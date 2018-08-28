@@ -1,0 +1,548 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<!--<link href="__PUBLIC__/dataTable/css/jquery.dataTables.min.css"/>-->
+<link href="__PUBLIC__/dataTable/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/Base64.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter').css('min-height',boxHeight)
+	})
+</script>
+
+<div class="boxOutter">
+	<div class="borderBottom of mb30">
+		<button type="button" onclick="" name="button" class="tabBtn left active" id="gainCode">获取节编码</button>
+		<button type="button" onclick="" name="button" class="tabBtn left" id="queryCode">查询节编码</button>
+	</div>
+
+	<div class="filterOutter borderNone pb0 gainCodeBox">
+		<div class="filterInner">
+			<div class="filterBox">
+				<label for="">版&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本</label>
+				<select name="" id="versions" class="inputCommon" onchange="getcharp()">
+					<option value="0">请选择</option>
+					<volist name="versionData" id="versionDataList">
+						<option value="{$versionDataList.id}">{$versionDataList.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="filterBox">
+				<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+				<select name="courseId" id="courseId" class="inputCommon" onchange="getcharp()">
+					<option value="0">请选择</option>
+					<volist name="courseList" id="courseList">
+						<option value="{$courseList.id}">{$courseList.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="filterBox">
+				<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label>
+				<select name="" id="grade" class="inputCommon" onchange="getcharp()">
+					<option value="0">请选择</option>
+					<volist name="grade" id="gradeList">
+						<option value="{$gradeList.id}">{$gradeList.grade}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="filterBox">
+				<label for="">分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</label>
+				<select name="" id="volume" class="inputCommon"  onchange="getcharp()">
+					<option value="0">请选择</option>
+					<option value="1">上册</option>
+					<option value="2">下册</option>
+					<option value="3">全一册</option>
+				</select>
+			</div>
+			<div class="filterBox">
+				<label for="">章</label>
+				<select name="" id="chapter" class="inputCommon" onchange="getChildcharp()">
+					<option value="0">请选择</option>
+				</select>
+			</div>
+			<div class="filterBox">
+				<label for="">节</label>
+				<select name="" id="section" class="inputCommon">
+					<option value="0">请选择</option>
+				</select>
+			</div>
+		</div>
+		<div class="filterBtn mb15">
+			<?php if(in_array('Multimedia/setCodeBase',session('exercises_permissions'))){ ?>
+			<button class="btn" id="" onclick="query();">查询</button>
+			<button class="btn" id="" onclick="reset()">重置</button>
+			<?php }?>
+		</div>
+		<!-- 查询结果 -->
+		<div class="grayResult" id="gainResult">
+			<p>该节对应的编码是：</p>
+			<p class="setCode"></p>
+		</div>
+	</div>
+
+	<div class="filterOutter borderNone pb0 queryCodeBox" style="display: none">
+		<div class="filterInner">
+			<div class="filterBox">
+				<label for="">编&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码</label>
+				<input type="text" class="inputCommon inputCode" placeholder="请输入编码">
+			</div>
+			<?php if(in_array('Multimedia/getCodeBase',session('exercises_permissions'))){ ?>
+			<button class="btn mb15" style="margin-left: -30px" id="submit" onclick="queryLike();">查询</button>
+			<?php }?>
+		</div>
+
+		<!-- 查询结果 -->
+		<div class="grayResult" id="queryResult"> 
+			<p>该编码对应的是：</p>
+			<p class="setCodeBase64"></p>
+		</div>
+	</div>
+
+	<div class="of borderBottom pt10">
+		<span class="tabBtn left text-center">内容上传区</span>
+	</div>
+
+	<div class="filterBtn mt30">
+		<button class="btn" id="uploadCihui" >上传词汇</button>
+		<input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+
+		<button class="btn" id="uploadJuzi" >上传句子</button>
+		<button class="btn" id="uploadTextbook" >上传课本</button>
+		<button class="btn" id="uploadVideo" >上传视频</button>
+
+		<br>
+		<a href="{:U('Multimedia/cihuiDownloadFile')}" class="activeA">下载词汇模板</a>
+		<a href="{:U('Multimedia/juziDownloadFile')}" class="activeA">下载句子模板</a>
+		<a id="downloadTextbook" class="activeA" style="cursor:pointer" target="iframeName1">下载课本模板</a>
+		<a href="{:U('Multimedia/VideoDownloadFile')}" class="activeA">下载视频模板</a>
+		<a id="blankHref" style="display: none;" target="iframeName1"></a>
+	</div>
+	<iframe name="iframeName1" id="iframeID1" src="about:blank" width="0" height="0" frameborder="0" ></iframe>
+	<div class="successInfo" style="display: none">
+		<div class="tableTopNotify">
+			<!-- 显示隐藏下边这个标签 -->
+			<span class="uploadResult">共录入<span class="totalNum">0</span>条数据，<span class="successTotal">0</span>条成功，<span class="loserTotal">0</span>条失败</span>
+			<a href="{:U('Multimedia/homeworkEntering')}" class="checkDetails">查看上传内容详情>></a>
+		</div>
+		<table class="tableCommon" id="table">
+			<thead>
+			<tr>
+				<th width=12%>版本</th>
+				<th width=12%>学科</th>
+				<th width=12%>年级</th>
+				<th width=12%>分册</th>
+				<th width=20%>章</th>
+				<th width=20%>节</th>
+				<th width=12%>成功导入数量</th>
+			</tr>
+			</thead>
+			<tbody class="setHtmlSuccess">
+			</tbody>
+		</table>
+	</div>
+
+</div>
+
+<div class="htmlerrorcsv" style="display: none">
+	<form action="index.php?m=Exercise&c=Multimedia&a=downloadError" method="post" id="errorImportSubmit">
+
+	</form>
+</div>
+<script src="__PUBLIC__/dataTable/js/jquery.dataTables.min.js"></script>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script src="__PUBLIC__/js/ajaxfile.js"></script>
+<script>
+	var url = '';
+	var types=0;
+	//上传数据
+	$(document).on('click','#uploadCihui',function(event){
+		url = "index.php?m=Exercise&c=Multimedia&a=uploadWordsFile&type=1";//句子
+		types=1;
+		$('.file_csv').val('');
+		$('.file_csv').trigger('click');
+	});
+
+	$(document).on('click','#uploadJuzi',function(event){
+		types = 2;
+		url = "index.php?m=Exercise&c=Multimedia&a=uploadWordsFile&type=2";//词汇
+		$('.file_csv').val('');
+		$('.file_csv').trigger('click');
+	});
+
+	$(document).on('click','#uploadVideo',function(event){
+		url = "index.php?m=Exercise&c=Multimedia&a=uploadWordsFile&type=3";//视频
+		types=3;
+		$('.file_csv').val('');
+		$('.file_csv').trigger('click');
+	});
+	var courseGradeTemplate = '<select id="course_id" name="course_id" class="input-control input-control-before">\
+	</select><select id="grade_id" name="grade_id" class="input-control input-control-before">\
+	</select>';
+	var interValIndex = 0;
+	$('#downloadTextbook').click(function(){
+		var obj = $(courseGradeTemplate);
+		$(obj[0]).html($('#courseId').html());
+		$(obj[1]).html($('#grade').html());
+		var textbookId = 0;
+		$.NotifyBox.NotifyTwoCallOneBlue('请选择课本','<div style="text-align:center">'+obj[0].outerHTML+ obj[1].outerHTML+'<select id="textbook_id"><option value="0">-请先选择年级和学科-</option></select></div>','确定','取消',
+				function(){
+					var url = '{:U('Multimedia/TextbookDownloadFile')}';
+					$('#blankHref').attr('href', url + '&id='+textbookId);
+					loading('downloading','正在生成模板,请稍候...');
+					$('#blankHref')[0].click();
+					interValIndex = setInterval(function(){
+						$.get('{:U('Multimedia/getXLSProcessIsFinish')}',{},function (res) {
+							if(JSON.parse(res).status == 200) {
+								removeLoad('downloading')
+								window.clearInterval(interValIndex);
+							}
+						})
+					},1000);
+				})
+		$("#course_id,#grade_id").unbind().change(function(){
+			getTextbooks();
+		});
+		$("#textbook_id").unbind().change(function(){
+			textbookId = $(this).val();
+		});
+
+
+	})
+
+	$(document).on('click','#uploadTextbook',function(event){
+
+			url = "index.php?m=Exercise&c=Multimedia&a=uploadWordsFile&type=4";//课本
+			types=4;
+			$('.file_csv').val('');
+			$('.file_csv').trigger('click');
+
+	});
+
+
+	function loading(name,title) {
+		if(title == undefined)
+			title = '正在上传...';
+		$('body').loading({
+			loadingWidth:240,
+			title:title,
+			name:name,
+			discription:'这是一个描述...',
+			direction:'row',
+			type:'origin',
+			originBg:'#71EA71',
+			originDivWidth:10,
+			originDivHeight:30,
+			originWidth:4,
+			originHeight:4,
+			smallLoading:false,
+			titleColor:'#388E7A',
+			loadingBg:'#312923',
+			loadingMaskBg:'rgba(22,22,22,0.2)'
+		});
+	}
+
+	function removeLoad(name) {
+		removeLoading(name);
+	}
+	function reset() {
+		window.location.reload();
+	}
+
+	function query() {
+		var versions = $('#versions').val(); // 版本
+		var courseId = $('#courseId').val() //学科
+		var grade = $('#grade').val(); // 年级
+		var volume = $('#volume').val(); // 分册
+		var chapter = $('#chapter').val(); // 章
+		var section = $('#section').val(); // 节
+
+		var version_name = $("#versions").find("option:selected").text();
+		var course_name = $("#courseId").find("option:selected").text();
+		var grade_name = $("#grade").find("option:selected").text();
+		var section_name = $("#volume").find("option:selected").text();
+		var chapter_name = $("#chapter").find("option:selected").text();
+		var festival_name = $("#section").find("option:selected").text();
+
+		var string = "";
+
+		if (versions != '' &&versions !=0 ) {
+			string += '&' + versions;
+		} else {
+			return;
+		}
+
+		if (courseId != '' &&courseId !=0) {
+			string += '&' + courseId;
+		}else{
+			return;
+		}
+		if (grade != ''&&grade !=0) {
+			string += '&' + grade;
+		} else {
+			return;
+		}
+		if (volume != ''&&volume !=0) {
+			string += '&' + volume;
+		}else{
+			return;
+		}
+		if (chapter != ''&&chapter !=0) {
+			string += '&' + chapter;
+		}else{
+			return;
+		}
+		if (section != ''&&section !=0) {
+			string += '&' + section;
+		} else {
+			return;
+		}
+
+		if (string.substr(0,1)=='&')
+			string=string.substr(1);
+
+		var setCode = "";
+		if (version_name != '') {
+			setCode += '&' + version_name;
+		}
+		if (course_name != '') {
+			setCode += '&' + course_name;
+		}
+		if (grade_name != '') {
+			setCode += '&' + grade_name;
+		}
+		if (section_name != '') {
+			setCode += '&' + section_name;
+		}
+		if (chapter_name != '') {
+			setCode += '&' + chapter_name;
+		}
+		if (festival_name != '') {
+			setCode += '&' + festival_name;
+		}
+
+		if (setCode.substr(0,1)=='&')
+			setCode=setCode.substr(1);
+
+		var str = string+'||'+setCode;
+
+        $.ajax({
+            type: "POST",   //访问WebService使用Post方式请求
+            url: 'index.php?m=Exercise&c=Multimedia&a=setCodeBase', //调用WebService的地址和方法名称组合---WsURL/方法名
+            data:{str:str},
+            dataType:'json',
+            beforeSend:function () {
+                loading('createAnswerQuestions');
+            },
+            success: function(res){
+                removeLoad('createAnswerQuestions');
+                $('.setCode').html(res)
+            }
+        });
+
+
+	}
+	
+	function queryLike() {
+		var inputCode = $('.inputCode').val();
+        if(inputCode==''){
+            return;
+        }
+        $.ajax({
+            type: "POST",   //访问WebService使用Post方式请求
+            url: 'index.php?m=Exercise&c=Multimedia&a=getCodeBase', //调用WebService的地址和方法名称组合---WsURL/方法名
+            data:{str:inputCode},
+            dataType:'json',
+            beforeSend:function () {
+                loading('createAnswerQuestions');
+            },
+            success: function(res){
+                removeLoad('createAnswerQuestions');
+                var content = res.split('||');
+
+                $('.setCodeBase64').html(content[1]);
+            }
+        });
+
+
+	}
+
+	$(document).off('change','.file_csv').on('change','.file_csv',function(){
+		var filepath = $('.file_csv').val();
+		var extStart = filepath.lastIndexOf(".");
+		var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+
+		if (ext == '.XLS' || ext == '.XLSX' ||ext == '.CSV' ) {
+
+			loading('createAnswerQuestions');
+			$.ajaxFileUpload({
+				url: url, //用于文件上传的服务器端请求地址
+				secureuri: false, //是否需要安全协议，一般设置为false
+				fileElementId: 'file_csv', //文件上传域的ID
+				dataType: 'json', //返回值类型 一般设置为json
+				success: function (data,status) //服务器成功响应处理函数
+				{
+					removeLoad('createAnswerQuestions');
+					if (data.code==200) {
+						$('.file_csv').val('');
+						$('.totalNum').text(data.totalNum);
+						$('.successTotal').text(data.successTotal);
+						$('.loserTotal').text(data.loserTotal);
+
+						var List = data.array;
+
+						if (Object.getOwnPropertyNames(List).length > 0){ //成功的
+							$('.successInfo').show();
+							var strHtml = '';
+							for(var i in List) {
+								strHtml += '<tr>';
+								var values = List[i];
+								var keys = i;
+								console.log(keys);
+								var message = i.split("||");
+								messageList = message[1].split("&amp;");
+								for (var j =0;j<messageList.length;j++){
+									strHtml += '<td>'+messageList[j]+'</td>';
+								}
+								strHtml += '<td>'+values+'</td>';
+								strHtml += '</tr>';
+							}
+							$('.setHtmlSuccess').html(strHtml);
+						}
+
+						if ( data.loserTotal > 0) { //有错误的
+
+							var html = "<input type='hidden' name='errorlist' value='"+ data['errordata'] +"'>";
+							html += "<input type='hidden' name='types' value='"+types +"'>";
+							$('form').append( html );
+
+							//点击按钮触发错误提交
+							$.NotifyBox.NotifyOneCallClose('下载导入失败数据',"共有"+data.loserTotal+"条数据上传失败<br>下载导入失败数据",'确定',function(){
+								$('#errorImportSubmit').submit();
+							})
+						}
+
+					} else {
+						$.NotifyBox.NotifyPromptOne('错误信息',"导入失败，请刷新网页进行重新尝试",'关闭');
+					}
+
+				},
+				error: function (data, status, e) //服务器响应失败处理函数
+				{
+					removeLoad('createAnswerQuestions');
+					$.NotifyBox.NotifyPromptOne('错误信息',"导入超时,请刷新网页进行重新尝试",'关闭');
+				}
+			})
+
+		} else {
+
+			$.NotifyBox.NotifyOneCallClose('错误信息','不支持此格式导入,请刷新重试','关闭',function(){
+				window.location.reload();
+			})
+		}
+	});
+
+</script>
+
+<script>
+
+    $('.tabBtn').click(function(){
+		if(!$(this).hasClass('active')) {
+			$(this).addClass('active').siblings('.tabBtn').removeClass('active');
+			$('.filterOutter').eq($(this).index()).show().siblings('.filterOutter').hide()
+		}
+	})
+
+	function getcharp(){
+		var version_id = $('#versions').val();
+		var courseId = $('#courseId').val();
+		var grade_id = $('#grade').val();
+		var school_term = $('#volume').val();//分册
+
+		$("#chapter option:not(:eq(0))").remove();
+		$("#section option:not(:eq(0))").remove();
+
+		$.ajax({
+			type: 'POST',
+			url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+			cache: false,
+			data:{'version':version_id,'courseId':courseId,'grade_id':grade_id,'school_term':school_term,'level':1},
+			// async: false,
+			dataType:'json',
+			success: function(msg){
+				if(msg.status == 200){
+					if(msg.data.length){
+						var html = '';
+						var	option =  "<option value='{0}'>{1}</option>";
+						html += option.format(0,'请选择');
+						$(msg.data).each(function (i, n) {
+
+							html += option.format(n.id, n.tree_point_name);
+
+							$('#chapter').html(html);
+						})
+					}
+				}
+			}
+		})
+	}
+
+	String.prototype.format = function (args) {
+		var result = this;
+		if (arguments.length > 0) {
+			if (arguments.length == 1 && typeof (args) == "object") {
+				for (var key in args) {
+					if (args[key] != undefined) {
+						var reg = new RegExp("({" + key + "})", "g");
+						result = result.replace(reg, args[key]);
+					}
+				}
+			} else {
+				for (var i = 0; i < arguments.length; i++) {
+					if (arguments[i] != undefined) {
+						var reg = new RegExp("({)" + i + "(})", "g");
+						result = result.replace(reg, arguments[i]);
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	function getChildcharp(){
+		var id = $('#chapter').val();
+		$("#section option:not(:eq(0))").remove();
+		$.ajax({
+			type: 'POST',
+			url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+			cache: false,
+			data:{'id':id,'level':2},
+			// async: false,
+			dataType:'json',
+			success: function(msg){
+				if(msg.status == 200){
+					if(msg.data.length){
+						var html = '';
+						var	option =  "<option value='{0}'>{1}</option>";
+						html += option.format(0,'请选择');
+						$(msg.data).each(function (i, n) {
+
+							html += option.format(n.id, n.tree_point_name);
+							$('#section').html(html);
+						})
+					}
+				}
+			}
+		})
+	}
+</script>
+
+<!-- 这里是下载失败数据弹窗 -->
+<!-- <script>
+	$.NotifyBox.NotifyOneCallClose('下载导入失败数据','共有5条数据上传失败<br>下载导入失败数据','确定',function(){
+		alert('下载')
+	})
+</script> -->

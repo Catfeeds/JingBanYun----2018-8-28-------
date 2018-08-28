@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<layout name="admin_layout"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<!--<script type="text/javascript" src="__PUBLIC__/js/jquery-1.8.3.js"></script>-->
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.core.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.datepicker.js"></script>
+
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+    
+    /*----------三期新增加↓↓↓-----------*/
+    .input_control_short{
+        -moz-appearance: none;
+		-webkit-appearance: none;
+		appearance: none;
+		position: relative;
+		border: 1px #d9d9d9 solid;
+		min-height: 2.125rem;
+    	height: 2.125rem;
+		padding: .3125rem;
+		z-index: 0;
+		outline: none;
+		margin: 0 10px;
+    }
+	
+	.input_control_short:hover {
+		border-color: #787878;
+	}
+	
+	.try_a, .use_a {
+		margin-left: 20px;
+	}
+	
+	.try_a:hover, .use_a:hover {
+		text-decoration: underline;
+	}
+	
+	.ui-datepicker-prev, .ui-datepicker-prev:hover {
+		background: url({$oss_path}public/web_img/Admin/left.png) no-repeat center;
+		background-size: 70% 70%;
+	}
+	.ui-datepicker-next, .ui-datepicker-next:hover {
+		background: url({$oss_path}public/web_img/Admin/right.png) no-repeat center;
+		background-size: 70% 70%;
+	}
+	/*----------三期新增加↑↑↑-----------*/
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 学校列表" class="button {:session('btntheme')}">&lt; 返回 学校列表</a>
+</div>
+
+
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/createSchool" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput"
+          data-show-error-hint="true">
+        <div class="example" data-text="基本信息">
+            <input type="hidden" id="id" name="id" value="{$data.id}">
+
+            <div class="form_section">
+                <label for="school_name">学校名称</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" id="school_name"  name="school_name" data-validate-func="required" value="{$data.school_name}"
+                           data-validate-hint="校名不能为空">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="school_name">负责人姓名</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="obligation_person" name="obligation_person" >
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="zip_code">负责人邮箱</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="email" id="email" >
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="telephone">负责人手机号</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="telephone" id="telephone" >
+                </div>
+            </div>
+ 
+            <!--admin_data-->
+            <div class="form_section">
+                <label for="contact_tel">管理员账号</label>
+
+                <div class="input-control text full-size">
+                    <select id="admin_id" name="admin_id_info" >
+                        <option value="">-请选择管理员-</option>
+                        <volist name="admin_data" id="admin_item">
+                            <option value="{$admin_item.id}" <if condition="$admin_item['id']==$data['admin_id']">selected</if>>{$admin_item.real_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="admin_nickname">管理员昵称</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="admin_nickname" id="admin_nickname" >
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="admin_realname">管理员姓名</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="admin_realname" id="admin_realname" value="{$data.real_name}" >
+                </div>
+            </div>
+            
+            <!--  <div class="form_section">
+                <label for="">管理员密码</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="admin_password" id="admin_password" data-validate-func="required" value="" data-validate-hint="管理员密码不能为空">
+                </div>
+            </div> -->
+            <in name="Think.session.admin.role" value="1">
+                <div class="form_section">
+                    <label for="">权限类型</label>
+
+                    <div class="input-control text full-size">
+                        <select id="user_auth" name="user_auth">
+                            <option value="">-请选择-</option>
+                            <volist name="auth" id="au">
+                                <option value="{$au.id}" {$au['id']==$data['user_auth']?'selected':''} >{$au.auth_name}</option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form_section">
+                    <label for="">到期时间</label>
+                    <input type="text" name="try_time_from" id="try_time_from" class="input_control_short" value="{$data.auth_start_time|default=''}" data-validate-hint="试用开始时间" placeholder="试用开始时间" style="width:20%;margin-right:30px;">
+                    <input type="text" name="try_time_to" id="try_time_to" class="input_control_short" value="{$data.auth_end_time|default=''}" data-validate-hint="试用结束时间" placeholder="试用结束时间" style="width:20%;margin-right:30px;">
+                    <input type="radio" id="try_add" name="try_more_less" {$data['timetype']==2?'checked':''} value="2"><label for="try_add">使用时间</label>
+                    <input type="radio" id="try_reduce" name="try_more_less" {$data['timetype']==1?'checked':''} {$data['timetype']==''?'checked':''} value="1"><label for="try_reduce">试用时间</label>
+                    <!-- <input type="number" name="try_number" class="input_control_short" step="1" min="0" style="width:15%;">日 -->
+                    <a class="try_a" href="{:U('Admin/lookAuthNotes?id=')}{$data.id}">查看修改记录</a>
+                </div>
+            </in>
+            
+        </div>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button {:session('btntheme')}" onclick="return check();">保存</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+    
+    function check() {
+        var school_name = $("#school_name").val();
+
+        if ( school_name == '') {
+            $.Notify({
+                caption: '提示',
+                content: '请输入学校名称',
+                type: 'warning'
+            });
+            return false;
+        }
+
+        return true;
+    }
+</script>
+<script>
+    $(function(){
+        //试用时间
+        $( "#try_time_from" ).datepicker({
+            defaultDate: "+1w",
+			minDate: 0,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'yy-mm-dd',   
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#try_time_to" ).datepicker( "option", "minDate", selectedDate );
+            }
+        });
+
+        $( "#try_time_to" ).datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'yy-mm-dd',   
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#try_time_from" ).datepicker( "option", "maxDate", selectedDate );
+            }
+        });
+
+        $( "#datepicker , #datepicker1" ).datepicker({
+            changeMonth: true,
+            changeYear: true
+        });//日期修改年份
+
+    });
+</script>
+</body>
+</html>

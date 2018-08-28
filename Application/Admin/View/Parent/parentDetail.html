@@ -1,0 +1,129 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		家长管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('Parent/parentList')}">家长管理</a>>>
+			<a href="javascript:;">查看家长信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<div class="blueBox">
+	<span class="blueText left fs16">查看家长信息</span>
+	<a href="{:U('Parent/parentModify')}&id={$parent_data.id}" class="blackText right" id="">
+		<img src="{$oss_path}public/web_img/Admin/icon-modify.png" alt="" class="mr10">
+                修改信息
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+
+<div class="grid condensed">
+	<div class="row cells3 infoBox">
+		<div class="cell">家长姓名：{$parent_data.parent_name}</div>
+		<div class="cell">家长手机号：{$parent_data.telephone}</div>
+
+		<if condition="$parent_data['permissions_status'] eq 1">
+			<div class="row cells3 infoBox">
+				<div class="cell">权限类型：vip权限</div>
+				<div class="cell">开始时间：{$parent_data['auth_start_time']|date="Y-m-d",###}</div>
+				<div class="cell">结束时间：{$parent_data['auth_end_time']|date="Y-m-d",###}</div>
+			</div>
+			<else />
+			<?php if ( $parent_data['auth_end_time']>time() ): ?>
+			<div class="row cells3 infoBox">
+				<div class="cell">权限类型：普通权限</div>
+				<div class="cell">VIP开始时间：{$parent_data['auth_start_time']|date="Y-m-d",###}</div>
+				<div class="cell">VIP结束时间：{$parent_data['auth_end_time']|date="Y-m-d",###}</div>
+			</div>
+			<?php else: ?>
+			<div class="row cells1 infoBox">
+				<div class="cell">权限类型：普通权限</div>
+			</div>
+			<?php endif; ?>
+
+		</if>
+
+		<div class="cell">账号状态： 
+                    <if condition="$parent_data['flag'] eq 1">
+                        正常
+                    <else />
+                        停用
+                    </if>
+                </div>
+		<div class="cell">&nbsp;</div>
+		<div class="cell">&nbsp;</div>
+	</div>
+</div>
+
+<p class="blueText fs16">学生信息</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+        <tr>
+            <th class="text-center">序号</th>
+            <th class="text-center">学生姓名</th>
+            <th class="text-center">性别</th>
+            <th class="text-center">所属学校</th>
+            <th class="text-center">所在年级</th>
+            <th class="text-center">所在班级</th>
+            <th class="text-center">账号状态</th>
+        </tr>
+	</thead>
+	<tbody id="body">
+            <volist name="student_list" id="item" key="key">
+                <tr>
+			<td class="text-center">
+				{$key}
+			</td>
+			<td class="text-center">
+				{$item.student_name}
+			</td>
+			<td class="text-center">
+				{$item.sex}
+			</td>
+			<td class="text-center">
+				{$item.school_name}
+			</td>
+			<td class="text-center">
+				{$item.grade}
+			</td>
+			<td class="text-center">
+				{$item.class_name}
+			</td>
+			<td class="text-center">
+                            <if condition="$item['flag'] eq 1">
+				正常
+                            <else />
+                                停用
+                            </if>
+			</td>
+		</tr> 
+            </volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"}
+            ]
+        });
+	})
+</script>

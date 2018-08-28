@@ -1,0 +1,678 @@
+<layout name="admin_layout"/>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+    
+    /*----------三期新增加↓↓↓-----------*/
+    .input_control_short{
+        -moz-appearance: none;
+		-webkit-appearance: none;
+		appearance: none;
+		position: relative;
+		border: 1px #d9d9d9 solid;
+		min-height: 2.125rem;
+    	height: 2.125rem;
+		padding: .3125rem;
+		z-index: 0;
+		outline: none;
+		margin: 0 10px;
+    }
+	
+	.input_control_short:hover {
+		border-color: #787878;
+	}
+	
+	.try_a, .use_a {
+		margin-left: 20px;
+	}
+	
+	.try_a:hover, .use_a:hover {
+		text-decoration: underline;
+	}
+	/*----------三期新增加↑↑↑-----------*/
+</style>
+<style>
+    * {
+        font-size: 16px;
+    }
+
+    body {
+        display: block;
+        background: url({$oss_path}public/web_img/Register/bodybackground.png) repeat-x left top ;
+    }
+
+    input,
+    textarea,
+    select {
+        box-sizing: border-box !important;
+    }
+
+    #topcloud {
+        position: absolute;
+        left: 0;
+        top: 40px;
+        z-index: 100;
+    }
+
+    .form_table td {
+        padding: 6px;
+    ;
+    }
+
+    .f_input input,
+    .f_input textarea,
+    .f_input select {
+        background-color: #DCE7EB;
+        padding: 4px 8px;
+        border: none;
+        width: 265px;
+    }
+
+    .red {
+        color: red;
+        display: inline-block;
+        font-size: 20px;
+        margin-left: 6px;
+        font-weight: 600;
+    }
+
+    .f_title {
+        text-align: right;
+        padding-right: 20px !important;
+    }
+</style>
+<style>
+    .red {
+        color: #ff0000;
+    }
+
+    .notify-container {
+        right: 42% !important;
+    }
+
+    #bg {
+        display: none;
+        position: fixed;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index: 1001;
+        -moz-opacity: 0.7;
+        opacity: .70;
+        filter: alpha(opacity=70);
+    }
+
+    #show {
+        display: none;
+        position: fixed;
+        top: 25%;
+        left: 22%;
+        width: 53%;
+        height: 55%;
+        padding: 8px;
+        border: 8px solid #E8E9F7;
+        background-color: white;
+        z-index: 1002;
+        overflow: auto;
+    }
+
+    #show_course {
+        display: none;
+        position: fixed;
+        top: 25%;
+        left: 22%;
+        width: 53%;
+        height: 55%;
+        padding: 8px;
+        border: 8px solid #E8E9F7;
+        background-color: white;
+        z-index: 1002;
+        overflow: auto;
+    }
+
+    #show_choice {
+        display: none;
+        position: absolute;
+        top: 25%;
+        left: 38%;
+        width: 20%;
+        height: 50%;
+        padding: 8px;
+        border: 8px solid #E8E9F7;
+        background-color: white;
+        z-index: 1002;
+        overflow: auto;
+    }
+</style>
+<style>
+    .school_item {
+        display: inline-block;
+        font-size: 16px;
+        margin-left: 20px;
+        padding: 8px 6px;
+        border: 1px solid #d3d3d3;
+        margin-bottom: 15px;
+    }
+
+    .school_item.selected {
+        background-color: #209994;
+        color: white;
+    }
+</style>
+<style>
+    .form-control{
+        display: block;
+        width: 100%;
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.428571429;
+        color: #555555;
+        background-color: white;
+        background-image: none;
+        border: 1px solid #cccccc;
+        border-radius: 6px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+    }
+    .btn {
+        background-color: #28D0C1;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: white;
+        font-size: 22px;
+        padding: 6px 18px;
+    }
+
+    .btn:hover {
+        background-color: #209994;
+        color: white;
+    }
+    /*=============警告框=================*/
+
+    .warning {
+        display: none;
+    }
+    /*================选择学校=======================*/
+
+    .show_top {
+        width: 100%;
+        height: 80%;
+        text-align: center;
+        padding-top: 5%;
+    }
+
+    .show_bottom {
+        width: 100%;
+        height: 20%;
+    }
+
+    .school_select {
+        margin-right: 10px;
+    }
+
+    .school_select select {
+        width: 50%;
+        background-color: #E8E9F7;
+        margin: 5px 0;
+        display: inline-block;
+    }
+
+    #queding {
+        display: block;
+        margin: 0 auto;
+        width: 96px;
+        height: 30px;
+        background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+        background-size: 100% 100%;
+        color: #fff;
+        font: 18px/30px "微软雅黑";
+        text-align: center;
+        text-decoration: none;
+    }
+    /*================选择学科=======================*/
+
+    .course_select {
+        float: left;
+        width: 50%;
+        text-align: center;
+    }
+
+    .course_select select {
+        width: 50%;
+        background-color: #E8E9F7;
+        margin: 5px 0;
+        display: inline-block;
+    }
+
+    #course_sure {
+        display: block;
+        margin: 0 auto;
+        width: 96px;
+        height: 30px;
+        background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+        background-size: 100% 100%;
+        color: #fff;
+        font: 18px/30px "微软雅黑";
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .choice span {
+        padding: 0 5px;
+        cursor: pointer;
+    }
+
+    .choice_hide {
+        text-align: center;
+    }
+
+    #choice_sure {
+        display: block;
+        margin: 0 auto;
+        width: 96px;
+        height: 30px;
+        background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+        background-size: 100% 100%;
+        color: #fff;
+        font: 18px/30px "微软雅黑";
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn_box {
+        margin-bottom: 5px;
+    }
+
+    .btn_box span {
+        padding-right: 5px;
+    }
+
+    #loginbtn:disabled {
+        background: #969292;
+    }
+
+    .beizhu {
+        font-size: 12px
+    }
+
+    #xuanzexuexiao {
+        position: relative
+    }
+
+    #xuanze {
+        position: absolute;
+        top: 0
+    }
+
+    #telephone {
+        background: #DCE7EB url({$oss_path}public/web_img/Register/phone.png) no-repeat center right;
+        background-size: 18px auto
+    }
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 教师列表" class="button {:session('btntheme')}">&lt; 返回 教师列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/createTeacherAccount" method="post" data-role="validator"
+          data-on-error-input="notifyOnErrorInput" data-show-error-hint="true">
+        <div class="example" data-text="基本信息">
+
+            <div class="form_section">
+                <label for="name">姓名</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="name" id="name" data-validate-func="required" data-validate-hint="姓名不能为空"
+                           maxlength="20">
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="telephone">性别</label> 
+                    <input type="radio" name="sex" value="1" checked="true"/>男
+                    <input type="radio" name="sex" value="2"/>女<br/> 
+            </div>
+
+            <div class="form_section">
+                <label for="telephone">手机号</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="telephone" id="telephone" data-validate-func="required"
+                           data-validate-hint="手机号不能为空" maxlength="11">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="telephone">密码</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="password" id="password" data-validate-func="required"
+                           data-validate-hint="密码不能为空" maxlength="20">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="email">邮箱</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="email" id="email" maxlength="30">
+                </div>
+            </div>
+
+            <div class="form_section" style="height: 152px">
+                <label for="brief_intro">简介</label>
+
+                <div class="input-control text full-size">
+                    <textarea id="brief_intro" name="brief_intro" rows="2"
+                              maxlength="200">{$data.brief_intro}</textarea>
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="childrens">已选择</label><br/><br/>
+                <div>
+                    <div class="select_class_grade" >
+                        <div class="select_span">
+                            <volist name="grade_class_select" id="grade_class_i" empty="">
+                                <span style="border: 1px solid gray;margin-left:20px;">
+                                    <span attr="{$grade_class_i.course_id}" class="select_course">{$grade_class_i.course_name}</span>
+                                    <span attr="{$grade_class_i.grade_id}" class="select_grade">{$grade_class_i.grade}</span>
+                                    <!--<span attr="{$grade_class_i.class_id}" class="select_class">{$grade_class_i.class_name}</span>-->
+                                    <a class="delete_info"> x</a>&nbsp;
+                                </span>
+                            </volist>
+                        </div>
+                        <div class="child_input">
+                            <volist name="grade_class_select" id="grade_class_i" empty="">
+                                <div class="child_div">
+                                    <input type="hidden" name="grade[]" class="hidden_grade" value="{$grade_class_i.grade_id}"/>
+                                    <!--<input type="hidden" name="class[]" class="hidden_class" value="{$grade_class_i.class_id}"/> -->
+                                    <input type="hidden" name="course[]" class="hidden_course" value="{$grade_class_i.course_id}"/> 
+                                </div>
+                            </volist>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="form_section">
+                <label for="school_id">任教年级</label>
+
+                <div class="input-control text full-size">
+                    <select id="grade_id" name="grade_id" data-validate-func="required" data-validate-hint="任教年级不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade">
+                            <option value="{$dataGrade.id}">{$dataGrade.grade}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            
+            <!--<div class="form_section">
+                <label for="school_id">任教班级</label>
+
+                <div class="input-control text full-size">
+                    <select id="class_id" name="class_id" data-validate-func="required" data-validate-hint="任教班级不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="class" id="class_item">
+                            <option value="{$class_item.id}">{$class_item.name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>-->
+
+            <div class="form_section">
+                <label for="school_id">任教学科</label>
+
+                <div class="input-control text full-size">
+                    <select id="course_id" name="course_id" data-validate-func="required" data-validate-hint="任教学科不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="courses" id="dataCourse">
+                            <option value="{$dataCourse.id}">{$dataCourse.course_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+ 
+
+            <in name="Think.session.admin.role" value="1,2">
+                <div class="form_section">
+                    <label for="school_id">所在学校</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" id="school_input" placeholder="选择学校" onkeydown="return false" autocomplete="off" onclick="return showChooseSchoolDlg()" required>
+                        <input type="hidden" name="school_id" id="school_id" data-validate-func="required" data-validate-hint="学校不能为空">
+                    </div>
+                </div>
+            </in>
+            
+            <!----------三期新增加↓↓↓----------->
+            <!--
+            <div class="form_section">
+                <label for="">权限类型</label>
+
+                <div class="input-control text full-size">
+                    <select id="admin_authority" name="admin_authority" data-validate-func="required" data-validate-hint="权限类型">
+                        <option value="">-请选择权限-</option>
+                        <option value="1">普通权限</option>
+                        <option value="2">VIP</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="">试用时间</label>
+                <input type="text" name="try_time" id="try_time" class="input_control_short" value="" data-validate-hint="试用时间" style="width:40%;margin-right:30px;">
+                <input type="radio" id="try_add" name="try_more_less" checked><label for="try_add">增加</label>
+                <input type="radio" id="try_reduce" name="try_more_less"><label for="try_reduce">减少</label>
+                <input type="number" class="input_control_short" step="1" min="0" style="width:15%;">日
+                <a class="try_a" href="javascript:;">查看修改记录</a>
+            </div>
+            
+            <div class="form_section">
+                <label for="">使用时间</label>
+                <input type="text" name="use_time" id="use_time" class="input_control_short" value="" data-validate-hint="使用时间" style="width:40%;margin-right:30px;">
+                <input type="radio" id="use_add" name="use_more_less" checked><label for="use_add">增加</label>
+                <input type="radio" id="use_reduce" name="use_more_less"><label for="use_reduce">减少</label>
+                <input type="number" class="input_control_short" step="1" min="0" style="width:15%;">日
+                <a class="use_a" href="javascript:;">查看修改记录</a>
+            </div>
+            ->
+            <!----------三期新增加↑↑↑----------->
+            
+        </div>
+        <br>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button {:session('btntheme')}" onclick="return check();">保存</button>
+        </div>
+    </form>
+
+    <div id="bg"></div>
+    <!----------------选择学校------------------->
+    <div id="show">
+        <div class="show_top" style="position:relative">
+            <div id="province" class="school_select">
+                省份：
+                <select name="" id="pro_select" class="form-control">
+                    <option value="">请选择省市区</option>
+                </select>
+            </div>
+            <div id="city" class="school_select">
+                市区：
+                <select name="" id="city_select" class="form-control">
+                    <option value="">请选择市区</option>
+                </select>
+            </div>
+            <div id="country" class="school_select">
+                区县：
+                <select name="" id="coun_select" class="form-control">
+                    <option value="">请选择区县</option>
+                </select>
+            </div>
+            <div id="school" class="school_select">
+                学校：
+                <select name="" id="sch_select" class="form-control">
+                    <option value="">请选择学校</option>
+                </select>
+            </div>
+            <img class="close_img" src="/Public/img/home/close_gray.png" alt="" style="position:absolute;right:0;top:0;cursor:pointer;">
+        </div>
+        <div class="show_bottom">
+            <a id="queding" href="javascript:;">确定</a>
+        </div>
+    </div>
+
+</div>
+
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+
+<script>
+    $('#queding').on('click', function () {
+        $('#bg').css('display', 'none');
+        $('#show').css('display', 'none');
+        $('#school_input').val($('#sch_select option:selected').text());
+        $('#school_id').val($('#sch_select option:selected').attr('data-id'));
+    })
+    $('.close_img').on('click', function () {
+        $('#bg').css('display', 'none');
+        $('#show').css('display', 'none');
+        $('#show_course').css('display', 'none');
+    })
+</script>
+
+<script>
+
+
+    function showChooseSchoolDlg() {
+        document.getElementById("bg").style.display = "block";
+        document.getElementById("show").style.display = "block";
+        $('#schoolWrapper').height($('#show').height() - 130);
+
+    }
+
+    bindQueryDistrictEvent("/index.php/Home/Teach", 'pro_select', 'city_select', 'coun_select', 'sch_select');
+
+    function checkSelect(){
+        var grade_val=$("#grade_id").val(); 
+        var course_val=$("#course_id").val();
+        if(grade_val && course_val){   
+            return true;
+        }else{ 
+            return false;
+        }
+    }
+    
+    var temp_div="<div class='child_div'>"+
+                    "<input type='hidden' name='grade[]' class='hidden_grade' value=''/>"+ 
+                    "<input type='hidden' name='course[]' class='hidden_course' value=''/>"+
+                "</div>";
+    var temp_span="<span style='border: 1px solid gray;margin-left:20px;'>"+
+                "<span attr='' class='select_course'></span>&nbsp;"+
+                "<span attr='' class='select_grade'></span>&nbsp;"+ 
+                "<a class='delete_info'>x</a>&nbsp;"+
+            "</span>";
+    
+    //创建元素并判断该span是否存在
+    function createElement(){
+        var course_id=$("#course_id").val();
+        var course_text=$("#course_id option:selected").text();
+        var grade_id=$("#grade_id").val();
+        var grade_text=$("#grade_id option:selected").text(); 
+        
+        //这里拿span进行比对的
+        var check_course=$(".select_course[attr="+course_id+"]");
+        var check_grade=$(".select_grade[attr="+grade_id+"]"); 
+        if(check_course.length && check_grade.length){
+            alert('您已经选择过该信息');
+            return false;
+        }
+        
+        //return false;
+        var inner_span=$(temp_span).clone(true);
+            $(inner_span).find(".select_course").attr("attr",course_id).text(course_text);
+            $(inner_span).find(".select_grade").attr("attr",grade_id).text(grade_text); 
+            
+            var inner_div=$(temp_div).clone(true);
+            $(inner_div).find('.hidden_grade').val(grade_id); 
+            $(inner_div).find('.hidden_course').val(course_id);
+            
+            $(".select_span").append(inner_span);
+            $(".child_input").append(inner_div);
+    }
+    
+    //年级等发生改变的时候,都要判断下拉是否都选中
+    $("#course_id,#grade_id").change(function(){  
+        if(checkSelect()==false){
+            return false;
+        } 
+        //判断是否有过去选择过得元素
+        createElement();  
+    });
+    
+    //点击已选择的删除
+    $(".delete_info").live('click',function(){
+        var current_index=$(this).parent().index();
+        $(".child_input").find(".child_div").eq(current_index).remove();
+        $(this).parent().remove();
+    });
+    
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+
+    function check() {
+        if(!$(".hidden_grade").length){
+            alert("请选择任教信息");
+            return false;
+        }
+        
+        //判断密码
+        var pwd_val=$('#password').val();
+        if(pwd_val.length<6){
+            $.Notify({
+                caption: '提示',
+                content: '密码必须6位含以上',
+                type: 'warning'
+            });
+            return false;
+        }
+
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regTel.test($("#telephone").val())) {
+            $.Notify({
+                caption: '提示',
+                content: '手机号格式不正确',
+                type: 'warning'
+            });
+            return false;
+        }
+        
+        if($("#email").val()!=''){
+            var regEmail = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+            if (!regEmail.test($("#email").val())) {
+                $.Notify({
+                    caption: '提示',
+                    content: '邮箱格式不正确',
+                    type: 'warning'
+                });
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+

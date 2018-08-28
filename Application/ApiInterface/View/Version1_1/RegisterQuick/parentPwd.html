@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>重置密码</title>
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<link type="text/css" rel="stylesheet" href="__PUBLIC__/css/registerQuick.css?ver=5">
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<script>
+		$(function(){
+			var newHeight = $(document).height();
+			$('html,body').height(newHeight);
+		})
+	</script>
+</head>
+
+<body>
+	<div class="pwdOutter">
+		<form action="/ApiInterface/Version1_1/RegisterQuick/parentResetPwd?{$share_str}" id='form_submit' method="post" onsubmit="return checkPwd()">
+			<div class="inputBox inputNoRight">
+				<span class="left">手机号码</span>
+				<input type="text" class="left" id="pwdPhone" name='telephone' autocomplete="off" placeholder="请输入" maxlength="11">
+			</div>
+			<div class="inputBox inputRight">
+				<span class="left">图形验证码</span>
+				<input type="text" class="left inputSpecial" id="pwdVerifyCode" name='verify_code' autocomplete="off" placeholder="请输入" maxlength="4">
+				<img id="image_verify_code" src="/ApiInterface/Version1_1/RegisterQuick/parentProduceCode" class="right imgCode">
+			</div>
+			<div class="inputBox inputRight">
+				<span class="left">验证码</span>
+				<input type="text" class="left" id="pwdCode" name='valid_code' autocomplete="off" placeholder="请输入">
+				<a href="javascript:;" onclick="sendPhoneCode()" class="right sendSmsButton">获取验证码</a>
+			</div>
+			<div class="inputBox inputNoRight">
+				<span class="left">新密码</span>
+				<input type="password" class="left" id="pwd1" name='password' autocomplete="off" placeholder="请输入6-16位密码" maxlength="16"  onkeyup="this.value=this.value.replace(/\s+/g,'')">
+			</div>
+			<div class="inputBox inputNoRight">
+				<span class="left">密码确认</span>
+				<input type="password" class="left" id="pwd2" name='confirm_password' autocomplete="off" placeholder="请输入6-16位密码" maxlength="16"  onkeyup="this.value=this.value.replace(/\s+/g,'')">
+			</div>
+			<div class="buttonBox">
+				<button type="submit" class="button" id="pwdSure">确定</button>
+			</div>
+		</form>
+	</div>
+	
+	<!--提示-->
+	<div class="blackNotify">
+		<span class="bNotify"></span>
+	</div>
+	
+	<script src="__PUBLIC__/js/jquery-1.11.0.min.js"></script>
+        <script src="__PUBLIC__/js/jquery.form.js"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	<!--提示-->
+	<script>    
+                $(function(){  
+                    var options = {
+                        success:    showResponse,  
+                        resetForm:  false,
+                        dataType:  'json'
+                    };  
+                    $('#form_submit').submit(function() {
+                            $(this).ajaxSubmit(options);
+                            $('#pwdSure').attr('disabled',true);
+                            return false;
+                    });
+                
+                });
+                function showResponse(responseText, statusText) {  
+                    $('#pwdSure').attr('disabled',false);
+                    switch(responseText.status)
+                    {
+                        case 200: //success  
+                                location.href=responseText.data.url; 
+                                break; 
+                        case 500:
+                                blackNotify(responseText.msg); 
+                                break;
+                        default: blackNotify(responseText.msg); 
+                                break;
+                    }
+		}
+                var times,timer,click_flag=true;;
+                
+                $("#image_verify_code").click(function(){
+                    $(this).attr('src','/ApiInterface/Version1_1/RegisterQuick/parentProduceCode?time='+Math.random());
+                });
+            
+                //发送短信
+                function sendPhoneCode(){
+                    console.log(click_flag); 
+                    if(click_flag==false){
+                        return false;
+                    }
+                    var url="/ApiInterface/Version1_1/RegisterQuick/parentSendSms";
+                    var telephone=$("#pwdPhone").val();
+                    var verify_code=$("#pwdVerifyCode").val();
+                    if(telephone==''){
+                        blackNotify('请输入手机号');
+                        return false;
+                    } else if(regTel.test(telephone) == false) {
+                        blackNotify('手机号码格式错误');
+                        return false;
+                    }else if(verify_code==''){
+                        blackNotify('请输入图形验证码');
+                        return false;
+                    } 
+                    click_flag=false;
+                    
+                    $.ajax({
+                        url: url, //请求的url地址
+                        dataType: "json", //返回格式为json 
+                        data: {
+                            'telephone': telephone,
+                            'code':verify_code,
+                        }, //参数值
+                        type: "GET", //请求方式 
+                        success: function (msg) { 
+                            if (msg.status < 0) {
+                                blackNotify(msg.msg);
+                                click_flag = true;
+                                return false; 
+                            } else {
+                                $('.sendSmsButton').html('<span class="image_code">60</span>秒后重发');
+                                times = 59;
+                                timer = setInterval(timeCount, 1000);
+                            } 
+                        }
+                    });
+                }
+                
+                function timeCount() {
+                    if (times < 1) { 
+                        click_flag=true;
+                        clearInterval(timer);
+                        $('.sendSmsButton').html('重新发送'); 
+                        return;
+                    } 
+                    $('.image_code').html(times);
+                    times--; 
+                }
+            
+		function blackNotify(notify) {
+		    $('.blackNotify').show().children('.bNotify').html(notify);
+			$('.blackNotify').stop(true).animate({bottom:'10%'},300).fadeOut(1000).animate({bottom:'-30px'},1)
+		} 
+        
+		function removeAllSpace(str) {
+			return str.replace(/\s+/g, "");
+		}
+		var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		  
+                function checkPwd(){ 
+                    var tel = $('#pwdPhone').val();
+                    var verifyCode=$("#pwdVerifyCode").val();
+                    var code = $('#pwdCode').val();
+                    var pwd1 = $.trim($('#pwd1').val());
+                    var pwd2 = $.trim($('#pwd2').val());
+                    if(tel == '') {     
+                        blackNotify('请输入手机号'); 
+                        return false;
+                    } else if(regTel.test(tel) == false) {
+                        blackNotify('手机号码格式错误');
+                        return false;
+                    } else if(verifyCode == '') {
+                        blackNotify('请输入图形验证码');
+                        return false;
+                    }  else if(code == '') {
+                        blackNotify('请输入验证码');
+                        return false;
+                    } else if(pwd1 == '') {
+                        blackNotify('请输入登录密码');
+                        return false;
+                    } else if(pwd1.length < 6) {
+                        blackNotify('密码长度不小于6位');
+                        return false;
+                    } else if(pwd2 == '') {
+                        blackNotify('请输入确认密码');
+                        return false;
+                    } else if(pwd1 != pwd2) {
+                        blackNotify('两次密码输入不一致');
+                        return false;
+                    } else{
+                        return true
+                    }
+		}
+	</script>
+</body>
+
+</html>

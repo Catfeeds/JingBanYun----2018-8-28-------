@@ -1,0 +1,187 @@
+<layout name="admin_layout_back_iframe"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="blueBox">
+	<span class="blueText left fs16">批量导入教师</span>
+	<a href="{:U('Class/downloadClassTeacherDemo')}&type={$class_status}" class="blackText right" id="">
+		<img src="{$oss_path}public/web_img/Admin/icon-download.png" alt="" class="mr10">
+		下载教师导入模板
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+
+<div class="pb10">
+	<label for="">文件地址：</label>
+	<input type="text" class="input-control fileAddress" placeholder="文件地址" id='address' readonly>
+	<a href="javascript:;" title="浏览" class="blueBtn2 browse_button">浏览</a>
+	<input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+	<a href="javascript:;" title="上传" class="blueBtn2 upload_file">上传</a>
+</div>
+
+<div class="tabBox">
+	<ul class="left tabUl" id="tabUl">
+		<li class="tabLi tabActive">导入成功</li>
+		<li class="tabLi">导入失败</li>
+	</ul>
+	<div class="tabCon" id="tabCon">
+		<div class="divTable tabConActive" id="successTable">
+			<!--导入成功-->
+			<table id="listWrapperSuccess" class="table striped hovered border" style='display:none;'>
+				<thead>
+					<tr>
+						<th class="text-center" style="width: 16%">序号</th>
+						<th class="text-center" style="width: 21%">教师姓名</th>
+						<th class="text-center" style="width: 21%">教师手机号</th>
+						<th class="text-center" style="width: 21%">任教学科</th> 
+					</tr>
+				</thead>
+				<tbody id="body">
+					 
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+
+		</div>
+		<div class="divTable" id="failTable">
+			<button class="blueBtn right" id="download_failed_data">下载失败数据</button>
+			<!--导入失败-->
+			<table id="listWrapperFail" class="table striped hovered border" style='display:none;'>
+				<thead>
+					<tr>
+						<th class="text-center" style="width: 15%">序号</th>
+						<th class="text-center" style="width: 17%">教师姓名</th>
+						<th class="text-center" style="width: 17%">教师手机号</th>
+						<th class="text-center" style="width: 17%">任教学科</th> 
+						<th class="text-center" style="width: 17%">失败原因</th>
+					</tr>
+				</thead>
+				<tbody id="body">
+					 
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByClassName("divTable");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="divTable tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="divTable";
+				}
+			}
+		} 
+	} 
+</script> 
+<script src="__PUBLIC__/js/importCommon.js"></script>
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>  
+<script>
+    var file_upload_url="{:U('Class/importClassTeacher')}&id={$class_id}"; 
+    var class_type="{$class_status}";
+    
+    var failed_tr='<tr>'+
+                    '<td class="text-center">1</td>'+ 
+                    '<td class="text-center">教师姓名</td>'+
+                    '<td class="text-center">教师手机号</td>'+ 
+                    '<td class="text-center">任教学科</td>'+ 
+                    '<td class="text-center">失败原因</td>'+ 
+                    '</tr>';
+    var success_tr='<tr>'+
+                    '<td class="text-center">1</td>'+ 
+                    '<td class="text-center">教师姓名</td>'+
+                    '<td class="text-center">教师手机号</td>'+ 
+                    '<td class="text-center">任教学科</td>'+  
+                    '</tr>';
+            
+        $('.upload_file').click(function(){  
+            upload_file();
+        });
+            
+        function upload_management(msg){
+            if(msg.status==200){ 
+                failed_data=msg.data.failed;
+                var data=msg.data; 
+                    //个人班
+                    if(data.failed.length){     
+                        for(var i=0;i<data.failed.length;i++){
+                            var failed_tr_obj=$(failed_tr).clone(true);
+                            $(failed_tr_obj).find('td').eq('0').text(i+1);
+                            $(failed_tr_obj).find('td').eq('1').text(data.failed[i].name);
+                            $(failed_tr_obj).find('td').eq('2').text(data.failed[i].telephone); 
+                            $(failed_tr_obj).find('td').eq('3').text(data.failed[i].course); 
+                            $(failed_tr_obj).find('td').eq('4').text(data.failed[i].notice_message); 
+                            $("#listWrapperFail").find('#body').append(failed_tr_obj);
+                        }
+                        $("#listWrapperFail").show();
+                    }
+                    if(data.success.length){
+                        for(var i=0;i<data.success.length;i++){
+                            var success_tr_obj=$(success_tr).clone(true);
+                            $(success_tr_obj).find('td').eq('0').text(i+1);
+                            $(success_tr_obj).find('td').eq('1').text(data.success[i].name);
+                            $(success_tr_obj).find('td').eq('2').text(data.success[i].telephone); 
+                            $(success_tr_obj).find('td').eq('3').text(data.success[i].course);
+                            $("#listWrapperSuccess").find('#body').append(success_tr_obj);
+                        }
+                        $("#listWrapperSuccess").show();
+                    } 
+            }else{
+                $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                return false;
+            }
+        }
+        
+    //下载失败的数据
+    $("#download_failed_data").click(function(){
+        
+        if(failed_data.length==0){
+            $.Notify({
+                caption: '提示',
+                content: '没有失败数据的数据可以导出!',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('Class/downloadImportTeacherErrorData')}&type="+class_type);
+        form.attr('method','post');
+        
+        for(var i=0;i<failed_data.length;i++){  
+            var div=$("<div></div>");
+            var teacher_name= $("<input type='hidden' name='teacher_name[]'/>");
+            var telephone= $("<input type='hidden' name='telephone[]'/>");   
+            var course= $("<input type='hidden' name='course[]'/>");
+
+            $(teacher_name).attr('value',failed_data[i].name); 
+            $(telephone).attr('value',failed_data[i].telephone); 
+            $(course).attr('value',failed_data[i].course); 
+ 
+            div.append(teacher_name);
+            div.append(telephone);  
+            div.append(course);  
+            form.append(div);
+        } 
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+</script>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+
+		<title>已完成作业</title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				font-size: 16px;
+					-webkit-tap-highlight-color: rgba(0,0,0,0);
+				-webkit-tap-highlight-color: transparent;
+			}
+			html,body{
+				height: 100%;
+				overflow: scroll;
+			}
+			#app{
+				height: 70%
+			}
+			body{
+				color: #333;
+			}
+			.p20{
+				padding:10px 20px
+			}
+			li{
+				list-style: none;
+			}
+			.top ul li{
+				overflow: hidden;
+				line-height: 32px;
+				border-bottom: 1px solid #eee
+			}
+
+			.top p {
+				word-break: break-all;
+			}
+
+			.left{
+				float: left;
+			}
+			.titleft{
+				height: 100%
+			}
+			.pright{
+				width:calc(100% - 80px);
+			}
+			.yellow{
+				color: #f2b718
+			}
+			.right{
+				float: right;
+			}
+			.color999{
+				color: #999
+			}
+			.m10{
+				margin: 10px 0
+			}
+			.border{
+				height: 1px ;
+				background: #eee;
+				position: relative;
+				z-index: 1;
+				top:17px
+			}
+			.text-center{
+				text-align: center;
+			}
+			.of{
+				overflow: hidden;
+			}
+			.title{
+				display: inline-block;
+				padding: 5px 10px;
+				background: #fff;
+				position: relative;
+				z-index: 2
+			}
+			a{
+				text-decoration: none;
+				color:#999
+			}
+			.w20{
+				width: 20%;
+				display: inline-block;
+			}
+			.qbtn{
+				width: 40px;
+			    height: 40px;
+			    display: block;
+			    text-align: center;
+			    line-height: 38px;
+			    border-radius: 50%;
+			    margin: 0 auto;
+				color:#333
+			}
+			.border-top{
+				border-top: 5px solid #f4f4f4
+			}
+			.fraction{
+				position: absolute;
+				top: 55px;
+				right: 20px;
+				background: url(__PUBLIC__/img/Apphomework/fenshu.png);
+				width: 70px;
+				height: 70px;
+				text-align: center;
+
+				background-size: 100%;
+
+				font-size: 20px
+			}
+			.btnFalse{
+				width: 40px;
+				height: 40px;
+				display: inline-block;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 50%;
+				margin: 5px;
+				color: #fff;
+				background: #ff683e;
+				border: 1px solid #ff683e;
+			}
+
+			.btnTrue{
+				width: 40px;
+				height: 40px;
+				display: inline-block;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 50%;
+				margin: 5px;
+				color: #fff;
+				background: #58d8db;
+				border: 1px solid #58d8db;
+			}
+
+			.questionMark {
+				width: 25px;
+				vertical-align: middle;
+				position: relative;
+				top: -1px;
+				left: 5px;
+			}
+
+			.explainMark {
+				/*width: 280px;*/
+				/*height: 234px;*/
+				width: 250px;
+				height: 371px;
+				background: url(__PUBLIC__/img/Apphomework/explainMarkNew.png) no-repeat center;
+				background-size: 100% 100%;
+				display: none;
+				position: fixed;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				margin: auto;
+				z-index: 3
+			}
+
+			.explainMark .closeMark {
+				width: 30px;
+				height: 30px;
+				float: right;
+			}
+
+			.fullBackMark {
+				display: none;
+				width: 100%;
+				height: 100%;
+				background: rgba(0,0,0,.3);
+				position: fixed;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				z-index: 2
+			}
+
+			.dimBox {
+				width: 100%;
+				overflow: hidden;
+				font-size: 14px;
+				color: #999;
+				padding: 15px 5px;
+			}
+
+			.dimBox .dimCircle {
+				float: left;
+			    width: 19px;
+			    height: 19px;
+			    display: inline-block;
+			    border-radius: 50%;
+				background: #58d8db;
+				border: 1px solid #58d8db;
+			}
+
+			.dimBox .dimCircle.circleNo {
+				background: #ff683e;
+    			border: 1px solid #ff683e;
+			}
+			.weipigai {
+			    background: #fff !important;
+			    border: 1px solid #fec93f  !important;
+			}
+			.dimBox .dimAnswer {
+				float: left;
+				margin: 0 10px 0 5px
+			}
+
+			.dimBox .dimAnswer.answerNo {
+				color: #e78b13;
+			}
+			.tabDiv{
+				height: 100%
+			}
+			/*大于600的手机*/
+			@media (min-width:600px){
+				.explainMark {
+					/*width: 510px;*/
+					/*height: 426px;*/
+					width: 350px;
+					height: 520px;
+				}
+
+				.explainMark .closeMark {
+					width: 60px;
+					height: 60px;
+				}
+
+				.dimBox {
+					font-size: 16px;
+				}
+
+				.dimBox .dimCircle {
+				    width: 21px;
+				    height: 21px;
+				}
+			}
+
+			@media  (max-width:359px) and (min-width:0){
+				.fraction {
+					right: 5px;
+				}
+			}
+			.tab li{
+				width: 100%;
+				text-align: center;
+				border-bottom: 1px solid #eee;
+				padding: 10px 0;
+			}
+			.yellowBorder{
+				border-bottom: 1px solid #fec93f !important
+			}
+			.m20{
+				margin: 20px
+			}
+			.ranking li{
+				padding: 0 20px;
+			}
+			.headPhoto{
+				width: 60px;
+				height: 60px;
+				display: block;
+			}
+
+			.ranking li div{
+				margin-right: 18px
+			}
+			.rankNum{
+				line-height: 85px;
+			}
+			.color666{
+				color: #999
+			}
+			.ranking li .achievement{
+				padding: 18px 0;
+				width: 190px;
+				margin-right: 0;
+				line-height: 27px;
+
+			}
+			.achievement p{
+				border-left:  1px solid #eee;
+				padding-left: 18px;
+				overflow: hidden;
+				text-overflow:ellipsis;
+				white-space: nowrap;
+			}
+			.red{
+				color:#eb2222
+			}
+			.videoImg{
+				height: 40px
+			}
+			.top{
+				position: relative;
+			}
+			.bgeee{
+				background: #eee
+			}
+			.btnUl{
+				overflow: hidden;
+			}
+			.btnUl li{
+				float: left;
+				width: 25%
+			}
+			.appTop {
+				height: 44px;
+				width: 100%;
+				border-bottom: 1px solid #eee;
+				position: fixed;
+				top: 0;
+				background: #fff;
+				z-index: 100;
+				box-sizing: content-box;
+			}
+			.appTop .appTopTitle {
+				height: 44px;
+				line-height: 44px;
+				font-size: 20px;
+				margin: 0 60px;
+				text-align: center;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+			}
+			.appTop .returnBox {
+				width: 44px;
+				height: 100%;
+				background: url(__PUBLIC__/img/Apphomework/fanhui.png) no-repeat center;
+				background-size: 10px 16px;
+				position: absolute;
+				top: 0;
+				left: -15px;
+			}
+			.tabDiv video{
+				width: 100%
+			}
+			[v-cloak] {
+			    display: none !important;
+			}
+		</style>
+	</head>
+	<body >
+		<div id="app" v-cloak>
+
+		<div class="top p20" >
+			<div class="appTop">
+				<div class="returnBox" @click="fanhui"></div>
+				<div class="appTopTitle">
+					{{studentArr.workName}}
+				</div>
+			</div>
+			<ul style="margin-top:45px">
+				<li>
+					<p class="left">
+						布置时间：
+					</p>
+					<p class="left buzhi">
+						{{studentArr.create_at}}
+					</p>
+				</li>
+				<li>
+					<p class="left">
+						截止时间：
+					</p>
+					<p class="left jiezhi">
+						{{studentArr.deadline}}
+					</p>
+				</li>
+				<li>
+					<p class="left">
+						作业要求：
+					</p>
+					<p class="left require pright">
+						{{studentArr.jobsments}}
+					</p>
+				</li>
+				<!-- <li v-if="submitId!=''">
+					<p class="left">
+						正确率：
+					</p>
+					<p class="left">
+						{{studentArr.jobsments}}
+					</p>
+				</li>
+				<li v-if="submitId!=''">
+					<p class="left">
+						提交时间：
+					</p>
+					<p class="left">
+						{{studentArr.submittime}}
+					</p>
+				</li>
+
+				<li v-if="submitId!=''">
+					<p class="left">
+						用时：
+					</p>
+					<p class="left">
+						{{studentArr.duration}}(秒)
+					</p>
+				</li> -->
+
+
+			</ul>
+			<div class="fraction">
+				<!-- <p style="height:14px;color: #ed2222; margin-top: 7px;font-size:22px"> -->
+					<!-- {{studentArr.point}}分
+				</p>
+				<img src="__PUBLIC__/img/homeworkV1/xiaofen.png" alt="" /> -->
+				<p  style="line-height: 70px;font-size: 20px;color: #eb2222;">
+					待完成
+				</p>
+			
+			</div>
+		</div>
+		<div v-cloak>
+				<div class="border-top tab">
+					<ul class="of">
+						<li class="left" v-bind:class="{yellowBorder:exerCardActive}" @click="exerCardShow=true,studentShow=false,teacherShow=false,studentActive=false,
+						teacherActive=false,exerCardActive=true" >
+							<p>
+								答题卡
+							</p>
+						</li>
+
+					</ul>
+				</div>
+
+				<div class="p20 tabDiv" v-show="exerCardShow">
+					<div class="m10">
+						共<span class="totalCount">{{message}}</span>道题<span class="color999">(<span class="totalScore">{{studentArr.total_score}}</span>分)</span>
+						<!-- <img src="__PUBLIC__/img/Apphomework/questionMark.png" alt="" class="questionMark"> -->
+					</div>
+
+					<div class="text-center">
+						<div class="border"></div>
+						<p class="title">
+
+						</p>
+					</div>
+
+					<div class="dimBox">
+
+						<span class="dimCircle  weipigai"></span>
+						<span class="dimAnswer ">未作答</span>
+					</div>
+					<div >
+
+
+
+						<div class="parent_index" v-for="(list,index) in tihao">
+							<p class="color999">
+								{{list.name}}
+							</p>
+							<ul class="btnUl">
+								<li class="of" v-for="(todo,index) in list.hasAnswer">
+									<a href="javascript:" class=" w20 left "><span class="weipigai qbtn"> {{index+1}}</span></a>
+								</li>
+							</ul>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="tabDiv p20 bgeee" v-show="teacherShow">
+					<ul>
+						<li v-for="(todo,$index) in teacherMsg">
+							<p v-if="todo.type == '1'">
+								{{todo.content}}
+							</p>
+							<p v-if="todo.type=='2'">
+								<img src="__PUBLIC__/img/Apphomework/luyinhou.png" alt="" v-bind:videoID=todo.id @click="getVideoId($event)" v-if="todo.is_read=='2' " class="videoImg">
+								<img src="__PUBLIC__/img/Apphomework/luyinweidu.png" alt="" v-bind:videoID=todo.id @click="getVideoId($event)" v-if="todo.is_read=='1' " class="videoImg">
+								<audio v-bind:src="todo.content" v-bind:id=todo.id></audio>
+							</p>
+						</li>
+					</ul>
+				</div>
+		</div>
+		<div class="fullBackMark"></div>
+		<div class="explainMark">
+			<div class="closeMark"></div>
+		</div>
+
+				</div>
+	</body>
+	<script src="__PUBLIC__/js/external/jquery.js" type="text/javascript"></script>
+	<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+	<script>
+		var userId = getQueryString('userId');
+		var role = getQueryString('role');
+		var homeworkId = getQueryString('homeworkId')
+		var name = '';
+		var studentId = getQueryString('studentId')
+		var statue = getQueryString('statue')
+		console.log(statue);
+		$(document).on('click','.qbtn',function(){
+			var i =0;
+			var a = 0;
+			var c = 0;
+			if($(this).parents('.parent_index').index() == 0){
+				var i = $(this).parents('li').index();
+
+			}else{
+				var a = $(this).parents('.parent_index').index();
+				for(var b = 0;b<a;b++){
+					c += $('.parent_index').eq(b).find('.w20').length;
+					i = c
+				}
+				i = i + $(this).parents('li').index()
+			}
+
+
+			window.location.href = '/index.php/ApiInterface/Version1_3/ParentHomework/exerciseDetails?role=3&userId='+userId+'&homeworkId='+homeworkId+'&statue=1&flag='+i
+		})
+
+		$('.questionMark').click(function(){
+			$('.fullBackMark,.explainMark').show();
+			$('body').css('overflow-y','hidden')
+		})
+
+		$('.fullBackMark,.closeMark').click(function(){
+			$('.fullBackMark,.explainMark').hide();
+			$('body').css('overflow-y','auto')
+		})
+		var app = new Vue({
+			el:'#app',
+			data:{
+				studentShow:false,
+				teacherShow:false,
+				exerCardShow:true,
+				studentActive:false,
+				teacherActive:false,
+				exerCardActive:true,
+				studentArr:[],
+				teacherMsg:[],
+				videoid:'',
+				studentId:studentId,
+				baogaoUrl:'/index.php/ApiInterface/Version1_3/HomeworkParent/getWeiHomeworkDetail',
+				weizuoUrl:'',
+				homeworkId:homeworkId,
+				userId:userId,
+				tihao:[],
+				message:0,
+				statue:statue
+			},
+			created :function(){
+				this.getstudentList()
+				this.getTeacherMsg()
+			},
+			methods:{
+				getstudentList:function(){
+					this.$http.post(this.baogaoUrl, {
+						userId: this.studentId,
+						role: '3',
+						homeworkId:this.homeworkId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.studentArr = JSON.parse(response.data).additionalData;
+							this.tihao =  JSON.parse(response.data).data['2dData'];
+							this.message = JSON.parse(response.data).message;
+							console.log(JSON.parse(response.data).data['2dData']);
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					})
+
+				},
+				getTeacherMsg:function(){
+					this.$http.post('/index.php/ApiInterface/Version1_3/HomeworkParent/getTeacherWrote?class_id={$classId}&work_id={$homeworkId}&student_id={$userId}', {
+						id:this.videoid
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+
+
+						if(JSON.parse(response.data).status == '200'){
+							this.teacherMsg = JSON.parse(response.data).data;
+							console.log(this.teacherMsg);
+						}else {
+
+						}
+
+					}, function (response) {
+
+					});
+				},
+				getVideoId:function(e){
+					this.videoid = e.target.getAttribute('videoid');
+					console.log(e.target.getAttribute('src'));
+					play(this.videoid)
+					if(e.target.getAttribute('src') !='/Public/img/Apphomework/luyinhou.png'){
+						e.target.setAttribute('src','/Public/img/Apphomework/luyinhou.png')
+						this.$http.post('/index.php/ApiInterface/Version1_3/HomeworkParent/setTeacherRead?class_id={$classId}&work_id={$homeworkId}&student_id={$userId}', {
+							id:this.videoid
+						}, {
+							emulateJSON: 'application/x-www-form-urlencoded'
+						}).then(function (response) {
+						}, function (response) {
+						});
+
+					}
+
+
+				},
+				fanhui:function(){
+					window.location.replace('/index.php/ApiInterface/Version1_3/ParentHomework/homeworkList?studentId='+this.studentId+'&userId='+this.userId+'&role=4')
+				}
+			}
+		})
+
+		function play(obj){
+			var player = $('#'+obj)[0];
+			if (player.paused){
+				player.play();
+				$(obj).parent().siblings().find('audio').trigger("pause")
+			}else {
+				player.pause();
+			}
+		}
+			function showWebNav(){}//显示web导航
+	</script>
+
+</html>

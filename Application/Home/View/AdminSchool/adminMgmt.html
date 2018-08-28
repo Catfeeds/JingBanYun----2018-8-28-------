@@ -1,0 +1,194 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+	.sortBox button.upBtn {
+		margin-bottom: 2px;
+		background: url({$oss_path}public/web_img/Admin/icon-grayUp.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+	
+	.sortBox button.downBtn {
+		background: url({$oss_path}public/web_img/Admin/icon-grayDown.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+	
+	.sortBox button.upBtnBlue {
+		margin-bottom: 2px;
+		background: url({$oss_path}public/web_img/Admin/icon-blueUp.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+	
+	.sortBox button.downBtnBlue {
+		margin-bottom: 2px;
+		background: url({$oss_path}public/web_img/Admin/icon-bluedown.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+</style>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">管理员管理</p>
+	<div class="underline2"></div>
+</div>
+
+<form action="" method="post">
+	<p class="blueText fs16">管理员查询</p>
+	<div class="grid condensed cellBox">
+		<div class="row cells4">
+			<div class="cell">
+				<label>管理员账号：</label>
+				<input type="text" class="input-control" name="" value="" placeholder="请输入学校名称">
+			</div>
+			<div class="cell">
+				<label>管理员姓名：</label>
+				<input type="text" class="input-control" name="" value="" placeholder="请输入管理员姓名">
+			</div>
+			<div class="cell">
+				<label>管理员手机号：</label>
+				<input type="text" class="input-control" name="" value="" placeholder="请输入管理员手机号">
+			</div>
+			<div class="cell">
+				<label>状态：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">正常</option>
+					<option value="2">停用</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+	</div>
+</form>
+
+<div class="grayBox">
+	<div class="left">
+		<button class="btns addBtn">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="">
+			添加
+		</button>
+		<button class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt="">
+			导出
+		</button>
+	</div>
+	<div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue-->
+			<button class="upBtn upBtnBlue"></button>
+			<button class="downBtn"></button>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>
+</div>
+
+<p class="blueText fs16">管理员列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+        <tr>
+            <th class="text-center">序号</th>
+            <th class="text-center">管理员姓名</th>
+            <th class="text-center">管理员账号</th>
+            <th class="text-center">管理员手机号</th>
+            <th class="text-center">状态</th>
+            <th class="text-center">操作</th>
+        </tr>
+	</thead>
+	<tbody id="body">
+    	<tr>
+			<td class="text-center">
+				1
+			</td>
+			<td class="text-center">
+				田小胖
+			</td>
+			<td class="text-center">
+				admin111
+			</td>
+			<td class="text-center">
+				13911111111
+			</td>
+			<td class="text-center">
+				正常
+			</td>
+			<td class="text-center">
+				<a href="javascript:;" class="operBtn" id="">详细/修改</a>
+				<a href="javascript:;" class="operBtn" id="">停用</a>
+				<a href="javascript:;" class="operBtn" id="">删除</a>
+			</td>
+		</tr>
+		<tr>
+			<td class="text-center">
+				2
+			</td>
+			<td class="text-center">
+				田小胖
+			</td>
+			<td class="text-center">
+				admin111
+			</td>
+			<td class="text-center">
+				13922222222
+			</td>
+			<td class="text-center">
+				正常
+			</td>
+			<td class="text-center">
+				<a href="javascript:;" class="operBtn" id="">详细/修改</a>
+				<a href="javascript:;" class="operBtn" id="">正常</a>
+				<a href="javascript:;" class="operBtn" id="">删除</a>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"16%"},
+                {"width":"16%"},
+                {"width":"16%"},
+                {"width":"16%"},
+                {"width":"16%"},
+                {"width":"20%"}
+            ]
+        });
+    });
+</script>
+
+<!--
+<script>
+	//一个按钮，无回调函数
+	$.NotifyBox.NotifyOne('注意','123','确定');
+	//一个按钮，有回调函数
+	$.NotifyBox.NotifyOneCall('注意','123','确定',function(){
+		alert('1')
+	});
+	//两个按钮，一个有回调函数，一个是灰色，一个是蓝色
+	$.NotifyBox.NotifyTwoCallOneGray('注意','123','确定','取消',function(){
+		alert('1')
+	});
+	//两个按钮，一个有回调函数，两个是蓝色
+	$.NotifyBox.NotifyTwoCallOneGray('注意','123','确定','取消',function(){
+		alert('1')
+	});
+	//两个按钮，两个有回调函数，两个是蓝色
+	$.NotifyBox.NotifyTwoCallTwo('注意','123','确定','取消',function(){
+		alert('1')
+	},function(){
+		alert('2')
+	})
+</script>
+-->

@@ -1,0 +1,68 @@
+ <div class="class_wrapper">
+         <div>
+             班级编号：{$data_stu.class_info.class_code} &nbsp;&nbsp;&nbsp;&nbsp;任教学科：{$dict_string_name} &nbsp;&nbsp;&nbsp;&nbsp;班级状态：{$data_stu.class_info.flag_name}
+         </div>
+         <span>班级成员：共{$count}人 , 教师{$data_stu.tea_count}人 , 学生{$data_stu.stu_count}人</span>
+
+
+
+        <!--
+                        <a href="{:U('Teach/classStudentMgmt?classId=')}{$data.id}" title="班级学生" class="button">班级学生</a> &nbsp;
+                        <a href="{:U('Teach/classTimetable?classId=')}{$data.id}" title="班级课表" class="button">班级课表</a> &nbsp;
+                        <a href="{:U('Teach/editClass?classId=')}{$data.id}" title="修改班级" class="button">修改班级</a>
+        -->
+
+
+        <span class="right right40 tea_stu">筛选：
+			<span class="padding5  "><span class="teacher_student_siftings">学生</span></span>
+				<span class="padding5 "><span class="teacher_siftings findteacher" classid="{$classid}">教师</span><span class="padding5Active"></span></span>
+				</span>
+<!--
+        <div class="class_screen">
+            <div class="search">
+                <button class="school_search_teacher" classid="{$classid}" class_status="{$data_stu.class_info.class_status}">搜索</button>
+                <input type="text" class="search_text" placeholder="输入老师姓名，手机号可搜索老师">
+            </div>
+        </div>
+-->
+     <input type="hidden" class="teacher_hiddenclass_status" value="{$data_stu.class_info.class_status}">
+     <input type="hidden" class="teacher_search_btn" value="{$classid}">
+        <div class="row" style="margin-top:20px">
+
+            <!--                   筛选教师-->
+            <volist name="list" id="data" empty="">
+                <div class="col-lg-3 col-md-6 col-sm-12 teacher_list" student_id="{$data.teacher_id}">
+                    <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+                    <img class="avatar" width="58" height="58" onerror="img_teacher(this)" src="<?php echo C('oss_path').$data['avatar']?>">
+                    <?php else: ?>
+                        <?php if ( $data['sex']=='男' ): ?>
+                        <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/teacher_m.png">
+                        <?php else: ?>
+                        <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/teacher_w.png">
+                        <?php endif; ?>
+
+                    <?php endif; ?>
+                    <span class="name">{$data.name}</span>
+
+                    <br>
+                    <span class="sex">{$data.sex}</span>
+                    <br>
+                    <p>任教学科：{$data.course_name}</p>
+                    <p class="parent_tel">教师手机号：{$data.telephone}</p>
+                    <p class="email">邮箱地址：{$data.email}</p>
+
+                </div>
+            </volist>
+        </div>
+        <div>
+
+        </div>
+    </div>
+
+     <div id="Popup">
+         <p><span>移除班级</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+         <p>确定将此学生移除班级？</p>
+         <p>
+             <button class="quedingyichuteacher">确定</button>
+         </p>
+     </div>

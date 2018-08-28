@@ -1,0 +1,278 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		学校管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('School/schoolList')}">学校管理</a>>>
+			<a href="javascript:;">导入学校</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<div class="blueBox">
+	<span class="blueText left fs16">批量导入学校</span>
+	<a href="{:U('School/downloadSchoolDemo')}" target="_blank" class="blackText right" id="">
+		<img src="{$oss_path}public/web_img/Admin/icon-download.png" alt="" class="mr10">
+		下载学校导入模板
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+
+<div class="pb10" style="margin-left: 70px;">
+	<label for="">文件地址：</label>
+	<input type="text" class="input-control fileAddress" placeholder="文件地址" id='address' readonly>
+	<a href="javascript:;" title="浏览" class="blueBtn2 browse_button">浏览</a>
+	<input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+	<a href="javascript:;" title="上传" class="blueBtn2 upload_file">上传</a>
+</div>
+
+<div class="tabBox">
+	<ul class="left tabUl" id="tabUl">
+		<li class="tabLi tabActive">导入成功</li>
+		<li class="tabLi">导入失败</li>
+	</ul>
+	<div class="tabCon" id="tabCon">
+		<div class="divTable tabConActive" id="successTable">
+			<!--导入成功-->
+			<table id="listWrapperSuccess" class="table striped hovered border">
+				<thead>
+					<tr>
+						<th class="text-center" style="width: 10%;">序号</th>
+						<th class="text-center" style="width: 15%;">学校名称</th>
+						<th class="text-center" style="width: 12%;">省份</th>
+						<th class="text-center" style="width: 12%;">市区</th>
+						<th class="text-center" style="width: 12%;">区县</th>
+						<th class="text-center" style="width: 12%;">学校性质</th>
+						<th class="text-center" style="width: 12%;">负责人</th>
+						<th class="text-center" style="width: 15%;">负责人联系电话</th>
+					</tr>
+				</thead>
+				<tbody id="body">
+					
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+
+		</div>
+		<div class="divTable" id="failTable">
+			<button class="blueBtn right" id="download_failed_data">下载失败数据</button>
+			<!--导入失败-->
+			<table id="listWrapperFail" class="table striped hovered border">
+				<thead>
+					<tr>
+						<th class="text-center" style="width: 10%;">序号</th>
+						<th class="text-center" style="width: 12%;">学校名称</th>
+						<th class="text-center" style="width: 10%;">省份</th>
+						<th class="text-center" style="width: 10%;">市区</th>
+						<th class="text-center" style="width: 10%;">区县</th>
+						<th class="text-center" style="width: 11%;">学校性质</th>
+						<th class="text-center" style="width: 11%;">负责人</th>
+						<th class="text-center" style="width: 12%;">负责人联系电话</th>
+						<th class="text-center" style="width: 14%;">失败原因</th>
+					</tr>
+				</thead>
+				<tbody id="body"> 
+                                    
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+
+		</div>
+	</div>
+</div>
+
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByClassName("divTable");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="divTable tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="divTable";
+				}
+			}
+		} 
+	}
+	
+</script>
+ 
+
+<script> 
+    var temp_failed_tr='<tr>'+
+                    '<td class="text-center">1</td>'+
+                    '<td class="text-center">北京小学</td>'+
+                    '<td class="text-center">北京市</td>'+
+                    '<td class="text-center">北京市</td>'+
+                    '<td class="text-center">海淀区</td>'+
+                    '<td class="text-center">学校性质</td>'+
+                    '<td class="text-center">田田田</td>'+
+                    '<td class="text-center">1333333333333</td>'+
+                    '<td class="text-center">错误原因</td>'+
+                    '</tr>';
+        var temp_success_tr='<tr>'+
+                    '<td class="text-center">1</td>'+
+                    '<td class="text-center">北京小学</td>'+
+                    '<td class="text-center">北京市</td>'+
+                    '<td class="text-center">北京市</td>'+
+                    '<td class="text-center">海淀区</td>'+
+                    '<td class="text-center">学校性质</td>'+
+                    '<td class="text-center">田田田</td>'+
+                    '<td class="text-center">1333333333333</td>'+
+                    '</tr>';
+        
+        //点击浏览按钮
+        $('.browse_button').click(function(){
+            //清空input框
+            $("#address").val('');
+            $('.file_csv').trigger('click');
+        });
+        
+        //input file发生变化
+        $('.file_csv').live('change',function(){    
+            var filepath = $('.file_csv').val();   
+            var extStart = filepath.lastIndexOf(".");
+            var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+            if(ext=='.CSV'){
+                $('#address').val(filepath); 
+            }else{
+                $.Notify({
+                    caption: '提示',
+                    content: '只支持csv文件上传',
+                    type: 'warning'
+                });
+                $('.file_csv').val('');
+            }
+        });
+        
+        var ajax_result='';
+        $('.upload_file').click(function(){
+            if($('#file_csv').val()=='' || !$('#file_csv').val()){
+                $.Notify({
+                    caption: '提示',
+                    content: '请选择需要上传的csv格式文件',
+                    type: 'warning'
+                });
+            }else{
+                $("#listWrapperSuccess").find('#body').empty();
+                $("#listWrapperFail").find('#body').empty();
+                $("#address").val('');
+                $.ajaxFileUpload
+                (
+                    {
+                        url: "{:U('School/importSchool')}", //用于文件上传的服务器端请求地址
+                        secureuri: false, //是否需要安全协议，一般设置为false
+                        fileElementId: 'file_csv', //文件上传域的ID
+                        dataType: 'text', //返回值类型 一般设置为json
+                        success: function (data)  //服务器成功响应处理函数
+                        {   
+                            data = eval('(' + data + ')');
+                            ajax_result=data;
+                            if(data.failed.length){
+                                for(var i=0;i<data.failed.length;i++){
+                                    var failed_tr_obj=$(temp_failed_tr).clone(true);
+                                    $(failed_tr_obj).find('td').eq(0).text(i+1);
+                                    $(failed_tr_obj).find('td').eq(1).text(data.failed[i].school_name);
+                                    $(failed_tr_obj).find('td').eq(2).text(data.failed[i].province_string);
+                                    $(failed_tr_obj).find('td').eq(3).text(data.failed[i].city_string);
+                                    $(failed_tr_obj).find('td').eq(4).text(data.failed[i].district_string);
+                                    $(failed_tr_obj).find('td').eq(5).text(data.failed[i].school_type);
+                                    $(failed_tr_obj).find('td').eq(6).text(data.failed[i].obligation_person);
+                                    $(failed_tr_obj).find('td').eq(7).text(data.failed[i].obligation_tel);
+                                    $(failed_tr_obj).find('td').eq(8).text(data.failed[i].notice_message);
+                                    $("#listWrapperFail").find('#body').append(failed_tr_obj);
+                                }
+                            }
+                            if(data.success.length){
+                                for(var i=0;i<data.success.length;i++){
+                                    var success_tr_obj=$(temp_success_tr).clone(true);
+                                    $(success_tr_obj).find('td').eq(0).text(i+1);
+                                    $(success_tr_obj).find('td').eq(1).text(data.success[i].school_name);
+                                    $(success_tr_obj).find('td').eq(2).text(data.success[i].province_string);
+                                    $(success_tr_obj).find('td').eq(3).text(data.success[i].city_string);
+                                    $(success_tr_obj).find('td').eq(4).text(data.success[i].district_string);
+                                    $(success_tr_obj).find('td').eq(5).text(data.success[i].school_type);
+                                    $(success_tr_obj).find('td').eq(6).text(data.success[i].obligation_person);
+                                    $(success_tr_obj).find('td').eq(7).text(data.success[i].obligation_tel); 
+                                    $("#listWrapperSuccess").find('#body').append(success_tr_obj);
+                                }
+                            }
+                            
+                        },
+                        error: function (data, status, e)//服务器响应失败处理函数
+                        {
+                            console.log(e);
+                            console.log(status);
+                            alert('导入失败,请刷新页面后重试');
+                        }
+                    }
+                )
+            }
+        });  
+        
+        //var temp_input='<input type="text" class="input-control" id="endTime" name="" value="">';
+        //点击下载失败数据
+        $("#download_failed_data").click(function(){        
+            var failed_data=ajax_result.failed;    
+            if(failed_data.length==0){
+                $.Notify({
+                    caption: '提示',
+                    content: '没有失败数据的数据可以导出!',
+                    type: 'warning'
+                });
+                return false;
+            }
+            var form="";
+            form = $("<form></form>");
+            form.attr('action',"{:U('School/downloadImportErrorData')}");
+            form.attr('method','post');
+            
+            for(var i=0;i<failed_data.length;i++){  
+                var div=$("<div></div>");
+                var temp_school= $("<input type='hidden' name='school[]'/>")
+                var temp_province= $("<input type='hidden' name='province[]'/>")
+                var temp_city= $("<input type='hidden' name='city[]'/>")
+                var temp_district= $("<input type='hidden' name='district[]'/>")
+                
+                var temp_school_type= $("<input type='hidden' name='school_type[]'/>")
+                var temp_school_obligation_person= $("<input type='hidden' name='obligation_person[]'/>")
+                var temp_school_obligation_telephone= $("<input type='hidden' name='obligation_telephone[]'/>")
+                
+                $(temp_school).attr('value',failed_data[i].school_name);
+                $(temp_province).attr('value',failed_data[i].province_string);
+                $(temp_city).attr('value',failed_data[i].city_string);
+                $(temp_district).attr('value',failed_data[i].district_string);
+                
+                $(temp_school_type).attr('value',failed_data[i].school_type);
+                $(temp_school_obligation_person).attr('value',failed_data[i].obligation_person);
+                $(temp_school_obligation_telephone).attr('value',failed_data[i].obligation_tel);
+                
+                div.append(temp_school);
+                div.append(temp_province);
+                div.append(temp_city);
+                div.append(temp_district);
+                div.append(temp_school_type);
+                div.append(temp_school_obligation_person);
+                div.append(temp_school_obligation_telephone);
+                form.append(div);
+            } 
+            form.appendTo("body");
+            form.css('display','none');
+            form.submit();
+        });
+</script>

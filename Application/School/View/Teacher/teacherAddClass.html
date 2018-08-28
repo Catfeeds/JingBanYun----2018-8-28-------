@@ -1,0 +1,190 @@
+<layout name="admin_layout_school" />
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+    <div class="standardMain hrefContent">
+        <a href="{:U('Teacher/teacherList')}" class="returnBack">教师列表</a>
+        >
+        <span class="thePage">创建教师</span>
+    </div>
+
+    <div class="standardMain classContent tableContent mt0">
+        <form id="form_submit" action="{:U('Teacher/teacherChooseClass')}" method="post" onsubmit="return checkInfo()">
+            <input type="hidden" name="id"  value="{$teacher_id}"/> 
+            <div class="blueBox">
+                <span class="left blueTitle">添加教师任教班级</span>
+                <a href="javascript:;" class="blackText right submitA" id="">
+                    <label for="submitSave"><img src="__PUBLIC__/img/admin/wanchengchuangjian.png" alt="" class="mr10"></label>
+                    <input type='submit' class="submitInput" id="submitSave" value='完成创建' />
+                </a>
+            </div>
+        </form>
+
+    	<div class="grid condensed infoOutter infoOutterModify">
+    		<div class="row cells3 infoBox">
+    			<div class="cell">
+    				<label>任教年级：</label>
+    				<select id="grade_list" class="input-control" name="" required>
+    					<option value="0">-请选择-</option>
+    					<volist name="grade_list" id="grade_item">
+    						<option value="{$grade_item.id}">{$grade_item.grade}</option>
+    					</volist>
+    				</select>
+    			</div>
+    			<div class="cell">
+    				<label>任教班级：</label>
+    				<select id="class_list" class="input-control" name="" required>
+    					<option value="0">-请选择-</option> 
+    				</select>
+    			</div>
+                <div class="cell">
+                    <label>任教学科：</label>
+                    <select id="course_" class="input-control" name="" required>
+                        <option value="0">-请选择-</option>
+                        <volist name="course_list" id="course_item">
+                            <option value="{$course_item.course_id}">{$course_item.course_name}</option>
+                        </volist>
+                    </select>
+                </div>
+    		</div>
+    	</div>
+        <span class="commonBtnBlue operateBtn btnBig" id="appendGrade" style="margin: -20px auto 30px; display: block">添加</span>
+
+        <!-- <div class="blueText fs16 mt30">已添加的任教学科列表</div> -->
+        <div class="tableOutter">
+            <table id="listWrapperClass" class="table striped hovered border newTable" style="display:none;">
+            	<thead>
+            		<tr>
+            			<th class="text-center">序号</th>
+            			<th class="text-center">任教年级</th>
+            			<th class="text-center">任教班级</th>
+            			<th class="text-center">任教学科</th>
+            			<th class="text-center">操作</th>
+            		</tr>
+            	</thead>
+            	<tbody id="body"> 
+            	</tbody>
+            </table>
+            <div class="Pagination">{$page}</div>
+        </div>
+
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"16%"}, 
+                {"width":"21%"},
+                {"width":"21%"},
+                {"width":"21%"},
+                {"width":"21%"}
+            ]
+        });
+	})
+</script>
+
+<script>
+    //提交
+    function checkInfo(){
+        if($('#body').find('.tr_').length){
+            var string='';
+            var allTr=$("#body").find('.tr_');
+            for(var i=0;i<allTr.length;i++){  
+                var clone_input=$(temp_input).clone(true);
+                $(clone_input).val($(allTr[i]).attr('attr_id'));
+                $("#form_submit").append(clone_input);
+            }    
+        } 
+        return true;
+    }
+     
+    var temp_input="<input type='hidden' name='class_course[]' />";
+    var temp_class_span="<option value='0'>-请选择-</option>";  
+        //年级发生改变
+        $("#grade_list").change(function(){
+            $("#class_list option:not(:eq(0))").remove(); 
+            var grade_id=$("#grade_list").val();   
+            if(grade_id==false){
+                return false;
+            }
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"{:U('Common/getClassByGrade')}",
+                data:{'grade_id':grade_id},
+                success: function(msg){
+                    if(msg.status==200){ 
+                        
+                        for(var i=0;i<msg.data.length;i++){
+                            var temp_span=$(temp_class_span).clone(true);
+                            $(temp_span).val(msg['data'][i].class_id);
+                            $(temp_span).text(msg['data'][i].class_name);
+                            $("#class_list").append(temp_span);
+                        }
+                    } 
+                }
+            });
+        }); 
+ 
+        var grade_course_span="<tr attr_id='1' class='tr_'><td class='text-center'>1</td><td class='text-center'>一年级</td>"+	
+                                "<td class='text-center'>一班</td><td class='text-center'>英语</td>"+
+                                "<td class='text-center'><a href='javascript:;' class='operBtn remove_tr' id=''>删除</a>"+
+                                "</td>"+
+                            "</tr>";
+        
+	$('#appendGrade').click(function(){ 
+            var grade_value=$('#grade_list').val();
+            var grade_text=$('#grade_list').find('option:selected').text();    
+            var course_value=$('#course_').val();                       
+            var course_text=$('#course_').find('option:selected').text();  
+            var class_value=$('#class_list').val();                       
+            var class_text=$('#class_list').find('option:selected').text(); 
+            
+            if(grade_value==false){
+                $.NotifyBox.NotifyOne('注意','请选择年级！','确定');
+                return false;
+            } 
+            if(course_value==false){
+                $.NotifyBox.NotifyOne('注意','请选择学科！','确定');
+                return false;
+            } 
+            if(class_value==false){
+                $.NotifyBox.NotifyOne('注意','请选择班级！','确定');
+                return false;
+            } 
+            var temp_span=$(grade_course_span).clone(true);
+            $(temp_span).find('td').eq(1).text(grade_text);
+            $(temp_span).find('td').eq(2).text(class_text);
+            $(temp_span).find('td').eq(3).text(course_text);
+            
+            $(temp_span).attr('attr_id',class_value+'_'+course_value+'_'+grade_value);
+            //判断该年级学科是否已经创建
+            if($('#body').find('.tr_').length){
+                var classsCourseAll=$('#body').find('.tr_');
+                for(var i=0;i<classsCourseAll.length;i++){
+                    if($(classsCourseAll[i]).attr('attr_id')==(class_value+'_'+course_value+'_'+grade_value)){
+                        $.NotifyBox.NotifyOne('注意','该年级学科您已选择过！','确定');
+                        return false;
+                    }  
+                }
+            }
+            $('#body').append(temp_span);
+            $("#listWrapperClass").show();
+        });
+        
+        
+        //移除tr
+        $('.remove_tr').live('click',function(){
+            $(this).parent().parent().remove();
+            if(!$('#body').find('.tr_').length){
+                $("#listWrapperClass").hide();
+            }
+        });
+</script>

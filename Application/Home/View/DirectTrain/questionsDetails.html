@@ -1,0 +1,305 @@
+<layout name="teacher_layout_1" />
+<link href="__PUBLIC__/css/directTrainDetails.css?v=5" rel="stylesheet" type="text/css"/>
+
+<div>
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div class="trainDetailsBox replyBox">
+	<div class="trainDetailsTitle">
+		<div class="authorInfo">
+			<img src="<?php echo !empty($details['avatar']) ?  $oss_path.$details['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="authorAvatar">
+			<div class="authorName"><?php echo $details['name']?>提问</div>
+		</div>
+		<div class="articleTitle"><?php echo $details['special_column_question_title']?></div>
+		<div class="authorElse">
+			<?php echo $details['putaway_status_time']?>&nbsp;&nbsp;阅读：<?php echo !empty($details['special_column_question_visit_count']) ? $details['special_column_question_visit_count'] : '0'?>
+			<div class="shareImg" title="分享">
+	            <img src="__PUBLIC__/img/resource/fenxiang.png" alt="" title="分享">
+	            <div class="bdsharebuttonbox" >
+	                <a href="javascript:;" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">&nbsp;新浪微博</a>
+	                <a href="javascript:;" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友">&nbsp;QQ好友</a>
+	                <a href="javascript:;" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">&nbsp;QQ空间</a>
+	                <a href="javascript:;" class="bds_weixin" data-cmd="weixin" title="分享到微信">&nbsp;微信</a>
+	            </div>
+	        </div>
+		</div>
+	</div>
+	<div class="articleBox">
+		<div class="articleMain">
+			<div class="articleContent"><?php echo html_entity_decode($details['special_column_question_reply_description'])?></div>
+			<img src="__PUBLIC__/img/directTrain/wen.png" alt="" class="wenImg">
+			<div class="articleLabelBox">
+				<div class="labelBox">
+					<?php foreach($tags as $itemTgas){?>
+					<span class="labelSpan">
+						<img src="__PUBLIC__/img/directTrain/biaoqian.png" alt="">
+						<?php echo $itemTgas['tags_name']?>
+					</span>
+					<?php }?>
+				</div>
+				<div class="labelGrade"><?php echo $details['course_name'].$details['grade']?>
+				<?php if($details['fascicule_id'] == '1'){?>
+					上册
+				<?php }elseif($details['fascicule_id'] == '2'){?>
+					下册
+				<?php }elseif($details['fascicule_id'] == '3'){?>
+					全一册
+				<?php }?>
+				</div>
+			</div>
+			<?php if($isEditor === true){?>
+			<div class="addCommentBtn replyBtn"><span>回复</span></div>
+			<div class="addComment">
+				<textarea name="" id="" cols="30" rows="10" class="addCommentText" placeholder="回复："></textarea>
+				<img src="__PUBLIC__/img/directTrain/duihuaqipao.png" alt="" class="cornerImg">
+				<div class="commBtn">
+					<button class="cancelBtn">取消</button>
+					<button class="sureBtn btnRed" attr-ppid="<?php echo $details['id']?>" attr-pid="0"
+							attr-special_column_editor_quizzer_id="<?php echo $userId?>"  attr-type="3" attr-question_reply_concat_id="<?php echo $details['id']?>"
+							attr-quizzer_replier_concat_id="<?php echo $details['special_column_editor_quizzer_id']?>"
+					>发表</button>
+				</div>
+			</div>
+			<?php }?>
+		</div>
+		<?php foreach($list as $itemList){?>
+		<!--编者回复-->
+		<div class="articleBox">
+	    	<!-- 评论区域 grayBack是背景灰色 commentLong是长的评论区域 commentShort是短的评论区域 -->
+				<?php if($itemList['delete_status'] == DELETE_FALSE && $itemList['putaway_status'] == UP && $itemList['status'] == YES){?>
+					<div class="commentOutter">
+					<div class="commentBox grayBack commentLong">
+						<div class="comment">
+							<div class="commentTitle">
+								<img src="<?php echo !empty($itemList['avatar']) ?  $oss_path.$itemList['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+								<span>编者<?php echo $itemList['name']?>回复 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemList['putaway_status_time']?></span>
+							</div>
+							<div class="commentMain">
+								<?php echo $itemList['special_column_question_reply_description']?>
+
+								<?php if($isEditor === false){?>
+									<div class="addCommentBtn quizBtn"><span>发表提问</span></div>
+									<div class="addComment">
+										<textarea name="" id="" cols="30" rows="10" class="addCommentText" placeholder="回复："></textarea>
+										<img src="__PUBLIC__/img/directTrain/duihuaqipao.png" alt="" class="cornerImg">
+										<div class="commBtn">
+											<button class="cancelBtn">取消</button>
+											<button class="sureBtn btnRed" attr-ppid="<?php echo $details['id']?>" attr-pid="<?php echo $itemList['id']?>"
+													attr-special_column_editor_quizzer_id="<?php echo $userId?>"  attr-type="2" attr-question_reply_concat_id="<?php echo $itemList['id']?>" attr-quizzer_replier_concat_id="<?php echo $itemList['special_column_editor_quizzer_id']?>">发表</button>
+										</div>
+									</div>
+								<?php }?>
+							</div>
+						</div>
+					</div>
+				</div>
+				<?php }elseif(($itemList['status'] == YES && $itemList['putaway_status'] != WAIT) || $itemList['delete_status'] == DELETE_TRUE){?>
+			<div class="commentOutter">
+				<div class="commentBox grayBack commentLong">
+					<div class="comment">
+						<div class="commentTitle">
+							<img src="<?php echo !empty($itemList['avatar']) ?  $oss_path.$itemList['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+							<span>编者<?php echo $itemList['name']?>回复 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemList['putaway_status_time']?></span>
+						</div>
+						<div class="commentMain commentMainDel">
+							该内容已被删除
+						</div>
+					</div>
+				</div>
+			</div>
+				<?php }?>
+			<?php foreach($itemList['child'] as $itemChild){?>
+				<?php if($itemChild['type'] == QUESTION){?>
+					<?php if($itemChild['delete_status'] == DELETE_FALSE  && $itemChild['putaway_status'] == UP && $itemChild['status'] == YES){?>
+						<div class="commentOutter">
+		    	<div class="commentBox commentShort">
+					<div class="comment">
+						<div class="commentTitle">
+							<img src="<?php echo !empty($itemChild['avatar']) ?  $oss_path.$itemChild['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+							<span><?php echo $itemChild['originatorname']?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemChild['putaway_status_time']?></span>
+						</div>
+						<div class="commentMain">
+							<?php echo $itemChild['special_column_question_reply_description']?>
+							<img src="__PUBLIC__/img/directTrain/wen.png" alt="" class="wenImg">
+
+							<?php if($isEditor === true){?>
+							<div class="addCommentBtn replyBtn"><span>回复</span></div>
+							<div class="addComment">
+								<textarea name="" id="" cols="30" rows="10" class="addCommentText" placeholder="回复："></textarea>
+								<img src="__PUBLIC__/img/directTrain/duihuaqipao.png" alt="" class="cornerImg">
+								<div class="commBtn">
+									<button class="cancelBtn">取消</button>
+									<button class="sureBtn btnRed" attr-ppid="<?php echo $details['id']?>" attr-pid="<?php echo $itemList['id']?>"
+											attr-special_column_editor_quizzer_id="<?php echo $userId?>"  attr-type="3" attr-question_reply_concat_id="<?php echo $itemChild['id']?>" attr-quizzer_replier_concat_id="<?php echo $itemChild['special_column_editor_quizzer_id']?>">发表</button>
+								</div>
+							</div>
+							<?php }?>
+						</div>
+					</div>
+		    	</div>
+		    </div>
+					<?php }elseif(($itemChild['status'] == YES && $itemChild['putaway_status'] != WAIT) || $itemChild['delete_status'] == DELETE_TRUE){?>
+						<div class="commentOutter">
+				<div class="commentBox commentShort">
+					<div class="comment">
+						<div class="commentTitle">
+							<img src="<?php echo !empty($itemChild['avatar']) ?  $oss_path.$itemChild['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+							<span><?php echo $itemChild['originatorname']?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemChild['putaway_status_time']?></span>
+						</div>
+						<div class="commentMain commentMainDel">
+							该内容已被删除
+							<img src="__PUBLIC__/img/directTrain/wen.png" alt="" class="wenImg">
+						</div>
+					</div>
+				</div>
+			</div>
+					<?php }?>
+				<?php }?>
+
+				<?php if($itemChild['type'] == REPLY){?>
+					<?php if($itemChild['delete_status'] == DELETE_FALSE  && $itemChild['putaway_status'] == UP && $itemChild['status'] == YES){?>
+						<div class="commentOutter">
+		    	<div class="commentBox grayBack commentShort">
+					<div class="comment">
+						<div class="commentTitle">
+							<img src="<?php echo !empty($itemChild['avatar']) ?  $oss_path.$itemChild['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+							<span>编者<?php echo $itemChild['originatorname']?>回复<?php echo $itemChild['passivename']?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemChild['putaway_status_time']?></span>
+						</div>
+						<div class="commentMain ">
+							<?php echo $itemChild['special_column_question_reply_description']?>
+							<?php if($isEditor === false){?>
+							<div class="addCommentBtn quizBtn"><span>发表提问</span></div>
+							<div class="addComment">
+								<textarea name="" id="" cols="30" rows="10" class="addCommentText" placeholder="回复："></textarea>
+								<img src="__PUBLIC__/img/directTrain/duihuaqipao.png" alt="" class="cornerImg">
+								<div class="commBtn">
+									<button class="cancelBtn">取消</button>
+									<button class="sureBtn btnRed" attr-ppid="<?php echo $details['id']?>" attr-pid="<?php echo $itemList['id']?>"
+											attr-special_column_editor_quizzer_id="<?php echo $userId?>"  attr-type="2" attr-question_reply_concat_id="<?php echo $itemChild['id']?>" attr-quizzer_replier_concat_id="<?php echo $itemChild['special_column_editor_quizzer_id']?>">发表</button>
+								</div>
+							</div>
+							<?php }?>
+						</div>
+					</div>
+		    	</div>
+		    </div>
+					<?php }elseif(($itemChild['status'] == YES && $itemChild['putaway_status'] != WAIT) || $itemChild['delete_status'] == DELETE_TRUE){?>
+						<div class="commentOutter">
+				<div class="commentBox grayBack commentShort">
+					<div class="comment">
+						<div class="commentTitle">
+							<img src="<?php echo !empty($itemChild['avatar']) ?  $oss_path.$itemChild['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+							<span>编者<?php echo $itemChild['originatorname']?>回复<?php echo $itemChild['passivename']?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemChild['putaway_status_time']?></span>
+						</div>
+						<div class="commentMain commentMainDel">
+							该内容已被删除
+						</div>
+					</div>
+				</div>
+			</div>
+					<?php }?>
+				<?php }?>
+			<?php }?>
+		</div>
+		<?php }?>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/share/share.js"></script>
+<!--分享-->
+<script type="text/javascript" charset="utf-8">
+    window._bd_share_config = {
+        "common": {
+            "bdSnsKey": {},
+            "bdText": "",
+            "bdDesc" : "",
+            "bdUrl" : "http://www.jingbanyun.com",
+            "bdPic" : "http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Index/ipad.png",
+            "bdMini": "2",
+            "bdMiniList": false,
+            "bdStyle": "0",
+            "bdSize": "16"
+        },
+        "share": {}
+    };
+
+    var id="{$data[0].id}";
+    $('.shareImg').hover(function(){
+        var activityImg = $('.browse_image').attr('src');
+        window.bdUrl = "http://{$_SERVER['HTTP_HOST']}/Home/BjResource/bjResourceDetails?id="+id+'&from=share';
+        //window.bdPic = "http://{$_SERVER['HTTP_HOST']}" + activityImg;
+
+        window._bd_share_main.init(window._bd_share_config);
+        $(this).children('.bdsharebuttonbox').stop(false,true).slideDown()
+    },function(){
+        $(this).children('.bdsharebuttonbox').stop(false,true).slideUp()
+    })
+</script>
+
+<script>
+	// 点击“回复”
+	$('.addCommentBtn').click(function(){
+		if($(this).siblings('.addComment').css('display') == 'block') {
+			$(this).siblings('.addComment').children('img').hide().end().slideUp();
+			if($(this).hasClass('replyBtn')){
+				$(this).children('span').text('回复')
+			} else {
+				$(this).children('span').text('发表提问')
+			}
+		} else {
+			$(this).siblings('.addComment').slideDown('normal',function(){
+				$(this).children('img').show()
+			});
+			$(this).children('span').text('收起')
+		}
+	})
+
+	// 点击文章中的'a'链接
+	$('.articleContent a').click(function(){
+		return false
+	})
+</script>
+<script>
+    // 点击“提交”
+	$('.sureBtn').click(function () {
+	    var pid = $(this).attr('attr-pid');
+	    var ppid = $(this).attr('attr-ppid');
+	    var special_column_editor_quizzer_id = $(this).attr('attr-special_column_editor_quizzer_id');
+	    var type = $(this).attr('attr-type');
+	    var question_reply_concat_id = $(this).attr('attr-question_reply_concat_id');
+	    var quizzer_replier_concat_id = $(this).attr('attr-quizzer_replier_concat_id');
+	    var special_column_question_reply_description = $(this).parent('.commBtn').siblings('.addCommentText').val();
+	    if($.trim(special_column_question_reply_description) == '') {
+	    	$.NotifyBox.NotifyPromptOne('提示', '请输入内容', '确定');
+	    	return false
+	    }
+		$.ajax({
+			data:{'pid':pid,'ppid':ppid,'special_column_editor_quizzer_id':special_column_editor_quizzer_id,'special_column_question_reply_description':special_column_question_reply_description,'type':type,'question_reply_concat_id':question_reply_concat_id,'quizzer_replier_concat_id':quizzer_replier_concat_id,},
+			url:"index.php?m=Home&c=DirectTrain&a=ajaxSubmit",
+			dataType:"JSON",
+			type:"POST",
+			success:function (data) {
+				if(data.status == 200) {
+					// alert(data.message);
+					$.NotifyBox.NotifyPromptOneC('提示', data.message, '确定', function(){
+						history.go();
+					});
+				} else {
+                    // alert(data.message);
+                    $.NotifyBox.NotifyPromptOne('提示', data.message, '确定')
+				}
+            }
+		})
+    })
+
+    // 点击“取消”
+    $('.cancelBtn').click(function() {
+    	$(this).parents('.addComment').children('img').hide().end().slideUp();
+    	if($(this).parents('.addComment').siblings('.addCommentBtn').hasClass('replyBtn')){
+			$(this).parents('.addComment').siblings('.addCommentBtn').children('span').text('回复')
+		} else {
+			$(this).parents('.addComment').siblings('.addCommentBtn').children('span').text('发表提问')
+		}
+    })
+</script>

@@ -1,0 +1,132 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<style>
+    #listWrapper img{
+        width: 50px !important;
+        height: 50px !important;
+        margin-right: 10px;
+        margin-top: 5px;
+    }
+
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+
+    .list_title {
+        width: 120px;
+        line-height: 50px;
+    }
+
+    .list_title a {
+        color: #2086bf !important;
+    }
+</style>
+<!--
+<div style="margin-bottom: 12px;float: left">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}" style="box-sizing:border-box;">&lt; 返回</a>
+</div>-->
+
+<div style="text-align: left;margin-bottom:20px;">
+    <a href="{:U('PullPeopleActivity/pullPeopleActivityInfo')}" class="button" style="">添加活动</a>
+</div>
+
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">序号</th>
+        <th class="text-center">活动名称</th>
+        <th class="text-center">链接地址</th>
+        <th class="text-center">QQ二维码</th>
+        <th class="text-center">微信二维码</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data">
+        <tr>
+            <td class="text-center">
+                <?php echo $key+1?>
+            </td>
+            <td class="text-center"><?php echo $data['activity_name'] ?></td>
+            <td class="text-center">
+                <?php echo  'http://'.$data['activity_url'].'&id='.$data['id']?>
+            </td>
+            <td class="text-center">
+                <img src="<?php echo $oss_path.$data['qq_code']?>">
+            </td>
+            <td class="text-center">
+                <img src="<?php echo $oss_path.$data['wx_code']?>">
+            </td>
+            <td class="text-center">
+                <a href="{:U('PullPeopleActivity/pullPeopleActivityInfo?id=')}{$data.id}" class="button info">修改</a>
+                <?php if($data['activity_status'] == 1){?>
+                <a href="javascript:;" class="button info" onclick="up_down_status($(this))" attr-data="<?php echo $data['id']?>" attr-status="2">上架</a>
+                <?php }else{?>
+                <a href="javascript:;" class="button info" onclick="up_down_status($(this))" attr-data="<?php echo $data['id']?>" attr-status="1">下架</a>
+                <?php }?>
+                <a href="javascript:;" class="button info" onclick="deletes($(this))" attr-data="<?php echo $data['id']?>">删除</a>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+
+<div class="Pagination">{$page}</div>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"10%"}
+            ]
+        });
+    });
+
+    function up_down_status(obj) {
+        var id = obj.attr('attr-data');
+        var up_down_status = obj.attr('attr-status');
+        $.ajax({
+            url:"{:U('PullPeopleActivity/upDown')}",
+            data:{id:id,up_down_status:up_down_status},
+            type:"post",
+            success:function (data) {
+                if(up_down_status == 1){
+                    obj.attr('attr-status',2);
+                    obj.text('上架')
+                }else{
+                    obj.attr('attr-status',1);
+                    obj.text('下架')
+                }
+
+            }
+        })
+    }
+
+    function deletes(obj) {
+        var id = obj.attr('attr-data');
+        if(confirm('确定删除吗？')){
+            $.ajax({
+                url:"{:U('PullPeopleActivity/delete')}",
+                data:{id:id,delete_status:1},
+                type:"post",
+                success:function (data) {
+                    location.reload();
+                }
+            })
+        }
+
+    }
+
+</script>

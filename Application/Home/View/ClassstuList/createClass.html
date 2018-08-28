@@ -1,0 +1,251 @@
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+
+<style>
+	#contentWrapper {
+		background: rgb(255, 251, 242);
+
+		border: 2px solid #efca33
+	}
+
+	#addcg {
+		background: url(__PUBLIC__/img/tianjiachenggongtanchuang.png) no-repeat;
+		width: 476px;
+		height: 284px;
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		margin: auto auto;
+		text-align: center;
+		display: none;
+	}
+
+	#addcg span {
+		font-size: 18px;
+		padding: 10px 25px;
+		background: #209994;
+		color: #fff;
+		border-radius: 5px;
+		margin-top: 200px;
+		display: inline-block;
+	}
+
+	.right {
+		display: inline-block;
+	}
+	.form_section,.form_section,.form_subject{
+		width: 600px;
+		margin: 20px auto;
+		height: 40px;
+		line-height: 40px;
+		font-size: 16px;
+	}
+	.form-actions{
+		text-align: center;
+		margin-top: 30px
+	}
+	input,select{
+		width: 521px;
+		height: 40px;
+		margin-left: 5px;
+		background: rgb(255, 251, 242);
+		border: 1px solid #ccc
+	}
+	.btn_actions{
+		    padding: 8px 80px;
+    border: none;
+    outline: none;
+    background-color: #efca33;
+    color: #fff
+	}
+</style>
+<!--<div id="bg"></div>-->
+<div class="main_opr">
+	<a href="{:U('ClassList/classList')}" title="我的班级" class="btn btn-main-opr ">我的班级</a>
+	<a href="{:U('ClassList/createClass')}" title="创建班级" class="btn btn-main-opr btn-main-opr-active">创建班级</a>
+	<a href="{:U('ClassList/joinClass')}" title="加入班级" class="btn btn-main-opr">加入班级</a>
+		<a href="{:U('ClassList/acceptClass')}" title="接收班级" class="btn btn-main-opr">接收班级</a>
+</div>
+<div style="margin-top:40px">
+	<form action="__URL__/createClass" method="post" id="mainForm" onsubmit="$('#saveButton').attr('disabled',true);">
+		<div class="example" data-text="班级数据">
+
+			<div class="form_section">
+				<label for="grade_id">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级:</label>
+				<div class="right">
+					<select id="grade_id" name="grade_id" class="" required>
+						<option value="">--选择--</option>
+						<volist name="grades" id="dataGrade" empty="暂时没有信息">
+							<option value="{$dataGrade.grade_id}">{$dataGrade.grade}</option>
+						</volist>
+					</select>
+				</div>
+			</div>
+			<div class="form_section">
+				<label for="name">班&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级:</label>
+				<div class="right">
+					<input type="text" name="name" id="name" class="" required maxlength="8" placeholder="输入班级名称，如：一班" >
+
+				</div>
+
+			</div>
+			<!--<div class="form_subject">-->
+				<!--<label class="subject">任教学科:</label>-->
+				<!--<div class="right">-->
+				<!--<select name="dict_course_id" id="dict_course_id">-->
+					<!--<option value="">&#45;&#45;选择&#45;&#45;</option>-->
+				<!--</select>-->
+
+			<!--</div>-->
+		</div>
+</div>
+<div class="form-actions" style="">
+	<button type="submit" class="btn_actions" id="saveButton">保存</button>
+</div>
+</form>
+</div>
+<!--
+<div class="modal fade" id="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">请在下表班级中选择</h4>
+			</div>
+			<div class="modal-body">
+				<ul class="text-center">
+					<volist name="gradeList" id="gradeList_id" empty="暂时没有班级哦">
+						<li><a class="btn btn-primary " href="javascript:void(0);" onclick="returnGrade(this)">{$gradeList_id.name}</a></li>
+					</volist>
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+-->
+<div id="addcg">
+	<span>确定</span>
+</div>
+<!--弹窗 -->
+<div id="Popup">
+	<p>加入班级<img src="__PUBLIC__/img/classManage/close_btn.png" alt=""></p>
+	<p>确定将此学生移除班级？</p>
+	<p>
+		<button>确定</button>
+	</p>
+</div>
+<!--
+<div id="classListModal">
+	<div class="close_btn">
+		<img src="__PUBLIC__/img/home/close_before.png" alt="">
+	</div>
+	<tr>
+		<ul class="text-center">
+            <volist name="gradeList" id="gradeList_id" empty="暂时没有班级哦">
+                <li><a class="btn btn-primary " href="javascript:void(0);" onclick="returnGrade(this)">{$gradeList_id.name}</a></li>
+            </volist>
+		</ul>
+	</tr>
+</div>
+-->
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+	$('#addcg>span').click(function () {
+		$('#addcg').hide()
+	})
+
+	function returnGrade(obj) {
+		var gradeStr = $(obj).text();
+		$('#name').val(gradeStr);
+		$('#dialog').modal('hide');
+		//		$('#classListModal').css('display', 'none');
+		//		$('#bg').css('display', 'none');
+	}
+
+	function showGradeList() {
+		$('#dialog').modal('show');
+		//		$('#classListModal').css('display', 'block');
+		//		$('#bg').css('display', 'block');
+	}
+	$('.close_btn').on('click', function () {
+		$('#classListModal,#bg').css('display', 'none');
+	});
+	$(function () {
+		var options = {
+			// target:        '#output',   // target element(s) to be updated with server response
+			//beforeSubmit:  showRequest,  // pre-submit callback
+			success: showResponse, // post-submit callback
+			resetForm: false,
+			dataType: 'json'
+
+			// other available options:
+			//url:       url         // override for form's 'action' attribute
+			//type:      type        // 'get' or 'post', override for form's 'method' attribute
+			//dataType:  null        // 'xml', 'script', or 'json' (expected server response type)
+			//clearForm: true        // clear all form fields after successful submit
+			//resetForm: true        // reset the form after successful submit
+
+			// $.ajax options can be used here too, for example:
+			//timeout:   3000
+		};
+
+		// bind to the form's submit event
+		$('#mainForm').submit(function () {
+			// inside event callbacks 'this' is the DOM element so we first
+			// wrap it in a jQuery object and then invoke ajaxSubmit
+			$(this).ajaxSubmit(options);
+
+			// !!! Important !!!
+			// always return false to prevent standard browser submit and page navigation
+			return false;
+		});
+	});
+
+	function showResponse(responseText, statusText) {
+		switch (responseText.code) {
+		case -1: //already reg
+			alert(responseText.msg);
+			break;
+		case 0:
+			//			alert(responseText.msg);
+			$('#addcg').show()
+
+			break;
+		default:
+			alert(responseText.msg);
+			break;
+		}
+		$('#saveButton').attr('disabled', false);
+	}
+
+	$('#addcg').click(function(){
+		location.reload();
+	})
+
+
+	function getXueke() {
+		var gradeId = $('#grade_id').val();
+		if (gradeId == '') {
+			$('#dict_course_id').html('<option value="">-选择-</option>');
+			return;
+		}
+		$.get('__URL__/getgradesandCourse', {
+			'grade_id': gradeId
+		}, function (res) {
+			var options = [];
+			$.each(res, function (index, item) {
+				options.push('<option value="{0}">{1}</option>'.format(item.id, item.course_name));
+			});
+			if (options.length > 0) {
+				$('#dict_course_id').html(options.join(''));
+			} else {
+				$('#dict_course_id').html('<option value="">-请选择-</option>');
+			}
+		})
+	}
+</script>

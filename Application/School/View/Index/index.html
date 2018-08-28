@@ -1,0 +1,1006 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/layui/css/layui.css">
+<script src="__PUBLIC__/highcharts/code/highcharts.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/exporting.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/export-data.js"></script>
+
+<style>
+	.contentMain {
+		padding: 0;
+	}
+
+	.dateContent .dateText {
+	    background: url({$oss_path}public/web_img/Icons/select20-8.png) no-repeat 28px center ;
+	}
+
+	.indexContent .lineOutter .roleText {
+	    background: url({$oss_path}public/web_img/Icons/select20-8.png) no-repeat 90px center ;
+	}
+
+	[v-cloak] {
+		display: none;
+	}
+
+	.laydate-selected:hover {
+		background-color: #b4e7f5 !important;
+	}
+</style>
+
+<div class="standardMain grayText">
+	{$introduce}
+</div>
+
+<div id="admin" v-cloak>
+	<div class="standardMain dateContent">
+		<span class="dateTitle">日期</span>
+		<div class="dateFilter">
+			<div class="dateText">日</div>
+			<ul class="dateUl">
+				<li class="active">日</li>
+				<li>月</li>
+				<li>年</li>
+			</ul>
+		</div>
+		<div class="layui-input-inline" style="display: block;">
+			<input type="text" class="layui-input" id="dayInput" placeholder="开始时间 - 结束时间" readonly autocomplete="off">
+			<div class="dateImgBox">
+				<img src="{$oss_path}public/web_img/Admin/rili.png" alt="" class="dateImg" id="dayImg">
+			</div>
+		</div>
+		<div class="layui-input-inline">
+			<input type="text" class="layui-input" id="monthInput" placeholder="年-月" readonly autocomplete="off">
+			<div class="dateImgBox">
+				<img src="{$oss_path}public/web_img/Admin/rili.png" alt="" class="dateImg" id="monthImg">
+			</div>
+		</div>
+		<div class="layui-input-inline">
+			<input type="text" class="layui-input" id="yearInput" placeholder="年" readonly autocomplete="off">
+			<div class="dateImgBox">
+				<img src="{$oss_path}public/web_img/Admin/rili.png" alt="" class="dateImg" id="yearImg">
+			</div>
+		</div>
+	</div>
+
+	<div class="clearBoth"></div>
+
+	<div class="indexOutter mt10">
+		<div class="standardMain indexContent">
+			<div class="indexTitle">人员登录统计</div>
+			<div class="tabOutter">
+				<a href="javascript:;" class="tabBox" v-on:click="goStatistics($event)" role="2">
+					<img src="__PUBLIC__/img/classManage/teacher_m.png" alt="" class="avatarImg">
+					<div class="selfInfo">
+						<p class="name">教师</p>
+						<p class="number">登录人数为{{ teacherNum }}人</p>
+					</div>
+				</a>
+				<a href="javascript:;" class="tabBox" v-on:click="goStatistics($event)" role="3">
+					<img src="__PUBLIC__/img/classManage/student_w.png" alt="" class="avatarImg">
+					<div class="selfInfo">
+						<p class="name">学生</p>
+						<p class="number">登录人数为{{ studentNum }}人</p>
+					</div>
+				</a>
+				<a href="javascript:;" class="tabBox" v-on:click="goStatistics($event)" role="4">
+					<img src="__PUBLIC__/img/classManage/jiazhang2.png" alt="" class="avatarImg">
+					<div class="selfInfo">
+						<p class="name">家长</p>
+						<p class="number">登录人数为{{ parentNum }}人</p>
+					</div>
+				</a>
+			</div>
+
+			<div class="indexTitle">学生作业统计</div>
+			<div class="pieOutter">
+				<div class="pieTop" style="height: 350px">
+					<div class="pieBox">
+						<div class="chartEmptyBox" v-if="homeworkArrangeDataLength == 0">
+							<div class="blackTitle">作业布置情况</div>
+							<img src="__PUBLIC__/img/admin/zuoyezanwushuju.png" alt="" class="emptyImg">
+						</div>
+						<div id="homeworkArrange" class="pieDiv"></div>
+						<div class="coverBox"></div>
+					</div>
+					<div class="pieBox">
+						<div class="chartEmptyBox" v-if="homeworkArrangeDataLength == 0 || homeworkCompleteDataLength == 0">
+							<div class="blackTitle">作业完成率</div>
+							<img src="__PUBLIC__/img/admin/zuoyezanwushuju.png" alt="" class="emptyImg">
+						</div>
+						<div id="homeworkComplete" class="pieDiv" style="width: 330px"></div>
+						<div class="coverBox" style="right: 40px"></div>
+					</div>
+					<div class="pieBox">
+						<div class="chartEmptyBox" v-if="homeworkScoreDataLength == 0">
+							<div class="blackTitle">作业得分情况</div>
+							<img src="__PUBLIC__/img/admin/zuoyezanwushuju.png" alt="" class="emptyImg">
+						</div>
+						<div id="homeworkScore" class="pieDiv"></div>
+						<div class="coverBox"></div>
+					</div>		
+				</div>
+				<div class="pieBottom">
+					<div class="pieTextBox">
+						<span class="redDot"></span>
+						<span class="pieText">作业正确率为{{ accuracyNum }}%</span>
+					</div>
+					<div class="pieTextBox">
+						<span class="redDot"></span>
+						<span class="pieText">作业完成率为{{ completeNum }}%</span>
+					</div>
+					<div class="pieTextBox">
+						<span class="redDot"></span>
+						<span class="pieText">提交时间平均为{{ timeNum }}</span>
+					</div>
+					<div class="pieTextBox">
+						<span class="redDot"></span>
+						<span class="pieText">平均得分为{{ scoreNum }}分</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="indexTitle">用户使用资源情况</div>
+			<div class="lineOutter">
+				<div class="roleFilter">
+					<div class="roleText" roleResource="2">教师</div>
+					<ul class="roleUl">
+						<li class="active" roleResource="2">教师</li>
+						<li roleResource="3">学生</li>
+						<li roleResource="4">家长</li>
+					</ul>
+				</div>
+				<div class="chartEmptyBox" v-if="resourceUseDataLength == 0">
+					<div class="blackTitle">用户使用资源情况</div>
+					<img src="__PUBLIC__/img/admin/yonghushiyongziyuanqingkuang.png" alt="" class="emptyImg mt30">
+				</div>
+				<div id="userResource" class="lineDiv"></div>
+				<div class="coverBox"></div>
+			</div>
+			
+			<div class="indexTitle">教师教学统计</div>
+			<div class="columnOutter overHidden">
+				<div class="chartEmptyBox" v-if="prepareLessonDataLength == 0">
+					<div class="blackTitle">备课统计</div>
+					<img src="__PUBLIC__/img/admin/beiketongji.png" alt="" class="emptyImg mt20">
+				</div>
+				<div id="prepareLesson" class="columnDiv"></div>
+				<div class="coverBox"></div>
+			</div>
+
+			<div class="columnOutter overHidden">
+				<div class="chartEmptyBox" v-if="attendClassDataLength == 0">
+					<div class="blackTitle">上课统计</div>
+					<img src="__PUBLIC__/img/admin/shangketongji.png" alt="" class="emptyImg mt20">
+				</div>
+				<div id="attendClass" class="columnDiv"></div>
+				<div class="coverBox"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/layui/layui.js" type="text/javascript"></script>
+
+<!-- 换算时分秒 -->
+<script>
+	function formatSeconds(value) {
+        var secondTime = parseInt(value);// 秒
+        var minuteTime = 0;// 分
+        var hourTime = 0;// 小时
+        //如果秒数大于60，将秒数转换成整数
+        if(secondTime > 60) {
+            //获取分钟，除以60取整数，得到整数分钟
+            minuteTime = parseInt(secondTime / 60);
+            //获取秒数，秒数取佘，得到整数秒数
+            secondTime = parseInt(secondTime % 60);
+            //如果分钟大于60，将分钟转换成小时
+            if(minuteTime > 60) {
+                //获取小时，获取分钟除以60，得到整数小时
+                hourTime = parseInt(minuteTime / 60);
+                //获取小时后取佘的分，获取分钟除以60取佘的分
+                minuteTime = parseInt(minuteTime % 60);
+            }
+        }
+        var result = "" + parseInt(secondTime) + "秒";
+
+        if(minuteTime > 0) {
+            result = "" + parseInt(minuteTime) + "分" + result;
+        }
+        if(hourTime > 0) {
+            result = "" + parseInt(hourTime) + "小时" + result;
+        }
+        return result;
+    }
+</script>
+
+<script>
+	var times = "{$times}";
+	var startTime = "{$startTime}";
+	var endTime = "{$endTime}";
+
+	var admin = new Vue({
+		el: '#admin',
+		data: {
+			times: times,
+			startTime: startTime,
+			endTime: endTime,
+			accuracyNum: '',
+			completeNum: '',
+			timeNum: '',
+			scoreNum: '',
+			role: '',
+			//登录人数
+			registerNumUrl: '/index.php?m=School&c=Index&a=getLoginPersonCount',
+			teacherNum: '',
+			studentNum: '',
+			parentNum: '',
+			//学生作业统计
+			studentHomeworkUrl: '/index.php?m=School&c=Index&a=studentHomeWorkStatistics',
+			//作业布置情况
+			homeworkArrangeData: '',
+			//作业布置情况长度
+			homeworkArrangeDataLength: '',
+			//作业完成率
+			homeworkCompleteData: '',
+			//作业完成率长度
+			homeworkCompleteDataLength: '',
+			//作业得分情况
+			homeworkScoreData: '',
+			//作业得分情况长度
+			homeworkScoreDataLength: '',
+			//用户使用资源角色
+			roleResource: 2,
+			//用户使用资源地址
+			resourceUseUrl: '/index.php?m=School&c=Index&a=usedResource',
+			//用户使用资源X轴
+			resourceUsexAxis: '',
+			//用户使用资源数据
+			resourceUseData: '',
+			//用户使用资源数据长度
+			resourceUseDataLength: 0,
+			//教师教学统计
+			teacherTeachUrl: '/index.php?m=School&c=Index&a=teachStatistics',
+			//备课统计
+			prepareLessonData: '',
+			//备课统计长度
+			prepareLessonDataLength: '',
+			//备课统计的学科
+			prepareLessonCourse: [],
+			//上课统计
+			attendClassData: '',
+			//上课统计长度
+			attendClassDataLength: '',
+			//上课统计的学科
+			attendClassCourse: []
+		},
+		created: function () {
+			// 获取登录人数
+			this.getRegisterNum();
+			// 获取作业布置情况
+			this.getHomeworkArrange();
+			// 获取作业得分情况
+			this.getHomeworkScore();
+			// 获取用户使用资源情况
+			this.getResourceUse();
+			// 获取备课统计
+			this.getPrepareLesson();
+			// 获取上课统计
+			this.getAttendClass();
+		},
+		methods: {
+			//获取登录人数
+			getRegisterNum: function(){
+				this.$http.post(this.registerNumUrl, {
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						if(response.data.data) {
+							this.teacherNum = response.data.data.teacherCount;
+							this.studentNum = response.data.data.studentCount;
+							this.parentNum = response.data.data.parentCount;
+						}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取作业布置情况
+			getHomeworkArrange: function(){ 
+				this.$http.post(this.studentHomeworkUrl, {
+					type: 1,
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						if(response.data.data[0]) {
+							this.homeworkArrangeData = response.data.data[0];
+							this.homeworkArrangeDataLength = response.data.data[0].length;
+
+							$('#homeworkArrange').show();
+							// 饼图-作业布置情况
+							Highcharts.chart('homeworkArrange', {
+								colors: ['#f46d3d', '#43c3d0', '#f0c636', '#a2a14f', '#e8557d', '#8fbe1b', '#005883', '#9968a9', '#f6ae28', '#f57909', '#7c521f', '#008d7a', '#fc7a89', '#0097bc', '#2086ed'],
+								title: {
+									text: '作业布置情况'
+								},
+								exporting: {
+									enabled: false,
+								},
+								tooltip: {
+									headerFormat: '{series.name}<br>',
+									pointFormat: '{point.name}: {point.num} {point.percentage:.1f}%'
+								},
+								plotOptions: {
+									pie: {
+										allowPointSelect: true,  // 可以被选择
+										cursor: 'pointer',       // 鼠标样式
+										dataLabels: {
+											enabled: true,
+											format: '{point.percentage:.1f}%<br>{point.name} {point.num}',
+											style: {
+												color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+											}
+										}
+									}
+								},
+								lang: {
+									noData: '暂无数据'
+								},
+								series: [{
+									type: 'pie',
+									borderWidth: 2,
+									name: '作业布置占比',
+									data: this.homeworkArrangeData
+								}]
+							});
+
+							
+							// 获取作业完成率
+							this.getHomeworkComplete();
+						} else {
+							this.homeworkArrangeDataLength = 0;
+							$('#homeworkArrange').hide()
+						}
+    					
+    					if(response.data.data[1]) {
+    						this.accuracyNum = response.data.data[1].average_score;
+	    					this.completeNum = response.data.data[1].completedPercentage;
+	    					this.timeNum = formatSeconds(response.data.data[1].submit_average_time);
+	    					this.scoreNum = response.data.data[1].average_score;
+    					}
+
+    					
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取作业完成率
+			getHomeworkComplete: function(){ 
+				this.$http.post(this.studentHomeworkUrl, {
+					type: 2,
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						if(response.data.data[0]) {
+    						this.homeworkCompleteData = response.data.data[0];
+    						this.homeworkCompleteDataLength = response.data.data[0].length;
+
+    						if(this.homeworkArrangeDataLength == 0) {
+    							$('#homeworkComplete').hide()
+    						} else {
+    							$('#homeworkComplete').show();
+		    					// 饼图-作业完成率
+								Highcharts.chart('homeworkComplete', {
+									colors: ['#82bf3d', '#daefc6'],
+									title: {
+										text: '作业完成率'
+									},
+									exporting: {
+										enabled: false,
+									},
+									tooltip: {
+										headerFormat: '{series.name}<br>',
+										pointFormat: '{point.name}: {point.number} {point.percentage:.1f}%'
+									},
+									plotOptions: {
+										pie: {
+											allowPointSelect: true,  // 可以被选择
+											cursor: 'pointer',       // 鼠标样式
+											dataLabels: {
+												enabled: true,
+												format: '{point.name} {point.number}<br>{point.percentage:.1f}%',
+												style: {
+													color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+												}
+											}
+										}
+									},
+									series: [{
+										type: 'pie',
+										borderWidth: 2,
+										name: '作业完成占比',
+										data: this.homeworkCompleteData
+									}]
+								});
+    						}
+    						
+						} else {
+							this.homeworkCompleteDataLength = 0;
+							$('#homeworkComplete').hide()
+						}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取作业得分情况
+			getHomeworkScore: function(){ 
+				this.$http.post(this.studentHomeworkUrl, {
+					type: 3,
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						if(response.data.data[0]) {
+							this.homeworkScoreData = response.data.data[0];
+							this.homeworkScoreDataLength = response.data.data[0].length;
+
+							var m = 0;
+							$.each(response.data.data[0], function(index, val){
+								if(this.num == 0) {
+									m++
+								}
+							});
+
+							if(m == this.homeworkScoreDataLength) {
+								this.homeworkScoreDataLength = 0;
+								$('#homeworkScore').hide()
+							} else {
+								$('#homeworkScore').show();
+		    					// 饼图-作业得分情况
+								Highcharts.chart('homeworkScore', {
+									colors: ['#f0c636', '#ed6905', '#69c0b0', '#20acd0'],
+									title: {
+										text: '作业得分情况'
+									},
+									exporting: {
+										enabled: false,
+									},
+									tooltip: {
+										headerFormat: '{series.name}<br>',
+										pointFormat: '{point.name}: {point.number} {point.percentage:.1f}%'
+									},
+									plotOptions: {
+										pie: {
+											allowPointSelect: true,  // 可以被选择
+											cursor: 'pointer',       // 鼠标样式
+											dataLabels: {
+												enabled: true,
+												format: '{point.name} {point.number}<br>{point.percentage:.1f}%',
+												style: {
+													color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+												}
+											}
+										}
+									},
+									series: [{
+										type: 'pie',
+										borderWidth: 2,
+										name: '作业完成占比',
+										data: this.homeworkScoreData
+									}]
+								});
+							}
+
+						} else {
+							this.homeworkScoreDataLength = 0;
+							$('#homeworkScore').hide()
+						}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取用户使用资源情况
+			getResourceUse: function(){ 
+				this.$http.post(this.resourceUseUrl, {
+					type: this.roleResource,
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						if(response.data.data.data){
+							this.resourceUseData = response.data.data.data;
+							this.resourceUsexAxis = response.data.data.timeList;
+
+							this.resourceUseDataLength = response.data.data.data.length;
+							$('#userResource').show();
+							// 折线图-用户使用资源情况
+							Highcharts.chart('userResource', {
+								title: {
+									text: ''
+								},
+								subtitle: {
+									text: ''
+								},
+								colors: ['#fbab0b', '#eb6e29', '#38b8c7'],
+								yAxis: {
+									title: {
+										text: '使用次数',
+										align: 'high',
+										rotation: 360,
+										offset: 40,
+										y: 15,
+										style: { 
+											"font-weight": "bold"
+										}
+									},
+									lineWidth: 1,
+									endOnTick: false
+								},
+								xAxis: {
+									title: {
+										text: '日期',
+										align: 'high',
+										style: { 
+											"font-weight": "bold"
+										}
+									},
+									categories: this.resourceUsexAxis,
+								},
+								exporting: {
+									enabled: false,
+								},
+								legend: {
+									layout: 'vertical',
+									align: 'right',
+									verticalAlign: 'middle'
+								},
+							    tooltip: {
+							        crosshairs: {
+							        	width: 1
+							        },
+							        shared: true
+							    },
+								plotOptions: {
+									series: {
+										label: {
+											connectorAllowed: false
+										}
+									}
+								},
+								series: this.resourceUseData,
+								responsive: {
+									rules: [{
+										condition: {
+											maxWidth: 500
+										},
+										chartOptions: {
+											legend: {
+												layout: 'horizontal',
+												align: 'center',
+												verticalAlign: 'bottom'
+											}
+										}
+									}]
+								}
+							});
+						} else {
+							this.resourceUseDataLength = 0;
+							$('#userResource').hide()
+						}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取备课统计
+			getPrepareLesson: function(){ 
+				this.$http.post(this.teacherTeachUrl, {
+					type: 1,
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.prepareLessonData = response.data.data;
+    					if(response.data.data) {
+    						this.prepareLessonDataLength = response.data.data.length;
+
+    						this.prepareLessonCourse = [];
+    						for(m = 0; m < response.data.data.length; m++) {
+	    						this.prepareLessonCourse.push(response.data.data[m].name);
+	    					}
+
+	    					$('#prepareLesson').show()
+	    					// 柱形图-备课统计
+							Highcharts.chart('prepareLesson',{
+							    chart: {
+							        type: 'column'
+							    },
+							    title: {
+							        text: '备课统计'
+							    },
+							    subtitle: {
+							        text: ''
+							    },
+							    colors: ['#0fbae8'],
+							    xAxis: {
+							        categories: this.prepareLessonCourse,
+							        title: {
+										text: '学科',
+										align: 'high',
+										style: { 
+											"font-weight": "bold"
+										}
+									}
+							    },
+							    yAxis: {
+							        min: 0,
+							        title: {
+										text: '课件(个)',
+										align: 'high',
+										rotation: 360,
+										offset: 40,
+										y: 15,
+										style: { 
+											"font-weight": "bold"
+										}
+									},
+									lineWidth: 1,
+									endOnTick: false
+							    },
+							    legend: {
+									enabled: false
+								},
+							    tooltip: {
+							        headerFormat: '{series.name}<br>',
+									pointFormat: '{point.name}: {point.y}',
+							        shared: true,
+							        useHTML: true
+							    },
+							    plotOptions: {
+							        column: {
+							            borderWidth: 0
+							        },
+							        series: {
+							            borderWidth: 0,
+							            pointWidth: 35,
+							            dataLabels: {
+							                enabled: true,
+							                format: '{point.y}',
+							                style:{
+							                    textOutline: "none"
+						                    }
+							            }
+							        }
+							    },
+							    exporting: {
+									enabled: false,
+								},
+						   		series: [{
+						            name: "备课",
+						            colorByPoint: true,
+						            data: this.prepareLessonData
+						        }]
+							});
+						} else {
+							this.prepareLessonDataLength = 0;
+							$('#prepareLesson').hide()
+						}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取上课统计
+			getAttendClass: function(){ 
+				this.$http.post(this.teacherTeachUrl, {
+					type: 2,
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.attendClassData = response.data.data;
+    					if(response.data.data) {
+    						this.attendClassDataLength = response.data.data.length;
+
+    						this.attendClassCourse = [];
+    						for(m = 0; m < response.data.data.length; m++) {
+	    						this.attendClassCourse.push(response.data.data[m].name);
+	    					}
+
+	    					$('#attendClass').show();
+	    					// 柱形图-备课统计
+							Highcharts.chart('attendClass',{
+							    chart: {
+							        type: 'column'
+							    },
+							    title: {
+							        text: '上课统计'
+							    },
+							    subtitle: {
+							        text: ''
+							    },
+							    colors: ['#ffce55'],
+							    xAxis: {
+							        categories: this.attendClassCourse,
+							        title: {
+										text: '学科',
+										align: 'high',
+										style: { 
+											"font-weight": "bold"
+										}
+									}
+							    },
+							    yAxis: {
+							        min: 0,
+							        title: {
+										text: '课时(时)',
+										align: 'high',
+										rotation: 360,
+										offset: 40,
+										y: 15,
+										style: { 
+											"font-weight": "bold"
+										}
+									},
+									lineWidth: 1,
+									endOnTick: false
+							    },
+							    legend: {
+									enabled: false
+								},
+							    tooltip: {
+							        headerFormat: '{series.name}<br>',
+									pointFormat: '{point.name}: {point.y}',
+							        shared: true,
+							        useHTML: true
+							    },
+							    plotOptions: {
+							        column: {
+							            borderWidth: 0
+							        },
+							        series: {
+							            borderWidth: 0,
+							            pointWidth: 35,
+							            dataLabels: {
+							                enabled: true,
+							                format: '{point.y}',
+							                style:{
+							                    textOutline: "none"
+						                    }
+							            }
+							        }
+							    },
+							    exporting: {
+									enabled: false,
+								},
+						   		series: [{
+						            name: "上课",
+						            colorByPoint: true,
+						            data: this.attendClassData
+						        }]
+							});
+						} else {
+							this.attendClassDataLength = 0;
+							$('#attendClass').hide()
+						}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			//跳转到人员登录统计页
+			goStatistics: function(e){
+				this.role = $(e.currentTarget).attr("role");
+				window.location.href = '/index.php?m=School&c=Index&a=personnelStatisticsOfLogin&role='+this.role+'&times='+this.times+'&startTime='+this.startTime+'&endTime='+this.endTime;
+			}
+		}
+	})
+</script>
+
+<script>
+	layui.use('laydate', function(){
+		var laydate = layui.laydate;
+		var date = new Date();
+
+		//日期范围
+		laydate.render({
+			elem: '#dayInput',
+			theme: '#0fbae8',
+			range: true,
+			max: 'date',
+			eventElem: '#dayImg',
+    		trigger: 'click',
+    		value: admin.startTime+' - '+admin.endTime,
+    		isInitValue: true, //是否允许填充初始值，默认为 true
+    		done: function(value, date, endDate){
+			    admin.times = "day";
+    			var timeArr = value.split(" - ");
+			    admin.startTime = timeArr[0];
+			    admin.endTime = timeArr[1];
+			    // 获取登录人数
+				admin.getRegisterNum();
+			    // 获取作业布置情况
+				admin.getHomeworkArrange();
+				// 获取作业完成率
+				admin.getHomeworkComplete();
+				// 获取作业得分情况
+				admin.getHomeworkScore();
+				// 获取用户使用资源情况
+				admin.getResourceUse();
+				// 获取备课统计
+				admin.getPrepareLesson();
+				// 获取上课统计
+				admin.getAttendClass();
+			}
+		});
+
+		//月选择器
+		laydate.render({
+			elem: '#monthInput',
+			theme: '#0fbae8',
+			type: 'month',
+			btns: ['clear', 'confirm'],
+			eventElem: '#monthImg',
+    		trigger: 'click',
+    		max: 'date',
+    		done: function(value, date, endDate){
+    			admin.times = "month";
+    			admin.startTime = value;
+    			// 获取登录人数
+				admin.getRegisterNum();
+    			// 获取作业布置情况
+				admin.getHomeworkArrange();
+				// 获取作业完成率
+				admin.getHomeworkComplete();
+				// 获取作业得分情况
+				admin.getHomeworkScore();
+				// 获取用户使用资源情况
+				admin.getResourceUse();
+				// 获取备课统计
+				admin.getPrepareLesson();
+				// 获取上课统计
+				admin.getAttendClass();
+			}
+		});
+
+		//年选择器
+		laydate.render({
+			elem: '#yearInput',
+			theme: '#0fbae8',
+			type: 'year',
+			btns: ['clear', 'confirm'],
+			eventElem: '#yearImg',
+    		trigger: 'click',
+    		max: 'date',
+    		done: function(value, date, endDate){
+    			admin.times = "year";
+			    admin.startTime = value;
+			    // 获取登录人数
+				admin.getRegisterNum();
+    			// 获取作业布置情况
+				admin.getHomeworkArrange();
+				// 获取作业完成率
+				admin.getHomeworkComplete();
+				// 获取作业得分情况
+				admin.getHomeworkScore();
+				// 获取用户使用资源情况
+				admin.getResourceUse();
+				// 获取备课统计
+				admin.getPrepareLesson();
+				// 获取上课统计
+				admin.getAttendClass();
+			}
+		});
+	});
+</script>
+
+<script>
+	//选择日月年 
+	$('.dateText').click(function(){
+		if($(this).hasClass('active')) {
+			$('.dateUl').stop(false,true).slideUp('fast',function(){
+				$('.dateText').removeClass('active')
+			})
+		} else {
+			$(this).addClass('active');
+			$('.dateUl').stop(false,true).slideDown('fast')
+		}
+	})
+
+	$('.dateUl li').click(function(){
+		var index = $(this).index();
+		$('.layui-input-inline').eq(index).show().siblings('.layui-input-inline').hide();
+		$(this).addClass('active').siblings().removeClass('active');
+		$('.dateText').text($(this).text());
+		$('.dateUl').stop(false,true).slideUp('fast',function(){
+			$('.dateText').removeClass('active')
+		});
+		$('.layui-input').val('')
+	})
+
+	$('body').click(function(){
+		if($(event.target).is('.dateText') || $(event.target).is('.dateUl li')){
+
+		} else {
+			$('.dateUl').stop(false,true).slideUp('fast',function(){
+				$('.dateText').removeClass('active')
+			})
+		}
+	})
+
+	//选择教师、学生、家长 
+	$('.roleText').click(function(){
+		if($(this).hasClass('active')) {
+			$('.roleUl').stop(false,true).slideUp('fast',function(){
+				$('.roleText').removeClass('active')
+			})
+		} else {
+			$(this).addClass('active');
+			$('.roleUl').stop(false,true).slideDown('fast')
+		}
+	})
+
+	$('.roleUl li').click(function(){
+		var index = $(this).index();
+		$(this).addClass('active').siblings().removeClass('active');
+		$('.roleText').text($(this).text());
+		$('.roleUl').stop(false,true).slideUp('fast',function(){
+			$('.roleText').removeClass('active')
+		})
+		admin.roleResource = $(this).attr('roleResource');
+		admin.getResourceUse();
+	})
+
+	$('body').click(function(){
+		if($(event.target).is('.roleText') || $(event.target).is('.roleUl li')){
+
+		} else {
+			$('.roleUl').stop(false,true).slideUp('fast',function(){
+				$('.roleText').removeClass('active')
+			})
+		}
+	})
+</script>
+
+
+

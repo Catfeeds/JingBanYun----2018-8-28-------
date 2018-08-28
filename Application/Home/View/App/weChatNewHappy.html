@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>新年祝福</title>
+	<script src="__PUBLIC__/js/external/jquery.min.js"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			outline: none;
+			box-sizing: border-box;
+		}
+		
+		.left {
+			float: left;
+		}
+		
+		.right {
+			float: right;
+		}
+		
+		.text-left {
+			text-align: left;
+		}
+		
+		.text-right {
+			text-align: right;
+		}
+		
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			font-family: "黑体";
+			color: #ffbe23;
+		}
+		
+		body {
+			background: url({$oss_path}public/web_img/Festival/wechatBack.png) no-repeat center;
+			background-size: 100% 100%
+		}
+		
+		.wechatWish {
+			display: block;
+			margin: 17% auto 0;
+			height: 7%;
+		}
+		
+		.videoBox {
+			height: 30%;
+			background: url({$oss_path}public/web_img/Festival/wechatVideo.png) no-repeat center;
+			background-size: 100% 100%;
+			padding: 3% 0 4% 0;
+			margin: 3% auto 0;
+		}
+		
+		video {
+			display: block;
+			height: 100%;
+			margin: 0 auto;
+			background: url({$oss_path}public/web_img/Festival/videoBack.png) no-repeat center;
+			background-size: 100% 100%
+		}
+		
+		.nameBox {
+			height: 5%;
+			margin-top: 1%
+		}
+		
+		.wechatName {
+			width: 32%;
+			border: none;
+			background: none;
+			font-family: "黑体";
+			color: #ffbe23;
+			font-size: 1.4rem;
+			font-weight: bold;
+			text-align: center;
+		}
+		
+		.nameBox span {
+			color: #ffbe23;
+			font-size: 1.5rem;
+			font-weight: bold;
+		}
+		
+		.wishBox {
+			height: 5%;
+			margin-top: 1%;
+			font-size: 2rem;
+			color: #ffbe23;
+			font-weight: bold;
+			text-align: center;
+		}
+		
+		.btnBox {
+			position: relative;
+			margin-top: 5%
+		}
+		
+		.wechatBtn {
+			border: none;
+			background: none;
+			background: url({$oss_path}public/web_img/Festival/wechatBtn.png) no-repeat center;
+			background-size: 100% 100%;
+			padding: 2.5% 3%;
+			display: block;
+			margin: 0 auto;
+			font-family: "黑体";
+			color: #cd2c1c;
+			font-size: 1.2rem;
+		}
+		
+		.wechatShare {
+			width: 20%;
+			display: block;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			right: 1rem;
+			margin: auto 0;
+			cursor: pointer;
+		}
+		
+		.QRcodeBox {
+			overflow: hidden;
+			width: 100%;
+			height: 22%;
+			position: absolute;
+			bottom: 0;
+			padding: 0 2%
+		}
+		
+		.codeBox1 {
+			width: 38%;
+		}
+		
+		.codeBox1 img {
+			width: 70%;
+			display: block;
+			margin: 0 auto;
+		}
+		
+		.codeBox1 p {
+			width: 100%;
+			display: block;
+			margin: 0 auto;
+			text-align: center;
+			font-size: 1.2rem;
+			line-height: 2rem;
+		}
+		
+		.codeBox2 {
+			width: 62%;
+			font-size: 1.1rem;
+			text-align: center;
+			line-height: 1.6rem;
+			padding-top: 7%;
+		}
+		
+		.wechatBottom {
+			text-align: center;
+			position: absolute;
+			bottom: 0.5rem;
+			left: 0;
+			right: 0;
+			margin: 0 auto;
+		}
+		
+		.wechatfull {
+			background: rgba(0, 0, 0, .8);
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 2;
+			width: 100%;
+			height: 100%;
+			display: none;
+		}
+		
+		.wechatfull img {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<img src="{$oss_path}public/web_img/Festival/wechatWish.png" alt="" class="wechatWish">
+	<div class="videoBox">
+		<video src="{$oss_path}public/web_img/Festival/intro.mp4" controls preload="auto"></video>
+	</div>
+	<div class="nameBox">
+		<input type="text" class="wechatName" value="{$name|default='育学林'}" placeholder="输入您的姓名" disabled>
+		<span>祝您：</span>
+	</div>
+	<div class="wishBox">
+		幸福安康，酉（有）财如意！
+	</div>
+	<div class="btnBox">
+		<button type="button" class="wechatBtn">点击制作自己的祝福</button>
+		<img src="{$oss_path}public/web_img/Festival/wechatShare.png" alt="" class="wechatShare">
+	</div>
+<!--
+	<div class="QRcodeBox">
+		<div class="left codeBox1">
+			<img src="{$oss_path}public/web_img/Festival/wechatClass.png" alt="">
+			<p class="right codeBoxP1">今日课堂</p>
+		</div>
+		<div class="left codeBox2">
+			长按识别京版教材官方微信公众账号，京版教材讲解，权威教育资讯等着您！
+		</div>
+	</div>
+-->
+	<!--黑色蒙層，提醒分享-->
+	<div class="wechatfull">
+		<img src="{$oss_path}public/web_img/Festival/wechatArrows.png" alt="">
+	</div>
+	<input id="osspath" type="hidden" value="{$oss_path}"></input>
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<script src="__PUBLIC__/js/share.js"></script>
+
+	<script>
+		var name = $('.wechatName').val();
+		var share_content = "专属祝福，私人订制。";
+
+		var appId = '{$signPackage.appId}';
+		var timestamp = '{$signPackage.timestamp}';
+		var nonceStr = '{$signPackage.nonceStr}';
+		var signature = '{$signPackage.signature}';
+		var title = name + '，给您拜年啦！';
+		var content = share_content;
+		var linkimgUrl = '{$oss_path}public/web_img/Festival/chicken.png';
+		share_weixin(appId, timestamp, nonceStr, signature, title, content, linkimgUrl);
+
+		var osspath = $("#osspath").val();
+		//	var name;
+		$('.wechatBtn').click(function () {
+			var id = $(this).attr('id');
+			if (id == 1) {
+				var name = $('.wechatName').val();
+				$.ajax({
+						type: 'GET',
+						url: '/index.php?m=Home&c=App&a=weChatNewAjax&name=' + name,
+						dataType: 'json',
+						success: function (msg) {
+							appId = msg.appId;
+							timestamp = msg.timestamp;
+							nonceStr = msg.nonceStr;
+							signature = msg.signature;
+							title = name + ',给您拜年啦！';
+							content = share_content;
+							linkimgUrl = osspath + 'public/web_img/Festival/chicken.png';
+							//share_weixin(appId,timestamp,nonceStr,signature,title,content,linkimgUrl);
+							wx.ready(function () {
+								var shareData = {
+									title: name + ',给您拜年啦！',
+									desc: share_content,
+									link: document.domain + '/index.php?m=Home&c=App&a=weChatNewHappy&name=' + name,
+									imgUrl: osspath + 'public/web_img/Festival/chicken.png',
+								};
+								wx.onMenuShareAppMessage(shareData);
+								wx.onMenuShareTimeline(shareData);
+							});
+
+						}
+					})
+					$('.wechatBtn').hide().siblings('.wechatShare').css({
+						'position':'static',
+						'margin': '0 auto',
+					});
+					//			window.location.href = 'index.php?m=Home&c=App&a=weChatNewHappy&name='+name;
+			} else {
+				$(this).html("确定生成祝福").attr("disabled", "disabled");
+				$('.wechatName').attr("value", "").removeAttr("disabled", "disabled").focus();
+				$(this).attr('id', 1);
+			}
+			//location.reload();
+		})
+
+		wx.ready(function () {
+			var shareData = {
+				title: name + ',给您拜年啦！',
+				desc: share_content,
+				link: document.domain + '/index.php?m=Home&c=App&a=weChatNewHappy&name=' + name,
+				imgUrl: osspath + 'public/web_img/Festival/chicken.png',
+			};
+			wx.onMenuShareAppMessage(shareData);
+			wx.onMenuShareTimeline(shareData);
+		});
+
+		$('.wechatName').bind('input propertychange', function () {
+			$('.wechatBtn').removeAttr("disabled", "disabled");
+		});
+
+		$('.wechatShare').click(function () {
+			$('.wechatfull').show();
+		})
+
+		$('.wechatfull').click(function () {
+			$('.wechatfull').hide();
+		})
+		
+	</script>
+
+	<!--微信分享代码-->
+
+	<script>
+	</script>
+
+	<!--微信分享结束代码-->
+
+</body>
+
+</html>

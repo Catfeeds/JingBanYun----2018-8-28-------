@@ -1,0 +1,162 @@
+<layout name="admin_layout_exercise"/>
+<div class="boxOutter">
+	<div class="borderBottom of">
+		<?php if(in_array('KnowledgeBaseManagement/subjectManagement',session('exercises_permissions'))){ ?>
+		<a href="{:U('KnowledgeBaseManagement/subjectManagement')}" class="tabBtn left text-center">学科管理</a>
+		<?php }?>
+		<?php if(in_array('KnowledgeBaseManagement/fasciculeManagement',session('exercises_permissions'))){ ?>
+		<a href="#" class="tabBtn left active text-center">分册管理</a>
+		<?php }?>
+		<?php if(in_array('KnowledgeBaseManagement/versionManagement',session('exercises_permissions'))){ ?>
+		<a href="{:U('KnowledgeBaseManagement/versionManagement')}" class="tabBtn left text-center">版本管理</a>
+		<?php }?>
+	</div>
+	<div class="mt20">
+		<?php if(in_array('KnowledgeBaseManagement/addFasciculeAjax',session('exercises_permissions'))){ ?>
+		<button type="button" class="btn" name="button">添加分册</button>
+		<?php }?>
+	</div>
+	<table class="tableCommon mt20" id="fascTable">
+				<thead>
+					<tr>
+						<th >年级</th>
+						<th>
+							分册
+						</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+			<?php foreach($list as $item){ ?>
+					<tr>
+						<td class="gradeTd"><?php echo $item['grade'] ?></td>
+						<td class="fascTd"><?php if($item['school_term'] == 1){echo '上册';}elseif($item['school_term'] == 2){echo '下册' ;}else{echo '全一册';}?></td>
+						<td>
+							<?php if(in_array('KnowledgeBaseManagement/saveVFasciculeAjax',session('exercises_permissions'))){ ?>
+							<a href="javascript:;" attr-data="<?php echo $item['id']?>" class="tableABtn">修改</a>
+							<?php }?>
+						</td>
+					</tr>
+				<?php }?>	
+				</tbody>
+	</table>
+	<div class="fullBack"></div>
+	<div class="adminNotifyBox" id="teacherAssign">
+		<div class="adminNotifyTitle">
+			添加分册
+		</div>
+		<div class="adminNotifyContent">
+			<div class="teacherChoose mt30">
+				<label for="" style="width:auto">年级：</label><span class="red"> *</span>
+				<select id="grade" class="inputCommon">
+					<option value="">请选择</option>
+					<?php foreach($gradeList as $item){ ?>
+					<option value="<?php echo $item['id']?>"><?php echo $item['grade']?></option>
+					<?php }?>
+				</select>
+			</div>
+			<div class="teacherChoose mt30">
+				<label for="" style="width:auto">分册：</label><span class="red"> *</span>
+				<select id="schoolTerm" class="inputCommon">
+					<option value="">请选择</option>
+					<option value="1">上册</option>
+					<option value="2">下册</option>
+					<option value="3">全一册</option>
+				</select>
+			</div>
+		</div>
+		<p class="adminNotifyButton">
+			<input type="hidden" id="hidden" value="">
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="teacherAssignSure">完成</a>
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="teacherAssignCancel">取消</a>
+		</p>
+	</div>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script type="text/javascript">
+	$('.tableABtn').click(function(){
+        $('.fullBack,#teacherAssign').show();
+        $('html,body').css('overflow-y','hidden');
+	    	var id = $(this).attr('attr-data');
+        $.ajax({
+            url:"{:U('KnowledgeBaseManagement/getInfoAjax')}",
+            data:{'id':id},
+            type:'post',
+            dataType:'json',
+            success:function(data){
+                //console.log(data);return false;
+                if(data.status == '200'){
+                    $('#grade').val(data.data[0]['grade_id']);
+                    $('#schoolTerm').val(data.data[0]['school_term']);
+                    $('#hidden').val(id);
+                }
+            }
+        })
+
+	});
+	$('.btn').click(function () {
+        $('.fullBack,#teacherAssign').show();
+        $('html,body').css('overflow-y','hidden');
+    });
+	$('#teacherAssignSure').click(function(){
+		var grade_id = $('#grade').val();
+		var name = $('#schoolTerm').val();
+		var gradeTd = $.trim($('#grade option:selected').text());//获取年级select框中的值
+		var fascTd = $.trim($('#schoolTerm option:selected').text());//获取分册select框中的值
+		var newAdd = gradeTd+fascTd;//两个值组成字符串
+		var stopN;//定义一个变量
+		$('#fascTable').children('tbody').children('tr').each(function(){
+			var oldAdd = $.trim($(this).children('td.gradeTd').text())+$.trim($(this).children('td.fascTd').text());
+			if(newAdd == oldAdd) {
+				stopN = 1;
+				$.NotifyBox.NotifyOne('提示','年级分册重复，请重新添加。','确定');
+				return false;
+			}
+		});
+		if(stopN != 1) {
+			if($('#hidden').val() == ''){
+	            $.ajax({
+	                url:"{:U('KnowledgeBaseManagement/addFasciculeAjax')}",
+	                data:{'grade_id':grade_id,'name':name},
+	                type:'post',
+	                dataType:'json',
+	                success:function(data){
+	                    //console.log(data);return false;
+	                    if(data.status == '200'){
+	                        location.reload();
+	                    }else{
+                            $.NotifyBox.NotifyOne('提示','添加失败，请稍后重试。','确定');
+						}
+	                }
+	            });
+			}else{
+			    var id = $('#hidden').val();
+	            $.ajax({
+	                url:"{:U('KnowledgeBaseManagement/saveVFasciculeAjax')}",
+	                data:{'grade_id':grade_id,'name':name,'id':id},
+	                type:'post',
+	                dataType:'json',
+	                success:function(data){
+	                    //console.log(data);return false;
+	                    if(data.status == '200'){
+	                        location.reload();
+	                    }else{
+                            $.NotifyBox.NotifyOne('提示',data.msg,'确定');
+						}
+	                }
+	            });
+			}
+		}
+		
+
+		//$('.fullBack,#teacherAssign').hide()
+	});
+	$('#teacherAssignCancel').click(function(){
+        $('#hidden').val('');
+        $('#schoolTerm').val('');
+        $('#grade').val('');
+		$('.fullBack,#teacherAssign').hide();
+		$('html,body').css('overflow-y','auto');
+	});
+</script>

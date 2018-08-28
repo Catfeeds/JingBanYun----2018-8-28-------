@@ -1,0 +1,413 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<p class="blueText fs18"></p>
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		绘本管理
+		<span class="blueSpan">
+			<a href="javascript:;">教学+</a>&gt;&gt;
+			<a href="javascript:;">绘本管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+<form class="" action="" method="post">
+	<div class="grid condensed searchbar" style="margin: 20px 0 0 0;">
+		<div class="row cells4 cellBox">
+			<div class="cell">
+				<label>绘本包名称：</label>
+				<input type="text" name="name" class='input-control input-control-before' id="picName" data-validate-func="required"  value="<?php echo $name?>" placeholder="绘本包名称">
+			</div>
+
+			<div class="cell">
+					<label>绘本ID：</label>
+				<input type="text" id="picId" class="input-control input-control-before" value='<?php echo $id ;?>' name="id" placeholder="绘本包ID">
+			</div>
+			<div class="cell">
+				<label>年级：</label>
+				<select id="grade_id" name="grade_id" class="input-control input-control-before">
+					<option value="">-请选择-</option>
+					<volist name="gradeList" id="dataGrade">
+						<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+							{$dataGrade.name}
+						</option>
+					</volist>
+				</select>
+			</div>
+
+			<div class="cell">
+				<label>体裁：</label>
+				<select id="course_id" name="type" class="input-control input-control-before">
+					<option value="">-请选择-</option>
+					<volist name="subjectList" id="subjectListItem">
+						<option value="{$subjectListItem.id}" {$subjectListItem['id']==$type?'selected':''}>
+							{$subjectListItem.name}
+						</option>
+					</volist>
+				</select>
+			</div>
+
+			<div class="cell">
+				<label>主题：</label>
+				<select id="textbook_id" name="subject" class="input-control input-control-before">
+					<option value="">-请选择-</option>
+					<volist name="themeList" id="themeListItem">
+						<option value="{$themeListItem.id}" {$themeListItem['id']==$subject?'selected':''}>
+							{$themeListItem.name}
+						</option>
+					</volist>
+				</select>
+			</div>
+
+			<div class="cell">
+				<label>状态：</label>
+				<select id="lock_status" name="status" class="input-control input-control-before">
+					<option value='0'>-请选择-</option>
+					<option value="1" <if condition="$status==1">selected</if> >待审核</option>
+					<option value="2" <if condition="$status==2">selected</if> >审核通过</option>
+					<option value="3" <if condition="$status==3">selected</if> >审核不通过</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>是否上架：</label>
+				<select id="shelf" name="shelf" class="input-control input-control-before">
+					<option value='0'>-请选择-</option>
+					<option value="1" <if condition="$shelf==1">selected</if> >下架</option>
+					<option value="2" <if condition="$shelf==2">selected</if> >上架</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>绘本提供方：</label>
+				<select id="source" name="source" class="input-control input-control-before">
+					<option value='0'>-请选择-</option>
+					<volist name="sources" id="sourceListItem">
+						<option value="{$sourceListItem['id']}" <if condition="$sourceListItem['id'] ==$source ">selected</if> >{$sourceListItem['name']}</option>
+					</volist>
+				</select>
+			</div>
+		</div>
+		<div class="text-center mt20">
+			<input type='submit' value='查询' class='blueBtn'/>
+			<input type='button' value='重置' class='blueBtn resetButton'/>
+		</div>
+	</div>
+</form>
+<hr class="thin bg-grayLighter">
+<div class="grayBox">
+	<div class="left">
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="">
+			<a href="{:U('PictureBooks/pictureBooksAdd')}">上传绘本</a>
+		</span>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-shelve.png" alt="">
+            <a href="javascript:;" class="shelveBtn" id="batchUp" status="2">批量上架</a>
+		</span>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-unShelve.png" alt="">
+            <a href="javascript:;" class="unShelveBtn" id="batchDown" status="1">批量下架</a>
+		</span>
+		<?php if($role == 2){?>
+		<span class="btns">
+			<img src="<?php echo $oss_path ;?>public/web_img/Admin/icon-shelve.png" alt="">
+            <a href="javascript:;" class="shelveBtn" id="batchAuditYes" status="2">批量审核通过</a>
+		</span>
+		<span class="btns">
+			<img src="<?php echo $oss_path ;?>public/web_img/Admin/icon-unShelve.png" alt="">
+            <a href="javascript:;" class="unShelveBtn" id="batchAuditNo" status="3">批量审核不通过</a>
+		</span>
+		<?php }?>
+	</div>
+</div>
+<p class="blueText fs16">资源列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+        <tr>
+			<th class="text-center"><input type="checkbox" class="check_all mr5">全选</th>
+            <th class="text-center">序号</th>
+            <th class="text-center">绘本包名称</th>
+			<th class="text-center">绘本ID</th>
+            <th class="text-center">年级</th>
+            <th class="text-center">主题</th>
+            <th class="text-center">体裁</th>
+            <th class="text-center">审核状态</th>
+			<th class="text-center">上下架状态</th>
+            <th class="text-center">所含内容</th>
+            <th class="text-center">操作</th>
+        </tr>
+	</thead>
+	<tbody id="body">
+	<?php foreach($list as $key=>$item){ ?>
+		<tr>
+			<td class="text-center">
+				<input type="checkbox" class="checkSelect check_child" attr_id="<?php echo $item['picture_books_id'] ;?>"/>
+			</td>
+			<td class="text-center">
+				<?php echo $key+1 ;?>
+			</td>
+			<td class="text-center">
+				<?php echo $item['picture_books_name'] ;?>
+			</td>
+			<td class="text-center">
+				<?php echo $item['picture_books_id'] ;?>
+			</td>
+			<td class="text-center">
+				<?php echo $item['picture_books_grade_name'] ;?>
+			</td>
+			<td class="text-center">
+				<?php foreach($themeList as $themeListItem){?>
+				<?php echo $themeListItem['id']==$item['picture_books_subject'] ?  $themeListItem['name'] : ''?>
+				<?php }?>
+			</td>
+			<td class="text-center up-down">
+				<?php foreach($subjectList as $subjectListItem){?>
+				<?php echo $subjectListItem['id']==$item['picture_books_type'] ?  $subjectListItem['name'] : ''?>
+				<?php }?>
+			</td>
+			<td class="text-center reviewJ">
+				<?php if($item['picture_books_status'] == AUDIT_WAIT){echo '待审核' ;}elseif($item['picture_books_status'] == AUDIT_YES){echo '审核通过' ;}elseif($item['picture_books_status'] == AUDIT_NO){ echo '审核拒绝' ;}else{echo '已删除' ;}?>
+			</td>
+			<td class="text-center">
+				<?php if($item['picture_book_shelf'] == ONSHELF){echo '上架' ;}else{echo '下架';}?>
+			</td>
+			<td class="text-center">
+				绘本，课件，教学设计，练习
+			</td>
+			<td class="text-center">
+				<input type="hidden"  value="<?php echo $item['picture_books_id'] ;?>" class="hidden_val"/>
+				<!--<a href="javascript:;" class="operBtn" id="">查看</a>-->
+				<a href="/index.php?m=Admin&c=PictureBooks&a=pictureBooksSave&id=<?php echo $item['picture_books_id']?>" class="button" id="">修改</a>
+				<a href="javascript:;" onclick="deletes($(this))" class="button" id="delete_click" attr="<?php echo $item['picture_books_id']?>">删除</a>
+				<?php if($role == 2){ ?>
+					<?php if($item['picture_books_status'] == AUDIT_NO){ ?>
+				<a href="javascript:;" class="button yes_status info" id="">通过审核</a>
+					<?php }elseif($item['picture_books_status'] == AUDIT_WAIT){?>
+
+						<a href="javascript:;" class="button yes_status info" id="">通过审核</a>
+						<a href="javascript:;" class="button no_status" id="">不通过审核</a>
+					<?php }elseif($item['picture_books_status'] == AUDIT_YES){ ?>
+					<a href="javascript:;" class="button no_status" id="">不通过审核</a>
+				<?php if($item['picture_book_shelf'] == ONSHELF){?>
+				<a href="javascript:;" class="button down_status" status="1" attr_id="<?php echo $item['picture_books_id'] ;?>" id="">不上架</a>
+				<?php }elseif($item['picture_book_shelf'] == OFFSHELF){?>
+				<a href="javascript:;" class="button up_status info" status="2" attr_id="<?php echo $item['picture_books_id'] ;?>" id="">上架</a>
+				<?php }?>
+					<?php }?>
+				<?php }else{ ?>
+					<?php if($item['picture_book_shelf'] == ONSHELF){?>
+				<a href="javascript:;" class="button down_status" status="1" attr_id="<?php echo $item['picture_books_id'] ;?>" id="">不上架</a>
+					<?php }elseif($item['picture_book_shelf'] == OFFSHELF){?>
+				<a href="javascript:;" class="button up_status info" status="2" attr_id="<?php echo $item['picture_books_id'] ;?>" id="">上架</a>
+					<?php }?>
+				<?php }?>
+			</td>
+		</tr>
+	<?php }?>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"6%"},
+                {"width":"6%"},
+                {"width":"15%"},
+                {"width":"8%"},
+                {"width":"8%"},
+                {"width":"8%"},//5
+                {"width":"8%"},
+                {"width":"10%"},
+                {"width":"15%"},
+                {"width":"16%"}
+            ]
+        });
+    });
+</script>
+
+<script>
+    /*********************************************************批量上下架*************************************************/
+    $('#batchUp,#batchDown').click(function(){
+        var checkBoxList = $('.checkSelect:checked');
+        if(checkBoxList.length == 0) {
+            $.NotifyBox.NotifyOne('提示','请勾选待上/下架的资源','确定');
+            return;
+        }
+        var idArray = [];
+        checkBoxList.each(function(i,n){
+            idArray.push($(n).attr('attr_id'));
+        });
+        var status = $(this).attr('status');
+        $.ajax({
+            url:"index.php?m=Admin&c=PictureBooks&a=pictureBooksSaveStatus",
+            data:{'id':idArray.join(),'status':status,shelf:'shelf'},
+            dataType:"json",
+            type:"post",
+            success:function (data) {
+                if(data.status == 200){
+                    location.reload();
+                }else{
+                    $.NotifyBox.NotifyOne('提示','操作失败','确定');
+                }
+            }
+        });
+    });
+
+    /*********************************************************批量审核*************************************************/
+    $('#batchAuditYes,#batchAuditNo').click(function(){
+        var checkBoxList = $('.checkSelect:checked');
+        if(checkBoxList.length == 0) {
+            $.NotifyBox.NotifyOne('提示','请勾选待操作审核的资源','确定');
+            return;
+        }
+        var idArray = [];
+        checkBoxList.each(function(i,n){
+            idArray.push($(n).attr('attr_id'));
+        });
+        var status = $(this).attr('status');
+        $.ajax({
+            url:"index.php?m=Admin&c=PictureBooks&a=pictureBooksSaveStatus",
+            data:{'id':idArray.join(),'status':status},
+            dataType:"json",
+            type:"post",
+            success:function (data) {
+                if(data.status == 200){
+                    location.reload();
+                }else{
+                    $.NotifyBox.NotifyOne('提示','操作失败','确定');
+                }
+            }
+        });
+    });
+    /***********************************************单个上下架**************************************************************/
+    $('.up_status,.down_status').click(function(){
+        var id = $(this).attr('attr_id');
+        var status = $(this).attr('status');
+        
+        $.ajax({
+            url:"index.php?m=Admin&c=PictureBooks&a=pictureBooksSaveStatus",
+            data:{'id':id,'status':status,shelf:'shelf'},
+            dataType:"json",
+            type:"post",
+            success:function (data) {
+                if(data.status == 200){
+                    location.reload();
+                }else{
+                    $.NotifyBox.NotifyOne('提示','操作失败','确定');
+                }
+            }
+        });
+    });
+
+    /***********************************************单个审核绘本**************************************************************/
+    $('.yes_status,.no_status').live('click',function(){
+        if($(this).hasClass('yes_status')){
+            var status=2;
+            $(this).siblings('.no_status').hide();
+        }else{
+            var status=3;
+            $(this).siblings('.yes_status').hide();
+        }
+        var obj=this;
+        var id=$(this).siblings('.hidden_val').val();
+        $.ajax({
+            url:"index.php?m=Admin&c=PictureBooks&a=pictureBooksSaveStatus",
+            data:{'id':id,'status':status},
+            dataType:"json",
+            type:"post",
+            success:function (data) {
+                if(data.status == 200){
+                    if(status==2){
+                        $(obj).parent().siblings('.reviewJ').text('审核通过');
+
+                        $(obj).attr('class','button no_status');
+                        $(obj).text('不通过审核');
+                        location.reload();
+                    }else if(status==3){
+                        $(obj).parent().siblings('.reviewJ').text('审核拒绝');
+                        $(obj).attr('class','button yes_status info');
+                        /*$(obj).html('<a href="javascript:;" class="operBtn yes_status" id="">通过审核</a>')*/
+                        $(obj).text('通过审核');
+                        location.reload();
+                    }
+                }else{
+                    $.NotifyBox.NotifyOne('提示','操作失败','确定');
+                }
+            }
+        });
+    });
+
+    /*************************************删除操作*******************************************************/
+    function deletes(obj) {
+		var id = $(obj).attr('attr');
+		var status = 4;
+        $.NotifyBox.NotifyTwoCallOneBlue('提示','确定删除吗？','确定','取消',function () {
+            $.ajax({
+                url:"index.php?m=Admin&c=PictureBooks&a=pictureBooksSaveStatus",
+                data:{'id':id,'status':status},
+                dataType:"json",
+                type:"post",
+                success:function (data) {
+                    if(data.status == 200){
+                        location.reload();
+                    }else{
+                        $.NotifyBox.NotifyOne('提示','操作失败','确定');
+                    }
+                }
+            });
+        });
+    }
+
+    //全选
+    $('.check_all').click(function () {
+        var childCheck = $('.check_child');
+        var temp_status = true;
+        if ($(this)[0].checked == true) {
+            //本次选中
+            temp_status = true;
+        } else {
+            //本次取消
+            temp_status = false;
+        }
+        for (var i = 0; i < childCheck.length; i++) {
+            childCheck[i].checked = temp_status
+        }
+    });
+
+    //取消全选
+    var lis_m = document.getElementsByClassName('check_child');
+    for (var j = 0; j < lis_m.length; j++) {
+        lis_m[j].index = j;
+        lis_m[j].onclick = function () {
+            if ($(this)[0].checked == false) {
+                $('.check_all').removeAttr('checked', 'checked');
+                $('.check_all').removeProp('checked', 'checked');
+            } else if ($(this)[0].checked == true) {
+                if (lis_m.length == $("[name='checkbox']:checked").length) {
+                    $('.check_all').attr('checked', 'checked');
+                    $('.check_all').prop('checked', 'checked');
+                };
+            }
+        }
+    };
+
+/*********************************重置*************************************************/
+//重置
+    $('.resetButton').click(function()
+    {
+        $('#picName').attr('value','');
+        $('#picId').attr('value','');
+        $('#grade_id').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#course_id').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#textbook_id').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#lock_status').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#shelf').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#source').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+    });
+
+</script>

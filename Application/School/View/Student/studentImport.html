@@ -1,0 +1,283 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+    <div class="standardMain hrefContent">
+        <a href="{:U('Student/studentList')}" class="returnBack">学生列表</a>
+        >
+        <span class="thePage">导入学生</span>
+    </div>
+
+    <div class="standardMain classContent tableContent mt0">
+        <div class="blueBox">
+            <span class="left blueTitle">批量导入学生</span>
+            <a href="{:U('Student/downloadStudentDemo')}" class="blackText right" id="">
+                <img src="__PUBLIC__/img/admin/xiazaimoban.png" alt="" class="mr10">
+                下载学生导入模板
+            </a>
+        </div>
+ 
+        <div class="p20 fileBox mb30">
+            <label for="">文件地址：</label>
+            <input type="text" class="input-control fileAddress" placeholder="文件地址" id='address' readonly>
+            <a href="javascript:;" title="浏览" class="commonBtnBlue operateBtn btnBig browse_button">浏览</a>
+            <input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+            <a href="javascript:;" title="上传" class="commonBtnBlue operateBtn btnBig upload_file">上传</a>
+        </div>
+
+        <div class="tableOutter mb30" id="listWrapperSuccessOutter" style="display: none">
+            <p class="tableTitle">导入成功列表</p>
+            <!--导入成功-->
+            <table id="listWrapperSuccess" class="table striped hovered border newTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 15;">序号</th>
+                        <th class="text-center" style="width: 17%;">学生姓名</th>
+                        <th class="text-center" style="width: 17%;">家长手机号</th>
+                        <th class="text-center" style="width: 17%;">家长姓名</th>
+                        <th class="text-center" style="width: 17%;">学生性别</th>
+                        <th class="text-center" style="width: 17%;">出生日期</th>
+                    </tr>
+                </thead>
+                <tbody id="body"> 
+                </tbody>
+            </table>
+            <div class="Pagination">{$page}</div>
+        </div>
+
+        <div class="tableOutter" id="listWrapperFailOutter" style="display: none">
+            <button class="blueBtn commonBtnBlue right" id="download_failed_data">下载失败数据</button>
+            <p class="tableTitle left pt20">导入失败列表</p>
+            <!--导入失败-->
+            <table id="listWrapperFail" class="table striped hovered border newTable">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 10;">序号</th>
+                        <th class="text-center" style="width: 15%;">学生姓名</th>
+                        <th class="text-center" style="width: 15%;">家长手机号</th>
+                        <th class="text-center" style="width: 15%;">家长姓名</th>
+                        <th class="text-center" style="width: 15%;">学生性别</th>
+                        <th class="text-center" style="width: 15%;">出生日期</th>
+                        <th class="text-center" style="width: 15%;">失败原因</th>
+                    </tr>
+                </thead>
+                <tbody id="body"> 
+                </tbody>
+            </table>
+            <div class="Pagination">{$page}</div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="__PUBLIC__/js/importCommon.js"></script>-->
+<!-- <script>
+    window.onload=function(){
+        var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+        var divs=document.getElementById("tabCon").getElementsByClassName("divTable");
+
+        for(var i=0;i<tabs.length;i++){
+            tabs[i].onclick=function(){
+                change(this);
+            }
+        }
+
+        function change(obj){
+            for(var i=0;i<tabs.length;i++){
+                if(tabs[i]==obj){
+                    tabs[i].className="tabLi tabActive";
+                    divs[i].className="divTable tabConActive";
+                }else{
+                     tabs[i].className="tabLi";
+                     divs[i].className="divTable";
+                }
+            }
+        } 
+    }
+    
+</script> -->
+
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script> 
+<script>
+    //点击浏览按钮
+    $('.browse_button').click(function(){       console.log(331);
+        //清空input框
+        $("#address").val('');
+        $('.file_csv').val('');
+        $('.file_csv').trigger('click');
+    });
+
+    //input file发生变化
+    $('.file_csv').live('change',function(){
+        var filepath = $('.file_csv').val();
+        var extStart = filepath.lastIndexOf(".");
+        var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+        if(ext=='.CSV'){
+            $('#address').val(filepath);
+        }else{
+            // $.Notify({
+            //     caption: '提示',
+            //     content: '只支持csv文件上传',
+            //     type: 'warning'
+            // });
+            $.NotifyBox.NotifyOne('提示', '只支持csv文件上传', '确定');
+            $('.file_csv').val('');
+        }
+    });
+    var ajax_result='';
+    function upload_file(){
+        if($('#file_csv').val()=='' || !$('#file_csv').val()){
+            // $.Notify({
+            //     caption: '提示',
+            //     content: '请选择需要上传的csv格式文件',
+            //     type: 'warning'
+            // });
+            $.NotifyBox.NotifyOne('提示', '请选择需要上传的csv格式文件', '确定');
+        }else{
+            $("#listWrapperSuccess").find('#body').empty();
+            $("#listWrapperFail").find('#body').empty();
+            $("#listWrapperSuccessOutter, #listWrapperSuccess").hide();
+            $("#listWrapperFailOutter, #listWrapperFail").hide();
+            $("#address").val('');
+            $.ajaxFileUpload
+            (
+                {
+                    url: file_upload_url, //用于文件上传的服务器端请求地址
+                    secureuri: false, //是否需要安全协议，一般设置为false
+                    fileElementId: 'file_csv', //文件上传域的ID
+                    dataType: 'text', //返回值类型 一般设置为json
+                    success: function (data)  //服务器成功响应处理函数
+                    {
+                        data = eval('(' + data + ')');
+                        ajax_result=data;
+                        $('.file_csv').val('');//清空file
+                        upload_management(ajax_result);
+
+                    },
+                    error: function (data)//服务器响应失败处理函数
+                    {
+                        //console.log(e);
+                        console.log(data);
+                        ajax_result = eval('(' + data.responseText + ')');
+                        if(ajax_result.status == '501'){
+                            alert(ajax_result.msg);
+                        }else{
+                            alert('导入失败,请刷新页面后重试');
+                        }
+
+                    }
+                }
+            )
+        }
+    }
+
+    var file_upload_url='';
+    var path="{:U('Student/importStudent')}";
+    
+    var failed_tr='<tr>'+
+                    '<td class="text-center">1</td>'+ 
+                    '<td class="text-center">学生姓名</td>'+
+                    '<td class="text-center">家长手机号</td>'+ 
+                    '<td class="text-center">家长姓名</td>'+ 
+                    '<td class="text-center">学生性别</td>'+ 
+                    '<td class="text-center">出生日期</td>'+
+                    '<td class="text-center">失败原因</td>'+ 
+                    '</tr>';
+    var success_tr='<tr>'+
+                    '<td class="text-center">1</td>'+ 
+                    '<td class="text-center">学生姓名</td>'+
+                    '<td class="text-center">家长手机号</td>'+ 
+                    '<td class="text-center">家长姓名</td>'+ 
+                    '<td class="text-center">学生性别</td>'+ 
+                    '<td class="text-center">出生日期</td>'+  
+                    '</tr>';
+    
+    $('.upload_file').click(function(){ 
+        file_upload_url=path;  
+        upload_file();
+    });
+    
+    
+    var import_complete_data;
+    function upload_management(msg){
+        if(msg.status==200){
+            import_complete_data=msg.data;
+            failed_data=import_complete_data.failed;
+            var data=msg.data;
+            if(data.failed.length){     //notice_message
+                for(var i=0;i<data.failed.length;i++){
+                    var failed_tr_obj=$(failed_tr).clone(true);
+                    $(failed_tr_obj).find('td').eq('0').text(i+1);
+                    $(failed_tr_obj).find('td').eq('1').text(data.failed[i].student_name);
+                    $(failed_tr_obj).find('td').eq('2').text(data.failed[i].parent_tel);
+                    $(failed_tr_obj).find('td').eq('3').text(data.failed[i].parent_name);
+                    $(failed_tr_obj).find('td').eq('4').text(data.failed[i].sex);
+                    $(failed_tr_obj).find('td').eq('5').text(data.failed[i].birth_date); 
+                    $(failed_tr_obj).find('td').eq('6').text(data.failed[i].notice_message);
+                    $("#listWrapperFail").find('#body').append(failed_tr_obj);
+                }
+                $("#listWrapperFailOutter, #listWrapperFail").show();
+            }
+            if(data.success.length){
+                for(var i=0;i<data.success.length;i++){
+                    var success_tr_obj=$(success_tr).clone(true);
+                    $(success_tr_obj).find('td').eq('0').text(i+1);
+                    $(success_tr_obj).find('td').eq('1').text(data.success[i].student_name);
+                    $(success_tr_obj).find('td').eq('2').text(data.success[i].parent_tel);
+                    $(success_tr_obj).find('td').eq('3').text(data.success[i].parent_name);
+                    $(success_tr_obj).find('td').eq('4').text(data.success[i].sex);
+                    $(success_tr_obj).find('td').eq('5').text(data.success[i].birth_date); 
+                    $("#listWrapperSuccess").find('#body').append(success_tr_obj);
+                }
+                $("#listWrapperSuccessOutter, #listWrapperSuccess").show();
+            }
+        }else{
+            $.NotifyBox.NotifyOne('提示',msg.msg,'确定');
+            return false;
+        }
+    }
+    
+    var failed_data=new Array();
+    
+    //下载失败的数据
+    $("#download_failed_data").click(function(){
+        
+        if(failed_data.length==0){
+            // $.Notify({
+            //     caption: '提示',
+            //     content: '没有失败数据的数据可以导出!',
+            //     type: 'warning'
+            // });
+            $.NotifyBox.NotifyOne('提示', '没有失败数据的数据可以导出!', '确定');
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('Student/downloadImportErrorData')}");
+        form.attr('method','post');
+        
+        for(var i=0;i<failed_data.length;i++){  
+            var div=$("<div></div>");
+            var teacher_name= $("<input type='hidden' name='student_name[]'/>");
+            var telephone= $("<input type='hidden' name='parent_tel[]'/>");  
+            var parent_name= $("<input type='hidden' name='parent_name[]'/>");
+            var sex= $("<input type='hidden' name='sex[]'/>");
+            var birth_date= $("<input type='hidden' name='birth_date[]'/>"); 
+
+            $(teacher_name).attr('value',failed_data[i].student_name); 
+            $(telephone).attr('value',failed_data[i].parent_tel);
+            $(parent_name).attr('value',failed_data[i].parent_name);
+            $(sex).attr('value',failed_data[i].sex);
+            $(birth_date).attr('value',failed_data[i].birth_date);
+ 
+            div.append(teacher_name);
+            div.append(telephone);
+            div.append(parent_name);
+            div.append(sex);
+            div.append(birth_date); 
+            form.append(div);
+        } 
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+</script>

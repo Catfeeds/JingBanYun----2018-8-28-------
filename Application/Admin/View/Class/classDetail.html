@@ -1,0 +1,104 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<style>
+	@media screen and (max-width: 1200px) and (min-width: 0) {
+        body {
+            width: 1200px;
+            overflow-x: scroll;
+        }
+    }
+</style>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		班级管理
+		<span class="blueSpan">
+			<a href="javascript:;">班级行管理</a>>>
+			<a href="{:U('Class/classList')}">班级管理</a>>>
+			<a href="javascript:;">查看班级信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<div class="blueBox">
+	<span class="blueText left fs18">班级详情</span>
+	<a href="{:U('Class/updateClass')}&id={$data.class_id}" class="blackText right" id="" onclick="checkInfo()">
+		<img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="mr10"> 
+		修改信息
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+	
+<div class="grid condensed">
+	<div class="row cells3 infoBox">
+		<div class="cell">省份：{$data.province}</div>
+		<div class="cell">市区：{$data.city}</div>
+		<div class="cell">区县：{$data.district}</div>
+		<div class="cell">学校名称：{$data.school_name}</div>
+		<div class="cell">学校代码：{$data.school_code}</div>
+		<div class="cell">&nbsp;</div>
+		<div class="cell">年级：{$data.grade}</div>
+		<div class="cell">班级：{$data.class_name}</div>
+		<div class="cell">班级代码：{$data.class_code}</div>
+		<div class="cell">班级类型：
+                    <if condition="$data['class_status'] eq 1">
+                        校建班
+                    <else />
+                        个人班
+                    </if>
+                </div>
+                <if condition="$data['class_status'] eq 2">
+                    <div class="cell">管理教师：{$data.teacher_name}</div>
+                    <div class="cell">管理教师手机号：{$data.telephone}</div>
+                </if>
+	</div>
+</div>
+
+<div class="tabBox">
+	<ul class="left tabUl" id="tabUl">
+		<li class="tabLi tabActive">课程表</li>
+		<li class="tabLi">学生信息</li>
+		<li class="tabLi">教师信息</li>
+		<li class="tabLi">家长信息</li>
+	</ul>
+	<div class="tabCon" id="tabCon">
+		<iframe class="tabConActive" id="classFrame" src="{:U('Class/class_iframe_classTimetable')}&id={$data.class_id}" frameborder="0" width="850" border=0 style="margin: 0 auto"></iframe>
+		<iframe style="width: 100%;" frameborder="0" src="{:U('Class/class_iframe_student')}&id={$data.class_id}"></iframe>
+		<iframe style="width: 100%;" frameborder="0" src="{:U('Class/class_iframe_teacher')}&id={$data.class_id}"></iframe>
+		<iframe style="width: 100%;" frameborder="0" src="{:U('Class/class_iframe_parent')}&id={$data.class_id}"></iframe>
+	</div>
+</div>
+
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="";
+				}
+			}
+		} 
+
+		var height1 = $("#classFrame").contents().find("body").height()+100;
+		var height2 = $("#classFrame").contents().find("body").height()+150;
+		$('.tabCon').css('min-height',height2);
+		$("#classFrame").height(height1)
+	}
+	
+</script>
+
+

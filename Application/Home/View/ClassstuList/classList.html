@@ -1,0 +1,1875 @@
+
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/activity.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/classlist.css" type="text/css" rel="stylesheet">
+<style>
+	.courseRemind {
+		width: 80px;
+		height: 80px;
+		margin-top: 8px;
+		cursor: pointer;
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind1.png) no-repeat center;
+		background-size: cover;
+		position: absolute;
+		top: -33px;
+		right: -80px;
+	}
+
+	.blackBack {
+		display: none;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.6);
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 20160921;
+	}
+
+	.courseRemind:hover {
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind2.png) no-repeat center;
+		background-size: cover;
+	}
+
+	.workPublish {
+
+		min-height: 60%;
+	}
+	.nav{
+		box-shadow: none !important
+	}
+	.courseRemind {
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind1.png) no-repeat center;
+		background-size: cover;
+	}
+
+	.courseRemind:hover {
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind2.png) no-repeat center;
+		background-size: cover;
+	}
+
+	.bellTopP2 {
+		background: url({$oss_path}public/web_img/classTimeTable/plusBell.png) no-repeat center;
+		background-size: cover;
+	}
+
+	#bg {
+		display: none;
+		position: fixed;
+		top: 0%;
+		left: 0%;
+		width: 100%;
+		height: 100%;
+		background-color: black;
+		z-index: 20170213;
+		-moz-opacity: 0.7;
+		opacity: .70;
+		filter: alpha(opacity=70);
+	}
+
+	#trans_class {
+		display: none;
+		width: 400px;
+		height: 400px;
+		position: fixed;
+		top: 30%;
+		left: 40%;
+		z-index: 1002;
+		background: url(/Public/img/classManage/transfer_class.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+
+	#trans_class .inner {
+		width: 70%;
+		height: 50%;
+		margin: 30% auto 0;
+		font-size: 16px;
+	}
+
+	.close_btn {
+		float: right;
+		margin: 10px 15px 0 0;
+		cursor: pointer;
+	}
+
+	.close_btn img {
+		width: 20px;
+		z-index: 9999;
+	}
+	/*-----------------导入成功-------------------*/
+
+	.receive_success,
+		/*        .transfer_success,*/
+
+	.undo_success {
+		display: none;
+		width: 500px;
+		height: 300px;
+		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		z-index: 9999;
+		background: url(/Public/img/home/30.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+
+	.transfer_success {
+		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		width: 500px;
+		background: url(/Public/img/home/30.png) no-repeat center;
+		height: 300px;
+		display: none;
+		z-index: 99999;
+	}
+
+	.success_top {
+		overflow: hidden;
+		padding: 50px 0 0 80px;
+	}
+
+	.success_top img {
+		width: 30%;
+		float: left;
+	}
+
+	.success_top p {
+		float: left;
+		font-size: 40px;
+		color: #666;
+		padding-top: 35px;
+	}
+
+	.success_bottom {
+		text-align: center;
+	}
+
+	.success_bottom button {
+		width: 120px;
+		height: 50px;
+		border: none;
+		background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+		background-size: 100% 100%;
+		color: #fff;
+		font-size: 20px;
+	}
+</style>
+<style>
+	#contentWrapper{
+		background: rgb(255, 251, 242);
+    	border: 2px solid #efca33;
+	}
+	.ml10p{
+		margin-left: 10%;
+	}
+	.classbox {
+		font-size: 16px;
+		line-height: 24px;
+		color: #333;
+		position: relative;
+		width: 910px;
+		margin: 0 auto;
+		border-left: 2px solid #efca33
+	}
+	.ti30{
+		text-indent: 30px;
+	}
+	.classbox li{
+		 list-style: initial;
+		 text-indent: 80px;
+	}
+	.yuan{
+		width: 30px;
+		height: 30px;
+		border-radius: 20px;
+		color: #fff;
+		background: #efca33;
+		 text-align: center;
+		text-indent: 0;
+		line-height:30px;
+		position: absolute;
+		top: -4px;
+    	left: -17px;
+	}
+		.classDiv {
+		width: 621px;
+		margin: 40px auto;
+		text-align: center;
+		font-size: 16px;
+		line-height: 36px;
+	}
+
+	.classbox select{
+		width: 212px;
+		height: 42px;
+	}
+
+	.classbox input {
+		width: 431px;
+	}
+
+	.classbox button {
+		border: none;
+		outline: none;
+		background: #efca33;
+		color: #fff;
+		width: 100px;
+		border-radius: 5px;
+		height: 43px;
+		position: relative;
+		top: -1px;
+		cursor: default;
+	}
+
+	.classbox .beizhu {
+		line-height: 24px;
+		font-size: 14px;
+		color: #ccc;
+		text-indent: 85px;
+		text-align: left
+	}
+
+
+	 .classbox table{
+		width: 621px;
+		border: 1px solid #efca33
+	}
+	.classbox thead{
+		background: rgb(232,202,51)
+
+	}
+	.classbox th,.classbox td,.classbox tr{
+		border: 1px solid #efca33;
+		text-align: center;
+	}
+	.spanleft{
+		float: left;
+		margin-left: 10px;
+	}
+	.spanright {
+		float: right;
+		margin-right: 10px;
+    }
+
+    .spanleft:hover, .spanright:hover {
+		text-decoration: none;
+		color: #1abc9c;
+    }
+
+	.classbox th{
+		border-right: 1px solid #fff
+	}
+
+	.class_code{
+		height: 42px;
+	}
+</style>
+<div class="main_opr">
+	<a href="{:U('ClassstuList/classList')}" title="创建班级" class="btn btn-main-opr btn-main-opr-active">我的班级</a>
+	<!--<a href="{:U('ClassList/joinClass')}" title="加入班级" class="btn btn-main-opr">加入班级</a>-->
+	<a href="{:U('ClassstuList/registerClass')}" title="加入班级" class="btn btn-main-opr">加入班级</a>
+</div>
+<div class="bg"></div>
+<empty name="list">
+	<div class="emptyResult" style="color:#333;font-family: inherit">您还没有加入任何班级,您可以通过以下方式加入班级</div>
+     <div class="ml10p mt30 classbox">
+		<p class="ti30">点击本页面上方的"加入班级"，可通过班级编号或选择已有班级两种方式加入班级</p>
+		<li class="mt20">通过选择班级编号既可加入教师创建的自建班级又可加入学校创建的校建班级</li>
+		<li class="pb20">选择已有班级仅可加入学校创建的校建班级</li>
+		<div class="yuan">1</div>
+	</div>
+	<div class="ml10p classbox pb30">
+		<p class="ti30">您可以向学校或已经加入班级的老师、同学询问班级编号，可通过班级编号加入班级</p>
+		<div class="ml30 mt30">
+			<p>班级编号：
+			<input type="text" class="class_code" placeholder="请输入班级编号"  disabled>
+
+			<button class="addclass">申请加入</button>
+			</p>
+			<p class="beizhu">*您可以输入班级编号加入校建班级或教师自建班级，可以向学校或已经加入班级的教
+			</p>
+			<p class="beizhu"> 师询问班级编号加入校建班级，需等待教师审核，您可在申请加入列表中查看审核进展</p>
+		</div>
+		<div class="yuan">2</div>
+	</div>
+	<div class="ml10p classbox pb30">
+		<p class="ti30">您可以选择您所在学校已创建的班级加入班级</p>
+		<div class="ml30 mt30">
+				<p>选择班级：
+			<select name="" id="getclassid" onchange="getXueke()" disabled>
+				<option value="">请选择年级</option>
+				<volist name="xiaojian" id="xiaojiandata" empty="暂时没有信息">
+					<option value="{$xiaojiandata.grade_id}">{$xiaojiandata.grade}</option>
+				</volist>
+			</select>
+			<select name="dict_course_id" id="dict_course_id"  disabled>
+				<option value="">请选择班级</option>
+			</select>
+
+			<button class="addclasstwo"  disabled>申请加入</button>
+		</p>
+		<p class="beizhu">*选择已有校建班级
+		</p>
+		</div>
+	<div class="yuan">3</div>
+	</div >
+	<div class="ml10p classbox" style="border:none">
+		<p style="border-left:2px solid #efca33" class="ti30">如您加入的是教师创建的自建班级，需要教师审核通过后方可加入成功，您可以通过“加入班级”页面中的表格查看审核进展</p>
+		<p class="text-center mt30">我申请加入的班级</p>
+		<div style="width:621px;margin:0 auto" class="mb30">
+		<table class="mb20">
+		<thead>
+			<tr>
+				<th class="text-center">序号</th>
+				<th class="text-center">班级编号</th>
+				<th class="text-center">年级</th>
+				<th class="text-center">班级</th>
+				<th class="text-center">申请状态</th>
+				<th class="text-center" style="width:160px;border-right:1px solid #efca33">操作</th>
+			</tr>
+		</thead>
+			<tr>
+				<td>1</td>
+				<td>123456</td>
+				<td>一年级</td>
+				<td>一班</td>
+				<td>未通过</td>
+				<td><a class="spanleft sendremind" classid="{$class_list_data.id}" student_id="{$class_list_data.student_id}" onclick="return false">发送提醒</a><a class="spanright noJoin" classid="{$class_list_data.id}" student_id="{$class_list_data.student_id}" onclick="return false">不加入</a></td>
+			</tr>
+			</table>
+			</div>
+			<div class="yuan">4</div>
+	</div>
+</empty>
+
+<notempty name="list">
+	<!--	<table class="table striped hovered border">-->
+
+
+	<div class="row row1" style="position:relative">
+		<volist name="list" id="data" empty="">
+			<!--			认证班左边-->
+			<div class="class_left">
+				<div class="class_name">
+					<?php if ($data['class_status'] == 1): ?>
+					<?php if ($data['flag'] != 0): ?>
+					<img src="__PUBLIC__/img/classManage/yirenzheng.png" alt="">
+					<?php else: ?>
+					<img src="__PUBLIC__/img/classManage/tingyong.png" alt="">
+					<?php endif ?>
+					<?php else: ?>
+
+					<?php if ($data['flag'] != 0): ?>
+					<img src="__PUBLIC__/img/classManage/zijian.png" alt="">
+					<?php else: ?>
+					<img src="__PUBLIC__/img/classManage/tingyong.png" alt="">
+					<?php endif ?>
+
+					<?php endif ?>
+					{$data.grade}{$data.name}
+				</div>
+				<div class="class_member class_active" classid="{$data.id}" class_status="{$data.class_status}">
+					<img src="__PUBLIC__/img/classManage/icon_banjichengyuan.png" alt="">班级成员
+				</div>
+				<div class="timetables" classid="{$data.id}" class_status="{$data.class_status}">
+					<img src="__PUBLIC__/img/classManage/icon_kechengbiao.png" alt="">课程表
+				</div>
+
+				<div class="class_information" classid="{$data.id}" class_status="{$data.class_status}">
+					<img src="__PUBLIC__/img/classManage/icon_xinxishezhi.png" alt="">信息设置
+				</div>
+
+			</div>
+
+		</volist>
+
+		<div class="class_student col-lg-10 col-md-9 col-sm-9 class_right"></div>
+
+	</div>
+	<div id="bg"></div>
+	<div id="trans_class">
+		<div class="close_btn" id="closeWindow">
+			<img src="__PUBLIC__/img/home/close.png" alt="">
+		</div>
+		<form action="__URL__/transferClass" method="post" id="transferClass" onsubmit="$('#confirmButton').attr('disabled',true);">
+			<div class="example inner" data-text="基本信息">
+				<div class="form_section">
+					<label for="name">接收班级教师姓名</label>
+					<input type="text" name="name" id="name" class="form-control" required maxlength="20" placeholder="必填，不超过20个字">
+				</div>
+				&nbsp;
+				<div class="form_section">
+					<label for="grade_id">接收班级教师手机号</label>
+					<input type="text" name="telephone" id="telephone" class="form-control" required maxlength="11" placeholder="必填">
+				</div>
+				<div class="form-actions" style="text-align: center; background: #fff; ">
+					<button type="submit" class="btn btn-primary" id="confirmButton">确定</button>
+				</div>
+			</div>
+			<input type="hidden" id="input_ClassId" name="classId" />
+		</form>
+
+	</div>
+	<input type="hidden" id="class_teacher_id" value="{$t_id_info}" />
+	<!-------------------班级接收成功---------------------->
+	<div class="receive_success">
+		<div class="success_top">
+			<img src="__PUBLIC__/img/home/32.png" alt="">
+			<p>班级接收成功！</p>
+		</div>
+		<div class="success_bottom">
+			<button type="submit" class="tr_success_sure">确定</button>
+		</div>
+	</div>
+	<!-------------------班级移交成功---------------------->
+	<div class="transfer_success">
+		<div class="success_top">
+			<img src="__PUBLIC__/img/home/32.png" alt="">
+			<p>班级移交成功！</p>
+		</div>
+		<div class="success_bottom">
+			<button type="submit" class="tr_success_sure">确定</button>
+		</div>
+	</div>
+	<!-------------------撤销成功---------------------->
+	<div class="undo_success">
+		<div class="success_top">
+			<img src="__PUBLIC__/img/home/32.png" alt="">
+			<p>撤销成功！</p>
+		</div>
+		<div class="success_bottom">
+			<button type="submit" class="tr_success_sure">确定</button>
+		</div>
+	</div>
+</notempty>
+
+<div id="Popup" class="hide_show_alert">
+	<p><span class="hide_show_title">加入班级</span><img src="__PUBLIC__/img/classManage/close_btn.png" class="display_none_alert" alt=""></p>
+	<p class="hide_show_content">确定将此学生移除班级？</p>
+	<p>
+		<button class="display_none_alert">确定</button>
+	</p>
+</div>
+
+<div id="addstudentTk">
+	<p id="addstuP">添加学生<img src="__PUBLIC__/img/classManage/close_btn_s.png" alt=""></p>
+	<!--    <span><input type="radio" checked="checked">您的学生已经注册京版云账号</span><span><input type="radio" checked="checked">还未注册京版云账号</span>-->
+	<div>
+		<input type="radio" id="student_register" checked="checked">
+		<label for="student_register" id="student_registerlb">您的学生已经注册京版云账号</label>
+		<input type="radio" id="student_noregister">
+		<label for="student_noregister" id="student_noregisterlb">还未注册京版云账号</label>
+	</div>
+	<div id="student_registerDiv">
+		<p><span>学生姓名</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p><span>家长手机号</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p><span>登陆密码</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p><span>确认密码</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p class="pbtn">
+			<button>确定</button>
+		</p>
+	</div>
+	<div id="student_noregisterDiv" style="padding-top:30px">
+		<p><span>学生姓名</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p><span>家长手机号</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p class="pbtn" style="margin-top:40px">
+			<button>确定</button>
+		</p>
+	</div>
+</div>
+<script>
+
+	$(document).on('click','.display_none_alert',function(event){
+		$('.hide_show_alert').hide()
+	})
+
+	$(document).on('click','#addstuP',function(event){
+		$(this).parent().hide()
+	})
+
+	$(document).on('click','.addstubtn',function(event){
+		$('#addstudentTk').show()
+	})
+
+	$(document).on('click','#student_noregister,#student_register',function(event){
+		$(this).attr('checked', 'checked');
+		$(this).siblings().removeAttr('checked');
+	})
+
+	$(document).on('click','#student_noregister,#student_noregistelb',function(event){
+		$('#student_noregisterDiv').show();
+		$('#student_registerDiv').hide();
+	})
+
+	$(document).on('click','#student_register,#student_registelb',function(event){
+		$('#student_registerDiv').show();
+		$('#student_noregisterDiv').hide();
+	})
+	$('.class_right').eq(0).show();
+
+	$(document).on('click','.class_name',function(event){
+		if ($(this).siblings().is(':hidden')) {
+			$(this).siblings().slideDown();
+			$(this).siblings('.class_member').click();
+		} else {
+			$(this).siblings().slideUp();
+		}
+		$(this).parent().siblings().find('.class_name').siblings().slideUp()
+
+
+	})
+
+	$(document).on('click','.class_left',function(event){
+		var classIndex = $(this).index();
+		$('.class_right').eq(classIndex).show().siblings('.class_right').hide()
+	})
+	$(function () {
+
+		$('.class_name').eq(0).find('img').show();
+		$('.class_name').eq(0).siblings().show()
+		var d = $('.class_right').eq(0).children().eq(1).height();
+//		$('.row1').css('min-height', d)
+	})
+
+	$(document).on('click','.teacher_siftings,.student_nosiftings,.class_TimeTable',function(event){
+		var w = $(this).width();
+		$(this).parent().siblings().find('.padding5Active').animate({
+			left: w + 12
+		})
+	})
+
+	//用户列表
+	$('.class_left').children('.class_member').click(function () {
+		$('.class_student').html('');
+		var a = $(this).index();
+		var c = $(this).parent().index();
+		$(this).addClass('class_active').siblings().removeClass('class_active');
+//		var b = $('.class_right').eq(c).children().eq(a).height();
+//		$('.row1').css('min-height', b + 50)
+		$('.class_right').eq(c).children().eq(a).show().siblings().hide();
+
+		var classid = $(this).attr('classid');
+		var class_status = $(this).attr('class_status');
+		if(classid!='') {
+			$.post('__URL__/isClassinfo', {
+				'classid': classid,
+				'class_status': class_status
+			}, function (res) {
+				$('.class_student').html(res);
+				var StuH = $('.Stu_box').height();
+
+				var rh = $('.row1').height();
+				if(rh<StuH ){
+					$('.row1').height(StuH+100);
+				}
+			});
+		}
+
+
+	})
+
+	//信息设置
+	$('.class_left').children('.class_information').click(function () {
+		$('.class_student').html('');
+		var a = $(this).index();
+		var c = $(this).parent().index();
+		$(this).addClass('class_active').siblings().removeClass('class_active');
+		var b = $('.class_right').eq(c).children().eq(a).height();
+//		$('.row1').css('min-height', b + 50)
+		$('.class_right').eq(c).children().eq(a).show().siblings().hide();
+
+		var classid = $(this).attr('classid');
+		var class_status = $(this).attr('class_status');
+
+		$.post('__URL__/setClassButton', {
+			'classid': classid,
+			'class_status': class_status
+		}, function (res) {
+			$('.class_student').html(res);
+			var SetH = $('.Setting_box').height();
+
+			var rh = $('.row1').height();
+			if(rh<SetH ){
+				$('.row1').height(SetH+100);
+			}
+		});
+
+	})
+
+	//校建班信息设置
+	$('.class_left').children('.class_buildoneself').click(function () {
+		$('.class_student').html('');
+		var a = $(this).index();
+		var c = $(this).parent().index();
+		$(this).addClass('class_active').siblings().removeClass('class_active');
+		var b = $('.class_right').eq(c).children().eq(a).height();
+//		$('.row1').css('min-height', b + 50)
+		$('.class_right').eq(c).children().eq(a).show().siblings().hide();
+
+		var classid = $(this).attr('classid');
+		var class_status = $(this).attr('class_status');
+
+		$.post('__URL__/setSchoolClassButton', {
+			'classid': classid,
+			'class_status': class_status
+		}, function (res) {
+			$('.class_student').html(res);
+			var SetH = $('.Setting_box').height();
+
+			var rh = $('.row1').height();
+			if(rh<SetH ){
+				$('.row1').height(SetH+100);
+			}
+		});
+
+	})
+	//课程表
+	$('.class_left').children('.timetables').click(function () {
+		$('.class_student').html('');
+		var a = $(this).index();
+		var c = $(this).parent().index();
+		$(this).addClass('class_active').siblings().removeClass('class_active');
+		var b = $('.class_right').eq(c).children().eq(a).height();
+//		$('.row1').css('min-height', b + 50)
+		$('.class_right').eq(c).children().eq(a).show().siblings().hide();
+
+		var classid = $(this).attr('classid');
+		var class_status = $(this).attr('class_status');
+
+		$.post('__URL__/classTimetable', {
+			'classId': classid,
+			'class_status': class_status
+		}, function (res) {
+
+			$('.class_student').html(res);
+
+			var TabH = $('.timeTable_box').height();
+
+			var rh = $('.row1').height();
+			if(rh<TabH){
+				$('.row1').height(TabH+100)
+			}
+		});
+
+	})
+
+
+
+
+	$('#Popup').find('img').click(function () {
+		$('#Popup').hide()
+	})
+	$('#addstudentTk').find('img').click(function () {
+		$('#addstudentTk').hide()
+	})
+
+	$(document).on('click','.courseRemind',function(event){
+		$('body').css('overflow-y', 'hidden');
+		$('.workPublish,.blackBack').show();
+	})
+
+	$(document).on('click','.workPublishClose',function(event){
+		$('body').css('overflow-y', 'auto');
+		$('.workPublish,.blackBack').hide();
+	})
+	//	------以前的JS
+	$('[data-role="select_text"]').change(function () {
+		var grade_id = $("#grade option:selected").val();
+		var class_teacher_id = $("#class_teacher_id").val();
+		$.get('index.php?m=Home&c=Teach&a=getListClass', {
+			grade_id: grade_id,
+			class_teacher_id: class_teacher_id,
+		}, function (res) {
+
+			var provinces = res.res;
+			var html = [];
+			var option_select = '<option value="" >-请选择-</option>';
+			var tpl = '<option value="{1}" data-id="{1}" data-name="{0}">{0}</option>';
+			html.push(option_select);
+
+			$.each(provinces, function (i, n) {
+				html.push(tpl.format(n.name, n.id));
+			});
+			//alert(html.join());
+			$('#class').html(html.join(''));
+		})
+	});
+
+	$(document).on('click','.tr_success_sure',function(event){
+
+		location.reload();
+	});
+
+	$(document).on('click','.undo_class',function(event){
+		var classId = $(this).attr('classid');
+		$.post('__URL__/undoClass', {
+			classid: classId
+		}, function (res) {
+			if (res.code == 200) {
+				$('#bg').css('display', 'block');
+				$('.undo_success').css('display', 'block');
+			}
+
+		});
+	});
+
+	$(document).on('click','.receive_class',function(event){
+		var classId = $(this).attr('classid');
+		$.post('__URL__/receiveClass', {
+			classid: classId
+		}, function (res) {
+			if (res.code == 200) {
+				$('#bg').css('display', 'block');
+				$('.receive_success').css('display', 'block');
+			} else {
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('接收班级');
+				$('.hide_show_content').html('接收失败');
+			}
+		});
+	});
+
+	$(document).on('click','.transfer_class',function(event){
+		var classId = $(this).attr('classid');
+		$('#input_ClassId').val(classId);
+		$('#bg').css('display', 'block');
+		$('#trans_class').css('display', 'block');
+	})
+	//确定（需要判断之后再关闭）
+
+	$(document).on('click','#closeWindow',function(event){
+		$('#bg').css('display', 'none');
+		$('#trans_class').css('display', 'none');
+	})
+
+	//页面在家完毕执行加载第一个班级成员
+	$(document).ready(function(){
+		var classid = $('.row1').find('.class_left').eq(0).find('.class_member').attr('classid');
+		var class_status = $('.row1').find('.class_left').eq(0).find('.class_member').attr('class_status');
+		$.post('__URL__/isClassinfo', {
+			'classid': classid,
+			'class_status': class_status
+		}, function (res) {
+			$('.class_student').html(res);
+			var StuH = $('.Stu_box').height();
+			var rh = $('.row1').height();
+			if(rh<StuH ){
+				$('.row1').height(StuH +100)
+			}
+		});
+	});
+</script>
+<!--<script src="__PUBLIC__/js/external/jquery.form.js" ></script>-->
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+	$(function () {
+		var options = {
+			// target:        '#output',   // target element(s) to be updated with server response
+			//beforeSubmit:  showRequest,  // pre-submit callback
+			success: showResponse, // post-submit callback
+			resetForm: false,
+			dataType: 'json'
+
+			// other available options:
+			//url:       url         // override for form's 'action' attribute
+			//type:      type        // 'get' or 'post', override for form's 'method' attribute
+			//dataType:  null        // 'xml', 'script', or 'json' (expected server response type)
+			//clearForm: true        // clear all form fields after successful submit
+			//resetForm: true        // reset the form after successful submit
+
+			// $.ajax options can be used here too, for example:
+			//timeout:   3000
+		};
+
+		// bind to the form's submit event
+		$('#transferClass').submit(function () {
+			// inside event callbacks 'this' is the DOM element so we first
+			// wrap it in a jQuery object and then invoke ajaxSubmit
+			$(this).ajaxSubmit(options);
+
+			// !!! Important !!!
+			// always return false to prevent standard browser submit and page navigation
+			return false;
+		});
+
+		function showResponse(responseText, statusText) {
+			switch (responseText.code) {
+				case -1: //transfer user does not exist
+					alert(responseText.msg);
+					break;
+				case 0: // transfer success
+					// $('#forceAdd').val('false');
+					$('#bg').css('display', 'block');
+					$('.transfer_success').css('display', 'block');
+
+					break;
+				default:
+					alert(responseText.msg);
+					break;
+			}
+			$('#confirmButton').attr('disabled', false);
+		}
+	});
+</script>
+
+<script>
+
+	$(document).on('click','.browse_button',function(event){
+		//$('#address').val('');
+		$('.file_csv').trigger('click');
+	});
+
+	$(document).on('click','.del_user_stu',function(event){
+
+		$('#Popup,.bg').hide();
+		$('.news,.bg').hide();
+	})
+	$(document).on('click','.search_btn',function(){
+
+		var classid = $(this).attr('classid');
+		var class_status = $(this).attr('class_status');
+		var keyword = $('.search_text').val();
+		if ( keyword==undefined ) {
+			return;
+		}
+		$.post('__URL__/isClassinfo', {
+			'classid': classid,
+			'class_status': class_status,
+			'keyword': keyword
+		}, function (res) {
+			$('.class_student').html(res);
+		});
+
+	});
+
+	$(document).on('keyup','.search_btn',function(event){
+
+		//$(".search_btn").keyup(function(event){
+		if(event.keyCode == 13){
+			//这里写你要执行的事件;
+			alert(1);
+		}
+	});
+
+
+	$(document).on('click','.delete_student',function(event){
+		var classid = $(this).attr('classid');
+		var student_id = $(this).attr('delid');
+		$('.quedingyichu').attr('classid',classid);
+		$('.quedingyichu').attr('student_id',student_id);
+		$('.quedingyichu').attr('is_init',1);
+		$('#Popup').show();
+	});
+
+	//点击单个删除
+	$(document).on('click','.quedingyichu',function(event){
+		var classid = $(this).attr('classid');
+		var student_id = $(this).attr('student_id');
+		var indexthis = $(this);
+		var is_init = $(this).attr('is_init');
+		if (is_init==1) {
+			$.post('__URL__/delStudentClass', {
+				'classid': classid,
+				'student_id': student_id
+			}, function (res) {
+				if (res.code ==200) {
+					$('.student_list').each(function(){
+						var del_id = $(this).attr('student_id');
+						if(student_id.indexOf(del_id) >= 0 )
+						{
+							$(this).remove();
+						}
+					})
+					$('#Popup').hide();
+				} else {
+					$('#Popup').hide();
+
+					$('.hide_show_alert').show();
+					$('.hide_show_title').html('移除');
+					$('.hide_show_content').html('移除失败');
+				}
+			});
+		} else {
+			$.post('__URL__/delStudentClass', {
+				'classid': classid,
+				'student_id': student_id
+			}, function (res) {
+				if (res.code ==200) {
+					$('.student_list').each(function(){
+						var del_id = $(this).attr('student_id');
+						if(student_id.indexOf(del_id) >= 0 )
+						{
+							$(this).remove();
+						}
+					})
+					$('#Popup').hide();
+				} else {
+					$('#Popup').hide();
+
+					$('.hide_show_alert').show();
+					$('.hide_show_title').html('删除');
+					$('.hide_show_content').html('删除失败');
+				}
+			});
+		}
+
+	});
+
+
+	//点击批量删除
+	$(document).on('click','.piliangdel',function(event){
+
+		var student_id = '';
+		var check_input=$('.student_list').each(function(){
+			var is_checked = $(this).find('.stuselect').is(":checked");
+			if (is_checked==true) {
+				student_id +=','+$(this).attr('student_id');
+			}
+		})
+
+		var classid = $('.search_btn').attr('classid');
+
+		if(student_id.length<1){
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('移除学生');
+			$('.hide_show_content').html('请勾选要移除的学生');
+			return false;
+		}
+
+		$('.quedingyichu').attr('classid',classid);
+		$('.quedingyichu').attr('student_id',student_id);
+		$('#Popup').show();
+
+	})
+
+
+	//点击批量导出
+	$(document).on('click','#export_btn',function(event){
+		var student_id = '';
+		var check_input=$('.student_list').each(function(){
+			var is_checked = $(this).find('.stuselect').is(":checked");
+			if (is_checked==true) {
+				student_id +=','+$(this).attr('student_id');
+			}
+		})
+
+		var classid = $('.search_btn').attr('classid');
+
+		if(student_id.length<1){
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('导出账号');
+			$('.hide_show_content').html('请勾选要导出的账号');
+			return false;
+		}
+		window.location.href="index.php?m=Home&c=ClassList&a=exportedStu&classid="+classid+"&student_id="+student_id;
+	});
+
+	$(document).on('click','.addstubtn',function(event){
+		$('#addstudentTk').show();
+		$('.registeraddstu').find('button').removeAttr('disabled');
+	})
+
+
+	$('#student_noregister,#student_register').click(function () {
+		$(this).attr('checked', 'checked');
+		$(this).siblings().removeAttr('checked');
+	})
+	$('#student_noregister,#student_noregistelb').click(function () {
+		$('#student_noregisterDiv').show();
+		$('#student_registerDiv').hide();
+	})
+	$('#student_register,#student_registelb').click(function () {
+		$('#student_registerDiv').show();
+		$('#student_noregisterDiv').hide();
+	})
+	$('#addstudentTk').find('img').click(function () {
+		$('#addstudentTk').hide()
+	})
+
+
+	//批量导入
+	$(document).on('click','#import_btn',function(event){
+		$('#import_outer').css('display', 'block');
+		$('#bg').css('display', 'block');
+	});
+
+	$(document).on('click','.close_btn',function(event){
+
+		$('#import_outer').css('display', 'none');
+		$('#bg').css('display', 'none');
+	});
+
+	//
+	//还未注册账户并且把学生添加到班级
+
+	$(document).on('click','.registeraddstu',function(event){
+		$(this).find('button').attr('disabled','disabled');
+		var index_this = $(this);
+		var classid = $('.search_btn').attr('classid');
+		var student_name = $('.student_name').val();
+		var parent_tel_data = $('.parent_tel_data').val();
+		var password = $('.password').val();
+		var pass = $('.pass').val();
+		if(student_name==''){
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('学生姓名');
+			$('.hide_show_content').html('请填写学生姓名');
+			return false;
+		}
+		if(parent_tel_data==''){
+
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('家长手机号');
+			$('.hide_show_content').html('请填写家长手机号');
+			return false;
+		}
+		if(password==''){
+
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('密码');
+			$('.hide_show_content').html('请填写密码');
+			return false;
+		}
+		if(pass==''){
+
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('确认密码');
+			$('.hide_show_content').html('请填写确认密码');
+			return false;
+		}
+
+		if(password!=pass){
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('密码不一致');
+			$('.hide_show_content').html('两次密码不一致');
+			return false;
+		}
+
+		$.post('__URL__/registeraddStu', {
+			'classid': classid,
+			'student_name': student_name,
+			'parent_tel_data': parent_tel_data,
+			'password': password,
+			'pass': pass,
+		}, function (res) {
+			if (res.code ==200) {
+				var html='';
+				html+='<div class="col-lg-3 col-md-6 col-sm-12 student_list" student_id="'+res.data['id']+'">';
+				html+='<img class="avatar" width="58" height="58" onerror="img_teacher(this)" src="__ROOT__/Uploads/StudentAvatars/'+res.data['id']+'">';
+				html+='<span class="name">'+res.data['student_name']+'</span>';
+				html+='<input type="checkbox" name="stuselect" class="stuselect" style="margin-left:5px">';
+				html+='<br>';
+				html+='<span class="sex">'+res.data['sex']+'</span>';
+				html+='<br>';
+				html+='<br>';
+				html+='<p class="parent_tel">家长手机号：'+res.data['parent_tel']+'</p>';
+				html+='<p class="email">邮箱地址：'+res.data['email']+'</p>';
+				html+='<img src="__PUBLIC__/img/classManage/icon_delete.png" alt="" class="delete_student" classid="'+classid+'" delid="'+res.data['id']+'" >';
+				html+='</div>';
+				index_this.find('button').removeAttr('disabled');
+				$('.stulistinfo').prepend(html);
+				$('#addstudentTk').hide();
+			} else if(res.code ==600)  {
+				$('#addstudentTk').hide();
+
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('直接加入');
+				$('.hide_show_content').html('该学生已存在请直接加入');
+
+			} else {
+				$('#addstudentTk').hide();
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('失败');
+				$('.hide_show_content').html('添加失败');
+			}
+		});
+
+	})
+
+	//已存在的学生添加到该班级下面
+	$(document).on('click','.existsaddstu',function(event){
+		$(this).find('button').attr('disabled','disabled');
+		var index_this = $(this);
+		var add_student_name = $('.add_student_name').val();
+		var add_parent_tel = $('.add_parent_tel').val();
+		var classid = $('.search_btn').attr('classid');
+
+		if(add_student_name==''){
+
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('学生姓名');
+			$('.hide_show_content').html('请填写学生姓名');
+			return false;
+		}
+		if(add_parent_tel==''){
+
+
+			$('.hide_show_alert,').show();
+			$('.hide_show_title').html('家长手机号');
+			$('.hide_show_content').html('请填写家长手机号');
+			return false;
+		}
+
+		$.post('__URL__/addStu', {
+			'classid': classid,
+			'student_name': add_student_name,
+			'parent_tel_data': add_parent_tel
+		}, function (res) {
+			if (res.code ==200) {
+				var html='';
+				html+='<div class="col-lg-3 col-md-6 col-sm-12 student_list" student_id="'+res.data['id']+'">';
+				html+='<img class="avatar" width="58" height="58" onerror="img_teacher(this)" src="__ROOT__/Uploads/StudentAvatars/'+res.data['id']+'">';
+				html+='<span class="name">'+res.data['student_name']+'</span>';
+				html+='<input type="checkbox" name="stuselect" class="stuselect" style="margin-left:5px">';
+				html+='<br>';
+				html+='<span class="sex">'+res.data['sex']+'</span>';
+				html+='<br>';
+				html+='<br>';
+				html+='<p class="parent_tel">家长手机号：'+res.data['parent_tel']+'</p>';
+				html+='<p class="email">邮箱地址：'+res.data['email']+'</p>';
+				html+='<img src="__PUBLIC__/img/classManage/icon_delete.png" alt="" class="delete_student" classid="'+classid+'" delid="'+res.data['id']+'" >';
+				html+='</div>';
+
+				$('.stulistinfo').prepend(html);
+				index_this.find('button').removeAttr('disabled');
+				$('#addstudentTk').hide();
+			} else if(res.code ==600)  {
+				$('#addstudentTk').hide();
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('注册加入');
+				$('.hide_show_content').html('请注册进行加入');
+			} else if(res.code ==700) {
+				$('#addstudentTk').hide();
+
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('加入班级');
+				$('.hide_show_content').html('已经加入该班级');
+			} else{
+				$('#addstudentTk').hide();
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('添加失败');
+				$('.hide_show_content').html('添加失败');
+			}
+		});
+	})
+
+
+	//点击导入文件
+	$(document).on('click','.upload_file',function(event){
+		$('#bg').css('display', 'block');
+		if ($('#file_csv').val() == '' || !$('#file_csv').val()) {
+			$.Notify({
+				caption: '提示',
+				content: '请选择需要上传的csv格式文件',
+				type: 'warning'
+			});
+		} else {
+			$.ajaxFileUpload({
+				url: 'index.php?m=Home&c=Teach&a=importStudentsList&classId={$classid}', //用于文件上传的服务器端请求地址
+				secureuri: false, //是否需要安全协议，一般设置为false
+				fileElementId: 'file_csv', //文件上传域的ID
+				dataType: 'text', //返回值类型 一般设置为json
+				success: function (data) //服务器成功响应处理函数
+				{
+					$('#address').val('');
+					data = eval('(' + data + ')');
+					if (data.code == 0) {
+						$('#import_outer').css('display', 'none');
+						$('#bg').css('display', 'none');
+						$('.news').show();
+					} else if (data.code == -1) {
+						//TODO:show data.msg
+						$.Notify({
+							caption: '提示',
+							content: data.msg,
+							type: 'warning'
+						});
+					} else if (data.code == -2) {
+						//TODO:open layer.js and show error result
+						data.msg = eval(data.msg);
+						var tbody = '';
+						$.each(data.msg, function (i, n) {
+							var line = tbodyTpl.format(n[0],
+									n[1],
+									n[2],
+									n[3],
+									n[4],
+									n[5],
+									n[6],
+									n[7]);
+							tbody += line;
+						});
+						layer.open({
+							type: 1,
+							title: '数据导入异常',
+							content: tpl.format(tbody),
+							area: ['950px', '550px']
+						});
+
+					}
+
+				},
+				error: function (data, status, e) //服务器响应失败处理函数
+				{
+
+					$('.hide_show_alert').show();
+					$('.hide_show_title').html('导入超时');
+					$('.hide_show_content').html('导入超时,请刷新网页进行重新尝试');
+
+				}
+			})
+		}
+	});
+
+	$('.file_csv').change(function () {
+		var filepath = $('.file_csv').val();
+		var extStart = filepath.lastIndexOf(".");
+		var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+		if (ext == '.CSV') {
+			$('#address').val(filepath);
+		} else {
+			$.Notify({
+				caption: '提示',
+				content: '只支持csv文件上传',
+				type: 'warning'
+			});
+			$('.file_csv').val('');
+		}
+	});
+
+	$(document).on('click','.daorusuccess',function(event){
+		var classid = $('.search_btn').attr('classid');
+		var class_status = $('.hiddenclass_status').val();
+
+		$.post('__URL__/isClassinfo', {
+			'classid': classid,
+			'class_status': class_status
+		}, function (res) {
+			$('.class_student').html(res);
+			var StuH = $('.Stu_box').height();
+
+			var rh = $('.row1').height();
+			if(rh< StuH){
+				$('.row1').height(StuH+100)
+			}
+			$('.news').hide();
+		});
+	});
+
+	//点击已通过
+
+
+	//点击未通过
+	$(document).on('click','.student_nosiftings',function(event){
+		var classid = $('.search_btn').attr('classid');
+
+		$.post('__URL__/getNotPassed', {
+			'classid': classid,
+		}, function (res) {
+			$('.class_student').html('');
+			$('.class_student').html(res);
+			var StuH = $('.Stu_box').height();
+
+			var rh = $('.row1').height();
+			if(rh< StuH){
+				$('.row1').height(StuH+100)
+			}
+			$('.news').hide();
+		});
+
+	});
+
+	$(document).on('click','.student_siftings',function(event){
+		var classid = $('.search_btn').val();
+		var class_status = $('.hiddenclass_status').val();
+		var w = $(this).width();
+
+		$(this).parent().siblings().find('.padding5Active').animate({
+			left : '-'+w-13
+		})
+		$.post('__URL__/isClassinfo', {
+			'classid': classid,
+			'class_status': class_status
+		}, function (res) {
+			$('.class_student').html('');
+			$('.class_student').html(res);
+			var StuH = $('.Stu_box').height();
+			var rh = $('.row1').height();
+			if(rh< StuH){
+				$('.row1').height(StuH+100)
+			}
+
+			$('.news').hide();
+		});
+
+	});
+
+	//通过学生
+
+	$(document).on('click','.receive_y',function(event){
+		var classid = $('.search_btn').val();
+		var class_status = $('.hiddenclass_status').val();
+		var student_id = $(this).attr('student_id');
+
+		$.post('__URL__/getAdoptStu', {
+			'classid': classid,
+			'status': 2,
+			'student_id': student_id,
+		}, function (res) {
+			if (res.code==200) {
+				$('.student_list').each(function(){
+					var del_id = $(this).attr('student_id');
+					if(student_id.indexOf(del_id) >= 0 )
+					{
+						$(this).remove();
+					}
+				})
+			} else {
+
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html(res.error);
+				$('.hide_show_content').html(res.error);
+			}
+
+		});
+
+	});
+
+
+	//拒绝学生
+
+	$(document).on('click','.receive_no',function(event){
+		var classid = $('.search_btn').val();
+		var class_status = $('.hiddenclass_status').val();
+		var student_id = $(this).attr('student_id');
+
+		$.post('__URL__/getAdoptStu', {
+			'classid': classid,
+			'status': 3,
+			'student_id': student_id,
+		}, function (res) {
+			if (res.code==200) {
+				$('.student_list').each(function(){
+					var del_id = $(this).attr('student_id');
+					if(student_id.indexOf(del_id) >= 0 )
+					{
+						$(this).remove();
+					}
+				})
+			} else {
+
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html(res.error);
+				$('.hide_show_content').html(res.error);
+			}
+		});
+	});
+
+	//点击批量导出
+	$(document).on('click','#export_btn_aupt',function(event){
+		var student_id = '';
+
+		$('.student_list').each(function(){
+			var is_checked = $(this).find('.stuselect').is(":checked");
+			if (is_checked==true) {
+				student_id +=','+$(this).attr('student_id');
+			}
+		})
+
+		var classid = $('.search_btn').val();
+
+		if(student_id.length<1){
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('勾选账号');
+			$('.hide_show_content').html('请勾选您要导出的账号');
+
+			return false;
+		}
+		window.location.href="index.php?m=Home&c=ClassList&a=exportedStu&classid="+classid+"&student_id="+student_id;
+	});
+
+	//点击批量通过 batchpass
+	$(document).on('click','#batchpass',function(event){
+		var student_id = '';
+
+		$('.student_list').each(function(){
+			var is_checked = $(this).find('.stuselect').is(":checked");
+			if (is_checked==true) {
+				student_id +=','+$(this).attr('student_id');
+			}
+		})
+
+		var classid = $('.search_btn').val();
+
+		if(student_id.length<1){
+
+
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('批量通过');
+			$('.hide_show_content').html('请勾选您要导出的账号');
+			return false;
+		}
+
+		$.post('__URL__/setBatchAdoptAndNodoptStu', {
+			'classid': classid,
+			'student_id': student_id,
+			'status':2,
+		}, function (res) {
+			if (res.code ==200) {
+				$('.student_list').each(function(){
+					var del_id = $(this).attr('student_id');
+					if(student_id.indexOf(del_id) >= 0 )
+					{
+						$(this).remove();
+					}
+				})
+
+			} else {
+
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('通过失败');
+				$('.hide_show_content').html('通过失败');
+			}
+		});
+
+	});
+
+	//点击批量不通过 batchpass
+	$(document).on('click','#batchNopass',function(event){
+		var student_id = '';
+
+		$('.student_list').each(function(){
+			var is_checked = $(this).find('.stuselect').is(":checked");
+			if (is_checked==true) {
+				student_id +=','+$(this).attr('student_id');
+			}
+		})
+
+		var classid = $('.search_btn').val();
+
+		if(student_id.length<1){
+
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('批量通过');
+			$('.hide_show_content').html('请勾选批量通过的账号');
+
+			return false;
+		}
+
+		$.post('__URL__/setBatchAdoptAndNodoptStu', {
+			'classid': classid,
+			'student_id': student_id,
+			'status':3,
+		}, function (res) {
+			if (res.code ==200) {
+				$('.student_list').each(function(){
+					var del_id = $(this).attr('student_id');
+					if(student_id.indexOf(del_id) >= 0 )
+					{
+						$(this).remove();
+					}
+				})
+
+			} else {
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('通过失败');
+				$('.hide_show_content').html('通过失败');
+			}
+		});
+
+	});
+
+	//移交班级
+	$(document).on('click','.Transferclass',function(event){
+		var Transferclassphone = $('.Transferclassphone').val();
+		var classid = $(this).attr('classid');
+		if(Transferclassphone==''){
+
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('手机号');
+			$('.hide_show_content').html('请填写老师手机号');
+			return false;
+		}
+
+
+		$.post('__URL__/teacherTransferclass', {
+			'classid': classid,
+			'Transferclassphone':Transferclassphone,
+		}, function (res) {
+			if (res.code ==200) {
+				var html = '';
+				html +='<div class="divborder yijiaohou">';
+				html +='<p class="fontColorEf">移交后</p>';
+				html +='<p>接收老师：'+res.info['name']+'</p>';
+				html +='<p>接收老师手机号：'+res.info['telephone']+'</p>';
+				html +='<button class="right padding15 margintop-65 Revokeclass" classid="'+classid+'" student_id="'+res.info['id']+'">撤销移交</button>';
+				html +='</div>';
+				$('.Transferclass').remove();
+				$('.yijiaobanjiteacher').html(html);
+
+			} else {
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html(res.info);
+				$('.hide_show_content').html(res.info);
+			}
+		});
+	});
+
+	//撤销班级
+
+	$(document).on('click','.Revokeclass',function(event){
+		var student_id = $(this).attr('student_id');
+		var classid = $(this).attr('classid');
+
+		$.post('__URL__/teacherRevokeClass', {
+			'student_id': student_id,
+			'classid':classid,
+
+		}, function (res) {
+			if (res.code ==200) {
+				var html = '';
+				html +='<div class="divborder yijiaobanji">';
+				html +='<p class="fontColorEf">移交班级</p>';
+				html +='<p>接收老师: <input type="text" class="width200 margintop5 Transferclassphone" placeholder="请输入接收老师手机号"> </p>';
+				html +='<button class="right padding15 margintop-65 Transferclass" classid="'+classid+'">移交班级</button>';
+				html +='</div>';
+				$('.yijiaohou').remove();
+				$('.yijiaobanjiteacher').html(html);
+
+			} else {
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('撤销失败');
+				$('.hide_show_content').html('撤销失败');
+			}
+		});
+	});
+
+	//删除班级
+
+	$(document).on('click','.deleteClassAlldata',function(event){
+		$('.daorusuccess_class_show,.bg').show();
+		/*var classid = $(this).attr('classid');
+		 var status = $(this).attr('status');
+		 $.post('__URL__/deleteClassAlldata', {
+		 'status':status,
+		 'classid':classid,
+
+		 }, function (res) {
+		 if (res.code ==200) {
+		 window.location.reload();
+		 } else {
+		 $.Notify({
+		 caption: '提示',
+		 content: '离开班级失败',
+		 type: 'warning'
+		 });
+		 }
+		 });*/
+	});
+
+	$(document).on('click','.daorusuccess_class',function(event){
+
+		var classid = $('.deleteClassAlldata').attr('classid');
+		var status = $('.deleteClassAlldata').attr('status');
+		$.post('__URL__/deleteClassAlldata', {
+			'status':status,
+			'classid':classid,
+
+		}, function (res) {
+			if (res.code ==200) {
+				window.location.reload();
+			} else {
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('离开班级');
+				$('.hide_show_content').html('离开班级失败');
+
+				$('.daorusuccess_class_show,.bg').hide();
+			}
+		});
+	});
+
+	//查找老师
+
+	$(document).on('click','.findteacher',function(event){
+
+		var classid = $(this).attr('classid');
+		$.post('__URL__/findTeacherList', {
+
+			'classid':classid,
+
+		}, function (res) {
+
+			$('.class_student').html('');
+			$('.class_student').html(res);
+			var StuH = $('.Stu_box').height();
+
+			var rh = $('.row1').height();
+			if(rh< StuH){
+				$('.row1').height(StuH+100)
+			}
+			$('.news').hide();
+
+		});
+	});
+	//点击学生
+	$(document).on('click','.teacher_student_siftings',function(event){
+		var classid = $('.teacher_search_btn').val();
+		var class_status = $('.teacher_hiddenclass_status').val();
+		var w = $(this).width();
+		$(this).parent().siblings().find('.padding5Active').animate({
+			left : '-'+w-13
+		})
+		$.post('__URL__/isClassinfo', {
+			'classid': classid,
+			'class_status': class_status
+		}, function (res) {
+			$('.class_student').html('');
+			$('.class_student').html(res);
+			var StuH = $('.Stu_box').height();
+			var rh = $('.row1').height();
+			if(rh< StuH){
+				$('.row1').height(StuH+100)
+			}
+			$('.news').hide();
+		});
+
+	});
+
+	//筛选老师搜索
+
+	$(document).on('click','.school_search_teacher',function(event){
+
+		var classid = $('.teacher_search_btn').val();
+		var class_status = $('.teacher_hiddenclass_status').val();
+		var search_text = $('.search_text').val();
+		$.post('__URL__/findTeacherList', {
+
+			'classid':classid,
+			'class_status':class_status,
+			'keyword':search_text,
+
+		}, function (res) {
+
+			$('.class_student').html('');
+			$('.class_student').html(res);
+			var StuH = $('.Stu_box').height();
+
+			var rh = $('.row1').height();
+			if(rh< StuH){
+				$('.row1').height(StuH+100)
+			}
+			$('.news').hide();
+
+		});
+	});
+
+	//修改班级名称
+
+	$(document).on('click','.saveclassdata',function(event){
+
+		var classid = $('.search_btn').val();
+		var xiugaiclass = $('.xiugaiclass').val();
+		var data_stu_classinfo_name = $('.data_stu_classinfo_name').val();
+		if(xiugaiclass == data_stu_classinfo_name) {
+			return;
+		}
+
+		$.post('__URL__/saveClassDataName', {
+
+			'classid':classid,
+			'xiugaiclass':xiugaiclass,
+
+		}, function (res) {
+
+			if (res.code==200) {
+				window.location.reload();
+			} else{
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('修改失败');
+				$('.hide_show_content').html('修改失败');
+			}
+
+		});
+	});
+
+	$(document).on('click','.delete_teacher',function(event){
+		var classid = $(this).attr('classid');
+		var student_id = $(this).attr('delid');
+		$('.quedingyichuteacher').attr('classid',classid);
+		$('.quedingyichuteacher').attr('student_id',student_id);
+		$('.quedingyichuteacher').attr('is_init',1);
+		$('#Popup').show();
+	});
+
+	$(document).on('click','.quedingyichuteacher',function(event){
+		var classid = $(this).attr('classid');
+		var teacher_id = $(this).attr('student_id');
+		var indexthis = $(this);
+
+		$.post('__URL__/delTeacherClass', {
+			'classid': classid,
+			'teacher_id': teacher_id
+		}, function (res) {
+			if (res.code ==200) {
+				$('.teacher_list').each(function(){
+					var del_id = $(this).attr('student_id');
+					if(teacher_id.indexOf(del_id) >= 0 )
+					{
+						$(this).remove();
+					}
+				})
+				$('#Popup').hide();
+			} else {
+				$('#Popup').hide();
+
+
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html('修改失败');
+				$('.hide_show_content').html('修改失败');
+			}
+		});
+
+
+	});
+
+
+	//校建班移交班级
+	$(document).on('click','.TransferTeacherclass',function(event){
+		$(this).attr('disabled','disabled');
+		var TeacherPhone = $('.TeacherPhone').val();
+		var course_id = $('#dict_course_id').val();
+		var classid = $(this).attr('classid');
+		var index_this = $(this);
+		if(TeacherPhone==''){
+
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('手机号');
+			$('.hide_show_content').html('请填写老师手机号');
+
+			$(this).removeAttr('disabled');
+			return false;
+
+		}
+
+		if(course_id==''){
+
+
+			$('.hide_show_alert').show();
+			$('.hide_show_title').html('学科');
+			$('.hide_show_content').html('请选择学科');
+
+			$(this).removeAttr('disabled');
+			return false;
+		}
+
+
+		$.post('__URL__/teacherSchoolTransferclass', {
+			'classid': classid,
+			'TeacherPhone':TeacherPhone,
+			'course_id':course_id,
+		}, function (res) {
+			if (res.code ==200) {
+
+				$.post('__URL__/setSchoolClassButton', {
+					'classid': classid,
+				}, function (res) {
+					$('.class_student').html(res);
+					var SetH = $('.Setting_box').height();
+					var rh = $('.row1').height();
+					if(rh<SetH ){
+						$('.row1').height(SetH+100)
+					}
+				});
+
+			} else {
+				index_this.removeAttr('disabled');
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html(res.info);
+				$('.hide_show_content').html(res.info);
+
+			}
+		});
+	});
+
+	//撤销班级
+	$(document).on('click','.RevokeclassTeacher',function(event){
+		$(this).attr('disabled','disabled');
+		var offid = $(this).attr('handoff');
+		var classid = $(this).attr('classid');
+
+		$.post('__URL__/revokeclassTeacherDel', {
+			'id': offid,
+		}, function (res) {
+			if (res.code ==200) {
+
+				$.post('__URL__/setSchoolClassButton', {
+					'classid': classid,
+				}, function (res) {
+					$('.class_student').html(res);
+					var SetH = $('.Setting_box').height();
+
+					var rh = $('.row1').height();
+					if(rh<SetH ){
+						$('.row1').height(SetH+100)
+					}
+				});
+
+			} else {
+				$(this).removeAttr('disabled');
+
+				$('.hide_show_alert').show();
+				$('.hide_show_title').html(res.info);
+				$('.hide_show_content').html(res.info);
+			}
+		});
+	});
+
+</script>

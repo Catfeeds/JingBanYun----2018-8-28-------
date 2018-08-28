@@ -1,0 +1,73 @@
+<empty name="homeworkResultInClass">
+    <div class="emptyResult">
+        <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Empty/sorry.png" alt="">
+        <p class="pl30">抱歉，没有搜索到相关的作业！</p>
+    </div>
+</empty>
+<notempty name="homeworkResultInClass">
+    <table class="table striped hovered border" cellpadding="0" cellspacing="0">
+        <thead>
+        <tr>
+            <th>
+                作业名称
+            </th>
+            <th>
+                作业要求
+            </th>
+            <th>
+                所属章节
+            </th>
+            <th class="text-center">
+                习题数量
+            </th>
+            <th class="text-center">
+                状态
+            </th>
+            <th class="text-center">
+                操作
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="homeworkResultInClass" id="data_homeworkInClass">
+            <tr>
+                <td nowrap>
+                    <h3 class="cut-off" title="{$data_homeworkInClass.homework_name}" style="width: 200px;">
+                        {$data_homeworkInClass.homework_name}
+                    </h3>
+                </td>
+                <td nowrap>
+                    <div class="cut-off" style="width:200px; " title="{$data_homeworkInClass.claim}">{$data_homeworkInClass.claim}</div>
+
+                </td>
+                <td nowrap>
+                    <select style="border-radius:5px;width:95%">
+                        <volist name="data_homeworkInClass.list_chapter" id="chapter_item" key="k">
+                            <option>{$chapter_item.chapter}{$chapter_item.festival}</option>
+                        </volist>
+                    </select>
+                </td>
+                <td class="text-center">
+                    {$data_homeworkInClass.exercises_number}
+                </td>
+                <td class="text-center" nowrap>
+                    <if condition="$data_homeworkInClass.homework_status eq 1">
+                        <span style="color:green;white-space:nowrap;">已布置</span>
+                        <else />
+                        <span style="color:red;white-space:nowrap;">未布置</span>
+                    </if>
+                </td>
+                <td class="text-center" nowrap>
+                    <if condition="$data_homeworkInClass.homework_status eq 1">
+                        <button onclick="showHomeworkComplateDetails('{$data_homeworkInClass.id}')" title="作业情况" class="button">作业情况</button>
+                        <else />
+                        <button onclick="assignHomeworkToStudents('{$data_homeworkInClass.id}','课后作业')" title="布置作业" class="button">布置作业</button>
+                    </if>
+                    <button onclick="copyHomework('{$data_homeworkInClass.id}')" title="复制习题" class="button">复制习题</button>
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div id="copyHomework"></div>
+</notempty>

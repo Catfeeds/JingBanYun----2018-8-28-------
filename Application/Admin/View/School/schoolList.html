@@ -1,0 +1,757 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<style>
+	.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+		box-sizing: content-box;
+	}
+
+	#laydate_hms {
+		display: none !important;
+	}
+</style>
+
+<!--
+<div class="titleBox">
+	<p class="blueText fs18 underline1">班级管理</p>
+	<div class="underline2"></div>
+</div>
+-->
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		学校管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="javascript:;">学校管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php/Admin/School/schoolList" method="get">
+	<p class="blueText fs16">学校查询</p>
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+                        <div class="cell">
+                                    <label>省份：</label>
+                                    <select id="province_list" class="input-control" name="province">
+                                            <option value="0">-请选择-</option>
+                                        <volist name="province_list" id="province_item">
+                                            <option value="{$province_item.id}" <if condition="$province_item['id']==$province"> selected="true"</if> >{$province_item.name}</option>    
+                                        </volist>
+                                    </select>
+                        </div>
+                        <div class="cell">
+                                    <label>城市：</label>
+                                    <select id="city_list" class="input-control" name="city">
+                                            <option value="0">-请选择-</option>
+                                        <volist name="city_list" id="city_item">
+                                            <option value="{$city_item.id}" <if condition="$city_item['id']==$city"> selected="true"</if> >{$city_item.name}</option>    
+                                        </volist>
+                                    </select>
+                        </div>
+                        <div class="cell">
+                                    <label>区县：</label>
+                                    <select id="district_list" class="input-control" name="district">
+                                            <option value="0">-请选择-</option>
+                                        <volist name="district_list" id="district_item">
+                                            <option value="{$district_item.id}" <if condition="$district_item['id']==$district"> selected="true"</if> >{$district_item.name}</option>    
+                                        </volist>
+                                    </select>
+                        </div>
+			<div class="cell">
+				<label>所在学校：</label>
+				<select id="school_list" class="input-control" name="school">
+                                        <option value="0">-请选择-</option>
+                                    <volist name="school_list" id="school_item">
+                                        <option value="{$school_item.id}" <if condition="$school_item['id']==$school"> selected="true"</if> >{$school_item.name}</option>    
+                                    </volist>
+                                </select>
+			</div> 
+                        <div class="cell">
+				<label>学校名称：</label>
+				<input type="text" class="input-control school_name" name="school_name" value="{$school_name}" placeholder="请输入学校名称">
+			</div>
+			<div class="cell">
+				<label>学校代码：</label>
+				<input type="text" class="input-control school_code" name="school_code" value="{$school_code}" placeholder="请输入学校代码">
+			</div>
+			<div class="cell">
+				<label>学校状态：</label>
+				<select id="school_status" class="input-control" name="school_status">
+					<option value="">-请选择-</option>
+                                        <option value="1" <if condition="$flag==='1'"> selected="true"</if> >正常</option>
+					<option value="0" <if condition="$flag==='0'"> selected="true"</if> >停用</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>是否已开通管理员：</label>
+				<select id="is_create_administartor" class="input-control" name="is_create_administartor">
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$administartor_status==='1'"> selected="true"</if> >是</option>
+					<option value="0" <if condition="$administartor_status==='0'"> selected="true"</if> >否</option>
+				</select>
+			</div>
+			 
+			<div class="cell">
+				<label>权限类型：</label>
+				<select id="privilege_type" class="input-control" name="privilege_type">
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$privilege_type=='1'"> selected="true"</if> >团体VIP</option>
+					<option value="2" <if condition="$privilege_type=='2'"> selected="true"</if> >普通权限</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>学校性质：</label>
+				<select id="school_category" class="input-control" name="school_category"> 
+					<option value="">-请选择-</option>
+                                        <volist name="school_category" id="school_category_item">
+                                                <option value="{$key}" <if condition="$key==$school_cat and $school_cat!=''">selected="true"</if> >{$school_category_item}</option>
+                                        </volist>
+                                        
+				</select>
+			</div>
+		</div>
+	</div>
+	<input type='hidden' name='order' class="order_class" value='0' />
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>-->
+		<input type='submit' value='查询' class='blueBtn' />
+		<input type='button' value='重置' class='blueBtn resetButton' />
+	</div>
+</form>
+
+<div class="grayBox">
+	<div class="left">
+		<span class="btns" id="addBtn">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="">
+			<a href="{:U('School/createSchool')}">添加</a>
+		</span>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-import.png" alt="">
+			<a href="{:U('School/schoolImport')}">导入</a>
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt="">
+			<a href='javascript:;' class='export_btn'>批量导出</a>
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt="">
+			<a href="{:U('School/exportedSchoolAll')}&{$condition_str}">导出全部</a>
+		</span>
+	</div>
+	<div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue-->
+			<if condition="$order=='asc'">
+				<button class="upBtn upBtnBlue"></button>
+				<button class="downBtn "></button>
+				<else />
+				<button class="upBtn "></button>
+				<button class="downBtn downBtnBlue"></button>
+			</if>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>
+</div>
+
+<p class="blueText fs16">学校列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center"><input type="checkbox" class="check_all mr5">全选</th>
+			<th class="text-center">序号</th>
+			<th class="text-center">学校名称</th>
+			<th class="text-center">学校代号</th>
+			<th class="text-center">学校性质</th>
+			<th class="text-center">学校状态</th>
+			<th class="text-center">是否已开通管理员</th>
+			<th class="text-center">权限类型</th>
+			<th class="text-center">负责人</th>
+			<th class="text-center">负责人手机号</th>
+			<th class="text-center">操作</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+		<volist name="list" id="item" key="key">
+			<tr>
+				<td class="text-center">
+					<input type="checkbox" class="check_child" attr="{$item.school_id}" name="checkbox">
+				</td>
+				<td class="text-center">
+					{$key}
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$item.school_name}
+				</td>
+				<td class="text-center" title="{$item.school_code}">
+					{$item.school_code}
+				</td>
+				<td class="text-center">
+					<volist name="school_category" id="category_item" >
+                                            <if condition="$key==$item['school_category']">
+                                                {$category_item}
+                                            </if>
+                                        </volist>
+				</td>
+				<td class="text-center">
+                                    <if condition="$item['flag'] eq 1">
+					正常
+                                    <else />
+                                        停用
+                                    </if>
+				</td>
+				<td class="text-center">
+                                    <if condition="$item['is_create_administartor'] eq 1">
+					已开通
+                                    <else />
+                                        未开通
+                                    </if> 
+				</td>
+				<td class="text-center">
+                                    <if condition="$item['permissions_status'] eq 1">
+					团体VIP
+                                    <else />
+                                        普通权限
+                                    </if> 
+					
+				</td>
+				<td class="text-center">
+					{$item.obligation_person}
+				</td>
+				<td class="text-center">
+					{$item.obligation_tel}
+				</td>
+				<td class="text-center">
+					<a href="{:U('School/schoolDetail')}&id={$item.school_id}" class="operBtn" id="">查看</a>
+                                        <a href="{:U('School/schoolModify')}&id={$item.school_id}" class="operBtn" id="">修改</a>
+                                    <if condition="$item['is_create_administartor'] neq 1">
+					<a href="javascript:;" class="operBtn createAdminButton" >开通管理员账号</a>
+                                    </if>
+                                    <if condition="$item['permissions_status'] neq 1">
+
+										<?php if ( $item['auth_end_time']>time() ): ?>
+											<a href="javascript:;" class="operBtn vipButton" >修改VIP</a>
+											<a href="javascript:;" class="operBtn delvipButton"  school_id="{$item.school_id}">取消VIP</a>
+										<?php else: ?>
+											<a href="javascript:;" class="operBtn vipButton" >开通VIP</a>
+										<?php endif ?>
+
+
+										<else />
+										<a href="javascript:;" class="operBtn vipButton" >修改VIP</a>
+										<a href="javascript:;" class="operBtn delvipButton"  school_id="{$item.school_id}">取消VIP</a>
+                                    </if>
+                                    <if condition="$item['flag'] eq 1">
+					<a href="javascript:;" class="operBtn school_status school_disable" >停用</a>
+                                    <else />
+                                        <a href="javascript:;" class="operBtn school_status school_enable" >启用</a>
+                                    </if>
+                                    <input type="hidden" class="school_id" value="{$item.school_id}" />
+				</td>
+			</tr>
+		</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<!--开通VIP权限-->
+<div class="fullscr1 fullLong" id="vipModify">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">开通VIP权限</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20">
+				<div class="selectBox">
+					<label for="">权限类型：</label>
+                                        <input type="text" class="input-control " placeholder="结束时间" value="团体vip" disabled> 
+					&nbsp;&nbsp;
+                                        <input type="radio" name="vipRadio" value="1" checked="true" class="vipRadio" id="tryRadio">
+					<label for="tryRadio" class="vipLabel">试用VIP</label>
+					&nbsp;&nbsp;
+					<input type="radio" name="vipRadio" value="2" class="vipRadio" id="officialRadio">
+					<label for="officialRadio" class="vipLabel">正式VIP</label>
+				</div>
+				<div class="selectBox">
+					<label for="">有效时间：</label>
+					<input type="text" class="input-control" id="startTime" name="" value="" placeholder="开始时间">&nbsp;至&nbsp;
+					<input type="text" class="input-control" id="endTime" name="" value="" placeholder="结束时间">
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureVip">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelVip">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<!--开通管理员账号-->
+<div class="fullscr1" id="adminID">
+	<div class="adminNotifyBox1 aBoxHeight" style="height: 404px">
+		<div class="adminNotifyTitle">开通管理员账号</div>
+		<div class="adminNotifyContent aConHeight" style="height: 360px">
+			<div class="adminSelect pt20">
+				<div class="selectBox">
+					<label for="">管理员姓名：</label>
+					<input type="text" class="input-control create_admin_realname" name="" value="" placeholder="请输入管理员姓名">
+				</div>
+				<div class="selectBox">
+					<label for="">管理员手机号：</label>
+					<input type="text" class="input-control create_admin_telephone" name="" value="" placeholder="请输入管理员手机号">
+				</div>
+				<div class="selectBox">
+					<label for="">管理员账号：</label>
+					<input type="text" class="input-control create_admin_account" name="" value="" placeholder="请输入管理员账号">
+				</div>
+				<div class="selectBox">
+					<label for="">登录密码：</label>
+					<input type="text" class="input-control create_admin_password" name="" value="" placeholder="请输入登录密码">
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureAdmin">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelAdmin">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.core.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.datepicker.js"></script>
+
+<script>
+	$(document).ready(function () {
+		$('#listWrapper').DataTable({
+			"scrollCollapse": true,
+			"paging": false,
+			"bSort": false,
+			"aoColumns": [
+				{"width": "5%"},
+				{"width": "5%"},
+				{"width": "14%"},
+				{"width": "6%"},
+				{"width": "8%"},
+				{"width": "6%"},
+				{"width": "10%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "10%"},
+				{"width": "20%"}
+            ]
+		});
+	});
+        
+        //点击批量导出
+        $(".export_btn").click(function(){
+            var check_input=$('#body').find("[name='checkbox']:checked");
+            if(check_input.length<1){
+                $.Notify({
+                    caption: '提示',
+                    content: '请勾选您要导出的账号',
+                    type: 'warning'
+                });
+                return false;
+            }
+            var form="";
+            form = $("<form></form>");
+            form.attr('action',"{:U('School/exportedSchool')}");
+            form.attr('method','post');
+            
+            for(var i=0;i<check_input.length;i++){ 
+                var temp_val=$(check_input[i]).attr('attr'); 
+                var temp= $("<input type='hidden' name='hid[]'/>")
+                $(temp).attr('value',temp_val);
+                form.append(temp);
+            } 
+            form.appendTo("body");
+            form.css('display','none');
+            form.submit();
+        });
+        
+        //启用或禁用 
+        $('.school_status').click(function(){ 
+            var id=$(this).siblings('.school_id').val();   
+            var obj=this;
+            $.ajax({
+                type:"post",
+                url:"{:U('School/updateStatusBySchool')}",
+                dataType:"json",
+                data:{'id':id},
+                success: function(msg){
+                    if(msg.status==200 || msg.status==500){
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+        
+        function IsDate(mystring) {
+            var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+            var str = mystring;
+            if (!reg.test(str)  || RegExp.$2>12 || RegExp.$3>31){
+                return false;
+            }
+            return true;
+        }
+        
+        $(".vipButton").click(function(){
+            school_id=$(this).siblings('.school_id').val();
+            $("#vipModify").show();
+            $('body').css('overflow-y','hidden')
+        });
+
+		$(".delvipButton").click(function(){
+			if(confirm('确认取消VIP')){
+				var id = $(this).attr('school_id');
+				var data={'id':id,'quxiao':1,'use_type':1};
+				$.ajax({
+					type:"post",
+					url:"{:U('School/giveSchoolVip')}",
+					dataType:"json",
+					data: data,
+					success: function(msg){
+						if(msg.status==200){
+							location.reload();
+						}else if(msg.status==400){
+							$.NotifyBox.NotifyNotLogin();
+						}else{
+							$.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+							return false;
+						}
+					}
+				})
+			}
+		});
+        
+        //点击开通vip
+        $("#sureVip").click(function(){
+            var use_type,startTime,endTime;
+            
+            startTime=$("#startTime").val();
+            endTime=$('#endTime').val();
+            use_type=$('.vipRadio').val();
+            if (startTime == '') {
+                $.NotifyBox.NotifyOne('注意', '开始时间不能为空！', '确定');
+                return false;
+            } else {
+                if (IsDate(startTime) == false) {
+                    $.NotifyBox.NotifyOne('注意', '开始时间格式不正确！', '确定');
+                    return false;
+                }
+            }
+            if (endTime == '') {
+                $.NotifyBox.NotifyOne('注意', '结束时间不能为空！', '确定');
+                return false;
+            } else {
+                if (IsDate(endTime) == false) {
+                    $.NotifyBox.NotifyOne('注意', '结束时间格式不正确！', '确定');
+                    return false;
+                }
+            }  
+            if(use_type=='' || use_type==false){
+                $.NotifyBox.NotifyOne('注意', '请选择使用类型！', '确定');
+                return false;
+            }
+            var data={'id':school_id,'use_type':use_type,'start_time':startTime,'end_time':endTime,'quxiao':2};
+            $.ajax({
+                type:"post",
+                url:"{:U('School/giveSchoolVip')}",
+                dataType:"json",
+                data: data,
+                success: function(msg){  
+                    if(msg.status==200){  
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+        
+        var school_id='';  
+        $(".createAdminButton").click(function(){
+            school_id=$(this).siblings('.school_id').val();
+            $("#adminID").show();
+        });
+        //点击开通管理员
+        $("#sureAdmin").click(function(){
+            var admin_realname,admin_telephone,admin_account,admin_password,data;
+            if(checkAdminData()==false){
+                return false;
+            }  
+            admin_account=$('.create_admin_account').val();
+            admin_password=$('.create_admin_password').val();
+            admin_realname=$('.create_admin_realname').val();
+            admin_telephone=$('.create_admin_telephone').val();
+            
+            data={'id':school_id,'real_name':admin_realname,'telephone':admin_telephone,'account':admin_account,'password':admin_password};
+            $.ajax({
+                type:"post",
+                url:"{:U('School/createSchoolAdmin')}",
+                dataType:"json",
+                data: data,
+                success: function(msg){  
+                    if(msg.status==200){  
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+        
+        function checkAdminData(){
+            var admin_account,admin_password;
+            admin_account=$('.create_admin_account').val();
+            admin_password=$('.create_admin_password').val();
+            if(admin_account==''){
+                $.NotifyBox.NotifyOne('注意','管理员账号不能为空！','确定');
+                return false;
+            }
+            if(admin_password==''){
+                $.NotifyBox.NotifyOne('注意','管理员密码不能为空！','确定');
+                return false;
+            }
+            
+            //姓名
+            var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+            var linkmanName = $('.create_admin_realname').val();
+            if (!regName.test(linkmanName)) {
+                    $.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+                    return false;
+            } else if (linkmanName == '') {
+                    $.NotifyBox.NotifyOne('注意','姓名不能为空！','确定'); 
+                    return false;
+            }
+
+            //电话
+            var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+            var linkmanPhone = $('.create_admin_telephone').val();
+            if (!regMobilePhone.test(linkmanPhone)) { 
+                    $.NotifyBox.NotifyOne('注意','手机号格式错误！','确定');
+                    return false;
+            } else if (linkmanPhone == '') { 
+                    $.NotifyBox.NotifyOne('注意','请输入管理员手机号！','确定');
+                    return false;
+            }  
+            return true;
+            
+        }
+</script>
+
+<script>
+        var temp_option="<option value='0'>-请选择-</option>";
+        //省份发生变化
+        $('#province_list').change(function(){ 
+            $("#city_list option:not(:eq(0))").remove();
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#province_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getCityByProvince')}",
+                dataType:"json",
+                data:{'province_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#city_list").append(clone_option);
+                    }
+                }
+            })
+        }); 
+        //城市发生变化
+        $('#city_list').change(function(){ 
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#city_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getDistrictByCity')}",
+                dataType:"json",
+                data:{'city_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#district_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        //区县发生变化
+        $('#district_list').change(function(){ 
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#district_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getSchoolByDistrict')}",
+                dataType:"json",
+                data:{'district_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#school_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        
+        //点击重置
+        $('.resetButton').click(function(){ 
+            $('#province_list').find('option:eq(0)').attr('selected',true);
+            $('#city_list').find('option:eq(0)').attr('selected',true); 
+            $('#district_list').find('option:eq(0)').attr('selected',true); 
+            $('#school_list').find('option:eq(0)').attr('selected',true); 
+            $('.school_name').val('');
+            $('.school_code').val(''); 
+            $('#school_status').find('option:eq(0)').attr('selected',true);
+            $('#is_create_administartor').find('option:eq(0)').attr('selected',true); 
+            $('#privilege_type').find('option:eq(0)').attr('selected',true); 
+            $('#school_category').find('option:eq(0)').attr('selected',true);  
+            
+        });
+        
+        
+        //点击排序
+        $('.upBtn').click(function(){
+            if(!$(this).hasClass('upBtnBlue')){
+                $(this).addClass('upBtnBlue');
+            }
+            $('.downBtn').removeClass('downBtnBlue');
+            $('.order_class').val(1);
+            $('#form_submit').submit();
+        });
+        
+        $('.downBtn').click(function(){
+            if(!$(this).hasClass('downBtnBlue')){
+                $(this).addClass('downBtnBlue');
+            }
+            $('.upBtn').removeClass('upBtnBlue');
+            $('.order_class').val(0);
+            $('#form_submit').submit();
+        });
+        
+        
+        
+        
+        
+        
+        
+        
+    
+	//全选
+	$('.check_all').click(function () {
+		var childCheck = $('.check_child');
+		var temp_status = true;
+		if ($(this)[0].checked == true) {
+			//本次选中
+			temp_status = true;
+		} else {
+			//本次取消
+			temp_status = false;
+		}
+		for (var i = 0; i < childCheck.length; i++) {
+			childCheck[i].checked = temp_status
+		}
+	});
+
+	//取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				$('.check_all').removeAttr('checked', 'checked');
+				$('.check_all').removeProp('checked', 'checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $("[name='checkbox']:checked").length) {
+					$('.check_all').attr('checked', 'checked');
+					$('.check_all').prop('checked', 'checked');
+				};
+			}
+		}
+	};
+</script>
+
+<script type="text/javascript">
+	!function(){
+		laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var startTime = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 endTime.min = datas; //开始日选好后，重置结束日的最小日期
+			 endTime.start = datas; //将结束日的初始值设定为开始日
+//			 appstart.max = datas;
+//			 append.max = datas;
+		}
+	};
+
+	var endTime = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 startTime.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(startTime);
+	laydate(endTime);
+</script>
+
+<!--VIP权限修改-->
+<script>
+	$('#sureVip').click(function(){
+		$('#vipModify').hide();
+		$('body').css('overflow-y','auto')
+	})
+	$('#cancelVip').click(function(){
+		$('#vipModify').hide();
+		$('body').css('overflow-y','auto')
+	})
+</script>
+
+<!--开通管理员账号-->
+<script>
+	$('#sureAdmin').click(function(){
+		$('#adminID').hide();
+	})
+	$('#cancelAdmin').click(function(){
+		$('#adminID').hide();
+	})
+</script>

@@ -1,0 +1,1853 @@
+<script src="__PUBLIC__/js/errorcsv.js"></script>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link href="__PUBLIC__/css/activity.css?v=7" rel="stylesheet" type="text/css"/>
+<script>
+    var currentServerTime = '<?= date('Y-m-d H:i:s',time()+5); ?>';
+    var activityStartTime = '{$data.activitystart|date="Y-m-d H:i:s",###}';
+    var activityEndTime = '{$data.activityend|date="Y-m-d H:i:s",###}';
+    var liveStartTime = '{$data.livestart|date="Y-m-d H:i:s",###}';
+    var liveEndTime = '{$data.liveend|date="Y-m-d H:i:s",###}';
+    var liveUrl = '{$data.url}';
+</script>
+<style>
+    .activityConRight {
+        min-height: 460px;
+    }
+
+    .activityConRight img {
+        max-width: 100%
+    }
+
+    form .form-actions {
+        margin: 0;
+    }
+
+    #contentWrapper {
+        height: auto !important;
+    }
+    .qq-uploader {
+        overflow-x: hidden;
+		max-height: 550px
+    }
+
+    .qq-upload-list {
+        max-height: 300px
+    }
+
+    .activityConRight ul, .activityConRight ol, .activityConRight li {
+        list-style: inherit;
+    }
+
+	.qqTitle {
+		margin-bottom: 5x;
+	}
+
+	.qqOutter {
+		overflow: hidden;
+		margin-bottom: 3px;
+	}
+
+	.qqOutter .qqInner1, .qqOutter .qqInner2 {
+		float: left;
+	}
+
+	.qqOutter .qqInner1 {
+		width: 230px;
+	}
+
+	.qqOutter .qqInner2 {
+		width: 175px;
+	}
+
+	.activityContent {
+		position: relative;
+	}
+	.activityConRight p{
+    font-size: 16px
+  }
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button{
+		-webkit-appearance: none !important;
+		margin: 0;
+	}
+
+	input[type="number"]{
+		-moz-appearance: textfield;
+	}
+
+    .answerA a {
+        background-color: inherit !important
+    }
+
+    .answerCode {
+        text-align: center;
+    }
+
+    p.answerName {
+        text-align: center;
+        text-indent: 0 !important;
+        font-weight: 600
+    }
+
+    .remarkP2 {
+        display: none;
+    }
+</style>
+
+<script>
+
+    var role = {$roles} == -1?0:{$roles};
+    function isWeiXin(){
+        var ua = window.navigator.userAgent.toLowerCase();
+        if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    if( !isWeiXin() && window.history.length != 1)
+        document.write('<div><a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a></div>');
+</script>
+
+<!-- 如果活动已下架，显示此图片 -->
+<empty name="data">
+<div class="emptyDiv">
+    <img src="{$oss_path}public/web_img/Empty/activityEmpty.png" alt="">
+</div>
+</empty>
+<notempty name="data">
+<div class="activityTitle">
+    <p class="title">{$data.title}</p>
+    <p class="liveTitleTime" style="display: none">活动时间：{$data.activitystart|date="Y-m-d H:i",###} 至 {$data.activityend|date="Y-m-d H:i",###}</p>
+    <p class="ctrl_box">
+        <img src="__PUBLIC__/img/live/mainImg.png" alt="" class="mainImg" style="display: none">
+<!--
+        <if condition="$existedZan eq 'yes'">
+            <img id="zanIcon" src="__PUBLIC__/img/icon/zaned.png">
+            <else/>
+            <img id="zanIcon" src="__PUBLIC__/img/icon/zan.png">
+        </if>
+-->
+        <if condition="$existedFavor eq 'yes'">
+            <img id="favorIcon" src="__PUBLIC__/img/activity/favored.png" title="取消收藏">
+            <else/>
+            <img id="favorIcon" src="__PUBLIC__/img/activity/favor.png" title="收藏">
+        </if>
+    </p>
+</div>
+<div class="activityContent">
+    <div class="left activityConLeft">
+        <p class="leftP">
+			<span class="leftPSpan">活动时间：</span><br>
+            {$data.activitystart|date="Y-m-d H:i",###} 至 {$data.activityend|date="Y-m-d H:i",###}
+        </p>
+        <?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+        <p class="leftP applyTimeBox">
+            <span class="leftPSpan">报名时间：</span><br>
+            {$data.applystart|date="Y-m-d H:i",###} 至 {$data.applyend|date="Y-m-d H:i",###}
+        </p>
+        <?php endif; ?>
+        <?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+        <if condition="$data.display_people_register eq 1">
+        <p class="leftP applyLimitBox"><span class="leftPSpan">限制人数：</span><?php if($data['apply_people_number'] == 0) echo '无限制'; else echo $data['apply_people_number'] . '人';?>
+        </if>
+        <?php endif; ?>
+		<p class="leftP oh remarkP1"><span class="leftPSpan left">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：</span><span class="leftPSpan2 left">{$data.remark}</span></p>
+        <p class="leftP remarkP2">
+            <span class="leftPSpan">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：</span><br>
+            {$data.remark}
+        </p>
+        <?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+        <if condition="$data.display_people_register eq 1">
+        <p class="leftP applyNumBox"><span class="leftPSpan">已&nbsp;&nbsp;报&nbsp;&nbsp;名：</span>{$data.register_numbers}人</p>
+        </if>
+
+
+        <p>
+            <span class="leftPSpan">面向人群：</span><br>
+            <span class="stakeholder padding10">
+				{$data.stakeholder}
+			</span>
+        </p>
+
+        <div class="activityData">
+			<span class="dataTitle">
+				<img src="__PUBLIC__/img/activity/dataTitle.png" alt="">
+				<span class="leftPSpan">活动资料</span>
+			</span>
+            <ul class="dataUl">
+                <volist name="activity_contact_file" id="contactData">
+                    <li class="dataLi">
+                        <a class="dataA" type="{$contactData.type}" vid="{$contactData.vid}" src="{$oss_path}{$contactData.activity_file_path}" href="javascript:;">{$contactData.activity_file_name}</a>
+                    </li>
+                </volist>
+            </ul>
+        </div>
+
+        <if condition="($_SESSION['teacher'] eq 'youke') OR (in_array($roles,explode(',',$data['role'])))">
+            <div class="text-center applyBox">
+                <if condition="$registered eq 'no'">
+                    <?php if (1 == $data['display_people_register']) : ?>
+                        <?php if (time() + 60 > $data['applyend'])  : ?>
+                    <p class="applyP">
+                        <button id="applyBtn" class="btn btn-gray">我要报名</button>
+                    </p>
+                        <?php else : ?>
+                    <p class="applyP">
+                        <button id="applyBtn" class="btn btn-red">我要报名</button>
+                    </p>
+                    <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if (($hasUploadWork == false) && (time()+60< $data['applyend']) && ($data['is_upload'] == 1)) :?>
+                    <p class="applyP">
+                        <button class="btn btn-gray" id="workUpload" disabled>上传资料</button>
+                        <br>
+                        <span class="applySpan">请先报名并填写报名信息</span>
+                    </p>
+                    <?php endif; ?>
+                        <?php if($is_true == 'yes'){?>
+                    <p class="applyP">
+                            <button id="vote" class="btn btn-red">我要投票</button>
+                    </p>
+                        <?php }else{?>
+
+                        <?php }?>
+
+                    <?php if($data['works_show_status'] == 1) { ?>
+
+                    <p class="applyP">
+                        <button id="Winning_entries" class="btn btn-red">获奖资料</button>
+                    </p>
+
+                    <?php }?>
+
+                    <else/>
+                    <p class="applyP">
+                        <button class="btn btn-gray" disabled>已报名</button>
+                    </p>
+
+                        <?php if (($hasUploadWork == false) && (time()+60< $data['applyend']) && ($data['is_upload'] == 1)) :?>
+                    <p class="applyP">
+                        <button class="btn btn-red" id="workUpload">上传资料</button>
+                    </p>
+                        <?php elseif (($hasUploadWork == true) && (time()+60< $data['applyend']) && ($data['is_upload'] == 1)) :?>
+                    <p class="applyP">
+                        <button class="btn btn-gray" id="workUpload" disabled>上传资料</button>
+                        <?php if ($hasUploadWork == true && $hasUploadWork['status'] == 0 && ($data['is_upload'] == 1)) :?>
+                        <br>
+                        <span class="applySpan">资料审核中...</span>
+                        <?php elseif ($hasUploadWork['status'] == 1) :?>
+                        <br>
+                        <span class="applySpan">资料已审核通过</span>
+                        <?php elseif ($hasUploadWork['status'] == 2) :?>
+                        <br>
+                        <span class="applySpan">资料被拒绝通过，请重新上传。拒绝理由：{$hasUploadWork.error_data}</span>
+                    </p>
+                        <?php endif; ?>
+                    <?php else : ?>
+                    <?php endif; ?>
+                        <?php if($is_true == 'yes'){?>
+                    <p class="applyP">
+                        <button id="vote" class="btn btn-red">我要投票</button>
+                    </p>
+                        <?php }else{?>
+
+                        <?php }?>
+
+                    <?php if($data['works_show_status'] == 1) { ?>
+
+                    <p class="applyP">
+                        <button id="Winning_entries" class="btn btn-red">获奖资料</button>
+                    </p>
+
+                    <?php }?>
+                </if>
+            </div>
+
+            <else/>
+            <div class="text-center applyBox">
+                <?php if($is_true == 'yes'){?>
+                <p class="applyP">
+                    <button id="vote" class="btn btn-red">我要投票</button>
+                </p>
+                <?php }else{?>
+
+                <?php }?>
+                <?php if($data['works_show_status'] == 1) { ?>
+
+                <p class="applyP">
+                    <button id="Winning_entries" class="btn btn-red">获奖资料</button>
+                </p>
+
+                <?php }?>
+            </div>
+        </if>
+        <?php endif; ?>
+    </div>
+
+    <div class="activityConRight padding10">
+        {$data.content}
+        <p class="publishBox">{$data.publisher}&nbsp;/&nbsp;{$data.approve_at|date="Y-m-d",###}</p>
+    </div>
+</div>
+
+<div class="applyBtn">
+    <if condition="$registered eq 'yes'">
+        <a href="javascript:;" class="redA checkApply">查看报名信息</a>
+        <?php if( (time() < $data['applyend'] - 60)) :?>
+        <a href="javascript:;" class="redA modifyApply">修改报名信息</a>
+        <?php endif; ?>
+    </if>
+    <if condition="$hasUploadWork neq false">
+	   <if condition="($environment eq 'true' && $data.id eq '142') || $data.is_work_compare_activity eq 1">
+           <a href="{:U('Activity/teachDesignWorkView')}&workId={$workInfo.id}" class="redA checkWork">查看资料</a>
+	   <else />
+           <a href="{:U('Activity/activityWorkDetails')}&id={$workInfo.id}&own=own" class="redA checkWork">查看资料</a>
+       </if>
+    </if>
+    <if condition="$hasUploadWork['status'] eq 2">
+        <a href="javascript:;" class="redA modifyresource">修改资料</a>
+    </if>
+
+</div>
+
+<if condition="$_SESSION['teacher'] neq 'youke'">
+    <div class="applyInfo" id="applyInfo">
+        <h2>报名信息表</h2>
+        <img src="__PUBLIC__/img/activity/applyInfo.png" alt="" class="applyInfoImg">
+        <form id="info-list" action="/ApiInterface/{$apiVersion}/Activity/signupInformation" method="post">
+            <input type="hidden" name="activity_id" value="{$data.id}">
+            <?php if($roles == 2){ ?>
+            <input type="hidden" name="user_ids" value="{$_SESSION.teacher.id}">
+            <?php }elseif($roles == 3){ ?>
+            <input type="hidden" name="user_ids" value="{$_SESSION.student.id}">
+            <?php }elseif($roles == 4){ ?>
+            <input type="hidden" name="user_ids" value="{$_SESSION.parent.id}">
+            <?php } ?>
+            <input type="hidden" name="edit_status" value="{$registered == 'yes' ? 1:0}" id="edit_status"/>
+            <div class="applyInfoBox">
+                <if condition = "($data.is_generate eq 2) AND ($data.is_disable eq 1)">
+                    <div class="form_section" id="activityCode">
+                        <label for="code">活动邀请码</label>
+                        <input type="text" name="Inviteid_code" id="code" class="form-control form-control2" required placeholder="必填" maxlength="6">
+                        <span class="applyInfoError" id="codeError">邀请码错误</span>
+                    </div>
+                </if>
+                <?php if(in_array('1',explode(',',$data['selectedfields']))) { ?>
+                <div class="form_section">
+                    <label for="tname">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</label>
+                    <input type="text" name="name" id="tname" class="form-control form-control2" required placeholder="必填" readonly>
+                    <span class="applyInfoError" id="tnameError">请输入正确的姓名</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('2',explode(',',$data['selectedfields'])) && $roles == '2') { ?>
+                <div class="form_section">
+                    <label for="course_id">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+                    <select id="course_id" name="course" class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+                        <volist name="courselist" id="dataCourse">
+                            <option value="{$dataCourse.course_id}">{$dataCourse.course_name}</option>
+                        </volist>
+                        <!--<option value="-1">QXK : 全学科</option>-->
+                    </select>
+                    <span class="applyInfoError" id="courseError">请选择学科</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('3',explode(',',$data['selectedfields'])) && $roles == '2') { ?>
+                <div class="form_section">
+                    <label for="issue">参评课题</label>
+                    <input type="text" name="lesson" id="issue" class="form-control form-control1" required placeholder="必填，不超过100字" maxlength="100" onblur="return regLesson();">
+                    <span class="applyInfoError" id="issueError">请输入参评课题</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('4',explode(',',$data['selectedfields'])) && ($roles == '2' || $roles == '3')) { ?>
+                <div class="form_section">
+                    <label for="">所属区县</label>
+                    <span>省</span>
+                    <!-- <input id="SchProvince" name="SchProvin    ce" class="form-control form-control3" required> -->
+                    <select name="province_choose" id="SchProvince" class="form-control form-control3" required>
+                        <option value="">请选择省</option>
+                    </select>
+
+                    <span>市</span>
+                    <!-- <input id="SchCity" name="SchCity" class="form-control form-control3" required> -->
+                    <select name="city_choose" id="SchCity" class="form-control form-control3" required>
+                        <option value="">请选择市</option>
+                    </select>
+
+                    <span>区</span>
+                    <!-- <input id="SchDistrict" name="SchDistrict" class="form-control form-control3" required> -->
+                    <select name="district_choose" id="SchDistrict" class="form-control form-control3" required>
+                        <option value="">请选择区</option>
+                    </select>
+
+                    <span class="applyInfoError" id="countyError">请选择所属区县</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('5',explode(',',$data['selectedfields'])) && ($roles == '2' || $roles == '3')) { ?>
+                <div class="form_section">
+                    <label for="school">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;校</label>
+                    <input id="school" name="school_name" class="form-control form-control1" required placeholder="请输入学校全称">
+
+                    <span class="applyInfoError" id="schoolError">请输入学校全称</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('6',explode(',',$data['selectedfields'])) && ($roles == '2' || $roles == '3')) { ?>
+                <div class="form_section">
+                    <label for="">学校地址</label>
+                    <input type="text" name="school_address" id="SchAddress" class="form-control form-control1" required placeholder="详细地址，必填" >
+                    <span class="applyInfoError" id="SchCountyError">请输入正确的学校地址</span>
+                </div>
+                <?php }?>
+
+                <!--<div class="form_section">-->
+                <!--<label for="">所属区县</label>-->
+                <!--<span>省</span>-->
+                <!--<select id="MyProvince" name="MyProvince" class="form-control form-control3" required>-->
+
+                <!--</select>-->
+                <!---->
+                <!--<span>市</span>-->
+                <!--<select id="MyCity" name="MyCity" class="form-control form-control3" required>-->
+
+                <!--</select>-->
+                <!---->
+                <!--<span>区</span>-->
+                <!--<select id="MyDistrict" name="MyDistrict" class="form-control form-control3" required>-->
+
+                <!--</select>-->
+                <!--<span class="applyInfoError" id="MyCountyError">请选择所属区县</span>-->
+                <!--</div>-->
+                <?php if(in_array('7',explode(',',$data['selectedfields']))) { ?>
+                <div class="form_section" style="position: relative">
+                    <label for="sex">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</label>
+                    <input id="radioMale" type="radio" name="sex" value="男">男
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input id="radioFemale" type="radio" name="sex" value="女">女
+                    <span class="applyInfoError" id="sexError">请选择性别</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('8',explode(',',$data['selectedfields']))) { ?>
+                <div class="form_section">
+                    <label for="age">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;龄</label>
+                    <input type="text" name="age" id="age" class="form-control form-control2" required placeholder="必填" onblur="return regage();" maxlength="3">
+                    <span class="applyInfoError" id="ageError">请输入正确的年龄</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('9',explode(',',$data['selectedfields'])) && $roles == '2') { ?>
+                <div class="form_section">
+                    <label for="education">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历</label>
+                    <select id="education" name="education" class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+                        <volist name="education" key="i" id="education_item">
+                            <option value="{$i}">{$education_item}</option>
+                        </volist>
+                    </select>
+                    <span class="applyInfoError" id="educationError">请选择学历</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('10',explode(',',$data['selectedfields'])) && $roles == '2') { ?>
+                <div class="form_section">
+                    <label for="job">职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称</label>
+                    <select id="job" name="positions" class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+                        <volist name="positions" key="i" id="positions_item">
+                            <option value="{$i}">{$positions_item}</option>
+                        </volist>
+                    </select>
+                    <span class="applyInfoError" id="jobError">请选择职称</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('11',explode(',',$data['selectedfields']))) { ?>
+                <div class="form_section">
+                    <label for="email">电子邮箱</label>
+                    <input type="email" name="email" id="email" class="form-control form-control2" required placeholder="必填" onblur="return regemail();" >
+                    <span class="applyInfoError" id="emailError">请输入正确的电子邮箱</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('12',explode(',',$data['selectedfields'])) && ($roles == '2' || $roles == '3')) { ?>
+                <div class="form_section">
+                    <label for="postcode">学校邮编</label>
+                    <input type="text" name="post_code" id="postcode" class="form-control form-control2" required placeholder="必填" maxlength="6" onblur="return regpostcode();">
+                    <span class="applyInfoError" id="postcodeError">请输入正确的学校邮编</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('13',explode(',',$data['selectedfields'])) && $roles == '2') { ?>
+                <div class="form_section">
+                    <label for="officePhone">办公电话</label>
+                    <input type="text" name="tel" id="officePhone" class="form-control form-control2" placeholder="选填" onblur="return regofficePhone();">
+                    <span class="applyInfoError" id="officePhoneError">请输入正确的办公电话</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('14',explode(',',$data['selectedfields']))) { ?>
+                <div class="form_section">
+                    <label for="mobilePhone">移动电话</label>
+                    <input type="text" name="mobilePhone" id="mobilePhone" class="form-control form-control2" required placeholder="必填" maxlength="11" onblur="return regmobilePhone();">
+                    <span class="applyInfoError" id="mobilePhoneError">请输入正确的移动电话</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('15',explode(',',$data['selectedfields'])) && $roles == '2') { ?>
+                <div class="form_section">
+                    <label for="localCourse">地方课程</label>
+                    <select id="localCourse" name="local_course"     class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+                        <option value="0">否</option>
+                        <option value="1">是</option>
+                    </select>
+                    <span class="applyInfoError" id="localCourseError">请选择地方课程</span>
+                </div>
+                <?php }?>
+
+                <?php if(in_array('16',explode(',',$data['selectedfields'])) && $roles == '2') { ?>
+                <div class="form_section">
+                    <label for="schoolCourse">校本课程</label>
+                    <select id="schoolCourse" name="school_course" class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+                        <option value="0">否</option>
+                        <option value="1">是</option>
+                    </select>
+                    <span class="applyInfoError" id="schoolCourseError">请选择校本课程</span>
+                </div>
+                <?php }?>
+
+                <?php if($data['additional_info'] !== '[]'){ $arrs = json_decode($data['additional_info']);
+                        if(count($arrs) > 1){
+                foreach($arrs as $temp){ ?>
+                <div class="form_section">
+                    <label for="mobilePhone"><?php echo $temp->name?></label>
+                    <?php if($temp->type == 'number') { ?>
+                    <input type="<?php echo $temp->type ?>" min="0" name="additionalRegInfo[]" id="" class="form-control form-control2 user-defined" placeholder="<?php echo $temp->placeholder ?>" oninput="if(value.length > <?php echo $temp->maxLength ?>)value=value.slice(0,<?php echo $temp->maxLength ?>)" onblur="return hiddens()">
+                    <?php }else{ ?>
+                    <input type="<?php echo $temp->type ?>" name="additionalRegInfo[]" id="" class="form-control form-control2 user-defined" placeholder="<?php echo $temp->placeholder ?>" maxlength="<?php echo $temp->maxLength ?>" onblur="return hiddens()">
+                    <?php }?>
+                    <span class="applyInfoError usererror">请输入正确的<?php echo $temp->name ?></span>
+                </div>
+                <?php }
+                    }else{  ?>
+                <div class="form_section">
+                    <label for="mobilePhone"><?php echo $arrs[0]->name?></label>
+                    <?php if($arrs[0]->type == 'number') { ?>
+                    <input type="<?php echo $arrs[0]->type?>" min="0" name="additionalRegInfo[]" id="" class="form-control form-control2 user-defined" placeholder="<?php echo $arrs[0]->placeholder?>" oninput="if(value.length > <?php echo $arrs[0]->maxLength ?>)value=value.slice(0,<?php echo $arrs[0]->maxLength ?>)" onblur="return hiddens()">
+                    <?php }else{ ?>
+                    <input type="<?php echo $arrs[0]->type ?>" name="additionalRegInfo[]" id="" class="form-control form-control2 user-defined" placeholder="<?php echo $arrs[0]->placeholder ?>" maxlength="<?php echo $arrs[0]->maxLength ?>" onblur="return hiddens()">
+                    <?php }?>
+                    <span class="applyInfoError usererror" id="userError">请输入正确的<?php echo $arrs[0]->name ?></span>
+                </div>
+                <?php } } ?>
+            </div>
+
+            <div class="applyInfoBtn">
+                <if condition="$registered eq 'no'">
+                    <button type="button" class="btn btn-red" id="submitInfo" onclick="checkAndSubmitInfo()" >提交</button>
+                    <else/>
+                    <button type="button" class="btn btn-red" id="submitInfo" onclick="checkAndSubmitInfo()" >提交</button>
+                    <button type="button" class="btn btn-red" id="closeInfo">关闭</button>
+                </if>
+            </div>
+        </form>
+    </div>
+</if>
+
+<!--资源展示弹窗-->
+<div class="fullBlack"></div>
+<div class="resourceOutter">
+    <span class="resourceClose"></span>
+    <div id="innerContent"></div>
+</div>
+
+<div class="workPublish">
+    <div style="overflow:hidden;">
+        <img src="__PUBLIC__/img/activity/worksUpload2.png" alt="" class="left up" style="width: 140px">
+        <img src="__PUBLIC__/img/activity/worksModify2.png" alt="" class="left save" style="width: 140px; display:none">
+        <span class="right workPublishClose"></span>
+    </div>
+    <form id="mainForm" action="{:U('Activity/activityWorkPublish')}" method="post" onsubmit="$('#saveButton').attr('disabled',true);">
+        <input type="hidden" name="id" value="{$data.id}">
+        <div class="overBox">
+            <?php if(in_array('2',explode(',',$data['selectedfields'])) && $roles == '2'){ ?>
+            <div class="form_section">
+                <label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+                <div class="input-control text full-size">
+                    <input type="text" class="form-control" value="{$courses.course_name}" disabled>
+                </div>
+            </div>
+            <?php } ?>
+            <?php if(in_array('1',explode(',',$data['upload_info'])) && $roles == '2'){ ?>
+            <div class="form_section">
+                <label for="grade_id">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label>
+
+                <div class="input-control text full-size">
+                    <select id="grade_id" name="grade_id" class="form-control"  required>
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                            <option value="{$dataGrade.grade}" {$dataGrade['grade_name']==$workInfo['grade']?'selected':''}>{$dataGrade.grade_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <?php } ?>
+
+            <?php if(in_array('3',explode(',',$data['upload_info']))){ ?>
+            <div class="form_section ">
+                <label for="name">名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="name" id="name" class="form-control" required placeholder="必填，不超过40个字" maxlength="40" value="{$workInfo.works_name}">
+                </div>
+            </div>
+            <?php } ?>
+            <?php if(in_array('4',explode(',',$data['upload_info']))){ ?>
+            <div class="form_section">
+                <label for="description" style="vertical-align:top">描&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;述</label>
+                <div class="input-control text full-size">
+                    <textarea id="description" name="description" rows="4" class="form-control" required placeholder="必填，不超过100个字" maxlength="100" value="">{$workInfo.works_description}</textarea>
+                </div>
+            </div>
+            <?php } ?>
+            <input type='hidden' name='file_name' id='file_name' />
+            <input type='hidden' name='unique_string' id='unique_string' />
+            <input type='hidden' name='vid_image_path' id='vid_image_path' />
+            <input type='hidden' name='vid_transition' id='vid_transition' />
+            <input type='hidden' name='vid' id='vid' />
+            <input type='hidden' name='vid_fullpath' id='vid_fullpath' />
+            <!--<div><a href="javascript:void(0)" style="color:#dd1010;text-decoration: none" class='choose_file'>选择上传文件</a></div>
+            <div id="add_files">
+                <p>
+
+                </p>
+            </div>-->
+            <div id="fine-uploader">
+
+            </div>
+            <!--作者寄语-->
+            <?php if(in_array('5',explode(',',$data['upload_info']))){ ?>
+            <div class="authorWishes">
+                <p class="autWisTitle">
+                    参赛寄语
+                    <img class="autWisImg" src="__PUBLIC__/img/activity/authorWishes.png" alt="">
+                </p>
+                <div class="input-control text full-size autConBox">
+                    <textarea id="authorContent" name="authorContent" rows="4" class="form-control" placeholder="不超过100个字" maxlength="100" value="">{$workInfo.author_remarks}</textarea>
+                </div>
+            </div>
+            <?php } ?>
+            <div class="form-actions" style="background:none">
+                <!--<button type="button" class="btn btn-primary" id="uploadButton">开始上传</button>-->
+                <button type="submit" class="btn btn-primary_red" id="saveButton" onclick="return checkWork();">保存</button>
+            </div>
+
+    </form>
+
+</div>
+</div>
+
+<div class="voteBox">
+	<h2>我要投票</h2>
+	<img src="__PUBLIC__/img/activity/applyInfo.png" alt="" class="applyInfoImg">
+	<p class="voteList">投票列表</p>
+	<div id="votes" class="votes">
+
+	</div>
+</div>
+
+
+
+<script type="text/javascript" src="__PUBLIC__/js/queryLimit.js"></script>
+<script src="__PUBLIC__/js/Base64.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+
+<script>
+    $(function(){
+        //如果活动资料为空
+        if($.trim($('.dataUl').html()) == '') {
+            $('.activityData').hide()
+        }
+    })
+</script>
+
+<script>
+    var obj = {};
+    var sp_arr = window.location.search.substr(1).split("&");
+    for (var i = 0; i < sp_arr.length; i++) {
+        var arr2 = sp_arr[i].split("=");
+        obj[arr2[0]] = arr2[1];
+    }
+    if(obj.id == 514) {
+        $('.remarkP1').hide();
+        $('.remarkP2').show();
+    } else {
+        $('.remarkP2').hide();
+        $('.remarkP1').show();
+    }
+</script>
+
+<script>
+    <if condition="($roles neq 2) AND ($roles neq 3) AND ($roles neq 4)">
+      $('.activityConRight').find('a').each(function(i,n){
+          var href =  $(n).attr('href');
+          if(href.indexOf('http://') < 0)
+          {
+              if(href.indexOf("{$_SERVER['SERVER_NAME']}") < 0)
+                  href = "{$_SERVER['SERVER_NAME']}" + href;
+              href = 'http://' + href;
+          }
+
+          $(n).attr('base64url',base64encode(href));
+      });
+      $('.activityConRight').find('a').removeAttr('href').css('cursor','pointer').click(function(){
+          var base64str =  $(this).attr('base64url');
+          $.NotifyBox.NotifyPromptTwoCt("提示",'请先登录或者注册','登录','注册',function () {
+            window.location.href = "/index.php?jtypt=1&url=" + base64str;
+        },function () {
+            window.location.href ="<?php echo U('Index/register').'&url='; ?>" + base64str;
+        })
+       })
+    </if>
+
+    var isWorkUploadPage = 1;
+</script>
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+<!--投票-->
+<script>
+    var send_activity_id = "{$activity_id}";
+    $('#vote').click(function () {
+        /*alert(1);return false;*/
+        vote();
+    });
+    function vote() {
+        var html = '';
+        $.ajax({
+        url:"{:U('Activity/ajax_vote')}",
+        data:{id:"{$data.id}"},
+        type: 'post',
+        success:function (data) {
+            if(data.status == 200){
+                //alert($.now());return false;1491906185731
+                var times = '';
+                times += $.now();
+
+                $.each(data.result,function (k,v) {
+                    if(parseInt(v.votestart) > <?php echo time()?>) {
+                        html += '<a class="voteA" href="index.php?m=Home&c=Activity&a=vote_details&id=' + v.id + '&activity_id=' + send_activity_id + '"><div class="left">' + v.title + '</div><div class="right">未开始</div></a>';
+                    }else if(parseInt(v.votestart) < <?php echo time()?>  && parseInt(v.voteend) > <?php echo time()?>){
+                        html += '<a class="voteA" href="index.php?m=Home&c=Activity&a=vote_details&id=' + v.id + '&activity_id=' + send_activity_id + '"><div class="left">' + v.title + '</div><div class="right">进行中</div></a>';
+                    }else if(parseInt(v.voteend) < <?php echo time()?>){
+                        html += '<a class="voteA" href="index.php?m=Home&c=Activity&a=vote_details&id=' + v.id + '&activity_id=' + send_activity_id + '"><div class="left">' + v.title + '</div><div class="right">已结束</div></a>';
+                    }
+
+                })
+				$('.voteBox').show();
+				$('.applyInfo').hide();
+                $('#votes').html(html);
+				 var rightHeight = $('.activityConRight').height();
+                $("html,body").animate({ scrollTop: rightHeight+400 });
+            }
+        }
+    })
+    }
+</script>
+<!--点赞收藏-->
+<script>
+    var zanCount=0;
+    var favorCount=0;
+    var isRegisterFull = '<?php if(($data['apply_people_number'] == $data['register_numbers']) && ($data['apply_people_number'] != 0)) echo "yes";else echo "no";?>';
+    $(function () {
+
+        <?php if (session('teacher') == 'youke'): ?>
+
+        $('#zanIcon,#favorIcon').click(function(){
+//            $('.fullscr,#toolTip1').show();
+            $.NotifyBox.NotifyPromptTwoCt("提示",'请先登录或者注册','登录','注册',function () {
+                window.location.href = "<?php echo '/index.php?jtypt=1'.'&url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) ?>" ;return false;
+            },function () {
+                window.location.href ="<?php echo U('Index/register').'&url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) ?>" ;return false;
+            })
+        });
+
+        <?php else : ?>
+        $('#zanIcon').click(function () {
+            if(!canQuery()){
+                $.notify({
+                    title: '提示',
+                    message: '请求过于频繁'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            zanCount++;
+            $.get('__URL__/zanActivity', {id: '{$data.id}'}, function (res) {
+                if (res.result == 'yes') {
+                    $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zaned.png');
+                    $.notify({
+                        title: '提示',
+                        message: '点赞成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+                    if (res.result == 'youke') {
+//                        $('.fullscr,#toolTip1').show();
+                        $.NotifyBox.NotifyPromptTwoCt("提示",'请先登录或者注册','登录','注册',function () {
+                            window.location.href = "<?php echo '/index.php?jtypt=1'.'&url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) ?>" ;return false;
+                        },function () {
+                            window.location.href ="<?php echo U('Index/register').'&url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) ?>" ;return false;
+                        })
+                    } else if(res.info =='success'){
+                        $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zan.png');
+                        $.notify({
+                            title: '提示',
+                            message: '已经取消点赞'
+                        }, {
+                            type: 'warning',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+        $('#favorIcon').click(function () {
+            if(!canQuery()){
+//                $.notify({
+//                    title: '提示',
+//                    message: '请求过于频繁'
+//                }, {
+//                    type: 'success',
+//                    placement: {
+//                        from: "top",
+//                        align: "center"
+//                    }
+//                });
+				$.NotifyBox.NotifyPromptOne('提示','请求过于频繁','确定')
+                return false;
+            }
+            favorCount++;
+
+            $.get('__URL__/favorActivity', {id: '{$data.id}'}, function (res) {
+                if (res.result == 'yes') {
+                    $('#favorIcon').attr({
+						'src': '__PUBLIC__/img/activity/favored.png',
+						'title': '取消收藏'
+					});
+//                    $.notify({
+//                        title: '提示',
+//                        message: '收藏成功'
+//                    }, {
+//                        type: 'success',
+//                        placement: {
+//                            from: "top",
+//                            align: "center"
+//                        }
+//                    });
+					$.NotifyBox.NotifyPromptOne('提示','收藏成功','确定')
+                } else {
+
+                    if (res.result == 'youke') {
+//                        $('.fullscr,#toolTip1').show();
+                        $.NotifyBox.NotifyPromptTwoCt("提示",'请先登录或者注册','登录','注册',function () {
+                            window.location.href = "<?php echo '/index.php?jtypt=1'.'&url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) ?>" ;return false;
+                        },function () {
+                            window.location.href ="<?php echo U('Index/register').'&url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']) ?>" ;return false;
+                        })
+                    } else if(res.info =='success'){
+
+                        $('#favorIcon').attr({
+							'src': '__PUBLIC__/img/activity/favor.png',
+							'title': '收藏'
+						});
+//                        $.notify({
+//                            title: '提示',
+//                            message: '已经取消收藏'
+//                        }, {
+//                            type: 'warning',
+//                            placement: {
+//                                from: "top",
+//                                align: "center"
+//                            }
+//                        });
+						$.NotifyBox.NotifyPromptOne('提示','已经取消收藏','确定')
+                    }
+                }
+            });
+        });
+        <?php endif; ?>
+
+    });
+</script>
+
+<script>
+    $(function(){
+        var options = {
+            success:    showResponseForm,  // post-submit callback
+            resetForm:  false,
+            dataType:  'json'
+        };
+
+        // bind to the form's submit event
+        $('#info-list').submit(function() {
+            $(this).ajaxSubmit(options);
+            return false;
+        });
+    });
+    function showResponseForm(responseText, statusText) {
+        switch(responseText.status)
+        {
+            case 200: if($('#edit_status').val() == 0) {
+            <?php if ($hasUploadWork == false && $data['is_upload'] == 1) : ?>
+                $('#workUpload').removeAttr('disabled');
+                $('#workUpload').removeClass('btn-gray');
+                $('#workUpload').addClass('btn-red');
+            <?php else : ?>
+            <?php endif; ?>
+            }
+            <?php if ($hasUploadWork == false && $data['is_upload'] == 1) : ?>
+			$.NotifyBox.NotifyPromptTwoCt("提示","报名成功！<br>请上传资料", "去上传","暂不上传",function(){
+                <?php if((strpos($_SERVER['HTTP_HOST'],'jingbanyun.com')!= -1 && $data['id'] == 142) ||  $data['is_work_compare_activity'] == 1){ ?>
+                    newWin("<?php echo '/index.php?m=Home&c=Activity&a=teachDesignWorkUpload&id='.$data['id']?>",'click');
+                    location.reload();
+                <?php } else { ?>
+                    location.replace(window.location.href+'&needUpload=1');
+                <?php } ?>
+
+            },function(){location.replace(location.href.replace(/&needUpload=1/g,''));});
+            <?php else : ?>
+                $.NotifyBox.NotifyPromptOneC("提示","提交成功", "确定",function () {
+                    location.replace(location.href.replace(/&needUpload=1/g,''));
+                });
+            <?php endif; ?>
+                break;
+            default: $.NotifyBox.NotifyPromptOneC("提示",responseText.info, "确定",function () {
+                location.replace(location.href.replace(/&needUpload=1/g,''));
+            });
+                break;
+        }
+    }
+
+    function checkAndSubmitInfo()
+    {
+        if(true == check()){
+//            $('#prompt_confirm').show();
+			$.NotifyBox.NotifyPromptTwoCo("提示","请确认报名信息无误！", "确定", "取消", function() {
+				$('#info-list').submit();
+			})
+        }
+    }
+//    $('#confirm_submit').click(function(){
+//        $('#info-list').submit();
+//    });
+//    $('#cancel_submit').click(function(){
+//        $('#prompt_confirm').hide();
+//    });
+    function showDialog3Seconds(dialogId,needRefresh)
+    {
+        var template = "$('#{0}')".format(dialogId);
+        var templateShow = template + '.show();';
+        var templateHide = template + '.hide();';
+        if(typeof needRefresh != 'undefined')
+            if(needRefresh == true)
+                templateHide += 'window.location.reload();';
+        eval(templateShow);
+        setTimeout(templateHide,3000);
+    }
+</script>
+
+<!--资源展示弹窗-->
+<script>
+//    $('.toolTipClose').click(function(){
+//        $('.fullscr,#toolTip1').hide();
+//    })
+    function loadRegData(disabled,isCodeDisabled)
+    {
+        var temp_arr = new Array();
+        $.get('__URL__/registrationInformationJSON4PC',{id:'{$data.id}'},function(res){
+        if(res.status == 200)
+        {
+            try {
+                $('#code').val(res.result.invitation_code);
+                $('#tname').val(res.result.user_name);
+                $('#course_id').val(res.result.course_id);
+                $('#issue').val(res.result.lesson);
+                $('#SchProvince').val(res.result.school_province_id).attr('default_id',res.result.school_province_id);
+                $('#SchCity').val(res.result.school_city_id).attr('default_id',res.result.school_city_id);
+                $('#SchDistrict').val(res.result.school_district_id).attr('default_id',res.result.school_district_id);
+                bindQueryDistrictEvent("__URL__", 'SchProvince', 'SchCity', 'SchDistrict');
+                //$('#SchProvince').change();
+                if (res.result.sex == '男')
+                    $('#radioMale').attr('checked', true);
+                else
+                    $('#radioFemale').attr('checked', true);
+                $('#age').val(res.result.age);
+                $('#education option:contains(' + res.result.education  + ')').each(function(){
+                    if ($(this).text() == res.result.education) {
+                        $(this).attr('selected', true);
+                    }
+                });
+                $('#job option:contains(' + res.result.positions + ')').each(function(){
+                    if ($(this).text() == res.result.positions) {
+                        $(this).attr('selected', true);
+                    }
+                });
+                $('#email').val(res.result.email);
+
+                $('#SchProvince').val(res.result.province);
+                $('#SchCity').val(res.result.city);
+                $('#SchDistrict').val(res.result.district);
+                $('#school').val(res.result.school_name);
+                $('#SchAddress').val(res.result.school_address);
+                $('#postcode').val(res.result.post_code);
+
+                $('#officePhone').val(res.result.tel);
+                $('#mobilePhone').val(res.result.telephone);
+                $('#localCourse').val(res.result.local_course);
+                $('#schoolCourse').val(res.result.school_course);
+                if(res.result.additional_info){
+                     temp_arr = res.result.additional_info.split(',');
+                    for (i = 0; i < temp_arr.length; i++) {
+                        $('.user-defined').eq(i).val(temp_arr[i]);
+                    }
+                }
+                 assing_parmes();
+                $('.applyInfo').find('input,select').each(function(i,n){
+                    if('' == disabled)
+                    {
+                        if('undefined' == typeof($(n).attr('readonly')) || $(n).attr('id') == "email")
+                            $(n).removeAttr("disabled");
+                    }
+                    else
+                        $(n).attr('disabled',disabled);
+                });
+                if(isCodeDisabled == true)
+                    $("#code").attr('disabled',true);
+                //页面跳转到报名表
+                var rightHeight = $('.activityConRight').height();
+                $("html,body").animate({ scrollTop: rightHeight+400 });
+
+            }catch(e){;}
+            $('.applyInfo').show();
+        }
+    });
+    }
+
+    $('.checkApply').click(function(){
+		$('.voteBox').hide();
+        //ajax load reg data
+        $('#submitInfo').hide();
+        loadRegData('disabled');
+        $('#code').attr('disabled',true);
+        $('#edit_status').val(0);
+    });
+    $('.modifyApply').click(function(){
+		$('.voteBox').hide();
+        //ajax load reg data
+        $('#submitInfo').show();
+        loadRegData('',true);
+        $('#code').attr('disabled',true);
+        $('#edit_status').val(1);
+    });
+//修改上传的资源
+    $('.modifyresource').click(function () {
+        <?php if((strpos($_SERVER['HTTP_HOST'],'jingbanyun.com')!= -1 && $data['id'] == 142) ||  $data['is_work_compare_activity'] == 1){ ?>
+            window.open("<?php echo 'index.php?m=Home&c=Activity&a=teachDesignWorkModify&workId='.$workInfo['id']?>");
+        <?php }else{ ?>
+        $('.up').hide();
+        $('.save').show();
+        $('.workPublish,.fullBlack').show();
+		$('body').css('overflow-y','hidden')
+        <?php } ?>
+    });
+
+    $('#closeInfo').click(function(){
+        $('.applyInfo').hide();//报名信息表大框出现
+    })
+</script>
+
+<!--游客弹窗-->
+<script>
+
+    $('.dataA').click(function(){
+        $('.fullBlack,.resourceOutter').show();
+        var obj = $(this);
+        switch(obj.attr('type'))
+        {
+            case 'image':var template = '<img src="{0}">';
+                $('#innerContent').html(template.format(obj.attr('src')));
+                break;
+            case 'video':
+                var template = '<div id="plv"></div>';
+                $('#innerContent').html(template.format(''));
+                var vid = $(this).attr('vid');
+                var player = polyvObject('#plv').videoPlayer({
+                    'vid': vid
+                });
+                break;
+            case 'audio':var template = '<video controls src="{0}">';
+                $('#innerContent').html(template.format(obj.attr('src')));
+                break;
+            case 'ppt':
+            case 'word':
+            case 'pdf':
+                var template = '<iframe id="resourceFrame" frameborder="1" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={0}" width="100%" height="100%"></iframe>';
+                var pdfFilePath = '';
+                if(obj.attr('type') == 'pdf')
+                    pdfFilePath = obj.attr('src');
+                else
+                {
+                    var orgFilePath = obj.attr('src');
+                    var orgFilePathSplitArray = orgFilePath.split('/');
+                    orgFilePathSplitArray[orgFilePathSplitArray.length-1];
+                    var fileNamePrefix = orgFilePathSplitArray[orgFilePathSplitArray.length-1].split('.')[0];
+                    pdfFilePath = '{$oss_path}Activity/{$data.id}/'+fileNamePrefix + '.pdf';
+                }
+                $('#innerContent').html(template.format(pdfFilePath));
+                break;
+            case 'swf':
+                var template = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">' +
+                        '<embed id="sfw_src" width="500" height="500" name="plugin"  src="{0}" type="application/x-shockwave-flash">' +
+                        '<param name="loop" value="false"><param name="movie" value=""></object>';
+                $('#innerContent').html(template.format(obj.attr('src')));
+                break;
+            case 'condensed':break;
+        }
+    })
+
+    $('.resourceClose').click(function(){
+        $('.fullBlack,.resourceOutter').hide();
+        $('#innerContent').html('');
+    })
+
+</script>
+
+<!--提示弹窗-->
+<script>
+    $('.cancel').click(function(){
+        $(this).parent().parent().hide();
+        $('.fullscr').hide()
+    })
+</script>
+
+<script>
+    $('#applyBtn').click(function(){
+		$('.voteBox').hide();
+        <?php if($_SESSION['teacher'] == 'youke') :?>
+//        $('.fullscr,#toolTip1').show();
+			$.NotifyBox.NotifyPromptTwoCt('提示','请先完成注册<br>登录后可查看更多信息哦！','登录','去注册',function(){
+				 location.href = "index.php?m=Home&c=Index&a=index";
+			},function(){
+				location.href = "index.php?m=Home&c=Index&a=register";
+			})
+        return;
+        <?php endif; ?>
+        <?php if( (time() < $data['applystart'])) :?>
+        $.NotifyBox.NotifyPromptOne("提示","报名还未开始", "确定");
+        return;
+        <?php elseif (time() + 60 > $data['applyend'])  : ?>
+        $.NotifyBox.NotifyPromptOne("提示","报名已经截止", "确定");
+        return;
+        <?php endif; ?>
+
+        if(isRegisterFull == 'yes')
+        {
+            $.NotifyBox.NotifyPromptOne("提示","报名人数已满", "确定");
+            return;
+        }
+
+
+        $('.applyInfo').show();//报名信息表大框出现
+		var rightHeight = $('.activityConRight').height();
+		$("html,body").animate({ scrollTop: rightHeight+400 });
+        loadRegData(false);
+        <if condition = "($data.is_generate eq 2) AND ($data.is_disable eq 1)">
+                $('#activityCode').siblings('.form_section').hide();//邀请码出现，其余隐藏
+        $('.applyInfoBtn').hide();//提交框隐藏
+        </if>
+
+    })
+
+    //判断邀请码正误
+    function checkCode() {
+        //ajax
+        var Inviteid = $('#code').val();
+        if (Inviteid != '') {
+            //开始验证
+            $.getJSON('ApiInterface/'+apiVersion+'/activity/VerificationCode',{id:'{$data.id}',code:Inviteid},function(msg){
+                if(msg.status==200){
+                    $('#activityCode').siblings('.form_section').show();//邀请码出现，其余隐藏
+                    $('.applyInfoBtn').show();//提交框隐藏
+                    $('#codeError').hide();
+                }else{
+                    $('#activityCode').siblings('.form_section').hide();//邀请码出现，其余隐藏
+                    $('.applyInfoBtn').hide();//提交框隐藏
+                    if(msg.status == 400)
+                        $('#codeError').text('该邀请码已使用');
+                    else
+                        $('#codeError').text('邀请码错误');
+
+                    $('#codeError').show();
+                }
+            });
+        }
+    }
+</script>
+<script>
+    var activity_id= '{$data.id}';
+    var apiVersion = '{$apiVersion}';
+    var hasRegistered = '{$registered}';
+</script>
+<script src="__PUBLIC__/js/DistrictQuery.js"></script>
+<script src="__PUBLIC__/js/activity/signup.js"></script>
+
+
+<!--上传作品-->
+
+<script type="text/template" id="qq-template">
+    <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+        <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+            <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+        </div>
+        <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+            <span class="qq-upload-drop-area-text-selector"></span>
+        </div>
+        <div class="qq-upload-button-selector qq-upload-button">
+            <div>上传附件</div>
+        </div>
+		<div class="qq-upload-notice">
+			<div class="qqTitle">附件支持以下格式:</div>
+            <?php if(in_array('avi',explode(',',$data['work_extension']))){ ?>
+			<div class="qqOutter">
+				<div class="qqInner1">
+					视频(mp4/mpg/mov/wmv/flv/avi)
+				</div>
+				<div class="qqInner2">
+					单个文件大小不超过500MB
+				</div>
+			</div>
+            <?php } ?>
+            <?php if(in_array('mp3',explode(',',$data['work_extension']))){ ?>
+			<div class="qqOutter">
+				<div class="qqInner1">
+					音频(mp3)
+				</div>
+				<div class="qqInner2">
+					单个文件大小不超过50MB
+				</div>
+			</div>
+            <?php } ?>
+            <?php if(in_array('jpg',explode(',',$data['work_extension']))){ ?>
+			<div class="qqOutter">
+				<div class="qqInner1">
+					图片(jpg/png)
+				</div>
+				<div class="qqInner2">
+					单个文件大小不超过5MB
+				</div>
+			</div>
+            <?php } ?>
+            <?php if(in_array('doc',explode(',',$data['work_extension']))){ ?>
+			<div class="qqOutter">
+				<div class="qqInner1">
+					word(doc/docx)
+				</div>
+				<div class="qqInner2">
+					单个文件大小不超过20MB
+				</div>
+			</div>
+            <?php } ?>
+            <?php if(in_array('ppt',explode(',',$data['work_extension']))){ ?>
+			<div class="qqOutter">
+				<div class="qqInner1">
+					ppt(ppt/pptx)
+				</div>
+				<div class="qqInner2">
+					单个文件大小不超过50MB
+				</div>
+			</div>
+            <?php } ?>
+            <?php if(in_array('pdf',explode(',',$data['work_extension']))){ ?>
+			<div class="qqOutter">
+				<div class="qqInner1">
+					pdf
+				</div>
+				<div class="qqInner2">
+					单个文件大小不超过50MB
+				</div>
+			</div>
+            <?php } ?>
+            <?php if(in_array('swf',explode(',',$data['work_extension']))){ ?>
+			<div class="qqOutter">
+				<div class="qqInner1">
+					swf
+				</div>
+				<div class="qqInner2">
+					单个文件大小不超过50MB
+				</div>
+			</div>
+            <?php } ?>
+		</div>
+        <div id="contactFileList">
+            <?php
+            for($i=0;$i<count($works2);$i++)
+            {
+                echo '<div style="width: 100%; clear: both; text-align: left" class="delet">'. $works2[$i]['works_file_name'].'<a onclick="deleteUploadInfo('.$i.',this)" style="display: inline-block; margin-left: 10px;cursor:pointer">删除</a></div>';
+        }
+        ?>
+    </div>
+    <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+    <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+        <li>
+            <div class="qq-progress-bar-container-selector">
+                <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+            </div>
+            <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+            <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+            <span class="qq-upload-file-selector qq-upload-file"></span>
+            <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+            <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+            <span class="qq-upload-size-selector qq-upload-size"></span>
+            <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">取消</button>
+            <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">重传</button>
+            <button type="button" class="qq-upload-pause-selector qq-upload-pause">暂停</button>
+            <button type="button" class="qq-upload-continue-selector qq-upload-continue">继续</button>
+            <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+        </li>
+    </ul>
+
+    <dialog class="qq-alert-dialog-selector">
+        <div class="qq-dialog-message-selector"></div>
+        <div class="qq-dialog-buttons">
+            <button type="button" class="qq-cancel-button-selector">Close</button>
+        </div>
+    </dialog>
+
+    <dialog class="qq-confirm-dialog-selector">
+        <div class="qq-dialog-message-selector"></div>
+        <div class="qq-dialog-buttons">
+            <button type="button" class="qq-cancel-button-selector">No</button>
+            <button type="button" class="qq-ok-button-selector">Yes</button>
+        </div>
+    </dialog>
+
+    <dialog class="qq-prompt-dialog-selector">
+        <div class="qq-dialog-message-selector"></div>
+        <input type="text">
+        <div class="qq-dialog-buttons">
+            <button type="button" class="qq-cancel-button-selector">Cancel</button>
+            <button type="button" class="qq-ok-button-selector">Ok</button>
+        </div>
+    </dialog>
+    </div>
+</script>
+<script>
+    var arr_info = new Array();
+    var str_info = "<?php echo $data['work_extension']?>";
+    if(str_info.length > 0){
+        arr_info = str_info.split(',');
+    }
+    var uploadInfo = {
+    <?php
+    for($i=0;$i<count($works2);$i++)
+    {
+        echo ($i).':';
+        echo "{'file_name': '" . $works2[$i]['works_file_name'] ."'," . "'file_path': '".$works2[$i]['works_file_path']."'," . "'image_path': '".$works2[$i]['vid_image_path']."'," . "'is_transition': '".$works2[$i]['is_transition']."'," . "'vid': '".$works2[$i]['vid']."'," ."'vid_fullpath': '".$works2[$i]['vid_fullpath']."'}";
+        if($i!=count($works)-1)
+            echo ',';
+    }
+    ?>
+
+    };
+    var existeduploadInfoCount = Object.keys(uploadInfo).length;
+    function changeInputFilter(){
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').attr('accept',acceptStr);
+    }
+    changeInputFilter();
+
+    function onFileCheck(){
+        if($('li').hasClass('qq-upload-fail')){
+            $.NotifyBox.NotifyPromptOne("提示","有文件上传错误", "确定");
+            return false;
+        }
+		if($('li').hasClass('qq-in-progress')){
+            $.NotifyBox.NotifyPromptOne("提示","文件未上传完毕,无法提交", "确定");
+            return false;
+        }
+        return true;
+    }
+    var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById('fine-uploader'),
+        request1Enable : true,
+		<?php if($data['id'] == 465) echo 'multiple:false,'."\r"; ?>
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mov","mp4","mp3","flv","avi","mpg","wmv"),
+            inputName:'Filedata',
+        },
+        request: {
+            endpointnum: 0,
+            endpoint: 'index.php?m=Home&c=Activity&a=workFileUpload',
+            params:{},
+            fileFilter:arr_info,
+            inputName:'file[]',
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'
+        },
+        retry: {
+            enableAuto: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[id+existeduploadInfoCount];
+        },
+        responseCallBack: function(id,specNum,xhr){
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                $.NotifyBox.NotifyPromptOne("提示",'上传失败!错误原因'+e, "确定");
+                return false;
+            }
+            if(specNum == 0){
+                if(result.status == 200){
+                    if(typeof(uploadInfo[id+existeduploadInfoCount])== 'undefined'){
+                        uploadInfo[id+existeduploadInfoCount] = {};
+                    }
+                    uploadInfo[id+existeduploadInfoCount]['file_name'] = result.data.fileName;
+                    uploadInfo[id+existeduploadInfoCount]['file_path'] = result.data.filePath;
+                    uploadInfo[id+existeduploadInfoCount]['image_path'] = result.data.imagePath.video_image;     //这里是视频截图,如果不是视频这里就是空
+                    uploadInfo[id+existeduploadInfoCount]['is_transition'] = result.data.imagePath.is_transition;            //这里是视频转换状态。
+                    return true;
+                }else{
+                    $.NotifyBox.NotifyPromptOne("提示",result.msg, "确定");
+                }
+            }else if(specNum == 1){
+                if(result.error == 0){
+                    //alert("上传成功!VID:"+result.data[0].vid);
+                    //TODO: add result.res to XXX
+                    if(typeof(uploadInfo[id+existeduploadInfoCount])== 'undefined')
+                    {
+                        uploadInfo[id+existeduploadInfoCount] = {};
+                    }
+                    uploadInfo[id+existeduploadInfoCount]['vid'] = result.data[0].vid;
+                    uploadInfo[id+existeduploadInfoCount]['vid_fullpath'] = result.data[0].mp4;
+                    return true;
+                }else{
+                    $.NotifyBox.NotifyPromptOne("提示",result.error, "确定");
+                }
+            }
+
+            return false;
+        }
+    });
+
+
+
+    $("#fine-uploader").find(':file').on('click',function(){ console.log('run');
+        if($("#type").val()==''){
+            return false;
+        }
+    });
+
+    function deleteUploadInfo(id,obj)
+    {
+		var thisId = id;
+        var thisObj = obj;
+//        $('#prompt_delete').show();
+		$.NotifyBox.NotifyPromptTwoCo("提示","确定删除？", "确定", "取消", function() {
+			$(thisObj).parent().remove();
+            delete uploadInfo[thisId];
+            <?php if($data['id'] == '465'){ ?>
+            if($('.delet').length == 0){
+                $('.qq-upload-notice').show();
+                $('.qq-upload-button').show();
+            }
+            <?php } ?>
+		})
+//        $('#toolTipBtn_yes').unbind().click(function(){
+//            $(thisObj).parent().remove();
+//            delete uploadInfo[thisId];
+//            $('#prompt_delete').hide();
+//        });
+//        $('#toolTipBtn_no').unbind().click(function(){
+//            $('#prompt_delete').hide();
+//        });
+    }
+
+
+    function checkWork() {
+        //资源名称
+        if(!onFileCheck()){
+            return false;
+        }
+        $('#unique_string').val('');
+        $('#file_name').val('');
+        $("#unique_vid").val();
+        $("#vid_width").val();
+        $("#vid_time").val();
+        $("#vid_fullpath").val('');
+        $("#vid_image_path").val('');
+        $("#vid_transition").val('');
+        $("#vid").val('');
+
+        for(var key in uploadInfo){
+            $('#unique_string').val($('#unique_string').val() + uploadInfo[key].file_path +',');
+
+            $('#file_name').val($('#file_name').val() + uploadInfo[key].file_name +',');
+
+            var image_path= typeof(uploadInfo[key].image_path) != 'undefined' ? uploadInfo[key].image_path : '0';
+            $('#vid_image_path').val($('#vid_image_path').val()+image_path+',');
+
+            var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+            $('#vid_transition').val($('#vid_transition').val()+vid_transition+',');
+
+            var vid= typeof(uploadInfo[key].vid) != 'undefined' ? uploadInfo[key].vid : '0';
+            $('#vid').val($('#vid').val()+vid+',');
+
+            var vid_fullpath= typeof(uploadInfo[key].vid_fullpath) != 'undefined' ? uploadInfo[key].vid_fullpath : '0';
+            $('#vid_fullpath').val($('#vid_fullpath').val()+vid_fullpath+',');
+        }
+        $('#file_name').val($('#file_name').val().substr(0 ,$('#file_name').val().length-1));
+        $('#unique_string').val($('#unique_string').val().substr(0 ,$('#unique_string').val().length-1));
+        $('#vid_image_path').val($('#vid_image_path').val().substr(0 ,$('#vid_image_path').val().length-1));
+        $('#vid_transition').val($('#vid_transition').val().substr(0 ,$('#vid_transition').val().length-1));
+        $('#vid').val($('#vid').val().substr(0 ,$('#vid').val().length-1));
+        $('#vid_fullpath').val($('#vid_fullpath').val().substr(0 ,$('#vid_fullpath').val().length-1));
+
+        var vid_file_path=$('#unique_string').val();
+        if(vid_file_path==''){
+            $.NotifyBox.NotifyPromptOne("提示",'上传文件不能为空', "确定");
+            return false;
+        }
+        return true;
+    }
+</script>
+<script>
+    <?php if($data['id'] == '465'){ ?>
+    if($('.delet').length > 0 ){
+        $('.qq-upload-notice').hide();
+        $('.qq-upload-button').hide();
+    }
+    <?php } ?>
+</script>
+
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+    $(function(){
+        var options = {
+            success:    saveWorks,  // post-submit callback
+            resetForm:  false,
+            dataType:  'json'
+        };
+
+        // bind to the form's submit event
+        $('#mainForm').submit(function() {
+            $(this).ajaxSubmit(options);
+            return false;
+        });
+    });
+    function saveWorks(responseText, statusText) {
+        $('#saveButton').attr('disabled',false);
+        switch(responseText.status)
+        {
+            case 200: //success
+                $.NotifyBox.NotifyPromptOneC("提示","保存成功", "确定",function(){
+                    window.location.reload();
+                });
+
+                break;
+
+            default: $.NotifyBox.NotifyPromptOne("提示",responseText.message, "确定");
+                break;
+        }
+    }
+</script>
+<!--获奖作品-->
+<script>
+    $('#Winning_entries').click(function () {
+        window.location.href = "{:U('Activity/activityWorks')}&id={$data.id}";
+    })
+</script>
+<!--弹窗隐藏-->
+<script>
+    $('.toolTipBtn').click(function(){
+        $(this).parent().parent().hide();
+        $('.fullscr').hide();
+    })
+</script>
+
+<!--上传作品-->
+
+<script>
+    function newWin(url, id) {
+        var a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('target', '_blank');
+        a.setAttribute('id', id);
+        // 防止反复添加
+        if(!document.getElementById(id)) {
+            document.body.appendChild(a);
+        }
+        a.click();
+    }
+    
+    var contactFileBackup ;
+    $('#workUpload').click(function(){
+	/*<if condition="$data.class_id neq 6">
+	        $('.workPublish,.fullBlack').show();
+            contactFileBackup = $('#contactFileList').html();
+	<else/>
+	        window.location.href = "{:U('Activity/teachDesignWorkUpload')}&id={$data.id}";
+	</if>*/
+        <?php if((strpos($_SERVER['HTTP_HOST'],'jingbanyun.com')!= -1 && $data['id'] == 142) || $data['is_work_compare_activity'] == 1){ ?>
+            newWin("<?php echo '/index.php?m=Home&c=Activity&a=teachDesignWorkUpload&id='.$data['id']?>",'click');
+        <?php }else{ ?>
+            $('.workPublish,.fullBlack').show();
+			$('body').css('overflow-y','hidden')
+            contactFileBackup = $('#contactFileList').html();
+        <?php }?>
+
+
+    });
+
+	$('.modifyWork').click(function(){
+
+        <?php if((strpos($_SERVER['HTTP_HOST'],'jingbanyun.com')!= -1 && $data['id'] == 142) ||  $data['is_work_compare_activity'] == 1){ ?>
+            window.location.href = "<?php echo 'index.php?m=Home&c=Activity&a=teachDesignWorkModify&workId='.$workInfo['id']?>";
+        <?php }else{ ?>
+            $('.workPublish,.fullBlack').show();
+			$('body').css('overflow-y','hidden')
+            contactFileBackup = $('#contactFileList').html();
+        <?php }?>
+
+    })
+    $('.workPublishClose').click(function(){
+        $('.workPublish,.fullBlack').hide();
+		$('body').css('overflow-y','inherit')
+        $('#contactFileList').html(contactFileBackup)
+    })
+</script>
+
+<!--右边内容最短与左边相等-->
+<script>
+    $(function(){
+        var rightHeight = $('.activityConLeft').height();
+        $('.activityConRight').css('min-height',rightHeight)
+    })
+</script>
+<!--单选框点击事件-->
+<script>
+    $('#radioFemale').click(function () {
+        if(!$(this).attr('checked')) {
+            $(this).attr('checked', 'checked')
+            $('#radioMale').removeAttr('checked')
+        }
+    })
+    $('#radioMale').click(function () {
+        if(!$(this).attr('checked')) {
+            $(this).attr('checked', 'checked')
+            $('#radioFemale').removeAttr('checked')
+        }
+    })
+</script>
+<!--提示去个人中心修改信息-->
+<script>
+
+    function personInfo(){
+
+        $.NotifyBox.NotifyPromptTwoCo("提示","若该信息与您的真实信息不符，<br>请先到个人中心修改个人信息。", "去修改", "取消", function() {
+            var arr = new Array();
+            var course_id = $('#course_id').val();
+            var sex = $("input[name='sex']").attr('checked','checked').val();
+            var issue = $('#issue').val();
+            var school = $('#school').val();
+            var SchAddress = $('#SchAddress').val();
+            var age = $('#age').val();
+            var education = $('#education').val();
+            var job = $('#job').val();
+            var email = $('#email').val();
+            var postcode = $('#postcode').val();
+            var officePhone = $('#officePhone').val();
+            var localCourse = $('#localCourse').val();
+            var schoolCourse = $('#schoolCourse').val();
+            var activity_id = "<?php echo $data['id'] ?>";
+            for(i=0;i<$('.user-defined').length;i++) {
+                arr.push($('.user-defined').eq(i).val());
+            }
+            document.cookie= 'user-defined='+arr;
+            document.cookie=  'course_id='+course_id;
+            document.cookie= 'issue='+issue;
+            document.cookie= 'SchAddress='+SchAddress;
+            document.cookie= 'age='+age;
+            document.cookie= 'education='+education;
+            document.cookie= 'job='+job;
+            document.cookie= 'email='+email;
+            document.cookie= 'postcode='+postcode;
+            document.cookie= 'officePhone='+officePhone;
+            document.cookie= 'localCourse='+localCourse;
+            document.cookie= 'schoolCourse='+schoolCourse;
+            document.cookie= "tips=1";
+            document.cookie= 'id='+activity_id;
+            /*var date=new Date();
+            var expireDays=1;
+            date.setTime(date.getTime()+expireDays*12*3600*1000);
+            document.cookie="tips=1;expire="+date.toGMTString();*/
+
+            <?php if($roles == '2'){ ?>
+            window.location.href = "{:U('Teach/me')}"
+            <?php }elseif($roles == '3') { ?>
+            window.location.href = "{:U('Student/me')}"
+            <?php }elseif($roles == '4') { ?>
+            window.location.href = "{:U('Parent/me')}"
+            <?php } ?>
+        })
+    }
+</script>
+
+<script>
+    if(getQueryString('needUpload') == '1' && $('#workUpload').attr('disabled')!='disabled')
+    {
+        $('#workUpload').click();
+    }
+</script>
+<script src="__PUBLIC__/js/md5/browser-md5-file.js"></script>
+
+<!--左边固定-->
+<script>
+	$(document).ready(function () {
+		$(window).scroll(function () {
+//			console.log($(window).scrollTop());
+//			console.log($('.applyBtn').offset().top - $(window).scrollTop());
+//			console.log($(window).height());
+			var leftHeight = $(window).height() - $('.activityConLeft').height();
+//			console.log($('.activityConLeft').height());
+			var aHeight = $(window).height() - ($('.applyBtn').offset().top - $(window).scrollTop());
+//			var rHeight = $('.activityConRight').height() - $('.activityConLeft').height() * 71/128;
+			if ($(window).scrollTop() >= 300 && aHeight < leftHeight) {
+				$('.activityConLeft').css({
+					'position': 'fixed',
+					'top': '20px',
+					'bottom': 'inherit'
+				})
+			} else if(aHeight >= leftHeight) {
+				$('.activityConLeft').css({
+					'position': 'absolute',
+					'top': 'inherit',
+					'bottom': '10px'
+				})
+			} else {
+				$('.activityConLeft').css({
+					'position': 'inherit',
+					'top': 'inherit',
+					'bottom': 'inherit'
+				})
+			}
+
+		});
+	});
+</script>
+
+<script>
+    function getCookie(name){
+    var strCookie=document.cookie;
+    var arrCookie=strCookie.split("; ");
+    for(var i=0;i<arrCookie.length;i++){
+    var arr=arrCookie[i].split("=");
+    if(arr[0]==name)return arr[1];
+    }
+    return "";
+    }
+
+    function deleteCookie(name){
+    var date=new Date();
+    date.setTime(date.getTime()-10000);
+    document.cookie=name+"=v; expire="+date.toGMTString();
+    }
+
+        var back = getCookie('back');
+    if(back == 'yes') {
+        $('#applyBtn').click();
+    }
+        function assing_parmes(){
+            if(back == 'yes') {
+                var temp_arr = new Array();
+                var user_defined_new = getCookie('user-defined');
+                var course_id_new = getCookie('course_id');
+                var issue_new = getCookie('issue');
+                var SchAddress_new = getCookie('SchAddress');
+                var age_new = getCookie('age');
+                var education_new = getCookie('education');
+                var job_new = getCookie('job');
+                var email_new = getCookie('email');
+                var postcode_new = getCookie('postcode');
+                var officePhone_new = getCookie('officePhone');
+                var localCourse_new = getCookie('localCourse');
+                var schoolCourse_new = getCookie('schoolCourse');
+                //赋值操作
+                $('#course_id').val(course_id_new);
+                $('#issue').val(issue_new);
+                $('#SchAddress').val(SchAddress_new);
+                $('#age').val(age_new);
+                $('#education').val(education_new);
+                $('#job').val(job_new);
+                $('#email').val(email_new);
+                $('#postcode').val(postcode_new);
+                $('#officePhone').val(officePhone_new);
+                $('#localCourse').val(localCourse_new);
+                $('#schoolCourse').val(issue_new);
+                temp_arr = user_defined_new.split(',');
+                for (i = 0; i < temp_arr.length; i++) {
+                    $('.user-defined').eq(i).val(temp_arr[i]);
+                }
+                deleteCookie('back');
+            }
+        }
+
+        function hiddens() {
+            $('.usererror').hide();
+        }
+</script>
+
+<script>
+    $(function(){
+        for(var i=0;i<$('.activityConRight').find('img').length;i++) {
+            $('.activityConRight').find('img').eq(i).css('margin-left',"-2em");
+        }
+    })
+</script>
+<script src='//player.polyv.net/script/polyvplayer.min.js'></script>
+</notempty>

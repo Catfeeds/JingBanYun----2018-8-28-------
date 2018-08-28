@@ -1,0 +1,1063 @@
+<layout name="teacher_layout_1"/>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/> 
+<link href="__PUBLIC__/css/activity.css" rel="stylesheet" type="text/css"/> 
+
+<style>
+	.activityConRight {
+		min-height: 460px;
+	}
+</style>
+
+<div>
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div class="activityTitle">
+	<p class="title">{$data.title}</p>
+	<p class="publishBox">{$data.publisher}&nbsp;/&nbsp;{$data.create_at|date="Y-m-d",###}</p>
+	<p class="ctrl_box">
+		<if condition="$existedZan eq 'yes'">
+			<img id="zanIcon" src="__PUBLIC__/img/icon/zaned.png">
+			<else/>
+			<img id="zanIcon" src="__PUBLIC__/img/icon/zan.png">
+		</if>
+		<if condition="$existedFavor eq 'yes'">
+			<img id="favorIcon" src="__PUBLIC__/img/icon/favored.png">
+			<else/>
+			<img id="favorIcon" src="__PUBLIC__/img/icon/favor.png">
+		</if>
+	</p>
+</div>
+<div class="activityContent">
+	<div class="left activityConLeft">
+		<p>
+			活动时间：<br>
+			{$data.activitystart|date="Y-m-d H:i",###} 至 {$data.activityend|date="Y-m-d H:i",###}
+		</p>
+		<p>
+			报名时间：<br>
+			{$data.applystart|date="Y-m-d H:i",###} 至 {$data.applyend|date="Y-m-d H:i",###}
+		</p>
+		<p>限制人数：{$data.apply_people_number}人</p>
+		<p>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：{$data.remark}</p>
+		<p>已&nbsp;&nbsp;报&nbsp;&nbsp;名：{$data.register_numbers}人</p>
+		<p>
+			面向人群：<br>
+			<span class="stakeholder padding10">
+				{$data.stakeholder}
+			</span>
+		</p>
+		<div class="activityData">
+			<span class="dataTitle">
+				<img src="__PUBLIC__/img/activity/dataTitle.png" alt="">
+				活动资料
+			</span>
+			<ul class="dataUl">
+				<volist name="activity_contact_file" id="contactData">
+					<li class="dataLi">
+						<a class="dataA" type="{$contactData.type}" src="{$oss_path}{$contactData.activity_file_path}" href="javascript:;">{$contactData.activity_file_name}</a>
+					</li>
+				</volist>
+
+			</ul>
+		</div>
+		<div class="text-center applyBox">
+			<if condition="$registered eq 'no'">
+				<p class="left applyP">
+					<button id="applyBtn" <?php
+                   if( (time() < $data['applystart']) || (time() + 60 > $data['applyend']) || ($data['apply_people_number'] == $data['register_numbers']))
+					{
+					echo 'class="btn btn-gray" disabled';
+					}
+					else
+					echo 'class="btn btn-red"';
+					?>>我要报名</button>
+				</p>
+				<p class="left applyP">
+					<button class="btn btn-gray" disabled>上传作品</button>
+					<br>
+					<span class="applySpan">请先报名并填写报名信息</span>
+				</p>
+			<else/>
+				<p class="left applyP">
+					<button class="btn btn-gray" disabled>已报名</button>
+				</p>
+				<p class="left applyP">
+
+					<button class="btn btn-red" id="workUpload">上传作品</button>
+					<br>
+					<if condition="$hasUploadWork neq false">
+						<if conditon="$hasUploadWork['status'] eq 0">
+					       <span class="applySpan">作品审核中...</span>
+						<elseif condition="$hasUploadWork['status'] eq 1"/>
+						   <span class="applySpan">作品已审核通过</span>
+						<elseif condition="$hasUploadWork['status'] eq 2"/>
+							<span class="applySpan">作品被拒绝通过，请重新上传。拒绝理由：{$hasUploadWork.error_data}</span>
+						</if>
+					</if>
+				</p>
+			</if>
+
+
+		</div>
+	</div>
+	<div class="activityConRight padding10">
+		{$data.content}
+	</div>
+</div>
+
+<div class="applyBtn">
+	<if condition="$registered eq 'yes'">
+	 <a href="javascript:;" class="redA checkApply">查看报名信息</a>
+	 <a href="javascript:;" class="redA modifyApply">修改报名信息</a>
+	</if>
+	<if condition="$hasUploadWork neq false">
+	  <a href="{:U('Activity/activityWorkDetails')}&id={$workInfo.id}" class="redA checkWork">查看作品</a>
+	   <if condition="($hasUploadWork['status'] eq 1) OR ($hasUploadWork['status'] eq 2)">
+	    <a href="javascript:;" class="redA modifyWork">修改作品</a>
+	   </if>
+	</if>
+
+</div>
+
+<if condition="$_SESSION['teacher'] neq 'youke'">
+	<div class="applyInfo">
+		<h2>报名信息表</h2>
+		<img src="__PUBLIC__/img/activity/applyInfo.png" alt="" class="applyInfoImg">
+		<form id="info-list" action="/ApiInterface/{$apiVersion}/Activity/signupInformation" method="post">
+			<input type="hidden" name="activity_id" value="{$data.id}">
+			<input type="hidden" name="teacher_id" value="{$_SESSION.teacher.id}">
+			<input type="hidden" name="edit_status" value="{$registered == 'yes' ? 1:0}" id="edit_status"/>
+			<div class="applyInfoBox">
+               <if condition = "($data.is_generate eq 2) AND ($data.is_disable eq 1)">
+				<div class="form_section" id="activityCode">
+					<label for="code">活动邀请码</label>
+					<input type="text" name="Inviteid_code" id="code" class="form-control form-control2" required placeholder="必填" maxlength="6" onblur="return regcode();">
+					<span class="applyInfoError" id="codeError">邀请码错误</span>
+				</div>
+				</if>
+				<div class="form_section">
+					<label for="tname">教师姓名</label>
+					<input type="text" name="name" id="tname" class="form-control form-control2" required placeholder="必填" readonly onblur="return regtname();" disabled="disabled">
+					<span class="applyInfoError" id="tnameError">请输入正确的姓名</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="course_id">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+					<select id="course_id" name="course" class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+                        <volist name="courselist" id="dataCourse">
+                            <option value="{$dataCourse.id}">{$dataCourse.code} : {$dataCourse.course_name}</option>
+                        </volist>
+                        <option value="-1">QXK : 全学科</option>
+                    </select>
+					<span class="applyInfoError" id="courseError">请选择学科</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="issue">参评课题</label>
+					<input type="text" name="lesson" id="issue" class="form-control form-control1" required placeholder="必填，不超过50字" maxlength="50">
+					<span class="applyInfoError" id="issueError">请输入参评课题</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="">所属区县</label>
+					<span>省</span>
+					<select id="MyProvince" name="MyProvince" class="form-control form-control3" required>
+
+                    </select>
+                    
+                    <span>市</span>
+					<select id="MyCity" name="MyCity" class="form-control form-control3" required>
+
+                    </select>
+                    
+                    <span>区</span>
+					<select id="MyDistrict" name="MyDistrict" class="form-control form-control3" required>
+
+                    </select>
+					<span class="applyInfoError" id="MyCountyError">请选择所属区县</span>
+				</div>
+				
+
+				
+				<div class="form_section">
+					<label for="sex">教师性别</label>
+					<input id="radioMale" type="radio" name="sex" value="男" disabled="disabled" readonly>男
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<input id="radioFemale" type="radio" name="sex" value="女" disabled="disabled" readonly>女
+					<span class="applyInfoError" id="sexError">请选择性别</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="age">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;龄</label>
+					<input type="text" name="age" id="age" class="form-control form-control2" required placeholder="必填"   onblur="return regage();"  maxlength="3">
+					<span class="applyInfoError" id="ageError">请输入正确的年龄</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="education">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历</label>
+					<select id="education" name="education" class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+						<volist name="education" key="i" id="education_item">
+								<option value="{$i}">{$education_item}</option>
+						</volist>
+                    </select>
+					<span class="applyInfoError" id="educationError">请选择学历</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="job">职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称</label>
+					<select id="job" name="positions" class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+						<volist name="positions" key="i" id="positions_item">
+							<option value="{$i}">{$positions_item}</option>
+						</volist>
+                    </select>
+					<span class="applyInfoError" id="jobError">请选择职称</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="email">电子邮箱</label>
+					<input type="email" name="email" id="email" class="form-control form-control2" required placeholder="必填" onblur="return regemail();" disabled="disabled" readonly>
+					<span class="applyInfoError" id="emailError">请输入正确的电子邮箱</span>
+				</div>
+				<div class="form_section">
+					<label for="school">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;校</label>
+					<span>省</span>
+					<select id="SchProvince" name="SchProvince" class="form-control form-control3" required disabled="disabled" readonly>
+						<option value="">-请选择-</option>
+						<option value="">北京</option>
+					</select>
+
+					<span>市</span>
+					<select id="SchCity" name="SchCity" class="form-control form-control3" required disabled="disabled" readonly>
+						<option value="">-请选择-</option>
+						<option value="">北京</option>
+					</select>
+
+					<span>区</span>
+					<select id="SchDistrict" name="SchDistrict" class="form-control form-control3" required disabled="disabled" readonly>
+						<option value="">-请选择-</option>
+						<option value="">海淀</option>
+					</select>
+					
+					<br>
+					<label for="">&nbsp;</label>
+					<span>学校</span>
+					<select id="school" name="school" class="form-control form-control2" required disabled="disabled" readonly style="margin:5px 0 0">
+
+					</select>
+					<span class="applyInfoError" id="schoolError">请选择学校</span>
+					
+					<br>
+					<label for="">&nbsp;</label>
+                    <input type="text" name="SchAddress" id="SchAddress" class="form-control form-control1" required placeholder="学校详细地址，必填" disabled="disabled" readonly style="margin:5px 0 0">
+					<span class="applyInfoError" id="SchCountyError">请输入正确的学校地址</span>
+				</div>
+
+				
+				<div class="form_section">
+					<label for="postcode">学校邮编</label>
+					<input type="text" name="post_code" id="postcode" class="form-control form-control2" required placeholder="必填" maxlength="6" onblur="return regpostcode();">
+					<span class="applyInfoError" id="postcodeError">请输入正确的学校邮编</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="officePhone">办公电话</label>
+					<input type="text" name="tel" id="officePhone" class="form-control form-control2" placeholder="选填" onblur="return regofficePhone();">
+					<span class="applyInfoError" id="officePhoneError">请输入正确的办公电话</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="mobilePhone">移动电话</label>
+					<input type="text" name="mobilePhone" id="mobilePhone" class="form-control form-control2" required disabled="disabled" readonly placeholder="必填" maxlength="11" onblur="return regmobilePhone();">
+					<span class="applyInfoError" id="mobilePhoneError">请输入正确的移动电话</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="localCourse">地方课程</label>
+					<select id="localCourse" name="local_course" class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+						<option value="0">否</option>
+                        <option value="1">是</option>
+					</select>
+					<span class="applyInfoError" id="localCourseError">请选择地方课程</span>
+				</div>
+				
+				<div class="form_section">
+					<label for="schoolCourse">校本课程</label>
+					<select id="schoolCourse" name="school_course" class="form-control form-control2" required>
+                        <option value="">-请选择-</option>
+						<option value="0">否</option>
+						<option value="1">是</option>
+                    </select>
+					<span class="applyInfoError" id="schoolCourseError">请选择校本课程</span>
+				</div>
+				
+			</div>
+
+			<div class="applyInfoBtn">
+				<if condition="$registered eq 'no'">
+					<button type="button" class="btn btn-red" id="submitInfo" onclick="checkAndSubmitInfo()" >提交</button>
+				<else/>
+					<button type="button" class="btn btn-red" id="submitInfo" onclick="checkAndSubmitInfo()" >提交</button>
+					<button type="button" class="btn btn-red" id="closeInfo">关闭</button>
+				</if>
+			</div>
+		</form>
+	</div>
+</if> 
+
+<!--资源展示弹窗-->
+<div class="fullBlack"></div>
+<div class="resourceOutter">
+	<span class="resourceClose"></span>
+	<div id="innerContent"></div>
+</div>
+
+<div class="workPublish">
+	<div style="overflow:hidden;">
+		<img src="__PUBLIC__/img/activity/worksUpload2.png" alt="" class="left" style="width: 140px">
+<!--修改作品： <img src="__PUBLIC__/img/activity/worksModify2.png" alt="" class="left" style="width: 140px">-->
+		<span class="right workPublishClose"></span>
+	</div>
+	<form id="mainForm" action="{:U('Teach/activityWorkPublish')}" method="post" onsubmit="$('#saveButton').attr('disabled',true);">
+		<input type="hidden" name="id" value="{$data.id}">
+		<div style="text-align:center;">
+			<div class="form_section">
+				<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+				<div class="input-control text full-size">
+					{$courses.course_name}
+				</div>
+			</div>
+			<div class="form_section">
+				<label for="grade_id">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label>
+
+				<div class="input-control text full-size">
+					<select id="grade_id" name="grade_id" class="form-control"  required style="width:400px">
+						<option value="">-请选择-</option>
+						<volist name="grades" id="dataGrade" empty="暂时没有信息">
+							<option value="{$dataGrade.grade}" {$dataGrade['grade_name']==$workInfo['grade']?'selected':''}>{$dataGrade.grade_name}</option>
+						</volist>
+					</select>
+				</div>
+			</div>
+
+			<div class="form_section ">
+				<label for="name">作品名称</label>
+				<div class="input-control text full-size">
+					<input type="text" name="name" id="name" class="form-control" required placeholder="必填，不超过40个字" maxlength="40" value="{$workInfo.works_name}">
+				</div>
+			</div>
+			<div class="form_section">
+				<label for="description" style="vertical-align:top">作品描述</label>
+				<div class="input-control text full-size">
+					<textarea id="description" name="description" rows="4" class="form-control" required placeholder="必填，不超过100个字" maxlength="100" value="">{$workInfo.works_description}</textarea>
+				</div>
+			</div>
+			<input type='hidden' name='file_name' id='file_name' />
+			<input type='hidden' name='unique_string' id='unique_string' />
+			<input type='hidden' name='vid_image_path' id='vid_image_path' />
+			<input type='hidden' name='vid_transition' id='vid_transition' />
+			<!--<div><a href="javascript:void(0)" style="color:#dd1010;text-decoration: none" class='choose_file'>选择上传文件</a></div>
+            <div id="add_files">
+                <p>
+
+                </p>
+            </div>-->
+			<div id="fine-uploader">
+
+			</div>
+			<!--作者寄语-->
+			<div class="authorWishes">
+				<p class="autWisTitle">
+					作者寄语
+					<img class="autWisImg" src="__PUBLIC__/img/activity/authorWishes.png" alt="">
+				</p>
+				<div class="input-control text full-size autConBox">
+					<textarea id="authorContent" name="authorContent" rows="4" class="form-control" placeholder="不超过100个字" maxlength="100" value="">{$workInfo.author_remarks}</textarea>
+				</div>
+			</div>
+			<div class="form-actions" style="background:none">
+				<!--<button type="button" class="btn btn-primary" id="uploadButton">开始上传</button>-->
+				<button type="submit" class="btn btn-primary_red" id="saveButton" onclick="return checkWork();">保存</button>
+			</div>
+
+	</form>
+
+</div>
+</div>
+<!--弹窗-->
+<div class="fullscr"></div>
+<!--游客弹窗-->
+<div class="toolTipBox toolTip1" id="toolTip1">
+	<span class="toolTipClose"></span>
+	<p class="toolTipButton">
+		<a href="{:U('Index/index')}" class="toolTipBtn toolTipBtnGreen2" id="">登录</a>
+		<a href="{:U('Index/index')}" class="toolTipBtn toolTipBtnGreen2" id="">去注册</a>
+	</p>
+</div>
+
+<!--请确认报名信息无误!-->
+<div class="toolTipBox prompt_confirm" id="prompt_confirm">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen2 cancel" id="cancel_submit">取消</a>
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen2 cancel" id="confirm_submit">确定</a>
+	</p>
+</div>
+
+<!--报名成功!请上传作品!-->
+<div class="toolTipBox prompt_applySuccess" id="prompt_applySuccess">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGray2 cancel" id="">暂不上传</a>
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen2 cancel" id="">去上传</a>
+	</p>
+</div>
+
+<!--您还没有上传作品哦!-->
+<div class="toolTipBox prompt_nowork" id="prompt_nowork">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGray2 cancel" id="">暂不上传</a>
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen2 cancel" id="">去上传</a>
+	</p>
+</div>
+
+<!--报名失败,活动人数已满.-->
+<div class="toolTipBox prompt_applyfail" id="prompt_applyfail">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen1 cancel" id="">确定</a>
+	</p>
+</div>
+
+<!--报名失败-->
+<div class="toolTipBox prompt_applyend" id="prompt_applyend">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen1 cancel" id="">确定</a>
+	</p>
+</div>
+
+<!--服务器繁忙,请稍后再试!-->
+<div class="toolTipBox prompt_busy" id="prompt_busy">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen1 cancel" id="">确定</a>
+	</p>
+</div>
+
+<!--提交成功-->
+<div class="toolTipBox prompt_submitsuccess" id="prompt_submitsuccess">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen1 cancel" id="">确定</a>
+	</p>
+</div>
+
+<!--提交失败,报名已结束,无法修改信息-->
+<div class="toolTipBox prompt_submitfail" id="prompt_submitfail">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen1 cancel" id="">确定</a>
+	</p>
+</div>
+
+<!--如果输入信息不符，请到个人中心修改信息!-->
+<div class="toolTipBox prompt_changeinfo" id="prompt_changeinfo">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGray2 cancel" id="">取消</a>
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen2 cancel" id="">去修改</a>
+	</p>
+</div>
+
+<!--大小超过限制弹窗-->
+<div class="toolTipBox prompt_limit" id="prompt_limit">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen1" id="">确定</a>
+	</p>
+</div>
+
+<!--保存成功-->
+<div class="toolTipBox prompt_save" id="prompt_save">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen1" id="">确定</a>
+	</p>
+</div>
+
+<!--确定删除弹窗-->
+<div class="toolTipBox prompt_delete" id="prompt_delete">
+	<p class="toolTipButton">
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen2" id="toolTipBtn_yes">是</a>
+		<a href="javascript:;" class="toolTipBtn toolTipBtnGreen2" id="">否</a>
+	</p>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/queryLimit.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+
+<!--点赞收藏-->
+<script>
+    var zanCount=0;
+    var favorCount=0;
+    
+    $(function () {
+        $('#zanIcon').click(function () {
+            if(!canQuery()){
+                $.notify({
+                    title: '提示',
+                    message: '请求过于频繁'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            zanCount++;
+            $.get('__URL__/zanActivity', {social_activity_id: '{$data.id}'}, function (res) {
+                if (res == 'success') {
+                    $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zaned.png');
+                    $.notify({
+                        title: '提示',
+                        message: '点赞成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+                    if (res == 'youke') {
+                        $('.fullscr,#toolTip1').show();
+                    } else {
+                        $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zan.png');
+                        $.notify({
+                            title: '提示',
+                            message: res
+                        }, {
+                            type: 'warning',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            }
+                        });
+                    }  
+                }
+            });
+        });
+
+        $('#favorIcon').click(function () {
+            if(!canQuery()){
+                $.notify({
+                    title: '提示',
+                    message: '请求过于频繁'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            favorCount++;
+            
+            $.get('__URL__/favorActivity', {social_activity_id: '{$data.id}'}, function (res) {
+                if (res == 'success') {
+                    $('#favorIcon').attr('src', '__PUBLIC__/img/icon/favored.png');
+                    $.notify({
+                        title: '提示',
+                        message: '收藏成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+
+                    if (res == 'youke') {
+                        $('.fullscr,#toolTip1').show();
+                    } else {
+
+                        $('#favorIcon').attr('src', '__PUBLIC__/img/icon/favor.png');
+                        $.notify({
+                            title: '提示',
+                            message: res
+                        }, {
+                            type: 'warning',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+	$(function(){
+		var options = {
+		success:    showResponseForm,  // post-submit callback
+		resetForm:  false,
+		dataType:  'json'
+		};
+
+		// bind to the form's submit event
+		$('#info-list').submit(function() {
+		$(this).ajaxSubmit(options);
+		return false;
+		});
+	});
+	function showResponseForm(responseText, statusText) {
+		switch(responseText.status)
+		{
+		case 200: showDialog3Seconds('prompt_submitsuccess',true);
+				   break;
+		default: showDialog3Seconds('prompt_submitfail');
+		          break;
+		}
+	}
+	function checkAndSubmitInfo()
+	{
+		if(true == check()){
+			$('#prompt_confirm').show();
+		}
+	}
+	$('#confirm_submit').click(function(){
+		$('#info-list').submit();
+	});
+	$('#cancel_submit').click(function(){
+		$('#prompt_confirm').hide();
+	});
+	function showDialog3Seconds(dialogId,needRefresh)
+	{
+	   var template = "$('#{0}')".format(dialogId);
+	   var templateShow = template + '.show();';
+	   var templateHide = template + '.hide();';
+		if(typeof needRefresh != 'undefined')
+	   	  if(needRefresh == true)
+			  templateHide += 'window.location.reload();';
+	   eval(templateShow);
+       setTimeout(templateHide,3000);
+	}
+</script>
+
+<!--资源展示弹窗-->
+<script>
+	$('.toolTipClose').click(function(){
+		$('.fullscr,#toolTip1').hide();
+	})
+	function loadRegData(disabled)
+	{
+		$.get('ApiInterface/'+apiVersion + '/Activity/registrationInformationJSON4PC',{id:{$data.id}},function(res){
+			if(res.status == 200)
+			{
+		try {
+			$('#code').val(res.result.invitation_code);
+			$('#tname').val(res.result.user_name);
+			$('#course_id').val(res.result.course_id);
+			$('#issue').val(res.result.lesson);
+			$('#MyProvince').val(res.result.province_id);
+			$('#MyCity').attr('default_id',res.result.city_id);
+			$('#MyDistrict').attr('default_id',res.result.district_id);
+			$('#MyProvince').change();
+			if (res.result.sex == '男')
+				$('#radioMale').attr('checked', true);
+			else
+				$('#radioFemale').attr('checked', true);
+			$('#age').val(res.result.age);
+			$('#education option:contains(' + res.result.education  + ')').each(function(){
+				if ($(this).text() == res.result.education) {
+					$(this).attr('selected', true);
+				}
+			});
+			$('#job option:contains(' + res.result.positions + ')').each(function(){
+				if ($(this).text() == res.result.positions) {
+					$(this).attr('selected', true);
+				}
+			});
+			$('#email').val(res.result.email);
+
+			$('#SchProvince').val(res.result.school_province_id);
+			$('#SchCity').attr('default_id',res.result.school_city_id);
+			$('#SchDistrict').attr('default_id',res.result.school_district_id);
+			$('#SchProvince').change();
+			$('#school').attr('default_id',res.result.school_id);
+			$('#SchAddress').val(res.result.school_address);
+			$('#postcode').val(res.result.post_code);
+
+			$('#officePhone').val(res.result.tel);
+			$('#mobilePhone').val(res.result.telephone);
+			$('#localCourse').val(res.result.local_course);
+			$('#schoolCourse').val(res.result.school_course);
+			$('.applyInfo').find('input,select').each(function(i,n){
+				if('' == disabled)
+				{
+				 if('undefined' == typeof($(n).attr('readonly')))
+				  $(n).removeAttr("disabled");
+				}
+				else
+				$(n).attr('disabled',disabled);
+			});
+
+		}catch(e){;}
+		$('.applyInfo').show();
+			}
+		});
+	}
+	$('.checkApply').click(function(){
+		//ajax load reg data
+		$('#submitInfo').hide();
+		loadRegData('disabled');
+		$('#edit_status').val(0);
+	});
+	$('.modifyApply').click(function(){
+		//ajax load reg data
+		$('#submitInfo').show();
+		loadRegData('');
+		$('#edit_status').val(1);
+	});
+
+	$('#closeInfo').click(function(){
+		$('.applyInfo').hide();//报名信息表大框出现
+	})
+</script>
+
+<!--游客弹窗-->
+<script>
+	$('.dataA').click(function(){
+		$('.fullBlack,.resourceOutter').show();
+		var obj = $(this);
+		switch(obj.attr('type'))
+		{
+			case 'image':var template = '<img src="{0}">';
+				          $('#innerContent').html(template.format(obj.attr('src')));
+				          break;
+			case 'video':
+			case 'audio':var template = '<video controls src="{0}">';
+				          $('#innerContent').html(template.format(obj.attr('src')));
+				          break;
+			case 'ppt':
+			case 'word':
+			case 'pdf':
+				          var template = '<iframe id="resourceFrame" frameborder="1" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={0}" width="100%" height="500"></iframe>';
+				          $('#innerContent').html(template.format(obj.attr('src')));
+				          break;
+			case 'swf':
+				          var template = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">' +
+								  '<embed id="sfw_src" width="500" height="500" name="plugin"  src="{0}" type="application/x-shockwave-flash">' +
+								  '<param name="loop" value="false"><param name="movie" value=""></object>';
+				          $('#innerContent').html(template.format(obj.attr('src')));
+				          break;
+			case 'condensed':break;
+		}
+	})
+	
+	$('.resourceClose').click(function(){
+		$('.fullBlack,.resourceOutter').hide();
+	})
+
+</script>
+
+<!--提示弹窗-->
+<script>
+	$('.cancel').click(function(){
+		$(this).parent().parent().hide();
+		$('.fullscr').hide()
+	})
+</script>
+	
+<script>
+	$('#applyBtn').click(function(){
+		$('.applyInfo').show();//报名信息表大框出现
+		<if condition = "($data.is_generate eq 2) AND ($data.is_disable eq 1)">
+		$('#activityCode').siblings('.form_section').hide();//邀请码出现，其余隐藏
+		$('.applyInfoBtn').hide();//提交框隐藏
+		</if>
+
+	})
+	
+	//判断邀请码正误
+	function checkCode() {
+		//ajax
+		var Inviteid = $('#code').val();
+		if (Inviteid != '') {
+			//开始验证
+			$.getJSON('ApiInterface/'+apiVersion+'/activity/VerificationCode',{id:{$data.id},code:Inviteid},function(msg){
+				if(msg.status==200){
+					$('#activityCode').siblings('.form_section').show();//邀请码出现，其余隐藏
+					$('.applyInfoBtn').show();//提交框隐藏
+				}else{
+					$('#activityCode').siblings('.form_section').hide();//邀请码出现，其余隐藏
+					$('.applyInfoBtn').hide();//提交框隐藏
+				}
+			});
+		}
+	}
+</script>
+<script>
+	var activity_id= {$data.id};
+	var apiVersion = '{$apiVersion}';
+	var hasRegistered = '{$registered}';
+</script>
+<script src="__PUBLIC__/js/DistrictQuery.js"></script>
+<script src="__PUBLIC__/js/activity/signup.js"></script>
+
+
+<!--上传作品-->
+
+<script type="text/template" id="qq-template">
+        <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+            <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+                <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+            </div>
+            <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+                <span class="qq-upload-drop-area-text-selector"></span>
+            </div>
+            <div class="qq-upload-button-selector qq-upload-button">
+                <div>上传附件</div>
+            </div>
+			<span class="qq-upload-notice">注：附件支持视频/音频/图片/word/ppt/pdf/swf，单个文件/压缩包大小不超过2G，单个图片大小不超过10M</span>
+			<?php
+            for($i=0;$i<count($works);$i++)
+            {
+                echo '<div>'. $works[$i]['works_file_name'].'<a onclick="deleteUploadInfo('.$i.',this)">删除</a></div>';
+		    }
+		    ?>
+            <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+            <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+                <li>
+                    <div class="qq-progress-bar-container-selector">
+                        <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                    </div>
+                    <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                    <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+                    <span class="qq-upload-file-selector qq-upload-file"></span>
+                    <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                    <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                    <span class="qq-upload-size-selector qq-upload-size"></span>
+                    <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">取消</button>
+                    <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">重传</button>
+                    
+                    <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+                </li>
+            </ul>
+
+            <dialog class="qq-alert-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Close</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-confirm-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">No</button>
+                    <button type="button" class="qq-ok-button-selector">Yes</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-prompt-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <input type="text">
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                    <button type="button" class="qq-ok-button-selector">Ok</button>
+                </div>
+            </dialog>
+        </div>
+</script>
+<script>
+    var uploadInfo = {
+	<?php
+	for($i=0;$i<count($works);$i++)
+	{
+		echo ($i).':';
+		echo "{'file_name': '" . $works[$i]['works_file_name'] ."'," . "'file_path': '".$works[$i]['works_file_path']."'," . "'image_path': '".$works[$i]['vid_image_path']."'," . "'is_transition': '".$works[$i]['is_transition']."'}";
+		if($i!=count($works)-1)
+			echo ',';
+	}
+	?>
+
+	};
+    function changeInputFilter(){
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').attr('accept',acceptStr);
+    }
+    changeInputFilter();
+    
+    function onFileCheck(){
+        if($('li').hasClass('qq-upload-fail')){
+            alert('有文件上传错误');
+            return false;
+        }
+        return true;
+    }
+	var uploader = new qq.FineUploader({
+		debug: false,
+		element: document.getElementById('fine-uploader'),
+		request1Enable : false,
+		request: {
+			endpointnum: 0,
+			endpoint: 'index.php?m=Home&c=Activity&a=workFileUpload',
+			params:{},
+			inputName:'file[]',
+		},
+		deleteFile: {
+			enabled: true,
+			endpoint: '/uploads'
+		},
+		retry: {
+			enableAuto: true
+		},
+		onCancel: function(id){
+			delete uploadInfo[id];
+		},
+		responseCallBack: function(id,specNum,xhr){
+			var result;
+			try{
+				result = JSON.parse(xhr.responseText);
+			}
+			catch(e){
+				alert('上传失败!错误原因'+e);
+				return false;
+			}
+			if(specNum == 0){
+				if(result.status == 200){
+					var count = Object.keys(uploadInfo).length;
+					if(typeof(uploadInfo[count])== 'undefined'){
+						uploadInfo[count] = {};
+					}
+					uploadInfo[count]['file_name'] = result.data.fileName;
+					uploadInfo[count]['file_path'] = result.data.filePath;
+					uploadInfo[count]['image_path'] = result.data.imagePath.video_image;     //这里是视频截图,如果不是视频这里就是空
+					uploadInfo[count]['is_transition'] = result.data.imagePath.is_transition;            //这里是视频转换状态。
+					return true;
+				}else{
+					alert(result.msg);
+				}
+			}
+			return false;
+		}
+	});
+    
+     
+    
+    $("#fine-uploader").find(':file').live('click',function(){ console.log('run'); 
+        if($("#type").val()==''){
+            return false;
+        }
+    });
+
+	function deleteUploadInfo(id,obj)
+	{
+		$(obj).parent().remove();
+		delete uploadInfo[id];
+	}
+
+
+	function checkWork() {
+		//资源名称
+		if(!onFileCheck()){
+			return false;
+		}
+		$('#unique_string').val('');
+		$('#file_name').val('');
+		$("#unique_vid").val();
+		$("#vid_width").val();
+		$("#vid_time").val();
+		$("#vid_fullpath").val('');
+		$("#vid_image_path").val('');
+		$("#vid_transition").val('');
+
+		for(var key in uploadInfo){
+			$('#unique_string').val($('#unique_string').val() + uploadInfo[key].file_path +',');
+
+			$('#file_name').val($('#file_name').val() + uploadInfo[key].file_name +',');
+
+			var image_path= typeof(uploadInfo[key].image_path) != 'undefined' ? uploadInfo[key].image_path : '0';
+			$('#vid_image_path').val($('#vid_image_path').val()+image_path+',');
+
+			var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+			$('#vid_transition').val($('#vid_transition').val()+vid_transition+',');
+		}
+		$('#file_name').val($('#file_name').val().substr(0 ,$('#file_name').val().length-1));
+		$('#unique_string').val($('#unique_string').val().substr(0 ,$('#unique_string').val().length-1));
+		$('#vid_image_path').val($('#vid_image_path').val().substr(0 ,$('#vid_image_path').val().length-1));
+		$('#vid_transition').val($('#vid_transition').val().substr(0 ,$('#vid_transition').val().length-1));
+
+		var vid_file_path=$('#unique_string').val();
+		if(vid_file_path==''){
+			alert('上传文件不能为空');
+			return false;
+		}
+		return true;
+	}
+</script>
+
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+	$(function(){
+		var options = {
+			success:    showResponse,  // post-submit callback
+			resetForm:  false,
+			dataType:  'json'
+		};
+
+		// bind to the form's submit event
+		$('#mainForm').submit(function() {
+			$(this).ajaxSubmit(options);
+			return false;
+		});
+	});
+	function showResponse(responseText, statusText) {
+		$('#saveButton').attr('disabled',false);
+		switch(responseText.status)
+		{
+			case 200: //success
+				alert(responseText.message);
+				break;
+
+			default: alert(responseText.msg);
+				break;
+		}
+	}
+</script>
+
+<!--弹窗隐藏-->
+<script>
+	$('.toolTipBtn').click(function(){
+		$(this).parent().parent().hide();
+		$('.fullscr').hide();
+	})
+</script>
+
+<!--上传作品-->
+<script>
+	$('#workUpload').click(function(){
+		$('.workPublish,.fullBlack').show();
+	})
+	$('.workPublishClose').click(function(){
+		$('.workPublish,.fullBlack').hide();
+	})
+</script>
+
+
+
+
+
+
+
+
+

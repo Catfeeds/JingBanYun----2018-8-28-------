@@ -1,0 +1,110 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=3.0" type="text/css" rel="stylesheet"> 
+<style>
+    #listWrapper img{
+        width: 50px !important;
+        height: 50px !important;
+		margin-right: 10px;
+		margin-top: 5px;
+    }
+    
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+	
+	.list_title {
+		width: 120px;
+		line-height: 50px;
+	}
+	
+	.list_title a {
+		color: #2086bf !important;
+	}
+	
+	.keyBox {
+		display: none;
+		border: 1px solid #d9d9d9;
+		width: 500px;
+		text-align: center;
+		padding: 50px 0;
+	}
+	
+	.keyButton {
+		display: block;
+		margin: 20px auto 0;
+	}
+</style>
+
+<div style="margin-bottom: 12px;width: 50%;float: left">
+    <a href="javascript:;" title="发布活动" class="button {:session('btntheme')}" id="keyCreate">创建关键词</a>
+    <div class="keyBox">
+     	<label>关键词：</label>
+    	<input type="text" class="input-control" name="keyword" value="{$keyword}" placeholder="请输入关键词">
+    	<button type="submit" class="button info keyButton">确定</button>
+    </div>
+</div>
+
+<div style="text-align: right;">
+    <div class="input-control text" data-role="input" style="width: 320px;">
+        <input class="key_name" type="text" value="{$search_val}" placeholder="请输入关键词或序号">
+        <button  class="button search_button"><span class="mif-search"></span></button><!--onclick="search()"-->
+    </div>
+</div>
+    
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">序号</th>
+        <th class="text-center">关键词</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+		<volist name="list" id="data">
+			<tr id="l_{$data.id}">
+				<td class="text-center">
+					序号
+				</td>
+				<td class="text-center">
+					关键词
+				</td>
+				<td class="text-center">
+					<button onclick="delete_data({$data.id},this)" class="button downR">删除</button>
+				</td>
+			</tr>
+		</volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/js/jquery-2.1.1.min.js"></script>
+<script>
+	//删除
+    function delete_data(id,obj){
+        if(confirm('你确定删除么')){
+            $.get('index.php?m=Home&c=Admin&a=deleteActivity', {id: id}, function (res) {
+                if (res == 'success') {  
+                    $(obj).parent().parent().remove(); 
+                    if($('.odd')<1){
+                        location.reload();
+                    }
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+</script>
+
+<script>
+	$(document).ready(function(){
+		$("#keyCreate").click(function(){
+			$(".keyBox").toggle("slow");
+	  	});
+	});
+
+</script>
+

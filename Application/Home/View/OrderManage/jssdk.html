@@ -1,0 +1,48 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <title>{$jsApiParameters}</title>
+    <script type="text/javascript">
+        //调用微信JS api 支付
+        function jsApiCall()
+        {
+            WeixinJSBridge.invoke(
+                    'getBrandWCPayRequest',
+            <?php echo $jsApiParameters; ?>,
+            function(res){
+                //WeixinJSBridge.log(res.err_msg);
+                //alert(res.err_code+res.err_desc+res.err_msg);
+                if(res.err_msg == "get_brand_wcpay_request:ok"){
+                    alert("微信支付成功!");
+                }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                    alert("用户取消支付!");
+                }else{
+                    alert("支付失败!");
+                }
+            }
+        );
+        }
+        function callpay()
+        {
+            if (typeof WeixinJSBridge == "undefined"){
+                if( document.addEventListener ){
+                    document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+                }else if (document.attachEvent){
+                    document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+                    document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+                }
+            }else{
+                jsApiCall();
+            }
+        }
+    </script>
+</head>
+<body>
+<div>{$jsApiParameters}</div>
+<div>当前url全路径<?php echo "<pre>";print_r($_SERVER); ?></div>
+</br></br></br></br>
+<div align="center">
+    <button style="width:400px; height:80px; background-color:#FE6714; border:0px #FE6714 solid; cursor: pointer;  color:white;  font-size:50px;" type="button" onclick="callpay()" >立即支付</button>
+</div>
+</body>
+</html>

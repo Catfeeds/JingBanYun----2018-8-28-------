@@ -1,0 +1,136 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="blueBox">
+	<span class="blueText left fs18">学校信息修改</span>
+	<a href="javascript:;" class="blackText right" id="" onclick="checkInfo()">
+		<img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="mr10">
+		保存修改
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+
+<div class="grid condensed">
+	<div class="row cells3 infoBox">
+		<div class="cell">
+			省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份：
+			<select id="province" time="" class="input-control">
+				<option value="0">-请选择-</option>
+				<volist name="province_list" id="province_item" empty="暂时没有省份">
+					<option value={$province_item.id} <if condition="$province_item['id']==$province"> selected="true"</if>  >{$province_item.name}</option>
+				</volist>
+			</select> 
+		</div>
+		<div class="cell">
+			市&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;区：
+			<select id="city" class="input-control">
+				<option value="0">-请选择-</option> 
+				<volist name="city_list" id="city_item" empty="暂时没有城市">
+					<option value={$city_item.id}  <if condition="$city_item['id']==$city"> selected="true"</if> >{$city_item.name}</option> 
+				</volist>
+			</select>
+		</div>
+		<div class="cell">
+			区&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;县：
+			<select id="district" class="input-control">
+				<option value="0">-请选择-</option>
+				<volist name="district_list" id="district_item" empty="暂时没有区域">
+					<option value={$district_item.id} <if condition="$district_item['id']==$district"> selected="true"</if>  >{$district_item.name}</option>
+				</volist>
+			</select>
+		</div>
+		<div class="cell">
+			学校名称：
+			<input type="text" value="" class="input-control" placeholder="学校名称">
+		</div>
+		<div class="cell">
+			学校代码：
+			<input type="text" value="" class="input-control" placeholder="学校代码" disabled>
+		</div>
+		<div class="cell">
+			学校性质：
+			<select id="" class="input-control">
+				<option value="0">-请选择-</option>
+				<option value="1">小学</option>
+				<option value="2">中学</option>
+			</select>
+		</div>
+		<div class="cell">
+			学校状态：
+			<input type="text" value="" class="input-control" placeholder="学校状态" disabled>
+		</div>
+		<div class="cell cellSeven">
+			是否开通管理员：
+			<input type="text" value="" class="input-control" placeholder="是否开通管理员" disabled>
+		</div>
+		<div class="cell cellFive">
+			管理员账号：
+			<input type="text" value="" class="input-control" placeholder="管理员账号" disabled>
+		</div>
+		<div class="cell cellFive">
+			联系人姓名：
+			<input type="text" value="" class="input-control" id="linkmanName" required placeholder="联系人姓名">
+		</div>
+		<div class="cell cellFive">
+			联系人电话：
+			<input type="text" value="" class="input-control" id="linkmanPhone" required placeholder="联系人电话">
+		</div>
+		<div class="cell cellFive">
+			联系人邮箱：
+			<input type="text" value="" class="input-control" id="linkmanEmail" required placeholder="联系人邮箱">
+		</div>
+		<div class="cell">
+			权限类型：
+			<input type="text" value="" class="input-control" placeholder="权限类型" disabled>
+		</div>
+		<div class="cell cellMore">
+			有效时间：
+			<input type="text" value="" class="input-control" placeholder="开始时间" disabled>
+			&nbsp;至&nbsp;
+			<input type="text" value="" class="input-control" placeholder="结束时间" disabled>
+		</div>
+		<div class="cell">
+			&nbsp;
+			<input type="text" value="" class="input-control" style="visibility: hidden">
+		</div>
+	</div>
+</div>
+
+<script>
+	function checkInfo(){
+		//联系人姓名
+		var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		var linkmanName = $('#linkmanName').val();
+		if (!regName.test(linkmanName) == true) {
+			alert("联系人姓名错误");
+			return false;
+		} else if (tname == '') {
+			alert("请输入联系人姓名");
+			return false;
+		}
+		
+		//联系人电话
+		var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		var linkmanPhone = $('#linkmanPhone').val();
+		if (!regMobilePhone.test(linkmanPhone) == true) {
+			alert("联系人电话错误");
+			return false;
+		} else if (mobilePhone == '') {
+			alert("请输入联系人电话");
+			return false;
+		}
+		
+		//联系人邮箱
+		var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+		var linkmanEmail = $('#linkmanEmail').val();
+		if (!regEmail.test(linkmanEmail) == true) {
+			alert("联系人邮箱错误");
+			return false;
+		} else if (email == '') {
+			alert("请输入联系人邮箱");
+			return false;
+		}
+		
+		return true;
+	}
+</script>

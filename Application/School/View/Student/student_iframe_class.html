@@ -1,0 +1,259 @@
+<layout name="admin_layout_school_iframe"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+	.fullscr {
+		top: 50px;
+	}
+</style>
+
+<!-- <p class="blueText fs16">班级列表</p> -->
+<!--<form action="" method="post">
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>所属年级：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">一年级</option>
+					<option value="2">二年级</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>所属班级：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">一班</option>
+					<option value="2">二班</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>班级编号：</label>
+				<input type="text" name="" id="" class="input-control" placeholder="请输入班级编号">
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+	</div>
+</form>-->
+
+<!-- <div class="grayBox">
+	<div class="left">
+		<span class="btns" id="addBtn">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="">
+			添加关联班级
+		</span>
+	</div> -->
+	<!--<div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue-->
+	<!--		<button class="upBtn upBtnBlue"></button>
+			<button class="downBtn"></button>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>-->
+<!-- </div> -->
+
+<div class="operateBtnContent pt0">
+    <a href="javascript:;" class="commonBtnBlue operateBtn add" id="addBtn">添加</a>
+</div>
+
+
+<table id="listWrapperClass" class="table striped hovered border newTable">
+	<thead>
+		<tr>
+			<th class="text-center" style="width:16%">序号</th>
+			<th class="text-center" style="width:21%">所属年级</th>
+			<th class="text-center" style="width:21%">所属班级</th>
+			<th class="text-center" style="width:21%">班级编号</th>
+			<th class="text-center" style="width:21%">操作</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+		<empty name="list">
+		   	<tr>
+                <td colspan="5" style="color: #999">
+					暂无信息
+				</td>
+			</tr>
+		</empty>
+		<notempty name="list">
+			<volist name="list" id="item" key="key">
+				<tr>
+					<td class="text-center">
+						{$key}
+					</td>
+					<td class="text-center">
+						{$item.grade}
+					</td>			 
+					<td class="text-center">
+						{$item.class_name}
+					</td>
+					<td class="text-center">
+						{$item.class_code}
+					</td>
+					<td class="text-center">
+						<a href="javascript:;" class="operBtn browse_button" attr="{:U('Class/classDetail')}&id={$item.id}">查看</a>
+						<a href="javascript:;" class="operBtn remove_class" >移除班级</a>
+					</td>
+					<input type="hidden" value="{$item.id}" class="class_id"/>
+				</tr>
+			</volist>
+		</notempty>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<!--添加班级弹窗-->
+<div class="fullscr1">
+	<div class="adminNotifyBox1" >
+		<div class="adminNotifyTitle">添加班级</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20">
+				<div class="selectBox">
+					<label for="">所属年级：</label>
+					<select name="" class="input-control" id="grade_list">
+						<option value="0">-请选择-</option>
+                                            <volist name="grade_list" id="grade_item">
+                                                <option value="{$grade_item.grade_id}">{$grade_item.grade}</option>
+                                            </volist>
+					</select>
+				</div>
+				<div class="selectBox">
+					<label for="">所属班级：</label>
+					<select name="" class="input-control" id="class_list">
+						<option value="0">-请选择-</option> 
+					</select>
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+ 
+
+<script>
+    $('.browse_button').click(function(){
+        var url=$(this).attr('attr');
+        parent.location.href=url;
+    });
+    
+   
+
+    var temp_class_span="<option value='0'>-请选择-</option>"; 
+
+    //年级发生改变
+    $("#grade_list").change(function(){
+        var grade_id=$("#grade_list").val();
+        if(grade_id==false){
+            return false;
+        }
+        $.ajax({
+            type:"post",
+            dataType:"json",
+            url:"{:U('Common/getClassByGrade')}",
+            data:{'grade_id':grade_id},
+            success: function(msg){
+                if(msg.status==200){ 
+                    $("#class_list option:not(:eq(0))").remove(); 
+                    for(var i=0;i<msg.data.length;i++){
+                        var temp_span=$(temp_class_span).clone(true);
+                        $(temp_span).val(msg['data'][i].class_id);
+                        $(temp_span).text(msg['data'][i].class_name);
+                        $("#class_list").append(temp_span);
+                    }
+                } 
+            }
+        });
+    });
+    
+    
+    $("#sureBtn").click(function(){ 
+        var grade_value=$("#grade_list").val();
+        var class_value=$("#class_list").val(); 
+        if(grade_value==false){
+            return false;
+        }
+        if(class_value==false){
+            return false;
+        }  
+        var data={'class_id':class_value,'student_id':student_id};
+        $.getJSON("{:U('Student/studentJoinClass')}",data,function(msg){
+            if(msg.status==200){
+                location.reload();
+            }else if(msg.status==300){
+                $.NotifyBox.NotifyNotLogin();
+            }else{
+                $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                return false;
+            }
+        });
+    });
+    
+        
+    var student_id="{$student_id}";
+	$('#addBtn').click(function(){
+		//$(this).parent().parent().siblings('#notifyClass').show();
+                $('.fullscr1').show();
+	})
+	
+	$('#cancelBtn').click(function(){
+		//$(this).parent().parent().parent().parent('#notifyClass').hide();
+                $('.fullscr1').hide();
+	})
+        
+        //移除某个学生
+        $(".remove_class").click(function(){
+            var class_val=$(this).parent().siblings('.class_id').val(); 
+            $.ajax({
+                url: "{:U('Common/classRemoveStudent')}",
+                type: "post",
+                dataType :"json",
+                data: {'class_id':class_val,'student_id':student_id},
+                success: function(msg){
+                    if(msg.status==200){  
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            });
+        });
+</script>
+<!--
+<script>
+	//一个按钮，无回调函数
+	$.NotifyBox.NotifyOne('注意','123','确定');
+	//一个按钮，有回调函数
+	$.NotifyBox.NotifyOneCall('注意','123','确定',function(){
+		alert('1')
+	});
+	//两个按钮，一个有回调函数，一个是灰色，一个是蓝色
+	$.NotifyBox.NotifyTwoCallOneGray('注意','123','确定','取消',function(){
+		alert('1')
+	});
+	//两个按钮，一个有回调函数，两个是蓝色
+	$.NotifyBox.NotifyTwoCallOneGray('注意','123','确定','取消',function(){
+		alert('1')
+	});
+	//两个按钮，两个有回调函数，两个是蓝色
+	$.NotifyBox.NotifyTwoCallTwo('注意','123','确定','取消',function(){
+		alert('1')
+	},function(){
+		alert('2')
+	})
+</script>
+-->

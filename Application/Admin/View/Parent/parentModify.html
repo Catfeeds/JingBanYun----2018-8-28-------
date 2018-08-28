@@ -1,0 +1,369 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<style>
+    .laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+        box-sizing: content-box;
+    }
+
+    #laydate_hms {
+        display: none !important;
+    }
+</style>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		家长管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('Parent/parentList')}">家长管理</a>>>
+			<a href="javascript:;">修改家长信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php/Admin/Parent/parentModify" method="post" onsubmit="return check_info()">
+<div class="blueBox">
+	<span class="blueText left fs16">家长详情</span>
+	<a href="javascript:;" class="blackText right" id="">
+		<img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="mr5"> 
+                <input type='submit' class="submitInput" id="" value='保存信息'/>
+	</a>
+	<a href="javascript:;"  class="blackText right mr30" id="vipModify" >
+		<img src="{$oss_path}public/web_img/Admin/icon-modify.png" alt="" class="mr5"> 
+                <input type='button' class="submitInput" id="" value='VIP权限修改'/>
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+
+        <input type='hidden' name="parent_id" value="{$parent_data.id}" />
+	<p class="blueText fs16">家长查询</p>
+	<div class="grid condensed cellBox">
+            <input type="hidden" class="order_class" name="order"/>
+		<div class="row cells3">
+			<div class="cell">
+				<label>家长姓名：</label>
+				<input type="text" class="input-control parent_name" name="parent_name" value="{$parent_data.parent_name}" placeholder="请输入家长姓名">
+			</div>
+			<div class="cell">
+				<label>家长手机号：</label>
+                                <input type="text" class="input-control telephone" name="telephone" value="{$parent_data.telephone}" placeholder="请输入家长手机号" disabled="true">
+			</div>
+			<div class="cell">
+				<label>家长账号状态：</label>
+				<select id="status" class="input-control" name="status">
+					<option value="">-请选择-</option>
+                                        <option value="1" <if condition="$parent_data['flag']==='1'">selected="true"</if> >正常</option>
+                                        <option value="0" <if condition="$parent_data['flag']==='0'">selected="true"</if> >停用</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>权限类型：</label>
+                                <if condition="$parent_data['permissions_status']==='2'">
+                                    <input type="text" class="input-control privilege_type" name="privilege_type" value="普通权限"  disabled="true">
+                                <elseif condition="$parent_data['permissions_status']==='1'" />
+                                    <input type="text" class="input-control privilege_type" name="privilege_type" value="个人VIP"  disabled="true"> 
+                                <else />
+                                    <input type="text" class="input-control privilege_type" name="privilege_type" value=""  disabled="true"> 
+                                </if>
+                                 
+			</div>
+		</div>
+	</div>
+</form>
+
+
+  
+
+<p class="blueText fs16">学生信息</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+        <tr>
+            <th class="text-center">序号</th>
+            <th class="text-center">学生姓名</th>
+            <th class="text-center">性别</th>
+            <th class="text-center">所属学校</th>
+            <th class="text-center">所在年级</th>
+            <th class="text-center">所在班级</th>
+            <th class="text-center">账号状态</th>
+            <th class="text-center">操作</th>
+        </tr>
+	</thead>
+	<tbody id="body">
+            
+                <volist name="student_list" id="item" key="key">
+                    <tr>
+                            <td class="text-center">
+                                    {$key}
+                            </td>
+                            <td class="text-center">
+                                    {$item.student_name}
+                            </td>
+                            <td class="text-center">
+                                    {$item.sex}
+                            </td>
+                            <td class="text-center">
+                                    {$item.school_name}
+                            </td>
+                            <td class="text-center">
+                                    {$item.grade}
+                            </td>
+                            <td class="text-center">
+                                    {$item.class_name}
+                            </td>
+                            <td class="text-center">
+                                <if condition="$item['flag'] eq 1">
+                                    正常
+                                <else />
+                                    停用
+                                </if>
+                            </td>
+                            <td class="text-center">
+                                <a href="javascript:;" class="operBtn remove_student" >解除关联</a>
+                            </td>
+                            <input type="hidden" value="{$item.id}" class="student_id" />
+                    </tr>
+                </volist> 
+	</tbody>
+</table> 
+
+<div class="Pagination">{$page}</div>
+
+<!--添加班级弹窗-->
+<div class="fullscr1 fullLong">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">VIP权限修改</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20">
+				<div class="selectBox">
+					<label for="">权限类型：</label>
+					<select name="" class="input-control" id="Mprivilege_type">
+						<option value="0">-请选择-</option>
+                                                <option value="1">普通权限</option>
+						<option value="2">个人VIP</option> 
+					</select>
+					&nbsp;&nbsp;
+					<input type="radio" value="1" name="vipRadio" class="vipRadio" id="tryRadio">
+					<label for="tryRadio" class="vipLabel">试用VIP</label>
+					&nbsp;&nbsp;
+					<input type="radio" value="2" name="vipRadio" class="vipRadio" id="officialRadio">
+					<label for="officialRadio" class="vipLabel">正式VIP</label>
+				</div>
+				<div class="selectBox">
+					<label for="">有效时间：</label>
+					<input type="text" class="input-control MstartTime" id="startTime" name="" value="" placeholder="开始时间">&nbsp;至&nbsp;
+					<input type="text" class="input-control MendTime" id="endTime" name="" value="" placeholder="结束时间">
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.core.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.datepicker.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"20%"}
+            ]
+        });
+    });
+     
+</script>
+<script>
+    !function(){
+        laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var startTime = {
+        elem: '#startTime',
+        format: 'YYYY-MM-DD',
+        min: laydate.now(), //设定最小日期为当前日期
+        max: '2099-06-16', //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+             endTime.min = datas; //开始日选好后，重置结束日的最小日期
+             endTime.start = datas; //将结束日的初始值设定为开始日
+//           appstart.max = datas;
+//           append.max = datas;
+        }
+    };
+
+    var endTime = {
+        elem: '#endTime',
+        format: 'YYYY-MM-DD',
+        min: laydate.now(),
+        max: '2099-06-16',
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+             startTime.max = datas; //结束日选好后，充值开始日的最大日期
+        }
+    };
+    laydate(startTime);
+    laydate(endTime);
+</script>
+
+<script>
+        function check_info(){
+            var parent_name,status;
+            parent_name=$('.parent_name').val();
+            status=$('#status').val();
+            if(status==''){
+                $.NotifyBox.NotifyOne('注意', '请选择状态！', '确定');
+                return false;
+            } 
+            var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+            if (parent_name == '') {
+                    $.NotifyBox.NotifyOne('注意', '家长姓名不能为空！', '确定');
+                    return false;
+            }else if(!regName.test(parent_name)){
+                    $.NotifyBox.NotifyOne('注意','家长姓名格式不正确！','确定');
+                    return false;
+            }
+            return true;
+        }
+        
+    //移除和学生的关系 
+    $(".remove_student").click(function(){
+		$.NotifyBox.NotifyTwoCallOneGray('确认','确认移除关系？','确定','取消',function(){
+			var student_id=$(".remove_student").parent().siblings('.student_id').val();
+			$.ajax({
+				url: "{:U('Parent/removeStudentParentContact')}",
+				type: "post",
+				dataType :"json",
+				data: {'student_id':student_id,'parent_id':parent_id},
+				success: function(msg){
+					if(msg.status==200){
+						location.reload();
+					}else if(msg.status==400){
+						$.NotifyBox.NotifyNotLogin();
+					}else{
+						$.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+						return false;
+					}
+				}
+			});
+
+		})
+
+    });
+    
+    var parent_id="{$parent_data.id}"; 
+	$('#vipModify').click(function(){
+            $.ajax({
+                type:"post",
+                url:"{:U('Parent/getParentInfo')}",
+                dataType:"json",
+                data: {'id':parent_id},
+                success: function(msg){  
+                    if(msg.status==200){  
+                        if(msg.data['permissions_status']==1){
+                            $("#Mprivilege_type").find('option:eq(2)').attr('selected',true);
+                            $('.MstartTime').val(msg.data['format_start_time']);
+                            $('.MendTime').val(msg.data['format_end_time']);
+                        }else{
+                            $("#Mprivilege_type").find('option:eq(1)').attr('selected',true);
+                        }
+                        if(msg.data['timetype']==1){
+                            $('.vipRadio').eq(0).attr('checked',true);
+                        }else{
+                            $('.vipRadio').eq(1).attr('checked',true);
+                        }
+                        
+                        $('.fullscr1').show();
+                    } 
+                }
+            })
+            
+	})
+        
+         
+        function IsDate(mystring) {
+            var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+            var str = mystring;
+            if (!reg.test(str)  || RegExp.$2>12 || RegExp.$3>31){
+                return false;
+            }
+            return true;
+        }
+        
+        
+	$('#sureBtn').click(function(){
+	    var privilege_type,use_type,startTime,endTime;
+                
+            startTime=$(".MstartTime").val();
+            endTime=$('.MendTime').val();
+            use_type=$('.vipRadio').val();
+            privilege_type=$('#Mprivilege_type').val();
+            if(privilege_type==0 || privilege_type==false){
+                $.NotifyBox.NotifyOne('注意', '请选择权限类型！', '确定');
+                return false;
+            }
+            if (startTime == '') {
+                $.NotifyBox.NotifyOne('注意', '开始时间不能为空！', '确定');
+                return false;
+            } else {
+                if (IsDate(startTime) == false) {
+                    $.NotifyBox.NotifyOne('注意', '开始时间格式不正确！', '确定');
+                    return false;
+                }
+            }       
+            if (endTime == '') {
+                $.NotifyBox.NotifyOne('注意', '结束时间不能为空！', '确定');
+                return false;
+            } else {
+                if (IsDate(endTime) == false) {
+                    $.NotifyBox.NotifyOne('注意', '结束时间格式不正确！', '确定');
+                    return false;
+                }
+            }  
+            if(use_type=='' || use_type==false){
+                $.NotifyBox.NotifyOne('注意', '请选择使用类型！', '确定');
+                return false;
+            }       
+            var data={'id':parent_id,'vip_type':privilege_type,'use_type':use_type,'start_time':startTime,'end_time':endTime};
+            $.ajax({
+                type:"post",
+                url:"{:U('Parent/giveParentVip')}",
+                dataType:"json",
+                data: data,
+                success: function(msg){  
+                    if(msg.status==200){  
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+	})
+        
+        $('#cancelBtn').click(function(){
+            $('.fullscr1').hide();
+        });
+</script>

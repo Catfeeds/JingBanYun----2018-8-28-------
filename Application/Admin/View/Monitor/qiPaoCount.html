@@ -1,0 +1,158 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<style>
+	.cellNew .cell1 {
+		width: 33.33% !important;
+	}
+
+	.cellNew .cell2 {
+		width: 66% !important;
+	}
+
+	.cellNew .cell2 .input-control {
+		width: 37.7% !important;
+	}
+
+	.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+		box-sizing: content-box;
+	}
+
+	.qq-uploader {
+		max-height: 540px
+	}
+
+	#laydate_hms {
+		display: none !important;
+	}
+</style>
+
+<!--
+<div class="titleBox">
+	<p class="blueText fs18 underline1">班级管理</p>
+	<div class="underline2"></div>
+</div>
+-->
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		气泡管理
+		<span class="blueSpan">
+			<a href="javascript:;">气泡管理</a>>>
+			<a href="javascript:;">气泡列表</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php/Admin/Monitor/qiPaoCount" method="get">
+	<p class="blueText fs16">统计查询</p>
+
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+
+			<div class="cell">
+				<label>查询时间：</label>
+				<input type="text" value="{$start}" class="input_control_short input-control-before input_margin " id="startTime" name="start">
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+                    <button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+                -->
+		<input type='submit' value='查询' class='blueBtn'/>
+		<input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+
+<p class="blueText fs16">气泡列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+	<tr>
+		<th class="text-center">名称</th>
+		<th class="text-center">时间</th>
+		<th class="text-center">点击数</th>
+	</tr>
+	</thead>
+	<tbody id="body">
+	<volist name="list" id="data" empty="暂时没有账户数据">
+		<tr>
+			<td class="text-center" title="{$item.school_name}">
+				{$data.name}
+			</td>
+			<td class="text-center" title="{$item.school_name}">
+				{$data.dateorder}
+			</td>
+			<td class="text-center" title="{$item.school_name}">
+				{$data.c_num}
+			</td>
+		</tr>
+	</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	$(document).ready(function () {
+		$('#listWrapper').DataTable({
+			"scrollCollapse": true,
+			"paging": false,
+			"bSort": false,
+			"aoColumns": [
+				{"width": "7%"},
+				{"width": "10%"},
+				{"width": "15%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "10%"},
+				{"width": "10%"}
+			]
+		});
+	});
+</script>
+
+<script>
+	!function(){
+		laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD ',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actend.min = datas; //开始日选好后，重置结束日的最小日期
+			actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD ',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+
+	$('.resetButton').click(function() {
+		window.location.href="{:U('Orderdata/orderList')}";
+	})
+</script>

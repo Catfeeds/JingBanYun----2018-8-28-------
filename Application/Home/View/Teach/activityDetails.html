@@ -1,0 +1,278 @@
+<layout name="teacher_layout_1"/>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/> 
+<link href="__PUBLIC__/css/activity.css" rel="stylesheet" type="text/css"/> 
+
+<div>
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div class="activityTitle">
+	<p class="title">{$data.title}</p>
+	<p class="publishBox">{$data.publisher}&nbsp;/&nbsp;{$data.create_at|date="Y-m-d",###}</p>
+	<p class="ctrl_box">
+		<if condition="$existedZan eq 'yes'">
+			<img id="zanIcon" src="__PUBLIC__/img/icon/zaned.png">
+			<else/>
+			<img id="zanIcon" src="__PUBLIC__/img/icon/zan.png">
+		</if>
+		<if condition="$existedFavor eq 'yes'">
+			<img id="favorIcon" src="__PUBLIC__/img/icon/favored.png">
+			<else/>
+			<img id="favorIcon" src="__PUBLIC__/img/icon/favor.png">
+		</if>
+	</p>
+</div>
+<div class="activityContent">
+	<div class="left activityConLeft">
+		<p>
+			活动时间：<br>
+			{$data.activitystart} 至 {$data.activityend}
+		</p>
+		<p>
+			报名时间：<br>
+			{$data.applystart} 至 {$data.applyend}
+		</p>
+		<p>限制人数：{$data.apply_people_number}人</p>
+		<p>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：{$data.remark}</p>
+		<p>已&nbsp;&nbsp;报&nbsp;&nbsp;名：{$data.register_numbers}人</p>
+		<p>
+			面向人群：<br>
+			<span class="stakeholder padding10">
+				{$data.stakeholder}
+			</span>
+		</p>
+		<div class="activityData">
+			<span class="dataTitle">
+				<img src="__PUBLIC__/img/activity/dataTitle.png" alt="">
+				活动资料
+			</span>
+			<ul class="dataUl">
+				<volist name="contactData" id="contactData">
+					<li class="dataLi">
+						<a class="dataA" type="{$contactData.type}" src="{$oss_path}{$contactData.activity_file_path}" href="javascript:;">{$contactData.activity_file_name}</a>
+					</li>
+				</volist>
+
+			</ul>
+		</div>
+	</div>
+	<div class="activityConRight padding10">
+		{$data.content}
+	</div>
+</div>
+
+<if condition="$_SESSION['teacher'] neq 'youke'">
+	<form id="info-list" action="__URL__/reportActivity" method="post">
+		<div class="applyTop">
+			<div class="left applyTopLeft">
+				<if condition="$registered eq 'no'">
+					<span class="applyBefore">
+						我要<br>报名
+					</span>
+				<else/>
+					<span class="applyAfter">
+						已报名
+					</span>
+				</if>
+			</div>
+			<div class="applyTopRight">
+				<input type="hidden" class="file_path" name="file_path"/>
+				<input type="hidden" name="activity_id" value="{$data.id}">
+				<if condition="$registered eq 'no'">
+					<textarea name="register_info" rows="3" placeholder="请输入您的姓名、电话、邮箱" >{$register_info}</textarea>
+				<else/>
+					<textarea name="register_info" rows="3" placeholder="请输入您的姓名、电话、邮箱" disabled>{$register_info}</textarea>
+				</if>
+			</div> 
+		</div>
+		
+		<div class="applyBottom">
+			<if condition="$registered eq 'no'">
+				<button type="submit" class="btn btn-primary-red">我要报名</button>
+				<else/>
+				<button type="submit" class="btn btn-primary-red" style="display: none">我要报名</button>
+			</if>
+		</div>
+	</form>
+</if> 
+
+<!--资源展示弹窗-->
+<div class="fullBlack"></div>
+<div class="resourceOutter">
+	<span class="resourceClose"></span>
+</div>
+
+<!--弹窗-->
+<div class="fullscr"></div>
+<!--游客弹窗-->
+<div class="toolTipBox toolTip1" id="toolTip1">
+	<span class="toolTipClose"></span>
+	<p class="toolTipButton">
+		<a href="{:U('Index/index')}" class="toolTipBtn toolTipBtnGreen2" id="">登录</a>
+		<a href="{:U('Index/index')}" class="toolTipBtn toolTipBtnGreen2" id="">去注册</a>
+	</p>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/queryLimit.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+
+<!--点赞收藏-->
+<script>
+    var zanCount=0;
+    var favorCount=0;
+    
+    $(function () {
+        $('#zanIcon').click(function () {
+            if(!canQuery()){
+                $.notify({
+                    title: '提示',
+                    message: '请求过于频繁'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            zanCount++;
+            $.get('__URL__/zanActivity', {social_activity_id: '{$data.id}'}, function (res) {
+                if (res == 'success') {
+                    $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zaned.png');
+                    $.notify({
+                        title: '提示',
+                        message: '点赞成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+                    if (res == 'youke') {
+                        $('.fullscr,#toolTip1').show();
+                    } else {
+                        $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zan.png');
+                        $.notify({
+                            title: '提示',
+                            message: res
+                        }, {
+                            type: 'warning',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            }
+                        });
+                    }  
+                }
+            });
+        });
+
+        $('#favorIcon').click(function () {
+            if(!canQuery()){
+                $.notify({
+                    title: '提示',
+                    message: '请求过于频繁'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            favorCount++;
+            
+            $.get('__URL__/favorActivity', {social_activity_id: '{$data.id}'}, function (res) {
+                if (res == 'success') {
+                    $('#favorIcon').attr('src', '__PUBLIC__/img/icon/favored.png');
+                    $.notify({
+                        title: '提示',
+                        message: '收藏成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+
+                    if (res == 'youke') {
+                        $('.fullscr,#toolTip1').show();
+                    } else {
+
+                        $('#favorIcon').attr('src', '__PUBLIC__/img/icon/favor.png');
+                        $.notify({
+                            title: '提示',
+                            message: res
+                        }, {
+                            type: 'warning',
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+	$(function(){
+		var options = {
+		success:    showResponse,  // post-submit callback
+		resetForm:  false,
+		dataType:  'json'
+		};
+
+		// bind to the form's submit event
+		$('#info-list').submit(function() {
+		$(this).ajaxSubmit(options);
+		return false;
+		});
+	});
+	function showResponse(responseText, statusText) {
+		switch(responseText.code)
+		{
+		case 0: //success
+				  alert(responseText.msg);
+				  var url = "{:U('Teach/activities')}";
+				  window.location.href = url;
+
+		break;
+
+		default: alert(responseText.msg);
+		break;
+		}
+	}
+</script>
+
+<!--资源展示弹窗-->
+<script>
+	$('.toolTipClose').click(function(){
+		$('.fullscr,#toolTip1').hide();
+	})
+</script>
+
+<!--游客弹窗-->
+<script>
+	$('.dataA').click(function(){
+		$('.fullBlack,.resourceOutter').show();
+	})
+	
+	$('.resourceClose').click(function(){
+		$('.fullBlack,.resourceOutter').hide();
+	})
+</script>
+
+
+
+

@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="精通云教育，北京出版社，京版教材">
+    <meta name="keywords" content="精通云教育，北京出版社，京版教材">
+
+    <link rel='shortcut icon' type='image/x-icon' href='__PUBLIC__/favicon.ico'/>
+
+    <title>教师注册 :: 精通云教育平台</title>
+
+    <link href="__PUBLIC__/metro/css/metro.css" rel="stylesheet">
+    <link href="__PUBLIC__/metro/css/metro-icons.css" rel="stylesheet">
+    <link href="__PUBLIC__/metro/css/metro-responsive.css" rel="stylesheet">
+    <link href="__PUBLIC__/metro/css/app/login.css" rel="stylesheet">
+
+    <!--<script src="http://libs.baidu.com/jquery/2.1.3/jquery.min.js"></script>-->
+    <script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+    <script src="__PUBLIC__/metro/js/metro.js"></script>
+
+    <script>
+        $(function () {
+            var form = $(".login-form");
+
+            form.css({
+                opacity: 1,
+                "-webkit-transform": "scale(1)",
+                "transform": "scale(1)",
+                "-webkit-transition": ".5s",
+                "transition": ".5s"
+            });
+        });
+    </script>
+    <style>
+        .login-form {
+            top: 390px !important;
+            height: 32.75rem;
+        }
+    </style>
+</head>
+<body>
+<div class="bg1">
+    <div class="toplogo">
+        <a href="http://123.56.145.63/" title="返回首页"><img src="__PUBLIC__/metro/img/logo.png"></a>
+    </div>
+</div>
+<div class="login-form padding20 block-shadow" style="background-color: #f8f1df;">
+    <form id="info-list" action="__URL__/register" method="post">
+        <h1 class="text-light" style="text-align: center;padding: 0 0 20px 0;">教师注册</h1>
+        <hr class="thin"/>
+        <br/>
+
+        <div class="input-control text full-size" data-role="input">
+            <label for="telephone">手机号:</label>
+            <input type="number" name="telephone" id="telephone" placeholder="请输入手机号">
+            <button class="button helper-button clear"><span class="mif-cross"></span></button>
+        </div>
+        <br/>
+        <br/>
+
+        <div class="input-control text full-size" data-role="input">
+            <label for="valid_code">手机验证码:</label>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="height: 48px;">
+                        <input type="text" name="valid_code" id="valid_code" placeholder="验证码">
+                    </td>
+                    <td width="80" valign="middle" align="right" id="">
+                        <a href="javascript:sendPhoneCode()">发送验证码</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br/>
+        <br/>
+
+        <div class="input-control text full-size" data-role="input">
+            <label for="name">真实姓名:</label>
+            <input type="text" name="name" id="name" placeholder="真实姓名">
+            <button class="button helper-button clear"><span class="mif-cross"></span></button>
+        </div>
+        <br/>
+        <br/>
+
+        <div class="input-control text full-size" data-role="input">
+            <label for="email">邮箱:</label>
+            <input type="mail" name="email" id="email" placeholder="邮箱">
+            <button class="button helper-button clear"><span class="mif-cross"></span></button>
+        </div>
+        <br/>
+        <br/>
+
+        <div class="input-control password full-size" data-role="input">
+            <label for="password">密码:</label>
+            <input type="password" name="password" id="password" placeholder="请输入密码" value="password">
+            <button class="button helper-button reveal"><span class="mif-looks"></span></button>
+        </div>
+        <br/>
+        <br/>
+
+        <div class="input-control password full-size" data-role="input">
+            <label for="confirm_password">密码确认:</label>
+            <input type="password" name="confirm_password" id="confirm_password" placeholder="请输入密码" value="password">
+            <button class="button helper-button reveal"><span class="mif-looks"></span></button>
+        </div>
+        <br/>
+        <br/>
+
+        <div class="form-actions" style="text-align: right;">
+            <a href="__URL__/login" style="float: left;">已有账号，马上登录</a>
+            <button type="submit" class="button danger">注册</button>
+        </div>
+    </form>
+    <div class="footer" style="margin-top: 100px;font-size: 10px;text-align: center;">
+        <p>© 2016 北京市育学林教育技术有限公司 京ICP12032432</p>
+    </div>
+</div>
+<script>
+    function sendPhoneCode() {
+        var telephone = $('#telephone').val();
+        if (telephone == '') {
+            alert('请输入手机号');
+            return false;
+        }
+        //
+        var type = $('#type').val();
+        $.get('__URL__/sendRegisterPhoneCode', {
+            'telephone': telephone
+        }, function (res) {
+            if (res == 'success') {
+                $('#valid_code').val('8888');
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<style>
+	.list_title a {
+		color: #2086bf !important;
+	}
+</style>
+
+<form action="{:U('LessonPlanning/lessonPlanningMgmt')}" method="post">
+    <input type="hidden" name="page" id="page" value="{$page}">
+</form>
+<div style="margin-bottom: 12px; float:left">
+    <a href="{:U('LessonPlanning/publishLessonPlanningTemplate')}" title="发布课件模板"
+       class="button primary {:session('btntheme')}">发布课件模板</a>
+</div>
+<div style="text-align: right;">
+    <div class="input-control text" data-role="input" style="width: 320px;">
+        <input type="text" id="keyword" value='{$keyword}' name="keyword" placeholder="搜索课件名称">
+        <button onclick="search()" class="button button-before"><span class="mif-search"></span></button>
+    </div>
+</div>
+
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">课件名称</th>
+        <th class="text-center">学科</th>
+        <th class="text-center">年级</th>
+        <th class="text-center">教材分册</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" >
+        <tr id="l_{$data.id}">
+            <td>
+                <h3 class="list_title">
+                    <a href="{:U('LessonPlanning/editLessonPlanningTemplate?id=')}{$data.id}">{$data.name}</a>
+                </h3>
+
+                <div class="list_sub_title">{$data.description}</div>
+            </td>
+            <td class="text-center">{$data.course_name}</td>
+            <td class="text-center">
+                {$data.grade}
+            </td>
+            <td class="text-center">
+                {$data.textbook}
+            </td>
+            <td class="text-center">
+                <a href="{:U('LessonPlanning/editLessonPlanningTemplate?id=')}{$data.id}" class="button info">编辑</a>
+                <a href="javascript:deleteLessonPlanningTemplate('{$data.id}')" class="button info">删除</a>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<include file="./Application/Home/View/Default/Public/pager_first.html"/>
+<include file="./Application/Home/View/Default/Public/pager.html"/>
+<script>
+    function search() {
+        var keyword = $('#keyword').val();
+        var url = 'index.php?m=Admin&c=LessonPlanning&a=lessonPlanningMgmt&keyword=' + keyword;
+        window.location.href = url;
+    }
+
+    function deleteLessonPlanningTemplate(id) {
+        if (confirm('确定要删除本课件吗？')) {
+            $.get('index.php?m=Admin&c=LessonPlanning&a=deleteLessonPlanningTemplate', {id: id}, function (res) {
+                if (res == 'success') {
+                    alert('删除成功')
+                    window.location.reload();
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false
+        });
+    });
+</script>

@@ -1,0 +1,96 @@
+<layout name="parent_layout_2"/>
+<link rel="stylesheet" href="__PUBLIC__/css/textbook/textbookList.css">
+
+<include file="./Application/Home/View/Common/CourseGradeTextBookSelector.html"/>
+<div style="margin-top: 40px;" id="listWrapper">
+</div>
+<script type="text/javascript">
+    function browserQuery(){
+        var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+        var isOpera = userAgent.indexOf("Opera") > -1;
+        if (isOpera) {
+            return "Opera"
+        }; //判断是否Opera浏览器
+        if (userAgent.indexOf("Firefox") > -1) {
+            return "FF";
+        } //判断是否Firefox浏览器
+        if (userAgent.indexOf("Chrome") > -1){
+            return "Chrome";
+        }
+        if (userAgent.indexOf("Safari") > -1) {
+            return "Safari";
+        } //判断是否Safari浏览器
+        if ((userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) || userAgent.indexOf("rv:11.0")) {
+            return "IE";
+        }; //判断是否IE浏览器
+    }
+    var obj =  new localQuery();
+    obj.init(obj);
+    var HTTP_BASE_URL = window.location.protocol + '//' + window.location.host + '/';
+    var PIC_BOOK_PATH = 'ebook/';
+    var template =
+            ['            <div class="book" tapmode="" >',
+                '                <img class="bookCover" onclick="showBook({0})"',
+                '                 onerror="imageError(this)"',
+                '                     src="{2}">',
+                '                <div class="bookIntro"><span onclick="showBook({0})">{1}</span></div>',
+                '            </div>'].join("");
+
+
+    renderBooks();
+
+    function renderBooks() {
+        var keyword = getQueryString('keyword');
+        if(keyword != null){
+            if("IE" != browserQuery())
+                keyword = escape(keyword);
+            else
+                keyword = encodeURI(keyword);
+        }
+        $.post('{0}ApiInterface/Version1_0/EtextBook/getETextBook'.format(HTTP_BASE_URL),{course:getQueryString('course'),grade:getQueryString('grade'),textbook:getQueryString('textbook'),keyword:keyword}, function (ret) {
+            var result = ret.result;
+            var allBookHtml = [];
+            var html = [];
+            var flag = 1; //计数器
+            //http://jingbanyun.oss-cn-beijing.aliyuncs.com/beijing_edu_pub/english/eng_4_1_v1/content/2.png
+            if(result.length == 0)
+                allBookHtml = ['<div style="text-align:center">没有找到对应的电子课本</div>'];
+			var lastCourseId = 0;
+            for (var i = 0; i < result.length; i++) {
+				if(i!=0){
+					if(result[i].course_id != lastCourseId){
+						html.push('</div><div class="booksWrapper">');
+					    flag = 1;
+					}
+				}
+				lastCourseId = result[i].course_id;
+                var coverImage = '{0}/content/2.png'.format(result[i].server_path);
+                html.push(template.format(result[i].id, result[i].name, coverImage, result[i].server_path));
+                if (flag == 6 || i == result.length - 1) {
+                    flag = 1;
+                    allBookHtml.push('<div class="booksWrapper">' + html.join('') + '</div>');
+                    html = [];
+                } else {
+                    flag++;
+                }
+            }
+            document.getElementById('listWrapper').innerHTML = allBookHtml.join('');
+        });
+    }
+
+    function showBook(id) {
+        //window.location.href = "index.php?m=Home&c=Teach&a=textbookDetails&id=" + id;
+        window.open("index.php?m=Home&c=Teach&a=textbookDetails&id=" + id);
+    }
+    function imageError(img)
+    {
+        var src = img.src;
+        if(src.substr(src.length-3,3)=='jpg')
+            return;   //控制不要一直跳动
+        img.src=src.substr(0,src.length-3)+'jpg';
+
+    }
+</script>
+<script>
+   var contentheight = '申明一个变量，在有些获取不到contwrapper高度的页面执行一个函数'
+</script>

@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<title>报名信息</title>
+	<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+	<script src="__PUBLIC__/js/jquery.form.js"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+  <link href="__PUBLIC__/css/appCommon.css" rel="stylesheet" type="text/css"/>
+</head>
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+	}
+
+	body {
+		background: #eee;
+		padding: 2rem 3rem;
+		color: #333;
+		-webkit-tap-highlight-color: rgba(0,0,0,0);
+	}
+
+	span {
+		font-size: 18px
+	}
+
+	input, select {
+		/*-webkit-appearance: none;*/
+	}
+
+	.left {
+		float: left;
+		width: 40%
+	}
+	#t_name,#t_region,#school,#t_email,#school_address{
+		position: relative
+	}
+	.right {
+		color: #d8716a;
+		visibility: hidden;
+	}
+
+	.leftregion {
+		display: inline-block;
+		float: left;
+		line-height: 30px;
+		width: 6%;
+		text-align: center;
+		font-size: 14px
+	}
+
+	select,
+	input {
+		border: none;
+		text-indent: 5px;
+		font-size: 16px
+	}
+
+	#next_o {
+		width: 80%;
+		line-height: 4rem;
+		background: #6acbcb;
+		margin: 1rem auto 4rem;
+		color: #fff;
+		text-align: center;
+		border-radius: 10px
+	}
+	.zindex20 {
+	width: 100%;
+	height: 100%;
+		position: absolute;
+		z-index: 20;
+		top: 0;
+	}
+	#three,
+	#two {
+		display: none;
+	}
+
+	#activeid {
+		font-size: 2rem;
+		text-align: center;
+		margin-top: 4rem;
+		margin-bottom: 1rem;
+	}
+
+	.iderror {
+		font-size: 1.5rem;
+		color: #d8716a;
+		display: none;
+		text-align: center;
+		line-height: 2rem;
+		margin: 1rem 0
+	}
+
+	#previous_t,
+	#next_t,
+	#previous_te,
+	#next_te {
+		width: 45%;
+		line-height: 40px;
+		background: #6acbcb;
+		float: left;
+		color: #fff;
+		text-align: center;
+		border-radius: 5px;
+		margin: 1rem 0 4rem;
+		font-size: 18px
+	}
+	#school{
+		position: relative
+	}
+	#Schooltips{
+		position: absolute;background: #fff;width: 100%;top:4.5rem;
+		display: none;
+		z-index: 2;
+		height: 10rem;
+		overflow: auto
+	}
+	#Schooltips p{
+		font-size: 1rem;line-height: 2rem;
+	}
+	#GetAppme,#confirmation{
+		background:#fff url(__PUBLIC__/img/app/quapp.png) no-repeat ;
+			width: 280px;height:200px;
+			background-size: 100% ;
+			border: 1px solid #eee;
+			border-radius: 10px;position: fixed;top: 0;bottom: 0;right: 0;left: 0;margin: auto auto;display: none;
+			z-index: 30;background-color: #fff;
+		text-align: center;
+	}
+	#GetAppme span,#confirmation span,#activeSuccess span{    margin-top: 150px;
+    background-color: #28D0C1;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+    padding: 6px 22px;
+
+    display: inline-block;
+   }
+	#getyes{margin-left:40px}
+	#confirmation{		background:url(__PUBLIC__/img/app/querenxinxi.png) no-repeat;
+			width: 280px;height:200px;
+			background-size: 100% ;
+			border: 1px solid #eee;
+			border-radius: 10px;position: fixed;top: 0;bottom: 0;right: 0;left: 0;margin: auto auto;
+			z-index: 2;background-color: #fff;
+		text-align: center;display: none;}
+		#activeSuccess{		background:url(__PUBLIC__/img/app/baomingcg.png) no-repeat;
+			width: 280px;height:200px;
+			background-size: 100% ;
+			border: 1px solid #eee;
+			border-radius: 10px;position: fixed;top: 0;bottom: 0;right: 0;left: 0;margin: auto auto;
+			z-index: 2;background-color: #fff;
+		text-align: center;display: none;}
+/*	#province_choose option,.city option,.district option{
+		display: none;
+
+
+	}*/
+
+	.inputCommon {
+		width: 100%;
+		height: 30px;
+		margin: 5px 0 15px;
+		background: #fff;
+	}
+
+	.inputShort {
+		width: 94%;
+		height: 30px;
+		background: #fff;
+	}
+
+	.adminNotifyBox {
+		width: 280px;
+	}
+
+</style>
+
+<body>
+  <div id="GetAppme">
+   	 <span id="getno" style="background:#c6c6c6">取&nbsp;消</span><span  id="getyes">去修改</span>
+   </div>
+   <div id="confirmation">
+   	<span>确定</span>
+   </div>
+   <div id="activeSuccess">
+   	<span>好的</span>
+   </div>
+	<form id='submit_form' action="{:U('ApiInterface/Version1_1/activity/signupInformation')}" method="post" onkeydown="if(event.keyCode==13)return false;">
+
+            <input type="hidden" name='user_ids' value="{$user_id}"/>
+		    <input type="hidden" name="role" id="role" value="{$role}"/>
+
+            <input type="hidden" name='activity_id' value="{$activity_id}"/>
+            <if condition="$show_invitationCode eq 1">
+		<div id="one">
+			<p id="activeid">活动邀请码</p>
+                        <if condition="$register_status eq 1">
+                            <input type="text" placeholder="必填" value="{$activity_register_info.invitation_code}" class="inputCommon" name="Inviteid_code" id="Inviteid" readonly="true">
+                        <else />
+                            <input type="text" placeholder="必填" class="inputCommon" name="Inviteid_code" id="Inviteid" required>
+                        </if>
+			<p class="iderror">邀请码错误</p>
+			<div id="next_o">下一步</div>
+		</div>
+            </if>
+		<div id="two">
+			<if condition="$register_status eq 0">
+				<input type="hidden" name="edit_status" value="0"/>
+				<else />
+				<input type="hidden" name="edit_status" value="1"/>
+			</if>
+			<?php if(in_array('1',explode(',',$data['selectedfields']))) { ?>
+			<div id="t_name">
+				<span class="left">姓名:</span>
+<!--				<span class="right">请输入正确姓名</span>-->
+                            <if condition="$register_status eq 0">
+				<input type="text" id="name"  value="{$school_info.name}" name="teacher_name" placeholder="必填" class="inputCommon" onblur="teacherName()" required onkeydown="return false" readonly>
+                            <else />
+				<input type="text" id="name"  value="{$activity_register_info.user_name}" name="teacher_name" placeholder="必填" class="inputCommon" onblur="teacherName()" required onkeydown="return false" readonly>
+                            </if>
+                            <!-- <div class="zindex20"></div> -->
+			</div>
+            <?php } ?>
+                        <!--<if condition="$allowed_reg_activity['status'] eq '0'">
+                                <span style='color:red;'>您所教学科不支持报名该活动</span>
+                        </if>-->
+			<?php if(in_array('2',explode(',',$data['selectedfields'])) && ($role == 2)) { ?>
+			<div id="t_subject">
+				<span class="left">学科:</span>
+
+				<span class="right">请选择学科</span>
+                                <select id="subject" name="course" placeholder="必填" class="inputCommon">
+					<option value="0">请选择</option>
+                                        <volist name="course_list" id="course_item">
+                                        <if condition="$register_status eq 1">
+                                            <option value="{$course_item.course_id}" {$course_item['course_id']==$activity_register_info['course_id']? selected:''} >{$course_item.course_name}</option>
+                                        <else />
+                                            <option value="{$course_item.course_id}">{$course_item.course_name}</option>
+                                        </if>
+                                        </volist>
+				</select>
+			</div>
+			<?php } ?>
+			<?php if(in_array('3',explode(',',$data['selectedfields'])) && ($role == 2)) { ?>
+			<div id="t_lesson">
+				<span class="left">参评课题:</span>
+				<span class="right">请输入参选课题</span>
+                            <if condition="$register_status eq 0">
+                                <input id="lesson" value="" name='lesson' placeholder="必填，不超过50个字" class="inputCommon" required maxlength="50">
+                            <else />
+                                <input id="lesson" value="{$activity_register_info.lesson}" name='lesson' placeholder="必填，不超过50个字" class="inputCommon" required maxlength="50">
+                            </if>
+			</div>
+			<?php } ?>
+			<?php if(in_array('4',explode(',',$data['selectedfields'])) && ($role == 2 || $role == 3)) { ?>
+			<div id="t_region">
+				<span class="left">所属区县:</span>
+				<span class="right">请选择所属区县</span>
+				<div style="overflow:hidden;width:100%" class="region" >
+					<div class="leftregion">省</div>
+
+                                        <if condition="$register_status eq 1">
+                                            <!-- <input type="text" class="province inputShort" id="province_choose" value="{$activity_register_info.province}" onkeydown="return false" readonly > -->
+                                            <select name="province_choose" id="province_choose" class="province inputShort" default_id="{$activity_register_info.province_id}">
+						                        <option value="">请选择省</option>
+						                    </select>
+                                        <else />
+                                            <!-- <input type="text" class="province inputShort" id="province_choose" value="{$school_info.province}" onclick="" onkeydown="return false" readonly> -->
+                                            <select name="province_choose" id="province_choose" class="province inputShort" default_id="{$school_info.province_id}">
+						                        <option value="">请选择省</option>
+						                    </select>
+                                        </if>
+					<div class="leftregion">市</div>
+
+                                     <if condition="$register_status eq 1">
+                                            <!-- <input type="text" value="{$activity_register_info.city}" class="city inputShort" onkeydown="return false" > -->
+                                            <select name="city_choose" id="city_choose" class="city inputShort" default_id="{$activity_register_info.city_id}">
+						                        <option value="">请选择市</option>
+						                    </select>
+                                        <else />
+                                            <!-- <input type="text" value="{$school_info.city}" class="city inputShort" onclick="" onkeydown="return false" > -->
+                                            <select name="city_choose" id="city_choose" class="city inputShort" default_id="{$school_info.city_id}">
+						                        <option value="">请选择市</option>
+						                    </select>
+                                    </if>
+					<div class="leftregion" style="margin-bottom: 1rem">区</div>
+
+                                        <if condition="$register_status eq 1">
+                                            <!-- <input type="text" value="{$activity_register_info.district}" class="district inputShort" onkeydown="return false"> -->
+                                            <select name="district_choose" id="district_choose" class="district inputShort" default_id="{$activity_register_info.district_id}">
+						                        <option value="">请选择区</option>
+						                    </select>
+                                        <else />
+                                            <!-- <input type="text" value="{$school_info.district}" class="district inputShort" onclick="" onkeydown="return false" > -->
+                                            <select name="district_choose" id="district_choose" class="district inputShort" default_id="{$school_info.district_id}">
+						                        <option value="">请选择区</option>
+						                    </select>
+                                        </if>
+				</div>
+				   <!-- <div class="zindex20"></div> -->
+			</div>
+			<?php } ?>
+			<?php if(in_array('7',explode(',',$data['selectedfields']))) { ?>
+			<div>
+				<span class="left">性别:</span>
+				<span class="right">请选择性别</span>
+				<div class="inputCommon">
+					<p id="sex" style="line-height: 30px; font-size: 16px">
+                        <if condition="$register_status eq 1">
+                            <if condition="$activity_register_info['sex'] eq '男'">
+                                    <input type="radio" style="margin-left:5%;"  checked="checked" name="sex" class="sex" value="男"><span>男</span>
+                                    <input type="radio" style="margin-left:5%;"  name="sex" class="sex" value="女"><span>女</span>
+                                    <br>
+                            <else />
+                                    <input type="radio" style="margin-left:5%;"  name="sex" class="sex" value="男"><span>男</span>
+                                    <input type="radio" style="margin-left:5%;"  checked="checked" name="sex" class="sex" value="女"><span>女</span>
+                            </if>
+                        <else />
+                            <if condition="$school_info['sex'] eq '男'">
+                                    <input type="radio" style="margin-left:5%;"  checked="checked" name="sex" class="sex" value="男"><span>男</span>
+                                    <input type="radio" style="margin-left:5%;"  name="sex" class="sex" value="女"><span>女</span>
+                                    <br>
+                            <else />
+                                    <input type="radio" style="margin-left:5%;"  name="sex" class="sex" value="男"><span>男</span>
+                                    <input type="radio" style="margin-left:5%;"  checked="checked" name="sex" class="sex" value="女"><span>女</span>
+                            </if>
+                        </if>
+                    </p>
+				</div>
+
+			</div>
+			<?php } ?>
+			<?php if(in_array('8',explode(',',$data['selectedfields']))) { ?>
+			<div>
+				<span class="left">年龄:</span>
+				<span class="right">请输入正确的年龄</span>
+                            <if condition="$register_status eq 1">
+				<input type="number" value="{$activity_register_info.age}" placeholder="必填" name='age' class="inputCommon" required id="age" onblur="teacherage()">
+                            <else />
+                                <input type="number" value="{$last_reg_info.age}" placeholder="必填" name='age' class="inputCommon" required id="age" onblur="teacherage()">
+                            </if>
+			</div>
+			<?php } ?>
+			<?php if(in_array('9',explode(',',$data['selectedfields'])) && ($role == 2)) { ?>
+			<div id="t_Education">
+				<span class="left">学历:</span>
+				<span class="right">请选择学历</span>
+				<select class="education inputCommon" name='education' placeholder="必填">
+					<option value="0">请选择</option>
+                        <volist name="education" key="i" id="education_item">
+                            <if condition="$register_status eq 1">
+                                <option value="{$i}" {$i==$activity_register_info['education']? selected:''}>{$education_item}</option>
+                            <else />
+                                <option value="{$i}" {$i==$last_reg_info['education']? selected:''} >{$education_item}</option>
+                            </if>
+                        </volist>
+				</select>
+			</div>
+			<?php } ?>
+			<?php if(in_array('10',explode(',',$data['selectedfields'])) && ($role == 2)) { ?>
+			<div id="t_positions">
+				<span class="left">职称:</span>
+				<span class="right">请输入职称</span>
+				<select class="positions inputCommon" name='positions' placeholder="必填">
+					<option value="0">请选择</option>
+                    <foreach name="positions"  item="positions_item">
+                        <if condition="$register_status eq 1">
+                            <option value="{$key}" {$key==$activity_register_info['positions']? selected:''}>{$positions_item}</option>
+                        <else />
+                            <option value="{$key}" {$key==$last_reg_info['positions']? selected:''} >{$positions_item}</option>
+                        </if>
+                    </foreach>
+				</select>
+			</div>
+			<?php } ?>
+			<?php if(in_array('11',explode(',',$data['selectedfields']))) { ?>
+			<div id="t_email">
+				<span class="left">电子邮箱:</span>
+				<span class="right">请输入正确的电子邮箱</span>
+                            <if condition="$register_status eq 1">
+				<input type="email" name="email" value="{$activity_register_info.email}" placeholder="必填" class="inputCommon" required onblur="teacheremail()" id="email" autocomplete="off" >
+                            <else />
+				<input type="email" name="email" value="{$school_info.email}" placeholder="必填" class="inputCommon" required onblur="teacheremail()" id="email" autocomplete="off">
+                            </if>
+
+			</div>
+			<?php } ?>
+
+		</div>
+		<div id="three">
+			<?php if(in_array('5',explode(',',$data['selectedfields'])) && ($role == 2 || $role == 3) ) { ?>
+			<div id="school" >
+				<span class="left">学校:</span>
+				<span class="right">请输入学校全称</span>
+                    <if condition="$register_status eq 1">
+		        		<input type="text" value="{$activity_register_info.school_name}" class="inputCommon" name="school_name" required id="schoolSeach" placeholder="请输入学校全称">
+                    <else />
+                        <input type="text" value="{$school_info.school_name}" class="inputCommon" name="school_name" required id="schoolSeach" placeholder="请输入学校全称">
+                    </if>
+                        <!--<input type="hidden" style="width:100%;margin:1rem 0;height:2rem" required id="schoolSeachId"  placeholder="请输入学校名称">-->
+		        <div id="Schooltips">
+
+		        </div>
+		           <!-- <div class="zindex20"></div> -->
+			</div>
+			<?php } ?>
+			<?php if(in_array('6',explode(',',$data['selectedfields'])) && ($role == 2 || $role ==3)) { ?>
+			<div id="school_address" >
+				<span class="left">学校地址:</span>
+				<span class="right">请输入学校地址</span>
+                    <if condition="$register_status eq 1">
+		        <input type="text" value="{$activity_register_info.school_address}" class="address inputCommon" name="school_address" id="schoolSeach"  placeholder="请输入学校地址">
+                    <else />
+                        <input type="text" value="{$school_info.school_address}" class="address inputCommon" name="school_address" id="schoolSeach" onfocus="" placeholder="请输入学校地址">
+                    </if>
+                    <!-- <div class="zindex20"></div> -->
+			</div>
+			<?php } ?>
+			<?php if(in_array('12',explode(',',$data['selectedfields'])) && ($role == 2 || $role == 3)) { ?>
+			<div>
+				<span class="left">学校邮编:</span>
+				<span class="right">请输入正确的学校邮编</span>
+                        <if condition="$register_status eq 1">
+                            <input type="tel" maxlength="6" value="{$activity_register_info.post_code}" name="post_code" class="inputCommon" placeholder="必填" id="schoolPostcodes" onblur="Postcodes()" >
+                        <else />
+                            <input type="tel" maxlength="6" value="{$last_reg_info.post_code}" name="post_code" class="inputCommon" placeholder="必填" id="schoolPostcodes" onblur="Postcodes()">
+                        </if>
+			</div>
+			<?php } ?>
+			<?php if(in_array('13',explode(',',$data['selectedfields'])) && ($role == 2 )) { ?>
+			<div>
+				<span class="left">办公电话:</span>
+				<span class="right">请输入正确的办公电话</span>
+                            <if condition="$register_status eq 1">
+				<input type="text" value="{$activity_register_info.tel}" name='tel' class="inputCommon" placeholder="选填，如:010-12345678" id="landline" onblur="schoollandline()">
+                            <else />
+				<input type="text" value="{$last_reg_info.tel}" name='tel' class="inputCommon" placeholder="选填，如:010-12345678" id="landline" onblur="schoollandline()">
+                            </if>
+			</div>
+			<?php } ?>
+			<?php if(in_array('14',explode(',',$data['selectedfields']))) { ?>
+			<div>
+				<span class="left">移动电话:</span>
+<!--				<span class="right">请输入正确的移动电话</span>-->
+                            <if condition="$register_status eq 1">
+				<input type="text" value="{$activity_register_info.telephone}" class="inputCommon" placeholder="选填" name="mobilePhone" id="mobilePhone" onblur="teachertel()" maxlength="11" autocomplete="off">
+                            <else />
+				<input type="text" value="{$school_info.telephone}" class="inputCommon" placeholder="选填" name="mobilePhone" id="mobilePhone" onblur="teachertel()" maxlength="11" autocomplete="off"/>
+                            </if>
+			</div>
+			<?php } ?>
+			<?php if(in_array('15',explode(',',$data['selectedfields'])) && ($role == 2)) { ?>
+			<div id="tel">
+				<span class="left">地方课程:</span>
+				<span class="right">请选择地方课程</span>
+				<select class="local_course inputCommon" name='local_course' placeholder="必填">
+					<option value="">请选择</option>
+                                    <if condition="$register_status eq 1">
+                                        <option value="1" <if condition="$activity_register_info['local_course'] eq 1"> selected</if> >是</option>
+					<option value="0" <if condition="$activity_register_info['local_course'] eq 0"> selected</if> >否</option>
+                                    <else />
+                                        <option value="1" <if condition="$last_reg_info['local_course'] eq 1"> selected</if> >是</option>
+					<option value="0" <if condition="$last_reg_info['local_course'] eq 0"> selected</if> >否</option>
+                                    </if>
+				</select>
+			</div>
+			<?php } ?>
+			<?php if(in_array('16',explode(',',$data['selectedfields'])) && ($role == 2)) { ?>
+			<div id="tel">
+				<span class="left">校本课程:</span>
+				<span class="right">请选择校本课程</span>
+				<select class="school_course inputCommon" name='school_course' placeholder="必填">
+					<option value="">请选择</option>
+                                    <if condition="$register_status eq 1">
+                                        <option value="1" <if condition="$activity_register_info['school_course'] eq 1"> selected</if> >是</option>
+					<option value="0" <if condition="$activity_register_info['school_course'] eq 0"> selected</if> >否</option>
+                                    <else />
+                                        <option value="1" <if condition="$last_reg_info['school_course'] eq 1"> selected</if> >是</option>
+					<option value="0" <if condition="$last_reg_info['school_course'] eq 0"> selected</if> >否</option>
+                                    </if>
+				</select>
+			</div>
+			<?php } ?>
+<script src="__PUBLIC__/js/notify/notifyApp.js" defer async="true"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+
+<script>
+	bindQueryDistrictEvent("__URL__", 'province_choose', 'city_choose', 'district_choose');
+</script>
+
+			<script>
+				String.prototype.format = function (args) {
+					if (arguments.length > 0) {
+						var result = this;
+						if (arguments.length == 1 && typeof (args) == "object") {
+							for (var key in args) {
+								var reg = new RegExp("({" + key + "})", "g");
+								result = result.replace(reg, args[key]);
+							}
+						}
+						else {
+							for (var i = 0; i < arguments.length; i++) {
+								if (arguments[i] == undefined) {
+									return "";
+								}
+								else {
+									var reg = new RegExp("({[" + i + "]})", "g");
+									result = result.replace(reg, arguments[i]);
+								}
+							}
+						}
+						return result;
+					} else {
+						return this;
+					}
+					return result;
+				}
+				var additionalInfo = '{$data['additional_info']}';
+				var regAddInfo = '{$activity_register_info['additional_info']}';
+				var spanTemplate = ' <div class="userDefinedInfo"><span class="left">{3}:</span><span class="right">请输入正确的{3}</span><input style="width:100%;height:2rem;margin:1rem 0" type={0} maxlength={1} placeholder="{2}" name="additionalRegInfo[]" value="{4}" autocomplete="off" class="newinput" ></div>';
+				additionalInfo = eval('(' + additionalInfo + ')');
+				regAddInfo = regAddInfo.split(',');
+				$(additionalInfo).each(function(i,n){
+					var regData = ''
+					if(regAddInfo[i] != undefined)
+                      regData = decodeURI(regAddInfo[i]);
+					document.write(spanTemplate.format(n.type,n.maxLength,n.placeholder,n.name,regData));
+				})
+			</script>
+
+
+
+			<div>
+				<button type="submit" onclick="return onSubmit();" id="next_te" style="display:none;margin-left:27.5%;border:none;outline:none" >提交</button>
+			</div>
+		</div>
+	</form>
+<volist name='allowed_reg_activity["data"]' id="item_data">
+    <input type='hidden' class='allow_course_list' value='{$item_data.course_id}'/>
+</volist>
+
+
+	<script>
+ 				$('.newinput').keyup(function(){
+					this.value=this.value.replace(/\s+/g,'');
+					if($(this).attr('type') == 'number'){
+							this.value=this.value.replace(/\D/g,'')
+					}
+				})
+
+
+        var show_invitationCode="{$show_invitationCode}";
+        if(show_invitationCode==0){
+            $("#two,#three").show();
+        }
+
+        var element_p='<p><span>北京市第一实验小学</span><input type="hidden" class="hid_school_id"></p>';
+        var lock=0;
+        var school_reg = /[\u4E00-\u9FA5\uF900-\uFA2D]/;
+        //提示去个人中心修改信息的弹窗
+		function getAppme(id_){
+			$('#GetAppme').show();
+			$(id_).blur()
+		}
+		$('#GetAppme,#confirmation,#activeSuccess').find('span').click(function(){
+
+			$(this).parent().hide()
+		})
+		$('#getyes').click(function(){
+			window.location.href = 'https://www.taobao.com'
+		})
+
+            var activity_id="{$activity_id}";
+            var user_id="{$user_id}";
+            var global_error=0;
+            var global_last_error=0;
+            var register_status="{$register_status}";
+
+            //邀请码
+		$('#next_o').click(function () {
+                    if(register_status==0){
+			var Inviteid = $('#Inviteid').val();
+			if (Inviteid != '') {
+                            //开始验证
+                            $.getJSON("{:U('ApiInterface/Version1_1/Activity/VerificationCode')}",{id:activity_id,code:Inviteid},function(msg){
+                                if(msg.status==200){
+                                    $('#one').hide();
+                                    $('#two,#three').show();
+                                    $(".iderror").hide();
+                                }else{
+									if(msg.status == 400)
+										$('.iderror').text('该邀请码已使用');
+									else
+										$('.iderror').text('邀请码错误');
+                                    $(".iderror").show();
+                                }
+                            });
+			}else{
+                            $(".iderror").text('邀请码不能为空');
+                            $(".iderror").show();
+                        }
+                    }else{
+                        $('#one').hide();
+                        $('#two,#three').show();
+                    }
+
+		});
+		        <if condition="$register_status eq 1">
+		        		$('#one').hide();
+		                $('#two,#three').show();
+		        </if>
+                var course_length=0;
+                var activity_course=new Array();
+                var allow_reg_status="{$allowed_reg_activity.status}";
+                if(allow_reg_status!=0){
+                    course_length=$('.allow_course_list').length;
+                    var allCourse;
+                    if($('.allow_course_list').length){
+                        allCourse=$('.allow_course_list');
+                        for(var i=0;i<allCourse.length;i++){
+                            activity_course.push($(allCourse[i]).val());
+                        }
+                    }
+                }
+
+                //学科操作
+                $("#subject").change(function(){
+                    if(!activity_course.length){
+                        $('#subject').siblings('.right').text('您所教学科不支持报名该活动');
+                        $('#subject').siblings('.right').css('visibility', 'inherit');
+                        $('#GetAppme').show();
+                        global_error=1;
+                        return false;
+                    }
+                    var course=$("#subject").val();
+
+                    if(course=='' || course==0){
+                        global_error=1;
+                        $('#subject').siblings('.right').text('请选择学科');
+                        $('#subject').siblings('.right').css('visibility', 'inherit');
+                    }else if(activity_course.length){
+                        for(var i=0;i<activity_course.length;i++){
+                            if(activity_course[i]==course){
+                                $('#subject').siblings('.right').css('visibility', 'hidden');
+                                break;
+                            }else{
+                                if(i==(activity_course.length-1)){
+                                    global_error=1;
+                                    $('#subject').siblings('.right').text('您所选学科不支持报名该活动');
+                                    $('#subject').siblings('.right').css('visibility', 'inherit');
+                                }
+                            }
+                        }
+                    }else{
+                        $('#subject').siblings('.right').css('visibility', 'hidden');
+                    }
+                });
+
+                //参评课题
+                $("#lesson").blur(function(){
+                    var lesson=$("#lesson").val();
+                    if(!lesson){
+                        global_error=1;
+                        $('#lesson').siblings('.right').css('visibility', 'inherit');
+                    }else{
+                        $('#lesson').siblings('.right').css('visibility', 'hidden');
+                    }
+                });
+
+                //省市区操作
+                $(".province,.city,.district").blur(function(){
+                    var province_val=$('.province').val();
+                    var city_val=$('.city').val();
+                    var district_val=$('.district').val();
+
+                    if(province_val==0 || city_val==0 || district_val==0){
+                        global_error=1;
+                        $('.city').parent().siblings('.right').css('visibility', 'inherit');
+                    }else{
+                        $('.city').parent().siblings('.right').css('visibility', 'hidden');
+                    }
+                });
+
+                //学历
+                $(".education").change(function(){
+                    var education=$(".education").val();
+                    if(education==0){
+                        global_error=1;
+                        $('.education').siblings('.right').css('visibility', 'inherit');
+                    }else{
+                        $('.education').siblings('.right').css('visibility', 'hidden');
+                    }
+                });
+
+                //职称
+                $(".positions").change(function(){
+                    var positions=$(".positions").val();
+                    if(positions==0){
+                        global_error=1;
+                        $('.positions').siblings('.right').css('visibility', 'inherit');
+                    }else{
+                        $('.positions').siblings('.right').css('visibility', 'hidden');
+                    }
+                });
+
+
+                //教师姓名
+		function teacherName() {
+			console.log(1)
+		}
+                var sex="{$school_info.sex}";
+                if(sex=='男'){
+                    var sex_flag=0;
+                }else{
+                    var sex_flag=1;
+                }
+
+
+                //教师年龄
+		function teacherage() {
+			var regage = /^[0-9]*[1-9][0-9]*$/;
+			var age = $('#age').val();
+			if (regage.test(age) == true && parseInt(age) < 100) {
+				$('#age').siblings('.right').css('visibility', 'hidden');
+				return true
+			} else  {
+                global_error=1;
+				$('#age').siblings('.right').css('visibility', 'inherit');
+				return false
+			}
+		}
+                //教师邮箱
+		function teacheremail() {
+			var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+			var email = $('#email').val();
+			if (regEmail.test(email) == true) {
+				$('#email').siblings('.right').css('visibility', 'hidden')
+				return true
+			} else if (email == '') {
+                                global_error=1;
+				$('#email').siblings('.right').css('visibility', 'inherit')
+				return true;
+			} else {
+                                global_error=1;
+				$('#email').siblings('.right').css('visibility', 'inherit')
+				return false;
+			}
+		}
+
+
+
+                //学校
+                $(".choose_school").change(function(){
+                    var school_val=$('.choose_school').val();
+                    if(school_val=='' || school_val==0){
+                        global_last_error=1;
+                        $('.choose_school').siblings('.right').css('visibility', 'inherit');
+                    }else{
+                        $('.choose_school').siblings('.right').css('visibility', 'hidden');
+                    }
+                });
+
+
+
+
+                //本地课程
+                $('.local_course').change(function(){
+                    var local_course=$('.local_course').val();
+                    if(local_course==''){
+                        global_last_error=1;
+                        $('.local_course').siblings('.right').css('visibility', 'inherit');
+                    }else{
+                        $('.local_course').siblings('.right').css('visibility', 'hidden');
+                    }
+                });
+
+                //校内课程
+                $('.school_course').change(function(){
+                    var school_course=$('.school_course').val();
+                    if(school_course==''){
+                        global_last_error=1;
+                        $('.school_course').siblings('.right').css('visibility', 'inherit');
+                    }else{
+                        $('.school_course').siblings('.right').css('visibility', 'hidden');
+                    }
+                });
+
+		function Postcodes() {
+			var regcode = /^[1-9][0-9]{5}$/;
+			var Postcodes = $('#schoolPostcodes').val();
+			if (regcode.test(Postcodes) == true) {
+				$('#schoolPostcodes').siblings('.right').css('visibility', 'hidden');
+			} else if (Postcodes == '') {
+                                global_last_error=1;
+				$('#schoolPostcodes').siblings('.right').css('visibility', 'inherit');
+			} else {
+                                global_last_error=1;
+				$('#schoolPostcodes').siblings('.right').css('visibility', 'inherit');
+			}
+		}
+
+		function schoollandline() {
+			var reglandline = /^((0\d{2,3}-\d{7,8})|(1[3584]\d{9}))$/;
+			var landline = $('#landline').val();
+			if (reglandline.test(landline) == true) {
+				$('#landline').siblings('.right').css('visibility', 'hidden');
+				return true
+			} else if (landline == '') {
+				$('#landline').siblings('.right').css('visibility', 'hidden');
+				return false
+			} else {
+                                global_last_error=1;
+				$('#landline').siblings('.right').css('visibility', 'inherit');
+				return false
+			}
+		}
+
+		function teachertel() {
+			var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+			var tel = $("#mobilePhone").val()
+			if (regTel.test(tel) == true) {
+				$("#mobilePhone").siblings('.right').css('visibility', 'hidden');
+				return true
+			} else if (tel == '') {
+                                global_last_error=1;
+				$("#mobilePhone").siblings('.right').css('visibility', 'inherit');
+				return false;
+			} else {
+                                global_last_error=1;
+				$("#mobilePhone").siblings('.right').css('visibility', 'inherit')
+				return false;
+			}
+		}
+		//自定义信息
+		$(".userDefinedInfo input").blur(function(){
+			var lesson=$(this).val();
+			var name = $(this).siblings('.left').text().replace(':','');
+			if(!lesson){
+				global_error=1;
+				$(this).siblings('.right').text(name + '信息文字格式不正确');
+				$(this).siblings('.right').css('visibility', 'inherit');
+				return;
+
+			}else{
+				$(this).siblings('.right').css('visibility', 'hidden');
+			}
+			if($(this).attr('type') == 'number')
+			{
+				var maxLength = $(this).attr('maxlength');
+				if(isNaN(parseInt($(this).val())))
+				{
+					$(this).siblings('.right').text(name + '格式不正确');
+					$(this).siblings('.right').css('visibility', 'inherit');
+					global_error=1;
+				}
+				else if(parseInt($(this).val())<0)
+				{
+					$(this).siblings('.right').text(name + '不能小于0');
+					$(this).siblings('.right').css('visibility', 'inherit');
+					global_error=1;
+				}
+                else if(maxLength < $(this).val().length)
+				{
+					$(this).siblings('.right').text(name + '长度不能超过'+maxLength+'位');
+					$(this).siblings('.right').css('visibility', 'inherit');
+					global_error=1;
+				}
+			}
+		});
+                //点击提交
+                function onSubmit(){
+                    global_last_error=0;
+					global_error=0;
+
+					$("#name").blur();
+					$("#subject").change();
+					$(".province").blur();
+					$(".city").blur();
+					$(".district").blur();
+					$('#lesson').blur();
+
+					$("#age").blur();
+					$('.education').change();
+					$('.positions').change();
+					$('#email').blur();
+					$('.choose_school').change();
+                    $('.school_province').blur();
+                    $('.school_city').blur();
+                    $('.school_district').blur();
+                    $('.address').blur();
+                    $('#schoolPostcodes').blur();
+                    $('#landline').blur();
+                    $('#mobilePhone').blur();
+                    $('.local_course').change();
+                    $('.school_course').change();
+					$(".userDefinedInfo input").blur();
+                    if(global_last_error ==1 || global_error == 1){
+                        $.NotifyBox.NotifyPromptOne('提示','请确认报名信息无误！','确定');
+                        return false;
+                    }
+				    for(var i = 0;i<$('.newinput').length;i++){
+				    	if($('.newinput').eq(i).attr('type') == 'number'){
+				    				var newval = $('.newinput').eq(i).val()*1;
+				    				if(typeof(newval) != 'number'){
+				    					$('.newinput').eq(i).siblings('.right').html('请输入正确的文字格式')
+				    					return false
+				    			}
+				    		}
+				    }
+
+                  return true;
+                }
+								var options = {
+										success: showResponse, // post-submit callback
+										resetForm: false,
+										dataType: 'json'
+								};
+								$("#submit_form").submit(function () {
+				            $(this).ajaxSubmit(options);
+							return !onSubmit();
+				        });
+
+
+
+				        function showResponse(responseText, statusText) {
+				            console.log(responseText);
+				            switch (responseText.status) {
+				                case 200:
+								    <if condition="$register_status eq 0">
+				                	alert('报名成功');
+									history.go(-1);
+									<else/>
+									alert('修改成功');
+									history.go(-2);
+									</if>
+				                    break;
+				                case 500:
+				                    alert('数据异常');
+				                    break;
+				                default:
+				                    alert(responseText.info);
+				                    break;
+				            }
+				        }
+				$('#next_te').fadeIn();
+
+
+</script>
+</body>
+
+</html>

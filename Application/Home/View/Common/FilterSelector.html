@@ -1,0 +1,118 @@
+<style>
+	ul,li {
+		list-style: none;
+	}
+	
+	.classify_ul li {
+		float: left;
+		margin: 0 10px 2px 10px;
+		cursor: pointer;
+	}
+	
+	.current_selected {
+		color: red;
+	}
+	
+	.cell {
+		float: left;
+		margin-left: 10px;
+	}
+</style>
+<div id="searchConditionArray">
+	<div class="grid condensed searchbar" id="classChoice">
+		<div class="row cells3">
+			<if condition="$filterSelect['province'] eq 1">
+				<div id="province" class="cell">
+					<select name="province_id" id="pro_select" class="form-control searchCondition input-control">
+						<option value="">-请选择省份-</option>
+					</select>
+				</div>
+			</if>
+			<if condition="$filterSelect['city'] eq 1">
+				<div id="city" class="cell">
+					<select name="city_id" id="city_select" class="form-control searchCondition input-control">
+						<option value="">-请选择市区-</option>
+					</select>
+				</div>
+			</if>
+			<if condition="$filterSelect['country'] eq 1">
+				<div id="country" class="cell">
+					<select name="country_id" id="coun_select" class="form-control searchCondition input-control">
+						<option value="">-请选择区县-</option>
+					</select>
+				</div>
+			</if>
+			<if condition="$filterSelect['school'] eq 1">
+				<div id="school" class="cell">
+					<select name="school_id" id="sch_select" class="form-control searchCondition input-control">
+						<option value="">-请选择学校-</option>
+					</select>
+				</div>
+			</if>
+			<if condition="$filterSelect['course'] eq 1">
+				<div class="cell">
+					<select id="course_id" class="input-control" name="course_id" onchange="{$filterSelect['textbook'] == 1 ? 'getTextbooks()':''}" class="searchCondition">
+						<!--TODO: getTextbooks parameters-->
+						<option value="">-请选择学科-</option>
+						<volist name="courses" id="dataCourse">
+							<option value="{$dataCourse.id}">
+								{$dataCourse.code} : {$dataCourse.course_name}
+							</option>
+						</volist>
+					</select>
+				</div>
+			</if>
+			<if condition="$filterSelect['grade'] eq 1">
+				<div class="cell">
+					<select id="grade_id" class="input-control" name="grade_id" onchange="{$filterSelect['textbook'] == 1 ? 'getTextbooks()':''}" class="searchCondition">
+						<option value="">-请选择年级-</option>
+						<volist name="grades" id="dataGrade">
+							<option value="{$dataGrade.id}">
+								{$dataGrade.grade}
+							</option>
+						</volist>
+					</select>
+				</div>
+			</if>
+			<if condition="$filterSelect['textbook'] eq 1">
+				<div class="cell">
+					<select id="textbook_id" class="input-control" name="textbook_id" class="searchCondition">
+						<option value="">-请选择教材分册-</option>
+					</select>
+				</div>
+			</if>
+		</div>
+	</div>
+</div>
+<script src=""></script>
+<script src="__PUBLIC__/js/common.js"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+<script>
+	bindQueryDistrictEvent("/Home/Teach", 'pro_select', 'city_select', 'coun_select', 'sch_select');
+
+	function localQuery() {}
+
+	localQuery.prototype.getQueryURL = function () {
+		return 'index.php?m=' + getQueryString('m') + '&c=' + getQueryString('c') + '&a=' + getQueryString('a');
+	}
+	localQuery.prototype.getQueryParas = function () {
+		var string = "";
+		$('#searchConditionArray .searchCondition').each(function (i, n) {
+			var value = $(n).val();
+			if (value) {
+				var name = $(n).attr('name');
+				string += '&' + name + '=' + value;
+			}
+		});
+		return string;
+	}
+
+	localQuery.prototype.getQueryURLWithParas = function () {
+		var url = this.getQueryURL() + this.getQueryParas();
+		return url;
+	}
+	localQuery.prototype.query = function () {
+		var url = this.getQueryURLWithParas();
+		location.href = url;
+	}
+</script>

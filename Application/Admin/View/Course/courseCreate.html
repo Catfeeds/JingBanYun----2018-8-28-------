@@ -1,0 +1,94 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+</style>
+
+<!--
+<div>
+    <a href="{:U('Course/courseMgmt')}">返回学科列表</a>
+    <br>
+    <br>
+    <br>
+    <form action="{:U('Course/courseCreateOp')}" method="post">
+        <div style="margin-left: 40px;"><a>学科</a><input style="margin-left:35px;width:1000px;" type="text" name="course" class='course'/></div>
+        <br>
+        <div style="margin-left: 40px;"><a>代码</a><input style="margin-left:35px;width:1000px;" type="text" name="code" class='code'/></div>
+        
+        <br>
+        <br>
+        <br>
+        <input type='submit' onclick='return check_data()' value='保存'/>
+    </form>
+</div>
+-->
+
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Course/courseMgmt')}" title="返回 学科列表" class="button primary {:session('btntheme')}">&lt; 返回 学科列表</a>
+</div>
+
+<div class="" style="padding-right: 100px;">
+    <form id="mainForm" action="{:U('Course/courseCreateOp')}" method="post" data-role="validator"
+          data-on-error-input="notifyOnErrorInput" data-show-error-hint="true" >
+        <div class="example" data-text="学科信息">
+
+            <div class="form_section">
+                <label for="course">学科</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="course" class="course" data-validate-func="required" data-validate-hint="学科不能为空" required/>
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="code">代码</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="code" class="code" data-validate-func="required" data-validate-hint="代码不能为空" required/>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button primary {:session('btntheme')}" id="save" onclick="return check_data();">保存</button>
+        </div>
+    </form>
+</div>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+    
+    function check_data(){ 
+        var course=$('.course').val();
+        var code=$('.code').val();  
+        if(course=='' || code==''){
+            return false;
+        }
+    }
+    $(function () {
+        var options = {
+            success: showResponse, // post-submit callback
+            resetForm: false,
+            dataType: 'json'
+        };
+
+        // bind to the form's submit event
+        $('#mainForm').submit(function () {
+            $(this).ajaxSubmit(options);
+            $('#save').attr('disabled',true);
+            return false;
+        });
+    });
+    function showResponse(responseText, statusText) {
+        switch (responseText.code) {
+            case 0:
+                window.location.href = "{:U('Course/courseMgmt')}";
+                break;
+            default:
+                alert(responseText.msg);
+                break;
+        }
+        $('#save').attr('disabled', false);
+    }
+</script>

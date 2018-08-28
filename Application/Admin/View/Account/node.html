@@ -1,0 +1,101 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<style>
+    td {
+        line-height: 56px
+    }
+</style>
+
+<form action="{:U('Account/node')}" method="post">
+<div style="margin: 20px 0;">
+    <div class="grid condensed searchbar">
+        <div class="row cells4 cellBox">
+            <div class="cell">
+                <label>模块级别:</label>
+                <select id="level" name="level" onchange="" class="input-control input-control-before">
+                    <option value="">-请选择-</option>
+                    <option value="1" {$level==1?'selected':''}>一级模块</option>
+                    <option value="2" {$level==2?'selected':''}>二级模块</option>
+                </select>
+            </div>
+            <div class="cell">
+                <label>父级模块:</label>
+                <select id="fid" name="fid"  class="input-control input-control-before">
+                    <option value="">-请选择-</option>
+                        <volist name="fdata" id="fv">
+                            <option value="{$fv.id}" {$fv['id']==$f_id?'selected':''}>
+                                {$fv.node_name}
+                            </option>
+                        </volist>
+                </select>
+            </div>
+            <div class="cell">
+   				<label>关键词：</label>
+   				<input type="text" id="keyword" name="keyword" placeholder="-关键字-" class="input-control input-control-before" value="{$keyword|default=''}">
+   			</div>
+    
+    		<div class="cell" data-role="input">
+    			<label for="">&nbsp;</label>
+				<button type="submit" class="button" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+			</div>
+        </div>
+    </div>
+</div>
+</form>
+
+<empty name="list">
+    <div class="emptyResult">暂时没有资源</div>
+</empty>
+<notempty name="list">
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+        <tr>
+            <th class="text-center">功能模块名称</th>
+            <th class="text-center">模块级别</th>
+            <th class="text-center">父级模块</th>
+            <th class="text-center">创建时间</th>
+        </tr>
+    </thead>
+    <tbody id="body">
+         <volist name="list" id="data" empty="暂时没有权限类型">
+            <tr>
+                <td class="text-center">
+                    {$data.node_name}
+                </td>
+                <td class="text-center">
+                    <?php if ($data['fid'] == 0): ?>
+                        一级模块
+                    <?php else: ?>
+                        二级模块
+                    <?php endif ?>
+                </td>
+                <td class="text-center">
+                    {$data.fname}
+                </td>
+                <td class="text-center">
+                    {$data.create_at|date="Y-m-d H:i",###}
+                </td>
+            </tr>
+        </volist>
+    </tbody>
+</table>
+</notempty>
+<div class="Pagination">{$page}</div>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 305) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns": []
+        });
+    });
+    //搜索
+    function search() {
+        var keyword = $('#keyword').val();
+
+        var url = 'index.php?m=Admin&c=Admin&a=Functionmanagement=' + keyword;
+        window.location.href = url;
+    }
+</script>

@@ -1,0 +1,152 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<script>
+  $(function(){
+    var boxHeight = $(window).height() - 180;
+    $('.boxOutter').css('min-height',boxHeight)
+  })
+</script>
+<div class="boxOutter">
+  <div class="borderBottom  mb30  of">
+    <?php if(in_array('UserManagement/userManagement',session('exercises_permissions'))){ ?>
+    <a href="{:U('UserManagement/userManagement')}" class="tabBtn  left text-center">用户管理</a>
+    <?php }?>
+    <?php if(in_array('UserManagement/roleList',session('exercises_permissions'))  && $tip===true ){ ?>
+    <a href="{:U('UserManagement/roleList')}" class="tabBtn left text-center">角色管理</a>
+    <?php }?>
+    <?php if(in_array('UserManagement/userBehaviorManagement',session('exercises_permissions'))){ ?>
+    <button type="button" name="button" class="tabBtn active left">用户行为管理</button>
+    <?php }?>
+  </div>
+  <form action='<?php echo U("UserManagement/userBehaviorManagement")?>' method='post'>
+  <div class="filterOutter border-none m0 pb10 of of">
+    <div class="filterInner">
+      <div class="filterBox">
+        <label for="">用户名</label>
+        <input type="text" class="inputCommon" id="" name='name' placeholder="请输入用户名">
+      </div>
+      <div class="filterBox">
+        <label for="">账&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+        <input type="text" class="inputCommon" id="" name='account' placeholder="请输入账号">
+      </div>
+      <div class="filterBox">
+        <label for="">手机号</label>
+        <input type="text" class="inputCommon" id="" name='phone' placeholder="请输入手机号">
+      </div>
+    </div>
+  </div>
+  <div class="tableTop text-center">
+    <button class="btn" id="">确定</button>
+  </div>
+  </form>
+  <table class="tableCommon">
+    <thead>
+      <tr >
+        <th width=5%>姓名</th>
+        <th width=6%>账号</th>
+        <th width=6%>ID</th>
+        <th width=6%>手机号</th>
+        <th width=6%>角色</th>
+        <th width=6%>上级</th>
+        <th width=6%>最近操作</th>
+        <th width=6%>操作IP限制</th>
+        <th width=6%>操作时间</th>
+      <?php if($tip===true){?>
+        <th width=10%>操作</th>
+    <?php }?>
+    </thead>
+    <tbody>
+    <?php if(!empty($list)){?>
+	  <?php foreach($list as $item){?>
+    <?php if($tip === false){?>
+    <?php if($item['id'] != 1){?>
+      <tr >
+        <td title="<?php echo $item['user_name']?>"><a href="<?php echo U('UserManagement/roleQuery').'&id='.$item['id']?>" class="tableAName"><?php echo $item['user_name']?></a></td>
+        <td title="<?php echo $item['account']?>"><?php echo $item['account']?></td>
+        <td title="<?php echo $item['id']?>"><?php echo $item['id']?></td>
+        <td title="<?php echo $item['mobile_phone']?>"><?php echo $item['mobile_phone']?></td>
+        <td class="text-center" title="<?php echo $item['r_name']?>"><?php echo $item['r_name']?></td>
+        <td title="<?php echo $item['ea_name']?>"><?php echo $item['ea_name']?></td>
+        <td title="<?php echo $item[1]?>"><?php echo $item[1]?></td>
+        <td title="<?php echo $item['login_ip']?>"><?php echo $item['login_ip']?></td>
+        <td class="text-left" title="<?php echo $item[0]?>"><?php echo $item[0]?></td>
+      <?php if($tip===true){?>
+        <td>
+          <?php if(in_array('UserManagement/roleQuery',session('exercises_permissions'))){ ?>
+          <a href="<?php echo U('UserManagement/roleQuery').'&id='.$item['id'] ?>" class="tableABtn">查看详情</a>
+          <?php }?>
+          <?php if(in_array('UserManagement/accountDisable',session('exercises_permissions'))){ ?>
+		  <?php if($item['account_status'] == 2){?>
+          <a href="javascript:;" class="tableABtn addRemarksBtn" attr-data="<?php echo $item['id']?>" attr-status="1" onclick = "disableds($(this))">禁用账号</a>
+		  <?php }else{?>
+		  <a href="javascript:;" class="tableABtn addRemarksBtn" attr-data="<?php echo $item['id']?>" attr-status="2" onclick = "disableds($(this))">启用账号</a>
+		  <?php }?>
+          <?php }?>
+        </td>
+      <?php }?>
+      </tr>
+      <?php }?>
+    <?php }else{?>
+    <tr >
+      <td title="<?php echo $item['user_name']?>"><a href="<?php echo U('UserManagement/roleQuery').'&id='.$item['id']?>" class="tableAName"><?php echo $item['user_name']?></a></td>
+      <td title="<?php echo $item['account']?>"><?php echo $item['account']?></td>
+      <td title="<?php echo $item['id']?>"><?php echo $item['id']?></td>
+      <td title="<?php echo $item['mobile_phone']?>"><?php echo $item['mobile_phone']?></td>
+      <td class="text-center" title="<?php echo $item['r_name']?>"><?php echo $item['r_name']?></td>
+      <td title="<?php echo $item['ea_name']?>"><?php echo $item['ea_name']?></td>
+      <td title="<?php echo $item[1]?>"><?php echo $item[1]?></td>
+      <td title="<?php echo $item['login_ip']?>"><?php echo $item['login_ip']?></td>
+      <td class="text-left" title="<?php echo $item[0]?>"><?php echo $item[0]?></td>
+      <?php if($tip===true){?>
+      <td>
+        <?php if(in_array('UserManagement/roleQuery',session('exercises_permissions'))){ ?>
+        <a href="<?php echo U('UserManagement/roleQuery').'&id='.$item['id'] ?>" class="tableABtn">查看详情</a>
+        <?php }?>
+        <?php if(in_array('UserManagement/accountDisable',session('exercises_permissions'))){ ?>
+        <?php if($item['account_status'] == 2){?>
+        <a href="javascript:;" class="tableABtn addRemarksBtn" attr-data="<?php echo $item['id']?>" attr-status="1" onclick = "disableds($(this))">禁用账号</a>
+        <?php }else{?>
+        <a href="javascript:;" class="tableABtn addRemarksBtn" attr-data="<?php echo $item['id']?>" attr-status="2" onclick = "disableds($(this))">启用账号</a>
+        <?php }?>
+        <?php }?>
+      </td>
+      <?php }?>
+    </tr>
+    <?php }?>
+	  <?php }}else{?>
+    <tr><td colspan="10">无数据</td></tr>
+    <?php }?>
+    </tbody>
+  </table>
+  <div class="Pagination">{$page}</div>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script>
+//=====================================================账号禁用=================================================================
+  function disableds(obj){
+	var account_id = obj.attr('attr-data');
+	var account_status = obj.attr('attr-status');
+	$.ajax({
+	type:'post',
+    dataType:'json',
+	url:"{:U('UserManagement/accountDisable')}",
+	data:{'id':account_id,'account_status':account_status},
+	success:function(data) {
+        if (data.status == 200) {
+            if (account_status == 1) {
+                var show_status = 2;
+                obj.text('启用账号');
+            } else {
+                var show_status = 1;
+                obj.text('禁用账号');
+            }
+            obj.attr('attr-status', show_status);
+        }else{
+            $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+        }
+    }
+	})
+  }
+</script>

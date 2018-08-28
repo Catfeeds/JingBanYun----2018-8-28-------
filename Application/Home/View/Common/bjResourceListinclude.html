@@ -1,0 +1,439 @@
+<link href="__PUBLIC__/css/bjResourceList.css" type="text/css" rel="stylesheet">
+<div class="resource_box">
+    <div class="resource_top">
+        <div class="search">
+            <button class="search_btn"></button>
+            <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资源名称">
+        </div>
+    </div>
+
+    <div class="resource_middle">
+         <div class="resource_classify">
+            <p class="classify_p">学段</p><span class="class_img"></span><span class="resource_name"></span>
+            <ul class="classify_ul course_ul">
+                <li {$course_id==null? 'class="current_selected"': ''} attr_id=''>全部</li>
+                 <li attr_id='-1' {$course_id==-1? 'class="current_selected"': ''}>小学</li>
+                <li attr_id='-1' {$course_id==-1? 'class="current_selected"': ''}>初中</li>
+                 <li attr_id='-1' {$course_id==-1? 'class="current_selected"': ''}>高中</li>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">学科</p><span class="class_img"></span>
+            <span class="resource_name"></span>
+            <ul class="classify_ul course_ul">
+                <li {$course_id==null? 'class="current_selected"': ''} attr_id=''>全部</li>
+                <volist name="courses" id="dataCourse">
+                    <li attr_id='{$dataCourse.id}' {$dataCourse[ 'id']==$course_id? 'class="current_selected"': ''}>
+                        {$dataCourse.course_name}
+                    </li>
+                </volist>
+                <li attr_id='-1' {$course_id==-1? 'class="current_selected"': ''}>全学科</li>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">年级</p><span class="class_img"></span>
+            <span class="resource_name"></span>
+            <ul class="classify_ul grade_ul">
+                <li {$grade_code==null? 'class="current_selected"': ''} attr_id=''>全部</li>
+                <!--<li attr_id='-1' {$grade_id==-1? 'class="current_selected"': ''}>小学全年级</li> ????全一册
+                <li attr_id='-2' {$grade_id==-2? 'class="current_selected"': ''}>初中全年级</li>
+                <li attr_id='-3' {$grade_id==-3? 'class="current_selected"': ''}>高中全年级</li>-->
+                <volist name="grades" id="dataGrade">
+                    <li attr_id="{$dataGrade.code}" {$dataGrade[ 'code']==$grade_code? 'class="current_selected"': ''}>
+                        {$dataGrade.grade}
+                    </li>
+                </volist>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">分册</p><span class="class_img"></span>
+            <span class="resource_name"></span>
+            <ul class="classify_ul textbook_ul">
+                <li {$textbook_id==null? 'class="current_selected"': ''} attr_id=''>全部</li>
+                <li {$textbook_id==1? 'class="current_selected"': ''} attr_id='1'>上册</li>
+                <li {$textbook_id==2? 'class="current_selected"': ''} attr_id='2'>下册</li>
+                <li {$textbook_id==3? 'class="current_selected"': ''} attr_id='3'>全一册</li>
+            </ul>
+        </div>
+        <div class="resource_classify" style="margin-bottom:0">
+            <p class="classify_p">类型</p><span class="class_img"></span>
+            <span class="resource_name"></span>
+            <ul class="classify_ul type_ul">
+                <li {$type==null ? 'class="current_selected"': ''} attr_id=''>全部</li>
+                <li attr_id='video' {$type=='video' ? 'class="current_selected"': ''}>视频</li>
+                <li attr_id='audio' {$type=='audio' ? 'class="current_selected"': ''}>音频</li>
+                <li attr_id='image' {$type=='image' ? 'class="current_selected"': ''}>图片</li>
+                <li attr_id='word' {$type=='word' ? 'class="current_selected"': ''}>WORD</li>
+                <li attr_id='ppt' {$type=='ppt' ? 'class="current_selected"': ''}>PPT</li>
+                <li attr_id='pdf' {$type=='pdf' ? 'class="current_selected"': ''}>PDF</li>
+                <li attr_id='swf' {$type=='swf' ? 'class="current_selected"': ''}>SWF</li>
+                <li attr_id='condensed' {$type=='condensed' ? 'class="current_selected"': ''}>压缩包</li>
+            </ul>
+        </div>
+        <div class="resource_classify" >
+            <p class="classify_p">排序</p><span class="class_img"></span><span class="resource_name"></span>
+            <div class="classify_ul">
+            <div class="classify_sort left">
+                <div class="sort_text left">
+                    观看
+                </div>
+                <div class="sort_btn right browse_count">
+                    <button {$sort_column=='5' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending'} id="ascending_watch" title="升序">&nbsp;</button>
+                    <button {$sort_column=='4' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending"'} id="descending_watch" title="降序">&nbsp;</button>
+                </div>
+            </div>
+            <div class="classify_sort left">
+                <div class="sort_text left">
+                    点赞
+                </div>
+                <div class="sort_btn right zan_count">
+                    <button {$sort_column=='1' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending'} id="ascending_like" title="升序">&nbsp;</button>
+                    <button {$sort_column=='0' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending'} id="descending_like" title="降序">&nbsp;</button>
+                </div>
+            </div>
+            <div class="classify_sort left">
+                <div class="sort_text left">
+                    收藏
+                </div>
+                <div class="sort_btn right collect_count">
+                    <button {$sort_column=='3' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending'} id="ascending_collect" title="升序">&nbsp;</button>
+                    <button {$sort_column=='2' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending'} id="descending_collect" title="降序">&nbsp;</button>
+                </div>
+            </div>
+            <div class="classify_sort left">
+                <div class="sort_text left">
+                    时间
+                </div>
+                <div class="sort_btn right time_count">
+                    <button {$sort_column=='7' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending'} id="ascending_collect" title="升序">&nbsp;</button>
+                    <button {$sort_column=='6' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending'} id="descending_collect" title="降序">&nbsp;</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="resource_border" style="position:relative">
+    	<div class="experimentBox">
+			<div class="experiment">
+					<a href="{:U('Teach/bjResourceTools')}">
+						<img src="{$oss_path}public/web_img/Resource/ball.png" alt="" title="精选资源">
+					</a>
+				</div>
+				<div class="nobookButton">
+				   <ul class="nobookButtonUl">
+					   <li>
+						   <a class="borderTopNone" href="{:U('Teach/bjResourceTools')}&cat=0">小学科学</a>
+					   </li>
+					   <li>
+						   <a href="{:U('Teach/bjResourceTools')}&cat=1">生物实验</a>
+					   </li>
+					   <li>
+						   <a href="{:U('Teach/bjResourceToolsPhysics')}" class="nobookli3">物理实验室</a>
+					   </li>
+				   </ul>
+				</div>
+		</div>
+    </div>
+
+    <div class="resource_bottom">
+        <ul class="row resource_ul">
+            <volist name="list" id="data" empty="暂时没有资源哦" key="i">
+                <li class="col-lg-3 col-md-4 col-sm-6 resource_li" id="l_{$data.id}" onclick="return clearPager;">
+
+                    <switch name="data.type">
+                        <case value="video">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/g_video.png)no-repeat center;">
+                                <a href="{:U('Teach/bjResourceDetails?id=')}{$data.id}&url_par={$url_par}"> 
+                                    <if condition="strpos($data['vid_image_path'],'http')===false">
+                                        <img class="resource_img" src="{$oss_path}{$data.vid_image_path}" alt=""> 
+                                    <else />
+                                        <img class="resource_img" src="{$data.vid_image_path}" alt=""> 
+                                     </if>
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                    
+                                </a>
+                        </case>
+                        <case value="audio">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/g_radio.png)no-repeat center;">
+                                <a href="{:U('Teach/bjResourceDetails?id=')}{$data.id}&url_par={$url_par}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/s_radio.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="image">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/g_image.png)no-repeat center;">
+                                <a href="{:U('Teach/bjResourceDetails?id=')}{$data.id}&url_par={$url_par}">
+                                    <img class="resource_img" src="{$oss_path}{$data.file_path}" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="condensed">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/g_rar.png)no-repeat center;">
+                                <if condition="$data.category eq 'bj'">
+                                    <a href="{:U('Teach/bjResourceDetails')}&cate={$data.category}&id={$data.id}&url_par={$url_par}">
+                                        <img class="resource_img" src="__PUBLIC__/img/resource/s_rar.jpg" alt="">
+                                        <p class="resource_title">{$data.name}</p>
+                                        <if condition="$data.is_new eq yes">
+                                            <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                       </if>
+                                    </a>
+                                    <else/> 
+                                    <a href="{:U('Teach/bjResourceDetails')}&id={$data.id}&url_par={$url_par}">
+                                        <img class="resource_img" src="__PUBLIC__/img/resource/s_rar.jpg" alt="">
+                                        <p class="resource_title">{$data.name}</p>
+                                        <if condition="$data.is_new eq yes">
+                                            <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                        </if>
+                                    </a>
+                            </if>
+                        </case>
+                        <case value="word">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/g_word.png)no-repeat center;">
+                                <a href="{:U('Teach/bjResourceDetails?id=')}{$data.id}&url_par={$url_par}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/s_word.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="ppt">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/g_ppt.png)no-repeat center;">
+                                <a href="{:U('Teach/bjResourceDetails?id=')}{$data.id}&url_par={$url_par}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/s_ppt.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="pdf">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/g_pdf.png)no-repeat center;">
+                                <a href="{:U('Teach/bjResourceDetails?id=')}{$data.id}&url_par={$url_par}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/s_pdf.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="swf">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/g_swf.png)no-repeat center;">
+                                <a href="{:U('Teach/bjResourceDetails?id=')}{$data.id}&url_par={$url_par}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/s_swf.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                    </switch>
+
+
+                    <p class="resource_p">
+                        <span class="left" style="color:#9dc030;margin-left:10px">{$data.textbook}</span>
+                        <span class="right" style="margin-right:10px">
+                                <img src="__PUBLIC__/img/resource/watch.png" alt="">
+                                <span>{$data.follow_count}</span>
+                        <img src="__PUBLIC__/img/resource/like.png" alt="">
+                        <span>{$data.zan_count}</span>
+                        <img src="__PUBLIC__/img/resource/collect.png" alt="">
+                        <span>{$data.favorite_count}</span>
+                        </span>
+                    </p>
+                    <p class="resource_p">
+                        <span class="left"  style="color:#9dc030;margin-left:10px">北京出版集团</span>
+                        <span class="right"  style="margin-right:10px">{$data.create_at|date="Y-m-d H:i",###}</span>
+                    </p>
+                    </div>
+                </li>
+            </volist>
+        </ul>
+		<div class="Pagination">{$page}</div>
+        </div>
+        </div>
+        <div id="ietanchuang">
+	<span>好的</span>
+</div>
+        <input type="hidden" class="url_par" value="{$url_par}">
+        <script>
+        </script>
+        <script>
+			
+            $(document).ready(function () {
+                var sort = "{$sort_column}" ? "{$sort_column}" : 0;
+
+
+                //点击搜索框
+                $('.search_btn').click(function () {
+				    string =  join_string() + get_sort_string();   
+                    location.href = "index.php?m=Home&c=BjResource&a=bjResourceList" + string;
+                });
+                //回车搜索
+                $(".search_text").keydown(function (evt) {
+                    if (event.keyCode == "13") { //keyCode=13是回车键
+                        var evt = (evt) ? evt : ((window.event) ? window.event : "")
+                        var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+                       
+                        string =  join_string() + get_sort_string();
+                        location.href = "index.php?m=Home&c=BjResource&a=bjResourceList" + string;
+
+                    }
+                })
+                //点击筛选切换进行
+                $('.classify_ul').children('li').on('click', function () {
+					var resource_name = $(this).html();
+					$(this).parent().siblings('.resource_name').html(resource_name).css('visibility',     'inherit')
+                    $(this).siblings('li').removeClass('current_selected');
+                    $(this).addClass('current_selected');
+                    var string = join_string();
+                    string = string + get_sort_string();
+                    location.href = "index.php?m=Home&c=BjResource&a=bjResourceList" + string;
+                })
+
+                //拿到排序的当前值
+                function get_sort_string() {
+                    sort = '&sort_column=' + sort;
+                    return sort;
+                }
+
+                //点击排序进行切换
+                $(".order_btn").click(function () {
+                    //判断当前选中不能再点
+                    if ($(this).hasClass('sort_desc_red') || $(this).hasClass('sort_asc_red')) {
+                        return false;
+                    }
+
+                    //判断当前是箭头向上还是向下 
+                    var sort_string = "";
+                    if ($(this).hasClass('ascending')) {
+                        var tag = 'up';
+                    } else {
+                        var tag = 'down';
+                    }
+                    //判断当前的类型是哪种类型
+                    if ($(this).parent().hasClass('browse_count')) {
+                        //观看数
+                        if (tag == 'up') {
+                            sort_string = 'sort_column=5';
+                            sort = 5;
+                        } else {
+                            sort_string = 'sort_column=4';
+                            sort = 4;
+                        }
+
+                    } else if ($(this).parent().hasClass('zan_count')) {
+                        //点赞数
+                        if (tag == 'up') {
+                            sort_string = 'sort_column=1';
+                            sort = 1;
+                        } else {
+                            sort_string = 'sort_column=0';
+                            sort = 0;
+                        }
+
+                    } else if ($(this).parent().hasClass('time_count')) {
+                        //点赞数
+                        if (tag == 'up') {
+                            sort_string = 'sort_column=7';
+                            sort = 7;
+                        } else {
+                            sort_string = 'sort_column=6';
+                            sort = 6;
+                        }
+
+                    } else {
+                        //其余就是收藏数
+                        if (tag == 'up') {
+                            sort_string = 'sort_column=3';
+                            sort = 3;
+                        } else {
+                            sort_string = 'sort_column=2';
+                            sort = 2;
+                        }
+                    }
+                    var string = join_string();
+                    string = string + '&' + sort_string;
+                    location.href = "index.php?m=Home&c=BjResource&a=bjResourceList" + string;
+                });
+                
+                    //拼接语句
+                function join_string() {
+                    var string = "";
+                    var course_id = $(".course_ul").find('.current_selected').attr('attr_id');
+                    var grade_id = $(".grade_ul").find('.current_selected').attr('attr_id');
+                    var textbook_id = $(".textbook_ul").find('.current_selected').attr('attr_id');
+                    var type_id = $(".type_ul").find('.current_selected').attr('attr_id');
+                    var keyword = $(".search_text").val();
+                    if (keyword != '') {
+                        string = '&keyword=' + keyword;
+                    }
+                    if (course_id != '') {
+                        string += '&course=' + course_id;
+                    }
+
+                    if (grade_id != '') {
+                        string += '&grade=' + grade_id;
+                    }
+                    //(/(^[1-9]\d*$)/.test(textbook_id)
+                    if (textbook_id != '') {
+                        string += '&textbook=' + textbook_id;
+                    }
+                    if (type_id != '') {
+                        string += '&type=' + type_id;
+                    }
+
+                    return string;
+                }
+            });
+        </script>
+        <script>
+			$('.experimentBox').hover(function () {
+				$('.nobookButtonUl').stop().slideDown('100')
+			}, function () {
+				$('.nobookButtonUl').stop().slideUp()
+			})
+				$('#ietanchuang').find('span').click(function(){
+		$(this).parent().hide()
+	   })
+	    var Sys = {};
+        var ua = navigator.userAgent.toLowerCase();
+        var s;
+		(s = ua.match(/rv:([\d.]+)\) like gecko/)) ? Sys.ie = s[1] :
+		(s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1] :
+		(s = ua.match(/firefox\/([\d.]+)/)) ? Sys.firefox = s[1] :
+		(s = ua.match(/chrome\/([\d.]+)/)) ? Sys.chrome = s[1] :
+		(s = ua.match(/opera.([\d.]+)/)) ? Sys.opera = s[1] :
+		(s = ua.match(/version\/([\d.]+).*safari/)) ? Sys.safari = s[1] : 0;
+	    if(Sys.ie){
+		$('.nobookli3').click(function(){
+			
+	    $('#ietanchuang').show();
+		return false
+		})
+	    }
+		$('.resource_classify').hover(function(){
+			$(this).children('.classify_ul').filter(':not(:animated)').slideDown()
+		},function(){
+			$(this).children('.classify_ul').slideUp()
+		})
+		$('.current_selected').each(function(i,n){
+			  var cho = $.trim($(this).html());
+              $(this).parent().siblings('.resource_name').html(cho)  
+		})
+		$('.sort_desc_red').each(function(i,n){
+			  var cho = $.trim($(this).parent().siblings('.sort_text').html());
+              $(this).parent().siblings('.resource_name').html(cho) ;
+			  $(this).parent().parent().parent().siblings('.resource_name').html(cho)
+		})
+		</script>

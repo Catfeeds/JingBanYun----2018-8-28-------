@@ -1,0 +1,80 @@
+<table class="pptTable" cellpadding="0" cellspacing="0" style="width: 100%;">
+    <tr>
+        <td class="pptTableNav" valign="top">
+            <div id="resource_pptnav" style="overflow-y: auto;"
+                 data-pages="{$lessonPlanning.ppt_pages}" data-oss="{$lessonPlanning.oss_path}">
+            </div>
+        </td>
+        <td class="pptTableContent" valign="top">
+            <img id="preview_ppt">
+        </td>
+    </tr>
+</table>
+<script>
+    var lessonPlanningDetailsId = '{$lessonPlanning.id}';
+    var lessonPlanningId = '{$lessonPlanning.biz_lesson_planning_id}';
+    function loadPPT() {
+        var wrapper = '#resource_pptnav';
+        var pages = parseInt($(wrapper).attr('data-pages'));
+        var ossPath = $(wrapper).attr('data-oss');
+        var html = [];
+        for (var i = 1; i <= pages; i++) {
+            var dataSource = "{0}/lessonplanning/{1}/{2}/".format(ossPath, lessonPlanningId, lessonPlanningDetailsId);
+            var imgPath = "{0}/lessonplanning/{1}/{2}/{3}.jpg".format(ossPath, lessonPlanningId, lessonPlanningDetailsId, i);
+            var imgEle = '<div class="ppt_img_wrapper"><img data-id="{1}" data-index="{2}" class="pptimg_nav" src="{0}"></div>'.format(imgPath, lessonPlanningId, i);
+            html.push(imgEle);
+            if (i == 1) {
+                $('#preview_ppt').attr({
+                    'data-source': dataSource,
+                    'data-pages': pages,
+                    'src': imgPath,
+                    'data-index': 1
+                }).click(function () {
+                    if (isTeacher == 'false') {
+                        return false;
+                    }
+                    var dataIndex = parseInt($(this).attr('data-index')) + 1;
+                    sendSocket("lesson|gotoPPTSlide|" + lessonPlanningDetailsId + ',' + dataIndex);
+                    gotoNextPPTSlide();
+                });
+            }
+        }
+        $(wrapper).html(html.join(''));
+    }
+    function gotoNextPPTSlide() {
+        var obj = document.getElementById('preview_ppt');
+        var currentIndex = $(obj).attr('data-index');
+        var dataSource = $(obj).attr('data-source');
+        var nextIndex = parseInt($(obj).attr('data-index')) + 1;
+        //judge index is valid
+        var total = parseInt($(obj).attr('data-pages'));
+        if (nextIndex > total) {
+            nextIndex = 1;
+        }
+        var nextSlideSrc = dataSource + nextIndex + '.jpg';
+        $(obj).attr({'src': nextSlideSrc, 'data-index': nextIndex});
+        currentClassroomState.the_opening_lesson_index = nextIndex;
+    }
+
+    $('#resource_pptnav').height($(window).height() - 210);
+    loadPPT();
+
+    $('.pptimg_nav').click(function () {
+        if (isTeacher == 'false') {
+            return false;
+        }
+        var lessonId = $(this).attr('data-id');
+        var lessonIndex = $(this).attr('data-index');
+        var currentSrc = $(this).attr('src');
+        currentClassroomState.the_opening_lesson_index = lessonIndex;
+        $('#preview_ppt').attr('src', currentSrc).attr('data-index', lessonIndex).unbind('click').click(function () {
+            if (isTeacher == 'false') {
+                return false;
+            }
+            var dataIndex = parseInt($(this).attr('data-index')) + 1;
+            sendSocket("lesson|gotoPPTSlide|" + lessonPlanningDetailsId + ',' + dataIndex);
+            gotoNextPPTSlide();
+        });
+        sendSocket("lesson|gotoPPTSlide|" + lessonPlanningDetailsId + ',' + lessonIndex);
+    });
+</script>

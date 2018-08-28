@@ -1,0 +1,118 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		学校管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('School/schoolList')}">学校管理</a>>>
+			<a href="javascript:;">查看学校信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<div class="blueBox">
+	<span class="blueText left fs18">学校详情</span>
+	<a href="{:U('School/schoolModify')}&id={$data.id}" class="blackText right" id="" onclick="checkInfo()">
+		<img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="mr10"> 
+		修改信息
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+	
+<div class="grid condensed">
+	<div class="row cells3 infoBox">
+		<div class="cell">学校名称：{$data.school_name}</div>
+		<div class="cell">学校代码：{$data.school_code}</div>
+		<div class="cell">学校性质：
+                    <volist name="school_category" id="category_item" >
+                        <if condition="$key==$data['school_category']">
+                            {$category_item}
+                        </if>
+                    </volist>
+                </div>
+		<div class="cell">省份：{$data.province}</div>
+		<div class="cell">市区：{$data.city}</div>
+		<div class="cell">区县：{$data.district}</div>
+		<div class="cell">学校状态：
+                    <if condition="$data['flag'] eq 1">
+                        正常
+                    <else />
+                        停用
+                    </if>
+                </div>
+		<div class="cell">是否已开通管理员账号：
+                    <if condition="$data['is_create_administartor'] eq 1">
+                        已开通
+                    <else />
+                        未开通
+                    </if> 
+                </div>
+		<div class="cell">管理员账号：{$data.name}</div>
+		<div class="cell">权限类型：
+                    <if condition="$data['permissions_status'] eq 1">
+                        团体VIP
+                    <else />
+                        普通权限
+                    </if> 
+                </div>
+                <if condition="$data['permissions_status'] eq 1">
+                    <div class="cell">VIP有效时间：{$data.auth_start_time|date="Y-m-d",###} 至 {$data.auth_end_time|date="Y-m-d",###}</div>
+                <else />
+
+					<?php if ( $data['auth_end_time']>time() ): ?>
+					<div class="cell">VIP有效时间：{$data.auth_start_time|date="Y-m-d",###} 至 {$data.auth_end_time|date="Y-m-d",###}</div>
+					<?php else: ?>
+					<div class="cell">&nbsp;</div>
+					<?php endif; ?>
+
+                </if>
+		<div class="cell">&nbsp;</div>
+		<div class="cell">负责人：{$data.obligation_person}</div>
+		<div class="cell">负责人手机号：{$data.obligation_tel}</div>
+		<div class="cell">负责人邮箱：{$data.obligation_email}</div>
+	</div>
+</div>
+
+<div class="tabBox">
+	<ul class="left tabUl" id="tabUl">
+		<li class="tabLi tabActive">班级信息</li>
+		<li class="tabLi">教师信息</li>
+		<li class="tabLi">学生信息</li>
+	</ul>
+	<div class="tabCon" id="tabCon">
+		<iframe class="tabConActive" style="width: 100%;" frameborder="0" src="{:U('School/school_iframe_class')}&id={$data.id}"></iframe>
+		<iframe style="width: 100%;" frameborder="0" src="{:U('School/school_iframe_teacher')}&id={$data.id}"></iframe>
+		<iframe style="width: 100%;" frameborder="0" src="{:U('School/school_iframe_student')}&id={$data.id}"></iframe>
+	</div>
+</div>
+
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="";
+				}
+			}
+		} 
+	}
+	
+</script>
+
+

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+	<title>拍照上传</title>
+	<link rel="stylesheet" href="__PUBLIC__/adminExercise/css/loading.css">
+
+</head>
+<style media="screen">
+	*{
+		margin: 0;
+		padding: 0;
+		background: #f4f4f4;
+		font-size: 16px
+	}
+	body{
+		padding: 20px
+	}
+	.xiazai{
+		position: fixed;
+		bottom: 0;
+		width: 100%;
+		line-height: 40px;
+		text-align: center;
+		color: #333;
+		background: #e5b136;
+		left:0
+	}
+	.shangchuan{
+		border: 2px solid  #e5b136;
+		border-radius: 5px;
+		width: 100%;
+		min-height: 150px
+	}
+	.btn{
+		margin: 10px auto;
+		outline: none;
+		color:#333;
+		background: #e5b136;
+		padding: 5px 20px;
+		border: none;
+		border-radius: 5px
+	}
+	.text-center{
+		text-align: center;
+	}
+	#pic{
+		width:100%;
+	}
+</style>
+<body>
+<div class="">
+	{$html}
+</div>
+
+<div class="shangchuan" id="inputDiv">
+	<img src="" id="pic"/>
+</div>
+<button class="btn text-center" id="leftRotate">左旋转</button>
+<button class="btn text-center" id="rightRotate">右旋转</button>
+<p class="text-center">
+	<input type="file" id="fileInput" style="display:none">
+	<button type="submit" name="button" class="btn text-center" id="submitBtn">提交</button>
+</p>
+<div class="xiazai">
+	下载京版云APP
+</div>
+</body>
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+	var url = '{$url}';
+
+	$("#fileInput").change(function(){
+		loadImage(this.files,'pic','picReal');
+	});
+
+	$('#inputDiv').click(function(){
+		$('#fileInput').click();
+	})
+	$('#leftRotate').click(function(){
+		rotateImage($('#pic')[0],270)
+	})
+	$('#rightRotate').click(function(){
+		rotateImage($('#pic')[0],90)
+	})
+	$('#submitBtn').click(function(){
+		var imageData = $('#pic')[0].src;//获取base64格式的图片
+		if(imageData == '')
+			alert('请选择图片');
+		var imageData = imageData.replace(/data:image\/jpeg;base64,/,'');//去掉"data:image/jpeg;base64,"
+		//上传图片
+		loading('loadData');
+		$.post('{:U('StudentHomework/uploadImage')}',{image:imageData,url:url},function (data) {
+			var data = JSON.parse(data);
+			removeLoading('loadData');
+			if(data['status']==200)
+			{alert('上传成功');WeixinJSBridge.call('closeWindow');}
+			else
+				alert('上传失败')
+		})
+	})
+</script>
+<script>
+
+	function loadImage(files,picId)
+	{
+		if(files.length){
+			var isImage = checkFile(files);
+			if(!isImage){
+				alert("请确保文件为图像类型");
+			}else{
+				var reader = new FileReader();
+				reader.onload = function(e){
+					var imageSize = e.total;//图片大小
+					var tempImage = new Image();
+					tempImage.src = e.target.result;
+					tempImage.onload = function () {
+						var newImage = compress(tempImage);
+						$('#'+picId).attr('src',(newImage))
+					}
+
+				}
+				reader.readAsDataURL(isImage);
+			}
+		}
+	}
+	/**
+	 * 检查文件是否为图像类型
+	 * @param files         FileList
+	 * @returns file        File
+	 */
+	function checkFile(files){
+		var file = files[0];
+		//使用正则表达式匹配判断
+		if(!/image\/\w+/.test(file.type)){
+			return false;
+		}
+		return file;
+	}
+	/**
+	 * 旋转图片
+	 * @param image         HTMLImageElement
+	 * @returns newImage    HTMLImageElement
+	 */
+	function rotateImage(image,angle) {
+		console.log('rotateImage');
+		var image1 = new Image();
+		image1.src=image.src;
+		var width = image1.width;
+		var height = image1.height;
+		var canvas = document.createElement("canvas")
+		var ctx = canvas.getContext('2d');
+		var newImage = new Image();
+		if(angle == 90)
+		{
+			canvas.height = width;
+			canvas.width = height;
+			ctx.rotate(Math.PI/2);
+			ctx.translate(0,-height);
+			ctx.drawImage(image,0,0)
+			imageDate = canvas.toDataURL('Image/jpeg',0.7)
+			newImage.src = imageDate;
+		}
+		else if(angle == 270)
+		{
+			canvas.height = width;
+			canvas.width = height;
+			ctx.rotate(3*Math.PI/2);
+			ctx.drawImage(image,-width,0,width,height)
+			imageDate = canvas.toDataURL('Image/jpeg',0.7)
+			newImage.src = imageDate;
+		}
+		image.src = newImage.src
+	}
+	function compress(image) {
+		var canvas = document.createElement('canvas')
+		var ctx = canvas.getContext('2d');
+
+		var imageLength = image.src.length;
+		var width = image.width;
+		var height = image.height;
+
+		canvas.width = width;
+		canvas.height = height;
+
+		ctx.drawImage(image, 0, 0, width, height);
+        ctx.scale(0.5,0.5);
+		//压缩操作
+		var quality = 0.7;//图片质量  范围：0<quality<=1 根据实际需求调正
+		var imageData = canvas.toDataURL("image/jpeg", quality);
+
+		console.log("压缩前：" + imageLength);
+		console.log("压缩后：" + imageData.length);
+		console.log("压缩率：" + ~~(100 * (imageLength - imageData.length) / imageLength) + "%");
+		return imageData;
+	}
+
+</script>
+<script>
+	function loading(name) {
+		$('body').loading({
+			loadingWidth:240,
+			title:'正在上传...',
+			name:name,
+			direction:'row',
+			type:'origin',
+			originBg:'#71EA71',
+			originDivWidth:30,
+			originDivHeight:30,
+			originWidth:4,
+			originHeight:4,
+			smallLoading:true,
+			titleColor:'#388E7A',
+			loadingMaskBg:'rgba(22,22,22,0.2)'
+		});
+	}
+</script>
+</html>

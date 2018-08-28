@@ -1,0 +1,425 @@
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=3.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/order.css?v=3.0">
+<script typet="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<style>
+	#contentWrapper {
+		border: 1px solid #eee;
+		border-top: none;
+	}
+
+	.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+		box-sizing: content-box;
+	}
+
+	.qq-uploader {
+		max-height: 540px
+	}
+
+	#laydate_hms {
+		display: none !important
+	}
+</style>
+
+<?php if ($kw ==1 || !empty($list)): ?>
+
+<div class="orderMain">
+	<input type="checkbox" id="checkAll">
+	<label for="checkAll" class="checkLabel">全选</label>
+	<!--<button type="button" class="payMerge">合并付款</button>-->
+	<button type="button" class="deleteBatch">批量删除</button>
+
+<div class="filterBox">
+	<form action="{:U('OrderMgmt/orderMgmt')}" method="get">
+		<input type="hidden" name='m' value="Home">
+		<input type="hidden" name='c' value="OrderMgmt">
+		<input type="hidden" name='a' value="orderMgmt">
+		<input type="hidden" name='mca' value="action">
+
+		<a href="javascript:;" class="filterBtn">资源筛选</a>
+		<div class="filterOutter">
+			<img src="__PUBLIC__/img/sinology/redCorner.png" alt="" class="redCorner">
+			<div class="filterInner">
+				<div class="inputBox">
+					<label>资源名称</label>
+					<input type="text" name="name" class="filterInput1 resourceName" value="{$parameter.name}">
+				</div>
+				<div class="inputBox">
+					<label>订单时间</label>
+					<input type="text" class="filterInput2 resourceStart" value="{$parameter.start}" name="start" id="startTime" readonly> -
+					<input type="text" class="filterInput2 resourceEnd" value="{$parameter.end}" name="end" id="endTime" readonly>
+				</div>
+				<div class="inputBox">
+					<label>订单状态</label>
+
+					<select id="school_status" class="filterInput1 resourceState" name="order_status">
+						<option value="">-请选择-</option>
+						<option value="2" <if condition="$parameter.order_status eq 2"> selected="true"</if> >已完成</option>
+						<option value="1" <if condition="$parameter.order_status eq 1"> selected="true"</if> >待付款</option>
+						<option value="3" <if condition="$parameter.order_status eq 3"> selected="true"</if> >已取消</option>
+					</select>
+
+				</div>
+
+				<button type="submit" class="btnNew sureBtn">确定</button>
+			</div>
+		</div>
+	</form>
+</div>
+
+<?php endif ?>
+
+	<empty name="list">
+		<div class="emptyDiv">
+			<img src="{$oss_path}public/web_img/Empty/orderMgmt.png" alt="">
+
+			<if condition="$kw eq 1 "><p>没有搜索到相关的订单！</p>
+				<else /><p>还没有您的资源购买订单数据哦！</p>
+				<p>赶快去<a href="{:U('BjResource/bjResourceIndex?auth_id=8')}">京版资源</a>购买您所需要的资源吧！</p>
+			</if>
+
+		</div>
+	</empty>
+<notempty name="list">
+
+	<ul class="orderUl">
+		<volist name="list" id="data">
+			<li class="orderLi">
+			<div class="orderCon">
+				<div class="conTop">
+					<span class="conTime">{$data.create_at|date="Y-m-d H:i",###}</span>
+					<span class="conNum">订单编号：{$data.order_sn}</span>
+					<span class="conPrice">
+						<img src="__PUBLIC__/img/sinology/money.png" alt="">
+						{$data.pay_fee}元/套
+					</span>
+				</div>
+				<div class="conMain">
+					<input type="checkbox" class="checkOne" value="{$data.order_sn}">
+					<img src="__PUBLIC__/img/sinology/check1.png" alt="" class="checkImg">
+					<?php if ($data['order_type']==0): ?>
+						<a href="{:U('BjResource/bjResourceDetails',array('id'=>$data['resources_id']))}">
+					<?php else: ?>
+						<a href="{:U('DirectTrain/specialColumnDetails',array('id'=>$data['resources_id']))}">
+					<?php endif; ?>
+						<div class="divCon1">
+							<div class="imgOutter">
+								<img src="{$data.pc_cover}" alt="" class="imgInner">
+							</div>
+							<div class="nameBox">
+								<div class="nameOutter">
+									<p class="nameInner" title="{$data.name}">{$data.name}</p>
+								</div>
+							</div>
+						</div>
+					</a>
+					<div class="divCon2">
+						<div class="stateOutter">
+							<if condition="$data.order_status eq 1 "> <p class="stateInner">待付款</p>
+								<elseif condition="$data.order_status eq 2"/> <p class="stateInner">已完成</p>
+								<else /> <p class="stateInner">已取消</p>
+							</if>
+
+							<a href="javascript:;" class="checkInner">查看订单详情</a>
+						</div>
+					</div>
+					<div class="divCon3">
+						<div class="orderOutter">
+
+
+							<if condition="$data.order_status eq 1 ">
+
+								<p class="cancelBtn" order_sn="{$data.order_sn}">取消订单</p>
+
+
+								<elseif condition="$data.order_status eq 2"/>
+
+									<p class="deleteBtnOne" order_sn="{$data.order_sn}">删除订单</p>
+
+								<else />
+
+									<p class="deleteBtnOne" order_sn="{$data.order_sn}">删除订单</p>
+							</if>
+
+						</div>
+					</div>
+					<div class="divCon4">
+						<if condition="$data.order_status eq 1 ">
+							<?php if ($data['order_type']==0): ?>
+								<a href="{:U('OrderManage/rightPayment',array('order_sn'=>$data['order_sn']))}" class="payBtn" target="_blank">去付款</a>
+							<?php else: ?>
+								<a href="{:U('DirectTrain/rightPayment',array('order_sn'=>$data['order_sn']))}" class="payBtn" target="_blank">去付款</a>
+							<?php endif; ?>
+						</if>
+
+					</div>
+				</div>
+			</div>
+
+			<if condition="$data.order_status eq 1 ">
+
+				<div class="orderState">
+					<div class="orderTitle">订单跟踪状态</div>
+					<div class="orderDetail">
+						<div class="orderDiv left">订单确认，等待付款。</div>
+						<div class="timeDiv left">{$data.create_at|date="Y-m-d H:i",###}</div>
+					</div>
+				</div>
+
+				<elseif condition="$data.order_status eq 2"/>
+
+				<div class="orderState">
+					<div class="orderTitle">订单跟踪状态</div>
+					<div class="orderDetail">
+						<div class="orderDiv left">订单确认，等待付款。</div>
+						<div class="timeDiv left">{$data.create_at|date="Y-m-d H:i",###}</div>
+					</div>
+					<!--竖线-->
+					<div class="orderLine"></div>
+					<div class="orderDetail">
+						<div class="orderDiv left">订单支付成功，支付完成。</div>
+						<div class="timeDiv left">{$data.pay_create_at|date="Y-m-d H:i",###}</div>
+					</div>
+				</div>
+
+				<else />
+
+				<div class="orderState">
+					<div class="orderTitle">订单跟踪状态</div>
+					<div class="orderDetail">
+						<div class="orderDiv left">订单确认，等待付款。</div>
+						<div class="timeDiv left">{$data.create_at|date="Y-m-d H:i",###}</div>
+					</div>
+					<!--竖线-->
+					<div class="orderLine"></div>
+					<div class="orderDetail">
+						<div class="orderDiv left">订单已取消，交易关闭。</div>
+						<div class="timeDiv left">{$data.order_cancel_create_at|date="Y-m-d H:i",###}</div>
+					</div>
+				</div>
+
+			</if>
+
+
+		</li>
+		</volist>
+	</ul>
+
+	<div class="Pagination">{$page}</div>
+</notempty>
+</div>
+
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+
+<!--全选 取消全选-->
+<script>
+	//全选
+	$('#checkAll').click(function () {
+		var childCheck = $('.checkOne');
+		var temp_status = true;
+		if ($(this)[0].checked == true) {
+			//本次选中
+			temp_status = true;
+		} else {
+			//本次取消
+			temp_status = false;
+		}
+		for (var i = 0; i < childCheck.length; i++) {
+//			childCheck[i].checked = temp_status;
+			if(temp_status == true) {
+				$('.checkImg').attr('src','__PUBLIC__/img/sinology/check2.png');
+				childCheck[i].setAttribute('checked', 'checked');
+				$('.orderLi .orderCon').addClass('active')
+			} else{
+				$('.checkImg').attr('src','__PUBLIC__/img/sinology/check1.png');
+				childCheck[i].removeAttribute('checked', 'checked');
+				$('.orderLi .orderCon').removeClass('active')
+			}
+		}
+	});
+
+	//取消全选
+	var lis_m = document.getElementsByClassName('checkImg');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if(!$(this).siblings('.checkOne').attr('checked')){
+				$(this).attr('src','__PUBLIC__/img/sinology/check2.png');
+				$(this).parentsUntil('.orderLi .orderCon').parent().addClass('active');
+				$(this).siblings('.checkOne').attr('checked','checked');
+				$(this).siblings('.checkOne').prop('checked','checked');
+				if (lis_m.length == $("[src='__PUBLIC__/img/sinology/check2.png']").length) {
+					$('#checkAll').attr('checked', 'checked');
+					$('#checkAll').prop('checked', 'checked');
+				};
+			} else {
+				$(this).attr('src','__PUBLIC__/img/sinology/check1.png');
+				$(this).parentsUntil('.orderLi .orderCon').parent().removeClass('active');
+				$(this).siblings('.checkOne').removeAttr('checked','checked');
+				$(this).siblings('.checkOne').removeProp('checked','checked');
+					$('#checkAll').removeAttr('checked', 'checked');
+					$('#checkAll').removeProp('checked', 'checked');
+			}
+		}
+	};
+</script>
+
+<!--图片比例-->
+<script>
+	$(function(){
+		for(var i=0;i<$('.imgInner').length;i++) {
+			var wid = $('.imgInner')[i].width;
+			var hei = $('.imgInner')[i].height;
+			if(wid/hei >= 1) {
+				$('.imgInner').eq(i).css({
+					'width' : '100%',
+					'height' : 'auto',
+					'max-width' : 'auto',
+					'max-height' : '100%'
+				})
+			} else {
+				$('.imgInner').eq(i).css({
+					'width' : 'auto',
+					'height' : '100%',
+					'max-width' : '100%',
+					'max-height' : 'auto'
+				})
+			}
+		}
+	})
+</script>
+
+<!--点击“查看详情”展开-->
+<script>
+	$('.checkInner').click(function(){
+		if($(this).parentsUntil('.orderCon').parent().siblings('.orderState').css('display') == 'none') {
+			$(this).addClass('active');
+			$(this).parentsUntil('.orderCon').parent().siblings('.orderState').slideDown();
+		} else {
+			$(this).removeClass('active');
+			$(this).parentsUntil('.orderCon').parent().siblings('.orderState').slideUp();
+		}
+	})
+</script>
+
+<!--点击“资源筛选”展开-->
+<script>
+	var filterNum;
+	$('.filterBtn').click(function(){
+		if(filterNum == undefined || filterNum == 1) {
+			$(this).addClass('active');
+			$(this).siblings('.filterOutter').slideDown();
+			filterNum = 2;
+		} else {
+			$(this).removeClass('active');
+			$(this).siblings('.filterOutter').slideUp();
+			filterNum = 1;
+		}
+
+	})
+</script>
+
+<script>
+	!function(){
+		laydate.skin('dahong');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+
+	$('.deleteBatch').click(function(){
+
+		var is_order_sn = '';
+		$.each($("input[class='checkOne']:checkbox"),function(){
+			if(this.checked){
+				if ($(this).val()!='on' && $(this).val()!='') {
+					is_order_sn += ','+$(this).val();
+				}
+			}
+		});
+		
+		if (is_order_sn != null && is_order_sn != undefined && is_order_sn != '') {
+
+			$.NotifyBox.NotifyPromptOneC("提示","确定删除订单", "确定",function () {
+				var order_sn = '';
+				$.each($("input[class='checkOne']:checkbox"),function(){
+					if(this.checked){
+						order_sn += ','+$(this).val();
+					}
+				});
+
+				$.get('index.php?m=Home&c=OrderMgmt&a=delOrder', {order_sn: order_sn}, function (res) {
+					if (res == 'success') {
+						window.location.reload();
+					} else {
+						$.NotifyBox.NotifyPromptOne('提示',res,'确定')
+					}
+				})
+			});
+		}
+
+
+	})
+	//删除单个订单
+	$('.deleteBtnOne').click(function(){
+		var index = $(this);
+		$.NotifyBox.NotifyPromptOneC("提示","确定删除订单", "确定",function () {
+			var order_sn = '';
+			order_sn += ','+index.attr('order_sn');
+			$.get('index.php?m=Home&c=OrderMgmt&a=delOrder', {order_sn: order_sn}, function (res) {
+				if (res == 'success') {
+					window.location.reload();
+				} else {
+					$.NotifyBox.NotifyPromptOne('提示','删除失败','确定')
+				}
+			})
+		});
+
+	})
+
+	//取消订单
+	$('.cancelBtn').click(function(){
+		var index = $(this);
+		$.NotifyBox.NotifyPromptOneC("提示","确定取消订单", "确定",function () {
+			var order_sn = '';
+			order_sn += ','+index.attr('order_sn');
+			$.get('index.php?m=Home&c=OrderMgmt&a=cancelOrder', {order_sn: order_sn}, function (res) {
+				if (res == 'success') {
+					window.location.reload();
+				} else {
+					$.NotifyBox.NotifyPromptOne('提示','取消失败','确定')
+				}
+			})
+		});
+
+	})
+
+</script>

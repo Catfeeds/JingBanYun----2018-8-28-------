@@ -1,0 +1,377 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+    .resourceBox {
+        width: 40%;
+        text-align: center;
+    }
+
+    .resourceBox img, .resourceBox video {
+        max-width: 100%
+    }
+
+    #plv object {
+        max-width: 100%
+    }
+
+    #qrcode {
+        width:160px;
+        height:160px;
+        margin-top:15px;
+    }
+</style>
+
+<div class="titleBox">
+    <p class="blueText fs18 underline1">
+        资源管理
+        <span class="blueSpan">
+			<a href="javascript:;">教学+</a>>>
+			<a href="{:U('Jbresources/jbresources')}">资源管理</a>>>
+			<a href="javascript:;">查看资源详情</a>
+		</span>
+    </p>
+    <div class="underline2"></div>
+</div>
+
+<p class="blueText fs16">查看资源</p>
+<input type="hidden" name="id" value="{$id}">
+<div class="blueDashed">
+    <div class="blueTitle">
+        基本信息
+    </div>
+    <div class="grid condensed cellBox blueBox">
+		<div class="listview">
+	        <div class="padding10">
+	            资源名称：{$content.name}
+	        </div>
+	        <div class="padding10">
+	            创作年：{$content['creation_year'] =='2017' ?'-2017年-':''}
+                        {$content['creation_year'] =='2016' ?'-2016年-':''}
+                        {$content['creation_year'] =='2015' ?'-2015年-':''}
+	        </div>
+	        <div class="padding10">
+	            来源：{$content['source'] =='1' ?'-教师资源分享-':''}
+                      {$content['source'] =='2' ?'-京版活动获奖设计-':''}
+
+        </div>
+	        <div class="padding10">
+	           作者：{$content['author']}
+	        </div>
+	        <div class="padding10">
+	            内容提供商：{$content['resource_type'] =='1' ?'-京版资源-':''}
+                            {$content['resource_type'] =='2' ?'-nobook-':''}
+                            {$content['resource_type'] =='3' ?'-万邦华堂资源-':''}
+                            {$content['resource_type'] =='4' ?'-京版资源网页-':''}
+	        </div>
+	        <div class="padding10">
+	            资源描述：{$content.description}
+	        </div>
+	    </div>
+    </div>
+</div>
+
+<div class="blueDashed">
+    <div class="blueTitle">
+        知识点关联
+    </div>
+    <div class="grid condensed cellBox blueBox">
+        <empty name="knowledge_resource_point">
+            <div class="emptyResult" style="padding: 30px 0">暂时没有关联知识点</div>
+        </empty>
+        <notempty name="knowledge_resource_point">
+            <table class="table striped hovered border w98">
+    			<thead>
+    				<tr>
+    					<th style="width: 10%" class="text-center">序号</th>
+    					<th style="width: 90%" class="text-center">知识点</th>
+    				</tr>
+    			</thead>
+        		<tbody>
+                <volist name="knowledge_resource_point" id="items">
+                    <tr class="l_{$items.id}" attr-data="{$items['publishing_house_id']},{$items['course']},{$items['grade']},{$items['textbook']},{$items['chapter']},{$items['festival']},{$items['knowledge']},{$items['child_knowledge']}">
+                        <td class="text-center">
+                            {$i}
+                        </td>
+                        <td class="text-center">
+                            {$items['knowledge_info_point']}
+                        </td>
+
+                    </tr>
+                </volist>
+        		</tbody>
+    		</table>
+        </notempty>
+	</div>
+</div>
+
+<div class="blueDashed">
+    <div class="blueTitle">
+        上架信息
+    </div>
+    <table class="blueTable">
+        <tr>
+            <td colspan="3" class="borderb">
+                <div class="resourceType left">
+                    <span class="redStar">*</span>
+                    <span class="spanType">资源类型</span>
+                    <volist name="data" id="item">
+					<span class="spanCheck">
+                        <if condition="in_array($item['id'],$types) eq 'true' ">
+                            <input disabled type="checkbox" name="types[]" class="spanCheckbox types" value="{$item.id}" checked="checked" >
+                            {$item.type_name}
+                        <else/>
+                            <input disabled type="checkbox" name="types[]" class="spanCheckbox types" value="{$item.id}" >
+                            {$item.type_name}
+                        </if>
+					</span>
+                    </volist>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3" class="borderb">
+				<span class="spanCheck pl20">
+					<input disabled type="checkbox" class="spanCheckbox" value="1" {$content['is_allowed_download'] == '1' ? 'checked="checked"' : ''} name="is_allowed_download">
+					是否允许下载
+				</span>
+                <span class="spanCheck pl20">
+					<input disabled type="checkbox" class="spanCheckbox" value="1" {$content['is_allowed_share'] == '1' ? 'checked="checked"' : ''} name="is_allowed_share">
+					是否允许分享
+				</span>
+                <span class="spanCheck pl20">
+					<input disabled type="checkbox" class="spanCheckbox" value="1" {$content['is_allowed_app_download'] == '1' ? 'checked="checked"' : ''} name="is_allowed_app_download">
+					是否允许APP缓存
+				</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="borderr tdWidth">
+				<span class="spanCheck">
+					<input disabled type="checkbox" class="spanCheckbox" value="1" {$content['putaway_status'] == '1' ?'checked="checked"':''} name="putaway_status">
+					是否上架
+				</span>
+            </td>
+            <td class="borderr tdWidth pb15 text-center">
+                <span class="redStar">*</span><span style="font-weight: 600"> 所属栏目</span>
+            </td>
+            <td>
+                <volist name="column_all" id="data">
+				<span class="spanCheck">
+                    <if condition="in_array($data['id'],$attrs) eq 'true'">
+					<input disabled type="checkbox" name="column_ids[]" checked="checked" value="{$data.id}" class="spanCheckbox" >
+					{$data.column_name}
+                    <else/>
+                     <input disabled type="checkbox" name="column_ids[]" value="{$data.id}" class="spanCheckbox" >
+					{$data.column_name}
+                    </if>
+				</span>
+                </volist>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="blueDashed price_setup">
+    <div class="blueTitle">
+            定价信息
+    </div>
+    <div class="grid condensed cellBox blueBox">
+        <div class="listview">
+            <div class="padding10">
+               资源收费设置：{$content['charge_status']=='1'?'免费':''}
+                             {$content['charge_status']=='2'?'收费':''}
+            </div>
+            <div class="padding10">
+                资源收费模式：{$content['charge_type']=='1'?'永久':''}
+                              {$content['charge_type']=='2'?'半年':''}
+                              {$content['charge_type']=='3'?'三个月':''}
+
+            </div>
+            <div class="padding10">
+                原价：{$content.resource_price}
+            </div>
+            <div class="padding10">
+               优惠价格：{$content.promote_price}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="blueDashed upload">
+    <div class="blueTitle">
+        文件上传
+    </div>
+    <div class="grid condensed cellBox blueBox">
+        <div class="listview">
+            <div class="padding10">
+               PC&nbsp;&nbsp;显示封面：
+               <img src="<?php if(strpos($content['pc_cover'],'http') === false){ echo $real_file_path.$content['pc_cover']; }else{echo $content['pc_cover']; }?>" id="pc_cover" style="max-width:300px;">
+            </div>
+            <div class="padding10">
+                APP显示封面：
+                <img src="<?php if(strpos($content['mobile_cover'],'http') === false){ echo $real_file_path.$content['mobile_cover']; }else{echo $content['mobile_cover']; }?>" id="mobile_cover" style="max-width:300px;">
+            </div>
+            <div class="padding10">
+              文件类型：<switch name="content.file_type">
+                          <case value="video">视频</case>
+                          <case value="audio">音频</case>
+                          <case value="ppt">PPT</case>
+                          <case value="word">WORD</case>
+                          <case value="pdf">PDF</case>
+                          <case value="image">图片</case>
+                          <case value="condensed">压缩包</case>
+                          <case value="html">网页</case>
+                          <case value="mixed">混合</case>
+                        </switch>
+            </div>
+            <if condition="($content.resource_type eq 2) OR ($content.resource_type eq 3) OR ($content.resource_type eq 4)">
+                <div class="padding10">
+                      URL：{$resource_list[0].resource_path}
+                </div>
+            <else/>
+                <div class="padding10">
+                    <table class="table striped hovered border left" style="width: 60%">
+                        <thead>
+                        <tr>
+                            <th style="width: 10%" class="text-center">序号</th>
+                            <th style="width: 25%" class="text-center">资源名称</th>
+                            <th style="width: 20%" class="text-center">是否上架</th>
+                            <th style="width: 20%" class="text-center">是否试用</th>
+                            <th style="width: 25%" class="text-center">是否收费</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <volist name="resource_list" id="resource_item" empty="" key="i">
+                            <tr>
+                                <td class="text-center">
+                                    {$i}
+                                </td>
+                                <td class="text-center">
+                                    <a href="javascript:;" type="{$resource_item.filetype}" vid_fullpath="{$resource_item.vid_fullpath}" class="resourceClick" convert_path="<?php
+			                                                        $path = explode('.',basename($resource_item['resource_path']));
+                                                                    $path = $path[0].'.pdf';
+                                                                    $path = 'bjresource/' .$content['id'].'/'.$resource_item['id'] .'/' .$path;
+                                                                    echo $path;
+                                                                    ?>" contactId="{$resource_item.id}" resource_path="{$resource_item.resource_path}" vid="{$resource_item.vid}">{$resource_item.file_name}</a>
+                                </td>
+                                <td class="text-center">
+                                    {$resource_item['putaway_status'] == 1 ? '是':'否'}
+                                </td>
+                                <td class="text-center">
+                                    {$resource_item['trial_status'] == 1 ? '是':'否'}
+                                </td>
+                                <td class="text-center">
+                                    {$resource_item['charge_status'] == 1 ? '免费':'收费'}
+                                </td>
+                            </tr>
+                        </volist>
+
+                        </tbody>
+                    </table>
+
+                    <div class="right resourceBox padding10" style="height:500px">
+
+                    </div>
+                </div>
+            </if>
+
+        </div>
+    </div>
+</div>
+
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<script>
+    //点击查看大图
+    var resource_type = "{$content.file_type}";
+    var mediaTemplate='<div id="plv"></div>';
+    var imgTemplate = '<img src="{0}" alt="">';
+    var swfTemplate = ['<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="800" height="600"',
+        '                        codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=20,0,0,0" id="swf">',
+        '                    <param name="movie" value="images/zf03320.swf">',
+        '                    <param name="quality" value="high">',
+        '                    <param name="bgcolor" value="#F0F0F0">',
+        '                    <param name="menu" value="false">',
+        '                    <param name="wmode" value="opaque">',
+        '                    <param name="FlashVars" value="">',
+        '                    <param name="allowScriptAccess" value="always">',
+        '                    <param name="allowNetworking" value="all">',
+        '                    <param name="loop" value="false">',
+        '                    <param name="play" value="true">',
+        '                    <embed name="swf" src="{0}"',
+        '                           width="800" height="600"',
+        '                           align="middle"',
+        '                           quality="high"',
+        '                           menu="false"',
+        '                           play="true"',
+        '                           loop="false"',
+        '                           FlashVars=""',
+        '                           allowScriptAccess="always"',
+        '                           type="application/x-shockwave-flash"',
+        '                           pluginspage="http://www.adobe.com/go/getflashplayer">',
+        '                    </embed>',
+        '                </object>'].join("");
+    var pdfTemplate = '<iframe id="resourceFrame" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={0}" width="100%" height="500"></iframe>';
+    var condensedTemplate = '<a target="_blank" href="/index.php?m=Home&c=Teach&a=downloadResource&url={0}">点击查看{0}</a>'
+    $(".resourceClick").live('click',function(){
+        var resourcePath =  $(this).attr('resource_path');
+        var convertPath = $(this).attr('convert_path');
+        if( resourcePath.indexOf('http://') == -1)
+            resourcePath = "{$oss_path}" + resourcePath;
+        if( convertPath.indexOf('http://') == -1)
+            convertPath = "{$oss_path}" + convertPath;
+        var vid = $(this).attr('vid');
+        var contactId = $(this).attr('contactId');
+        var subType = resource_type;
+        if(resource_type == 'mixed')
+            subType =  $(this).attr('type');
+        switch(subType){
+            case 'image':
+                $('.resourceBox').html(imgTemplate.format(resourcePath));
+                break;
+            case 'video':
+            case 'audio':
+                $('.resourceBox').html(mediaTemplate);
+                var player = polyvObject('#plv').videoPlayer({
+                    'width': '100%',
+                    'height': '500',
+                    'vid': vid
+                });
+
+                break;
+            case 'swf':
+                $('.resourceBox').html(swfTemplate.format(resourcePath));
+                break;
+            case 'pdf':
+                $('.resourceBox').html(pdfTemplate.format(resourcePath));
+                break;
+            case 'word':
+                $('.resourceBox').html(pdfTemplate.format(convertPath));
+                break;
+            case 'ppt':
+                $('.resourceBox').html(pdfTemplate.format(convertPath));
+                break;
+            case 'condensed':
+                $('.resourceBox').html(condensedTemplate.format(resourcePath));
+                break;
+        }
+    }).eq(0).click();
+    $(window).scroll(function(){
+        if($(window).scrollTop()>1900){
+            $('.resourceBox').css({
+                position:'fixed',
+                top:'0px',
+                right:'0px'
+            })
+        }else {
+            $('.resourceBox').css({
+                position:'inherit',
+                top:'none',
+                right:'none'
+            })
+        }
+    })
+
+
+</script>
+

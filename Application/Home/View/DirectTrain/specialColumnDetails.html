@@ -1,0 +1,264 @@
+<layout name="teacher_layout_1"/>
+<link href="__PUBLIC__/css/directTrainDetails.css?v=4" rel="stylesheet" type="text/css"/>
+
+<div>
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div class="directTrainBox row">
+    <div class="trainDetailsLeft col-md-8">
+        <!-- 这里是题目区域 -->
+        <div class="trainDetailsTitle">
+            <span class="detailsTitle left">培训课程名称</span>
+            <span class="readingQuantity left">阅读量：<?php echo $info['special_column_question_visit_count']?></span>
+            <span class="detailsTime right"><?php echo $info['putaway_status_time']?></span>
+        </div>
+
+        <!-- 这里是各个类型的主要内容 -->
+        <div class="trainDetailsMain">
+            <?php if($info['special_column_type'] == ARTICLE){?>
+            <!-- 这里是文章 -->
+            <div class="articleBox">
+                <?php if(($info['special_column_price'] > 0 && !is_null($info['order_sn'])) || $vip == 'vip'){?>
+                <!-- 这个span里放置完整文章 -->
+                <span class="articleFull">
+                         <?php echo  html_entity_decode($info['special_column_article']);?>
+                    </span>
+                <?php }elseif($info['special_column_price'] == 0){?>
+                <!-- 这个span里放置完整文章 -->
+                <span class="articleFull">
+                        <?php echo  html_entity_decode($info['special_column_article']);?>
+                    </span>
+                <?php }else{?>
+                <!-- 这个span里放置删减文章 -->
+                <span class="articleLimit">
+                    <?php echo  html_entity_decode($info['special_column_article_show']);?>
+                    </span>
+                <!-- <span class="limitNum">（100字）</span>-->
+                <div class="articleMore">查看更多 >></div>
+                <?php }?>
+            </div>
+            <?php }else{ ?>
+            <!-- 这里是视频/音频,只拷贝了资源的结构，js没有拷贝 -->
+            <div class="resourceDisplayFrame videoAudio dn">
+                <div id='plv'></div>
+                <div id="imgs" style="display:none"><img src="__PUBLIC__/img/sinology/paypc.png" style="width:100%">
+                </div>
+            </div>
+            <?php }?>
+        </div>
+
+        <!-- 这里是购买区域 -->
+        <div class="trainDetailsBottom">
+            <?php if($info['special_column_type'] == ARTICLE && $info['special_column_price'] > 0 &&
+            is_null($info['order_sn']) && $vip == 'no'){?>
+            <!-- 文章提示 -->
+            <span class="detailsNotify left">该文章为会员专属，购买后方可阅读全文</span>
+            <?php }elseif($info['special_column_type'] != ARTICLE && $info['special_column_price'] > 0 &&
+            is_null($info['order_sn']) && $vip == 'no'){?>
+            <!-- 视频/音频提示 -->
+            <span class="detailsNotify left">您可以免费观看试听前<span class="redText">60</span>秒</span>
+            <?php }?>
+            <div class="shareImg" title="分享">
+                <img src="__PUBLIC__/img/resource/fenxiang.png" alt="" title="分享"><span class="imgText">一键分享</span>
+                <div class="bdsharebuttonbox">
+                    <a href="javascript:;" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">&nbsp;新浪微博</a>
+                    <a href="javascript:;" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友">&nbsp;QQ好友</a>
+                    <a href="javascript:;" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">&nbsp;QQ空间</a>
+                    <a href="javascript:;" class="bds_weixin" data-cmd="weixin" title="分享到微信">&nbsp;微信</a>
+                </div>
+            </div>
+            <?php if($info['special_column_price'] > 0 && is_null($info['order_sn']) && $vip == 'no'){?>
+            <span class="buyBox right">
+                <span class="detailsMoney">
+                    <img src="__PUBLIC__/img/sinology/money.png" alt="">
+                    <?php echo $info['special_column_price']?>
+                </span>
+                <a href="index.php?m=Home&c=DirectTrain&a=confirmOrder&id=<?php echo $id ;?>"><button
+                        class="detailsBuy">马上购买</button></a>
+            </span>
+            <?php }?>
+        </div>
+    </div>
+
+    <div class="trainDetailsRight col-md-4">
+        <div class="trainRecommend">
+            <img src="__PUBLIC__/img/resource/jingpinziyuan.png" alt="">
+            相关推荐
+        </div>
+        <!-- 循环下边 -->
+        <?php foreach($recommend as $item){?>
+        <a href="index.php?m=Home&c=DirectTrain&a=specialColumnDetails&id=<?php echo $item['id'];?>" class="recoBox">
+            <div class="recoLeft">
+                <img src="<?php echo !empty($item['avatar']) ? $oss_path.$item['avatar'] : '/Public/img/classManage/teacher_m.png';?>" alt=""
+                     class="recoAvatar">
+                <div class="recoName"><?php echo $item['name'];?></div>
+            </div>
+            <div class="recoRight">
+                <div class="recoTitle">
+                    <p><?php echo $item['special_column_question_title'];?></p>
+                </div>
+                <div class="recoGrade">
+                    <?php echo $item['course_name'].$item['grade'].$item['course_name']?>
+                    <?php if($item['fascicule_id'] == 1){?>
+                    上册
+                    <?php }elseif($item['fascicule_id'] == 2){?>
+                    下册
+                    <?php }else{?>
+                    全一册
+                    <?php }?>
+
+                    <?php if($item['special_column_type'] == ARTICLE){?>
+                    <img src="__PUBLIC__/img/resource/word.png" alt="" class="resource_typeimg">
+                    <?php }elseif($item['special_column_type'] == VIDIO){?>
+                    <img src="__PUBLIC__/img/resource/shipin.png" alt="" class="resource_typeimg">
+                    <?php }elseif($item['special_column_type'] == AIDIO){?>
+                    <img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="resource_typeimg">
+                    <?php }?>
+                </div>
+                <div class="recoWatch left">观看：<?php echo $item['special_column_question_visit_count']?></div>
+                <div class="recoDate right"><?php echo $item['putaway_status_time']?></div>
+            </div>
+        </a>
+        <?php }?>
+
+
+    </div>
+
+<?php if($info['special_column_type'] != ARTICLE){?>    <!-- 视频/音频介绍区域 -->
+    <div class="trainDetailsIntro">
+        <div class="trainRecommend">
+            <img src="__PUBLIC__/img/resource/jingpinziyuan.png" alt="">
+            培训课程名称
+        </div>
+        <div class="introTitle"><?php echo $info['special_column_question_title']?></div>
+        <div class="introMain"><?php echo $info['special_column_question_reply_description']?></div>
+    </div>
+ <?php }?></div>
+
+<script src="__PUBLIC__/js/share/share.js"></script>
+<script src='//player.polyv.net/script/polyvplayer.min.js'></script>
+<!--分享-->
+<script type="text/javascript" charset="utf-8">
+    var title = "<?php echo $info['special_column_question_title']?>";
+    window._bd_share_config = {
+        "common": {
+            "bdSnsKey": title,
+            "bdText": "专栏",
+            "bdDesc": "自定义分享摘要",
+            "bdUrl": "http://www.jingbanyun.com",
+            "bdPic": "http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Index/ipad.png",
+            "bdMini": "2",
+            "bdMiniList": false,
+            "bdStyle": "0",
+            "bdSize": "16"
+        },
+        "share": {}
+    };
+
+    var id = "{$info.id}";
+    $('.shareImg').hover(function () {
+        var activityImg = $('.browse_image').attr('src');
+        window.bdUrl = "http://{$_SERVER['HTTP_HOST']}/Home/DirectTrain/specialColumnDetails?id=" + id + '&from=share';
+        //window.bdPic = "http://{$_SERVER['HTTP_HOST']}" + activityImg;
+        window.bdPic = "http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Index/ipad.png";
+        window.bdSnsKey = title;
+
+        window._bd_share_main.init(window._bd_share_config);
+        $(this).children('.bdsharebuttonbox').stop(false, true).slideDown()
+    }, function () {
+        $(this).children('.bdsharebuttonbox').stop(false, true).slideUp()
+    })
+</script>
+
+<script>
+    // 点击文章中的“查看更多”
+    $('.articleMore').click(function () {
+        alert('请先购买');
+    });
+
+    //超过两行显示“...”
+    /*function clamp() {
+        $(".recoTitle").each(function(i){
+            var divH = $(this).height();
+            var $p = $("p", $(this)).eq(0);
+            while ($p.outerHeight() > divH) {
+                $p.text($p.text().replace(/(\s)*([a-zA-Z0-9]+|\W)(\.\.\.)?$/, "..."));
+            };
+        });
+    }
+
+    $(function(){
+        clamp()
+    });*/
+
+    function s2j_onPlayOver(){
+        if(is_vip == 'no' && price > 0 && order_sn == ''){
+            $('#plv').hide();
+            $('#imgs').show();
+        }
+    }  /**********************************************************************************************************************************************/
+    var price = "<?php echo $info['special_column_price'];?>";
+    var order_sn = "<?php echo $info['order_sn'];?>";
+    var is_vip = "<?php echo $vip;?>";
+    $(function () {
+        var type = "<?php echo $info['special_column_type']?>";
+ //       $(".browse_resource").click(function () {
+            $('.resourceDisplayFrame').addClass('dn');
+            var subType = type;
+            switch (subType) {
+                case '1':
+                case '3':
+                    $('.videoAudio').removeClass('dn');
+                    var vid = "<?php echo $info['vid'];?>";
+                    if (is_vip == 'no' && price > 0 && order_sn == '') { //试看20秒
+                        $('#plv').show();
+                        $('#imgs').hide();
+                        $('.video_text').show();
+                        var player = polyvObject('#plv').previewPlayer({  //观看1分钟的JS
+                            'width': '100%',
+                            'height': '500',
+                            'vid': vid
+                        });
+                    } else if ((price > 0 && order_sn != '') || is_vip == 'vip') {
+                       /* $('#plv').hide();
+                        $('#imgs').show();
+                        $('.video_text').hide();*/
+                        $('#plv').show();
+                        $('#imgs').hide();
+                        var player = polyvObject('#plv').videoPlayer({
+                            'width': '100%',
+                            'height': '500',
+                            'vid': vid
+                        });
+                    } else if(price == 0) {
+                        $('#plv').show();
+                        $('#imgs').hide();
+                        var player = polyvObject('#plv').videoPlayer({
+                            'width': '100%',
+                            'height': '500',
+                            'vid': vid
+                        });
+                    }
+
+                    break;
+            }
+ //       });
+        window.onresize = function () {
+            for (var i = 0; i < $('.resourceNameDiv').length; i++) {
+                if ($('.resourceNameDiv').eq(i).height() == '56' && $(document).width() > '1221' || $('.resourceNameDiv').eq(i).height() == '56' && $(document).width() <= '992') {
+                    $('.resourceNameDiv').eq(i).addClass('mt22')
+                } else if ($('.resourceNameDiv').eq(i).height() == '56' && $(document).width() <= '1220') {
+                    $('.resourceNameDiv').eq(i).removeClass('mt22')
+                }
+            }
+        };
+    });
+
+
+    $(function(){
+        if($('.shareImg').siblings().length == 0) {
+            $('.shareImg').parent('.trainDetailsBottom').addClass('active')
+        }
+    })
+</script>

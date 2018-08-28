@@ -1,0 +1,892 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/adminExercise/css/tree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/kityformula-plugin/addKityFormulaDialog.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/kityformula-plugin/getKfContent.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/kityformula-plugin/defaultFilterFix.js"></script>
+<style>
+	.rtImg, .numInput, .addChapter, .addSection, .addPoint, .addKey {
+		display: none !important;
+	}
+
+	.titleLogo {
+		display: none;
+	}
+
+	.topNav {
+		display: none;
+	}
+
+	.boxOutter {
+		border: none;
+		padding-top: 0;
+	}
+</style>
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter').css('min-height',boxHeight);
+        $('.knowCon').css('min-height',boxHeight-250)
+	})
+</script>
+
+<div class="boxOutter" style="position: relative">
+	<div class="treeLeft">
+		<div class="treeTop" style="margin-bottom: 50px">
+			<div class="version"><?php echo $versionName?></div>
+			<button class="btn right perfect">完善课标树</button>
+			<button class="btn right" id="customTree">自定义知识点</button>
+		</div>
+		<div class="treeOutter">
+			<div class="treeTitle">课标知识树</div>
+
+			<div class="knowCon">
+				<!--学段-->
+
+				<div class="knowSubject">
+					<img src="__PUBLIC__/img/icon/icon-plus.png" alt="" class="plusMius knowSubjectTitle">
+					<span class="knowName chooseSpan" id="course{$tree_item.id}">
+                                 <font><?php if($Learning_period_id == 1){echo '小学' ;}elseif($Learning_period_id == 2){echo '初中' ;}else{echo '高中' ;}?></font>
+
+                            </span>
+					<ul>
+						<li>
+							<!--学科-->
+							<div class="knowGrade">
+								<img src="{$oss_path}public/web_img/Admin/icon-plus.png" attr_id="{$textbook_item.id}" alt="" class="plusMius knowUnitTitle">
+								<span class="knowName" id="textbook{$textbook_item.id}">
+	                                       <font><?php echo $course[0]['name']?></font>
+	                                    </span>
+							</div>
+						</li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<!--添加弹窗-->
+<div class="fullBack" id="addMain">
+	<div class="adminNotifyBox" style="display: block">
+		<div class="adminNotifyTitle">输入名称：</div>
+
+		<div class="adminNotifyContent">
+			<script type="text/plain" id="content" name="content" style="height: 100px; width:423px">{$data.content}</script>
+		</div>
+		<p class="adminNotifyButton">
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn">确定</a>
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn">取消</a>
+		</p>
+	</div>
+</div>
+
+<!--修改弹窗-->
+<div class="fullBack" id="changeMain">
+	<div class="adminNotifyBox" style="display: block">
+		<div class="adminNotifyTitle">输入名称：</div>
+		<div class="adminNotifyContent">
+			<script type="text/plain" id="contentEdit" name="content" style="height: 100px; width: 423px; overflow-y: auto">{$data.content}</script>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn2">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn2">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script>
+	var ueCon = UE.getEditor('content');
+	var ueConEdit = UE.getEditor('contentEdit');
+
+    function sortNumber(a,b)
+    {
+        return a - b
+    }
+	//展开收起
+    var plus_element='/Public/img/icon/icon-plus.png';
+	function toggleDiv(a, b,level) {  
+            $(a).live('click', function () {
+                switch(level){
+                    case 0:
+                        if ($(this).parent().find(b).css('display') == 'none') {
+                                $(this).attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                                $(this).siblings('ul').find('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-plus.png');
+                                $(this).parent().find(b).show().children('a,img,div,ul').show()
+                            } else {
+                                $(this).attr('src', '/Public/img/icon/icon-plus.png');
+                                $(this).siblings('ul').find('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-plus.png');  
+								$(this).parent().find(b).hide().find('div,p,a,img').hide();
+
+                            }
+                        break; 
+                    default:
+                        if($(this).attr('src')==plus_element){          
+                            $(this).attr('src', '__PUBLIC__/img/icon/icon-minus.png');         
+                        }else{                                          
+                            $(this).attr('src', '/Public/img/icon/icon-plus.png');  
+                        } 
+                        
+                        if($(this).parent().find(b).length){
+                            if ($(this).parent().find(b).css('display') == 'none') { 
+                                $(this).attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                                $(this).siblings('ul').find('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-plus.png');
+                                $(this).siblings('ul').show().find(b).show().children().show().find('span,img').show();
+                            } else {
+                                $(this).attr('src', '/Public/img/icon/icon-plus.png');
+                                $(this).siblings('ul').find('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-plus.png');
+                                $(this).siblings('ul').hide().find(b).hide().find('div,span,img').hide();
+                            }
+                        }else{
+                            var id=$(this).attr('attr_id');
+                            if(id == ''){
+                                var id = -1;//这是在父级也是新增的情况下添加节点
+							}
+                            var obj=this;
+                            if(level == 1){ //获取一级知识点
+                                var Learning_period_id = "<?php echo $Learning_period_id ?>";
+                                var course = "<?php echo $courseId ?>";
+                                request_url="{:U('CurriculumTree/getNextLevelKnowledge')}&Learning_period_id="+Learning_period_id+'&course='+course+'&level='+level;
+
+                            }else{
+                                request_url="{:U('CurriculumTree/getNextLevelKnowledge')}&id="+id+'&level='+level;
+                            }
+                            $.ajax({
+                                type: 'get', 
+                                url: request_url,  
+                                cache: false,
+                                async: false,
+                                dataType:'json',
+                                success: function(msg){
+                                    if(msg.data.length){
+                                        switch(level){
+                                            case 1:  
+                                                var element_ul='<ul class="chapterUl"></ul>';
+                                                var element='<li><!--第一章-->'+
+                                                                '<div class="knowChapter" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addChapter" title="增加">'+
+                                                                    '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowChapterTitle">'+
+                                                                    '<span class="knowName" level_point="chapter" >'+
+                                                                        '<font>第一章</font>'+
+                                                                        '<input type="text" class="numInput" value="3">'+
+                                                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                                                        '<button type="button" class="btn addTree" id="addTreeChapter" onclick="treeText(this);">添加到教材树</button>'+
+                                                                    '</span>'+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break;
+                                            case 2:  
+                                                var element_ul='<ul class="sectionUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--第一节-->'+
+                                                                '<div class="knowSection" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addSection" title="增加">'+
+                                                                    '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowSectionTitle">'+
+                                                                    '<span class="knowName" level_point="festival">'+
+                                                                        '<font>第一节</font>'+
+                                                                        '<input type="text" class="numInput" value="3">'+
+                                                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                                                        '<button type="button" class="btn addTree" id="addTreeSection" onclick="treeText(this);">添加到教材树</button>'+
+                                                                    '</span>'+
+                                                                '</div>'+  
+                                                            '</li>';
+                                                break;
+                                            case 3: 
+                                                var element_ul='<ul class="pointUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--第一节的知识点-->'+
+                                                                '<div class="knowPoint" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addPoint" title="增加">'+
+                                                                    '<span class="knowName" level_point="knowledge">'+
+                                                                        '<font>第一节的知识点</font>'+
+                                                                        '<input type="text" class="numInput" value="3" placeholder="排序">'+
+                                                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                                                        '<button type="button" class="btn addTree" id="addTreePoint" onclick="treeText(this);">添加到教材树</button>'+
+                                                                    '</span> '+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break;
+                                            case 4: 
+                                                var element_ul='<ul class="KeyUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--知识点详情-->'+
+                                                                '<div class="knowKey" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addKey" title="增加">'+
+                                                                    '<span class="knowName" level_point="child_knowledge">'+
+                                                                        '<font>知识点1</font>'+
+                                                                        '<input type="text" class="numInput" value="3">'+
+                                                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                                                        '<button type="button" class="btn addTree" id="addTreeKey" onclick="treeText(this);">添加到教材树</button>'+
+                                                                    '</span>'+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break; 
+                                        }
+                                        if(msg.data.length){
+                                            var clone_url=$(element_ul).clone(true);
+                                            for(var i=0;i<msg.data.length;i++){ 
+                                                var clone_data=$(element).clone(true);
+                                                if(i!=0){
+                                                    $(clone_data).find('img').eq(0).remove();
+                                                }
+                                                if(level==4){
+                                                    $(clone_data).find('.rtImg').attr('attr_id',msg.data[i].id);
+                                                }
+                                                $(clone_data).find('.plusMius').attr('attr_id',msg.data[i].id);
+                                                $(clone_data).find('.knowName').find('font').eq(0).html(msg.data[i].tree_point_name);
+												//$(clone_data).find('.knowName').find('font').eq(0).attr('html',msg.data[i].html);
+                                               // $(clone_data).find('.knowName').find('font').eq(1).text(msg.data[i].sort);
+                                                //var level_class=$(clone_data).find('.knowName').attr('level_point');
+                                                //level_class=level_class+msg.data[i].id;
+                                                var level_class=msg.data[i].id;
+                                                $(clone_data).find('.knowName').attr('id',level_class);
+                                                if (msg.data[i].count >0) {
+                                                    $(clone_data).find('button').css('visibility', 'hidden');
+                                                } else {
+                                                    $(clone_data).find('button').show();
+                                                }
+                                                $(clone_url).append(clone_data); 
+                                            }
+                                            $(obj).parent().append(clone_url);
+                                        }
+                                    } else{
+										switch(level){
+                                            case 1:  
+                                                var element_ul='<ul class="chapterUl"></ul>';
+                                                var element='<li><!--第一章-->'+
+                                                                '<div class="knowChapter" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addChapter" title="增加">'+
+                                                                '</div>'+
+                                                            '</li>';
+											
+                                                break;
+                                            case 2:  
+                                                var element_ul='<ul class="sectionUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--第一节-->'+
+                                                                '<div class="knowSection" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addSection" title="增加">'+
+                                                                '</div>'+  
+                                                            '</li>';
+                                                break;
+                                            case 3: 
+                                                var element_ul='<ul class="pointUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--第一节的知识点-->'+
+                                                                '<div class="knowPoint" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addPoint" title="增加">'+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break;
+                                            case 4: 
+                                                var element_ul='<ul class="KeyUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--知识点详情-->'+
+                                                                '<div class="knowKey" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addKey" title="增加">'+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break; 
+                                        }
+										var clone_ul= $(element_ul).append(element);
+										$(obj).parent().append(clone_ul);
+									}
+                                }
+                            });
+                        }
+                        break;
+                }
+            })
+	}
+    toggleDiv('.knowSubjectTitle', '.knowGrade',0);
+    toggleDiv('.knowUnitTitle', '.knowChapter',1);
+	toggleDiv('.knowChapterTitle', '.knowSection',2);
+	toggleDiv('.knowSectionTitle', '.knowPoint',3);
+	
+    var empty_add_li='';
+    var operation_ul='';
+    function operation_type_class(obj,flag){
+        //1这里为点击删除
+        if(flag==1){
+            if($(obj).parent().parent().hasClass('knowKey')){
+                empty_add_li=$(emtpy_child_knowledge).clone(true);
+                operation_ul='KeyUl';
+                
+            }else if($(obj).parent().parent().hasClass('knowPoint')){
+                empty_add_li=$(empty_knowledge_element).clone(true);
+                operation_ul='pointUl';
+                
+            }else if($(obj).parent().parent().hasClass('knowSection')){
+                empty_add_li=$(empty_festival_element).clone(true);
+                operation_ul='sectionUl';
+                
+            }else if($(obj).parent().parent().hasClass('knowChapter')){
+                empty_add_li=$(empty_chapter_element).clone(true);//之前这里是empty_add_li=$(empty_festival_element)
+                operation_ul='chapterUl';
+            }
+        } else {
+            //点击新增
+            if($(obj).parent().hasClass('knowKey')){
+                empty_add_li=$(emtpy_child_knowledge).clone(true);
+                operation_ul='KeyUl';
+                
+            }else if($(obj).parent().hasClass('knowPoint')){
+                empty_add_li=$(empty_knowledge_element).clone(true);
+                operation_ul='pointUl';
+                
+            }else if($(obj).parent().hasClass('knowSection')){
+                empty_add_li=$(empty_festival_element).clone(true);
+                operation_ul='sectionUl';
+                
+            }else if($(obj).parent().hasClass('knowChapter')){
+                empty_add_li=$(empty_festival_element).clone(true);
+                operation_ul='chapterUl';
+            }
+        }
+    }
+        
+        
+	var aaa;
+    //删除操作
+    $('.rtImg').live('click',function(){
+//        aaa = 1;
+        
+        //得到知识点id
+//        if($(this).parent().parent().hasClass('knowKey')){
+//            var id=$(this).attr('attr_id');
+//        }else{
+//            var id=$(this).parent().siblings('.plusMius').attr('attr_id');
+//        }
+//        if(id=='' || typeof(id)=='undefined'){
+//            return false;
+//        }
+        operation_type_class(this,1);
+
+        var obj=this;
+        $.NotifyBox.NotifyTwoCallOneBlue('提示','确定删除吗？','确定','取消',function () {
+            $(obj).attr('remove','remove');//删除的添加一个属性
+            var index=$(obj).parent().parent().parent().index();//添加了一个parent()
+            if(index==0){
+                $(obj).parents('.'+operation_ul).prepend(empty_add_li);//添加了一个parent()====已恢复原样
+            }
+            if($(obj).parent().attr('level_point') == 'chapter'){
+                if($(obj).parent().parent().parent().parent().find('span[level_point="chapter"]').length>1){
+                    //$(obj).parent().parent().parent().parent().find('span[level_point="chapter"]').eq(1).addClass('chooseSpan');
+                }else{
+                    //上级得到当前光标
+                    $(obj).parent().parent().parent().parent().siblings('span').eq(0).addClass('chooseSpan');
+                }
+            }else if($(obj).parent().attr('level_point') == 'festival'){
+                if($(obj).parent().parent().parent().parent().find('span[level_point="festival"]').length>1){
+                    //$(obj).parent().parent().parent().parent().find('span[level_point="festival"]').eq(1).addClass('chooseSpan');
+                }else{
+                    //上级得到当前光标
+                    $(obj).parent().parent().parent().parent().siblings('span').eq(0).addClass('chooseSpan');
+                }
+            }else if($(obj).parent().attr('level_point') == 'knowledge'){
+                if($(obj).parent().parent().parent().parent().find('span[level_point="knowledge"]').length>1){
+                   // $(obj).parent().parent().parent().parent().find('span[level_point="knowledge"]').eq(1).addClass('chooseSpan');
+                }else{
+                    //上级得到当前光标
+                    $(obj).parent().parent().parent().parent().siblings('span').eq(0).addClass('chooseSpan');
+                }
+            }else if($(obj).parent().attr('level_point') == 'child_knowledge'){
+                if($(obj).parent().parent().parent().parent().find('span[level_point="child_knowledge"]').length>1){
+                   // $(obj).parent().parent().parent().parent().find('span[level_point="child_knowledge"]').eq(1).addClass('chooseSpan');
+                }else{
+                    //上级得到当前光标
+                    $(obj).parent().parent().parent().parent().siblings('span').eq(0).addClass('chooseSpan');
+                }
+            }
+            $(obj).parent().parent().parent().hide();//多了一个parent（），已删除====已恢复原样
+//
+        });
+//        setTimeout(function(){aaa =0},1000)
+    });
+        
+	//增加类目
+	var that, lastKnowName, lastNum; 
+	function add(){
+	    $('.addUnit,.addChapter,.addSection,.addPoint,.addKey').live('click',function(){
+	        $('#addMain').show();
+	        $('body').css('overflow-y','hidden');
+	        $('.addName').attr('value','');
+	        $('.addNum').attr('value','');
+	        that = $(this);
+	    })
+	}
+	add();
+	$('#sureBtn').click(function(){
+        operation_type_class(that,2);
+        var addName = $.trim(ueCon.getContentTxt());//编辑器中的纯文本
+        var addHTML = $.trim(ueCon.getPlainTxt());//编辑器中的样式文本
+
+		if(addName == '' && addHTML == ''){
+			$.NotifyBox.NotifyOne('提示','名称不能为空','确定');
+			return false;
+		}
+
+                var id=$(that).parent().parent().parent().siblings('.plusMius').attr('attr_id');   //获取分册ID
+
+                if($(that).attr('class') == 'addChapter'){
+                   var is_chapter = 'yes';
+				}else{
+                    var is_chapter = 'no';
+				}
+		if(operation_ul=='chapterUl') {  //如果是添加章
+            var empty_add_li3=$(empty_chapter_element).clone(true);
+            var clone_element=$(chapter_element).clone(true); 
+		    $(clone_element).find('.addChapter').remove();
+            lastKnowName=$(that).parents('.chapterUl').children().last().find('span[level_point="chapter"]');
+            lastNum = lastKnowName.children('.numInput').val();   
+		}else if(operation_ul=='sectionUl'){  //如果是添加节
+            var empty_add_li3=$(empty_festival_element).clone(true);
+            var clone_element=$(festival_element).clone(true);
+		    $(clone_element).find('.addSection').remove();
+            lastKnowName=$(that).parents('.sectionUl').children().last().find('span[level_point="festival"]');
+            lastNum = lastKnowName.children('.numInput').val();        
+		}else if(operation_ul=='pointUl'){  //如果是添加知识点
+            var empty_add_li3=$(empty_knowledge_element).clone(true);
+            var clone_element=$(knowledge_element).clone(true);
+            $(clone_element).find('.addPoint').remove();
+            lastKnowName=$(that).parents('.pointUl').children().last().find('span[level_point="knowledge"]');
+            lastNum = lastKnowName.children('.numInput').val();
+		}else{
+            var empty_add_li3=$(emtpy_child_knowledge).clone(true);
+            var clone_element=$(child_knowledge_element).clone(true);
+            $(clone_element).find('.addKey').remove();
+            lastKnowName=$(that).parents('.KeyUl').children().last().find('span[level_point="child_knowledge"]');
+            lastNum = lastKnowName.children('.numInput').val();
+        }
+
+        $(clone_element).find('.knowName').find('font').eq(0).html(addHTML);
+        $(clone_element).find('.knowName').find('font').eq(0).attr('html',addHTML);
+        if(lastNum == undefined){
+            $(clone_element).find('.knowName').find('.numInput').val(1);
+        } else{
+            $(clone_element).find('.knowName').find('.numInput').val(parseInt(lastNum)+parseInt(1));
+        }
+        var level_class=$(clone_element).find('.knowName').attr('level_point');
+        $(clone_element).find('.knowName').addClass(level_class);
+        $('.knowName').removeClass('chooseSpan');
+        $(clone_element).find('.knowName').addClass('chooseSpan');
+        $(that).parent().parent().parent().append(clone_element);
+        $('#addMain').hide();
+        $('body').css('overflow-y','auto');
+	})
+	
+	//修改名称
+	// var that2,newName,newNum;
+	// $('.knowName').find('font').live('dblclick',function(){ 
+ //        if(!$(this).parent().hasClass('knowName')){
+ //            return false;
+ //        }
+ //        $('#changeMain').show();
+ //        $('body').css('overflow-y','hidden');
+	//     if($(this).attr('html') != '' && $(this).attr('html') != undefined)
+ //        // $('#contentEdit').html($(this).attr('html'));
+ //        ueConEdit.setContent($(this).attr('html'));
+	//     else
+	// 	// $('#contentEdit').html($(this).text());
+ //        ueConEdit.setContent($(this).text());
+ //        $('.editNum').val($(this).siblings('span').find('font').text()); 
+ //        that2=this;
+	// })
+	
+	$('#sureBtn2').click(function(){  
+        //var editName = $.trim($('#contentEdit').text());
+	    //var editHTML = $.trim($('#contentEdit').html());
+        var editName = $.trim(ueConEdit.getContentTxt());
+        var editHTML = $.trim(ueConEdit.getPlainTxt()); 
+        //var editNum = parseInt($.trim($('.editNum').val()));
+        var regNum = /^[1-9]\d*$/;
+
+//        var temp_arr = new Array();
+//        var temp_arr2 = new Array();
+//        if($(that2).parent().attr('level_point') == 'chapter'){
+//            temp_arr.push($(that2).parent().parent().parent().parent().find('span[level_point="chapter"]'));
+//		}else if($(that2).parent().attr('level_point') == 'festival'){
+//            temp_arr.push($(that2).parent().parent().parent().parent().find('span[level_point="festival"]'));
+//		}else if($(that2).parent().attr('level_point') == 'knowledge'){
+//            temp_arr.push($(that2).parent().parent().parent().parent().find('span[level_point="knowledge"]'));
+//		}else if($(that2).parent().attr('level_point') == 'child_knowledge'){
+//            temp_arr.push($(that2).parent().parent().parent().parent().find('span[level_point="child_knowledge"]'));
+//		}
+//        for(var r=0;r<temp_arr[0].length;r++){
+//			if($(that2).parent().find('font').eq(1).text() != $(temp_arr[0][r]).find('font').eq(1).text())
+//            temp_arr2.push($(temp_arr[0][r]).find('font').eq(1).text());
+//        }
+//
+//        if(editName == ''){
+//            $.NotifyBox.NotifyOne('提示','名称不能为空','确定');
+//            return false;
+//        }
+//
+//        if($(that2).parent().parent().hasClass('knowKey')){
+//            var id=$(that2).siblings('.rtImg').attr('attr_id');
+//        }else{
+//            var id=$(that2).parent().siblings('.plusMius').attr('attr_id');
+//        }
+//        if(id=='' || typeof(id)=='undefined'){
+//            return false;
+//        }
+        var current_li=$(that2).parent().parent().parent().clone(true);
+        var current_index=$(that2).parent().parent().parent().index();
+//        var error=0;
+//        var Jdata='';
+//        var data={'name':editName,'html':editHTML,'id':id};
+//        $.ajax({
+//            type: 'post',
+//            url: "{:U('TextbookTree/updateKnowledgePoint')}",
+//            data:data,
+//            cache: false,
+//            async: false,
+//            dataType:'json',
+//            success: function(msg){
+//                if(msg.status!=200){
+//                    $.NotifyBox.NotifyOne('提示','操作失败','确定');
+//                    error=1;
+//                    return false;
+//                }else{
+                    $(current_li).children('div').children('.knowName').find('font').eq(0).html(editHTML);//有可能有问题
+					$(current_li).children('div').children('.knowName').find('font').eq(0).attr('html',editHTML);//有可能有问题
+                    /*$(current_li).children('div').children('.knowName').find('font').eq(1).text(editNum);//有可能有问题*/
+                    /*Jdata=msg.data;
+                }
+            }
+        });
+        if(error==1){
+            return false;
+        }   */
+        var allKnowName=new Array();        
+        var empty_add_li='';
+            
+        if($(that2).parent().parent().hasClass('knowKey')){
+            var allKnowNameL=$(that2).parents('.KeyUl').find('span[level_point="child_knowledge"]');
+            empty_add_li=$(emtpy_child_knowledge).clone(true);
+            
+//            for(var i=0;i<allKnowNameL.length;i++){
+//                if($(allKnowNameL[i]).find('.rtImg').attr('attr_id')==id){
+//                    continue;
+//                }
+//                allKnowName.push($(allKnowNameL[i]));
+//            }
+
+        }else{
+            if($(that2).parent().parent().hasClass('knowPoint')){
+                var allKnowNameL=$(that2).parents('.pointUl').find('span[level_point="knowledge"]');
+                empty_add_li=$(empty_knowledge_element).clone(true);
+
+            }else if($(that2).parent().parent().hasClass('knowSection')){
+                var allKnowNameL=$(that2).parents('.sectionUl').find('span[level_point="festival"]');
+                empty_add_li=$(empty_festival_element).clone(true);
+
+            }else if($(that2).parent().parent().hasClass('knowChapter')){
+                var allKnowNameL=$(that2).parents('.chapterUl').find('span[level_point="chapter"]');
+                empty_add_li=$(empty_chapter_element).clone(true);
+                
+            }
+//            for(var i=0;i<allKnowNameL.length;i++){
+//                if($(allKnowNameL[i]).siblings('.plusMius').attr('attr_id')==id){
+//                    continue;
+//                }
+//                allKnowName.push($(allKnowNameL[i]));
+//            }
+        } 
+            
+                
+                //取到所有同级,比较 
+//                var n_length=allKnowName.length;        //8
+//                var p_sort,n_sort;
+//                //var min_num_arr=new Array();
+//                var temp_arrs2=new Array();
+//                if(n_length > 1){
+//                    //$(allKnowName[i]).parent().parent().parent().parent().find('.addPoint').remove();
+//                    /*if(current_index==0){
+//                        $(current_li).find('.addPoint').remove();//此处操作好像没用上？？
+//                    }*/
+//                    var max_sort,min_sort;
+//                    for(var i=0;i < n_length;i++){
+//                        temp_arrs2.push($(allKnowName[i][0]).find('font').eq(1).text());
+//                    }
+//                    temp_arrs2.sort(sortNumber);
+//                    max_sort = temp_arrs2.pop();
+//                    min_sort = temp_arrs2.shift();
+//                    if($(that2).parent().parent().children().eq(0).attr('title') == '增加'){
+//                        $(that2).parent().parent().parent().remove();
+//                        //$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                        for(var i=0;i<n_length;i++){
+//                            p_sort=$(allKnowName[i][0]).find('font').eq(1).text();
+//                            n_sort=$(allKnowName[i+1][0]).find('font').eq(1).text();
+//                            if(min_sort > editNum){ //最小
+//                                $(allKnowName[i][0]).parent().parent().before(current_li);
+//                                break;
+//                            }else if(editNum > p_sort && editNum < n_sort){ //在中间
+//                                //先删除加号的操作，后生成加号
+//
+//                                $(allKnowName[i][0]).parent().parent().parent().prepend(empty_add_li);//添加新加号
+//                                $(allKnowName[i][0]).parent().parent().after(current_li);//ul
+//                                $(current_li).children().children().eq(0).remove();//删除本身的加号
+//								break;
+//                                //$(allKnowName[0][i]).parent().parent().parent().append(current_li);
+//
+//                               /* if(i==(n_length-1)){
+//                                    $(allKnowName[i]).parent().parent().parent().append(current_li);
+//                                }*/
+//                            }else if(editNum > max_sort){ //最大
+//								//先删除加号，然后再添加加号
+//
+//                                $(allKnowName[i][0]).parent().parent().parent().prepend(empty_add_li);//添加新加号
+//                                $(allKnowName[i][0]).parent().parent().parent().append(current_li);//ul
+//                                $(current_li).children().children().eq(0).remove();//删除本身的加号
+//								break;
+//                                //$(allKnowName[0][i]).parent().parent().parent().append(current_li);
+//							}
+//                        }
+//					}else{
+//                        $(that2).parent().parent().parent().remove();
+//                        //$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                        for(var i=0;i<n_length;i++){
+//                            p_sort=$(allKnowName[i][0]).find('font').eq(1).text();
+//                            n_sort=$(allKnowName[i+1][0]).find('font').eq(1).text();
+//                            if(min_sort > editNum){ //最小
+//								if($(allKnowName[i][0]).parent().children().eq(0).attr('title') == '增加'){
+////删除排序为第一的加号，然后再添加加号
+//                                    $(allKnowName[i][0]).parent().children().eq(0).remove();
+//
+//                                    $(allKnowName[i][0]).parent().parent().before(empty_add_li);
+//                                    $(allKnowName[i][0]).parent().parent().before(current_li);
+//                                    break;
+//								}else{
+//                                    $(allKnowName[i][0]).parent().parent().before(current_li);
+//                                    break;
+//								}
+//
+//                            }else if(editNum > p_sort && editNum < n_sort){ //在中间
+//                                //
+//                                $(allKnowName[i][0]).parent().parent().after(current_li);
+//								break;
+//								/* if(i==(n_length-1)){
+//								 $(allKnowName[0][i]).parent().parent().parent().append(current_li);
+//								 }*/
+//                            }else if(editNum > max_sort){ //最大
+//                                $(allKnowName[i][0]).parent().parent().parent().append(current_li);
+//                                break;
+//							}
+//                        }
+//					}
+//					//$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                    //$(allKnowName[0]).parent().parent().parent().prepend(empty_add_li);
+//
+//
+//
+//
+//
+//
+//                }else if(n_length == 1) {
+//                    if($(that2).parent().parent().children().eq(0).attr('title') == '增加'){
+//                        $(that2).parent().parent().parent().remove();
+//                        //$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                            if(allKnowName[0][0] > editNum){ //最小
+//                                $(allKnowName[0][0]).parent().parent().before(current_li);//li
+//                            }else{ //最大
+//                                //先删除加号，然后再添加加号
+//                                $(allKnowName[0][0]).parent().parent().before(empty_add_li);//添加新加号
+//                                $(allKnowName[0][0]).parent().parent().parent().append(current_li);//ul
+//                               $(current_li).children().eq(0).remove();//删除本身的加号
+//                            }
+//
+//                    }else{ //加号分离了
+//                        $(that2).parent().parent().parent().remove();
+//                        //$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                            if(allKnowName[0][0] > editNum){ //最小
+//                                $(allKnowName[0][0]).parent().parent().before(current_li);
+//
+//                            }else if(editNum > allKnowName[0][0]){ //最大
+//                                $(allKnowName[0][0]).parent().parent().parent().append(current_li);
+//                            }
+//                        }
+//                }else{
+//                    //直接生成
+                    $(that2).parent().parent().parent().before(current_li);
+                    $(that2).parent().parent().parent().remove();
+//				}
+
+
+
+
+
+
+            $('#changeMain').hide();
+            $('body').css('overflow-y','auto');
+	})
+	
+	//弹窗隐藏
+	$('#cancelBtn').click(function(){
+            $('#addMain').hide();
+            $('body').css('overflow-y','auto');
+	})
+	$('#cancelBtn2').click(function(){
+            $('#changeMain').hide();
+            $('body').css('overflow-y','auto');
+	})
+	
+        //当前选中加高亮
+	
+		$('.knowName').live('click',function(){
+			if(aaa !=1) {
+				$('.knowName').removeClass('chooseSpan');
+				$(this).addClass('chooseSpan');
+			}
+			
+		});
+        
+        
+        $("#knowledge_level").change(function(){
+            $('.searchUl').find('li').remove();
+        });
+        
+        
+        //请求树形数据
+        function requestTreeData(url){
+            var result;
+            $.ajax({
+                type: 'get', 
+                url: url,  
+                cache: false,
+                async: false,
+                dataType:'json',
+                success: function(msg){     
+                    result=msg;
+                }  
+            });
+            return result;
+        }
+        
+        var chapter_ul='<ul class="chapterUl"></ul>';
+        var chapter_element='<li><!--第一章-->'+
+                                '<div class="knowChapter" style="display: block;">'+
+                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addChapter" title="增加">'+
+                                    '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowChapterTitle">'+ 
+                                    '<span class="knowName" level_point="chapter">'+
+                                        '<font>第一章</font>'+
+                                        '<input type="text" class="numInput" value="3">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                    '</span>'+
+                                '</div>'+
+                            '</li>';
+        var empty_chapter_element='<li>'+
+                                '<div class="knowChapter" style="display: block;">'+
+                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addChapter" title="增加">'+ 
+                                '</div>'+'</li>'
+                           ;//这里把<li></li>标签删除了====已恢复原样
+                    
+                    
+        var festival_ul='<ul class="sectionUl"></ul>';
+        var festival_element='<li>'+
+                                '<!--第一节-->'+
+                                '<div class="knowSection" style="display: block;">'+
+                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addSection" title="增加">'+
+                                    '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowSectionTitle">'+
+                                    '<span class="knowName" level_point="festival">'+
+                                        '<font>第一节</font>'+
+                                        '<input type="text" class="numInput" value="3">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                    '</span>'+
+                                '</div>'+  
+                            '</li>';
+        var empty_festival_element='<li>'+
+                                '<!--第一节-->'+
+                                '<div class="knowSection" style="display: block;">'+
+                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addSection" title="增加">'+ 
+                                '</div>'+
+                            '</li>';
+                    
+                    
+        var knowledge_ul='<ul class="pointUl"></ul>';
+        var knowledge_element='<li>'+
+                                    '<!--第一节的知识点-->'+
+                                    '<div class="knowPoint" style="display: block;">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addPoint" title="增加">'+
+                                        '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowPointTitle">'+
+                                        '<span class="knowName" level_point="knowledge">'+
+                                            '<font>第一节的知识点</font>'+
+                                            '<input type="text" class="numInput" value="3">'+
+                                            '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                        '</span> '+
+                                    '</div>'+
+                                '</li>';
+        var empty_knowledge_element='<li>'+
+                                    '<!--第一节的知识点-->'+
+                                    '<div class="knowPoint" style="display: block;">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addPoint" title="增加">'+ 
+                                    '</div>'+
+                                '</li>';
+        
+        
+        var child_knowledge_ul='<ul class="KeyUl"></ul>';
+        var child_knowledge_element='<li>'+
+                                        '<!--知识点详情-->'+
+                                        '<div class="knowKey" style="display: block;">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addKey" title="增加">'+
+                                            '<span class="knowName" level_point="child_knowledge">'+
+                                                '<font>知识点1</font>'+
+                                                '<input type="text" class="numInput" value="3">'+
+                                                '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                            '</span>'+
+                                        '</div>'+
+                                    '</li>';
+        var emtpy_child_knowledge='<li>'+
+                                        '<!--知识点详情-->'+
+                                        '<div class="knowKey" style="display: block;">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addKey" title="增加">'+ 
+                                        '</div>'+
+                                    '</li>';
+</script>
+<script>
+//**************************************************AJAX分页****************************************************************
+function return_ajax($page) {
+        if($page){
+            var page = $page;
+        }
+        $.ajax({
+            url: '/index.php?m=Exercise&c=TextbookTree&a=ajaxPage',
+            type: 'GET',
+            //dataType: 'json',
+            data:{'p':page},
+            success: function (data) {
+                $('.block').html(data);
+               // $("html,body").animate({scrollTop:0}, 300);
+            },
+            error: function () {
+                // alert('cuo');
+                $.NotifyBox.NotifyOne('提示','错误','确定')
+            }
+        });
+    }
+	
+	function callback(data) {
+        var arr = data.split("&p=");
+        //console.log(arr);return false;
+        return_ajax(arr[1]);
+    }
+</script>
+
+<script>
+    function treeText(obj) {
+        var html_ = $(obj).siblings('font').html();
+        var id_ = $(obj).parent().attr('id');
+        window.parent.getText(html_,id_)
+    }
+</script>
+<script>
+	$('.perfect').click(function () {
+	    var url = "/index.php?m=Exercise&c=CurriculumTree&a=curriculumTree&courseId=<?php echo $courseId?>&Learning_period_id=<?php echo $Learning_period_id?>";
+        window.parent.location.href= url;
+    /*<a href="/index.php?m=Exercise&c=CurriculumTree&a=curriculumTree&courseId=<?php echo $courseId?>&Learning_period_id=<?php echo $Learning_period_id?>">*/
+    })
+</script>
+

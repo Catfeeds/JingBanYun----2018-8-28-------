@@ -1,0 +1,239 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<script>
+  $(function(){
+    var boxHeight = $(window).height() - 180;
+    $('.boxOutter').css('min-height',boxHeight)
+  })
+</script>
+
+<div class="boxOutter">
+  <div class="borderBottom  mb30  of">
+    <?php if(in_array('UserManagement/userManagement',session('exercises_permissions'))){ ?>
+    <button type="button" name="button" class="tabBtn active left">用户管理</button>
+    <?php }?>
+    <?php if(in_array('UserManagement/roleList',session('exercises_permissions')) && $tip===true){ ?>
+    <a href="{:U('UserManagement/roleList')}"  class="tabBtn left text-center">角色管理</a>
+    <?php }?>
+    <?php if(in_array('UserManagement/userBehaviorManagement',session('exercises_permissions'))){ ?>
+    <a href="{:U('UserManagement/userBehaviorManagement')}" class="tabBtn left text-center">用户行为管理</a>
+    <?php }?>
+  </div>
+  <div class="filterOutter">
+    <div class="filterInner">
+	<form action="<?php echo U('UserManagement/userManagement')?>" method="post">
+      <div class="filterBox">
+        <label for="">用户名</label>
+        <input type="text" class="inputCommon" id="" name="name" value="<?php echo $name?>" placeholder="请输入用户名">
+      </div>
+      <div class="filterBox">
+        <label for="">账&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+        <input type="text" class="inputCommon" id="" name="account" value="<?php echo $account?>" placeholder="请输入账号">
+      </div>
+      <div class="filterBox">
+        <label for="">手机号</label>
+        <input type="text" class="inputCommon" id="" name="phone" value="<?php echo $phone?>" placeholder="请输入手机号">
+      </div>
+	  <div class="filterBtn">
+	      <button class="btn" id="">确定</button>
+	   </div>
+    </form>
+    </div>
+  </div>
+  <div class="tableTop">
+  <?php if($tip===true){?>
+    <?php if(in_array('UserManagement/addUser',session('exercises_permissions'))){ ?>
+    <a href="<?php echo U('UserManagement/addUser')?>"><button class="btn" id="">添加账号</button></a>
+    <?php }?>
+  <?php }?>
+  </div>
+
+  <table class="tableCommon">
+    <thead>
+      <tr >
+        <th width=10%>姓名</th>
+        <th width=10%>账号</th>
+        <th width=10%>手机号</th>
+        <th width=10%>角色</th>
+        <th width=10%>单IP登录</th>
+        <th width=13%>登录IP限制</th>
+        <th width=20%>上级标引</th>
+       <?php if($tip===true){?>
+        <th width=20%>操作</th>
+      <?php }?>
+    </thead>
+    <tbody>
+    <?php if(!empty($list)){?>
+	<?php foreach($list as $item){ ?>
+    <?php if($tip === false){?>
+      <?php if($item['id'] != 1){?>
+      <tr>
+        <td title="<?php echo $item['user_name']?>"><a href="/index.php?m=Exercise&c=UserManagement&a=roleInformation&id=<?php echo $item['id']?>" class="tableAName"><?php echo $item['user_name']?></a></td>
+        <td title="<?php echo $item['account']?>"><?php echo $item['account']?></td>
+        <td title="<?php echo $item['mobile_phone']?>"><?php echo $item['mobile_phone']?></td>
+        <td class="text-center" title="<?php echo $item['r_name']?>"><?php echo $item['r_name']?></td>
+        <td>否</td>
+        <td title="<?php if($item['login_ip']){echo $item['login_ip'] ;}else{echo '暂为空' ;}?>"><?php if($item['login_ip']){echo $item['login_ip'] ;}else{echo '暂为空' ;}?></td>
+        <td class="text-left" title="<?php if($item['superior_content']){ echo $item['superior_content'];}else{echo '暂为空' ;}?>"><?php if($item['superior_content']){ echo $item['superior_content'];}else{echo '暂为空' ;}?></td>
+      <?php if($tip===true){?>
+        <td>
+          <?php if(in_array('UserManagement/accountDisable',session('exercises_permissions'))){ ?>
+          <?php if($item['account_status'] == 2){?>
+          <a href="javascript:;" class="tableABtn" attr-data="<?php echo $item['id']?>" attr-status="1" onclick = "disableds($(this))">禁用</a>
+          <?php }else{?>
+          <a href="javascript:;" class="tableABtn" attr-data="<?php echo $item['id']?>" attr-status="2" onclick = "disableds($(this))">启用</a>
+          <?php }?>
+          <?php }?>
+          <?php if(in_array('UserManagement/saveUser',session('exercises_permissions'))){ ?>
+          <a href="/index.php?m=Exercise&c=UserManagement&a=saveUser&id=<?php echo $item['id']?>" class="tableABtn addRemarksBtn">修改</a>
+          <?php }?>
+          <?php if(in_array('UserManagement/deleteStatus',session('exercises_permissions'))){ ?>
+          <a href="javascript:;" class="tableABtn" attr-data="<?php echo $item['id']?>" onclick="deletes($(this))">删除</a>
+          <?php }?>
+          <?php if(in_array('UserManagement/roleQuery',session('exercises_permissions'))){ ?>
+          <a href="{:U('UserManagement/roleQuery')}&id=<?php echo $item['id']?>" class="tableABtn">查看行为</a>
+          <?php }?>
+        </td>
+        <?php }?>
+      </tr>
+      <?php }?>
+    <?php }else{?>
+    <tr>
+      <td title="<?php echo $item['user_name']?>"><a href="/index.php?m=Exercise&c=UserManagement&a=roleInformation&id=<?php echo $item['id']?>" class="tableAName"><?php echo $item['user_name']?></a></td>
+      <td title="<?php echo $item['account']?>"><?php echo $item['account']?></td>
+      <td title="<?php echo $item['mobile_phone']?>"><?php echo $item['mobile_phone']?></td>
+      <td class="text-center" title="<?php echo $item['r_name']?>"><?php echo $item['r_name']?></td>
+      <td>否</td>
+      <td title="<?php if($item['login_ip']){echo $item['login_ip'] ;}else{echo '暂为空' ;}?>"><?php if($item['login_ip']){echo $item['login_ip'] ;}else{echo '暂为空' ;}?></td>
+      <td class="text-left" title="<?php if($item['superior_content']){ echo $item['superior_content'];}else{echo '暂为空' ;}?>"><?php if($item['superior_content']){ echo $item['superior_content'];}else{echo '暂为空' ;}?></td>
+      <?php if($tip===true){?>
+      <td>
+        <?php if(in_array('UserManagement/accountDisable',session('exercises_permissions'))){ ?>
+        <?php if($item['account_status'] == 2){?>
+        <a href="javascript:;" class="tableABtn" attr-data="<?php echo $item['id']?>" attr-status="1" onclick = "disableds($(this))">禁用</a>
+        <?php }else{?>
+        <a href="javascript:;" class="tableABtn" attr-data="<?php echo $item['id']?>" attr-status="2" onclick = "disableds($(this))">启用</a>
+        <?php }?>
+        <?php }?>
+        <?php if(in_array('UserManagement/saveUser',session('exercises_permissions'))){ ?>
+        <a href="/index.php?m=Exercise&c=UserManagement&a=saveUser&id=<?php echo $item['id']?>" class="tableABtn addRemarksBtn">修改</a>
+        <?php }?>
+        <?php if(in_array('UserManagement/deleteStatus',session('exercises_permissions'))){ ?>
+        <a href="javascript:;" class="tableABtn" attr-data="<?php echo $item['id']?>" onclick="deletes($(this))">删除</a>
+        <?php }?>
+        <?php if(in_array('UserManagement/roleQuery',session('exercises_permissions'))){ ?>
+        <a href="{:U('UserManagement/roleQuery')}&id=<?php echo $item['id']?>" class="tableABtn">查看行为</a>
+        <?php }?>
+      </td>
+      <?php }?>
+    </tr>
+    <?php }?>
+	  <?php }}else{?>
+    <tr>
+      <td colspan="8">
+        无数据
+      </td>
+    </tr>
+    <?php }?>
+    </tbody>
+  </table>
+  <div class="Pagination">{$page}</div>
+</div>
+
+<!-- 弹窗：添加备注 -->
+<div class="fullBack"></div>
+<div class="adminNotifyBox" id="addRemarks">
+  <div class="adminNotifyTitle">
+    添加备注
+  </div>
+  <div class="adminNotifyContent">
+    <textarea name="" id="" class="remarksMain" rows="6" placeholder="请输入通过的理由，限100字" maxlength="100"></textarea>
+  </div>
+  <p class="adminNotifyButton">
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksSure">完成</a>
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksCancel">取消</a>
+  </p>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script>
+  //=====================================================账号禁用=================================================================
+  function disableds(obj){
+	var account_id = obj.attr('attr-data');
+	var account_status = obj.attr('attr-status');
+	$.ajax({
+	type:'post',
+	url:"{:U('UserManagement/accountDisable')}",
+	data:{'id':account_id,'account_status':account_status},
+      dataType:"json",
+	success:function(data){
+	    if(data.status == 200){
+            if(account_status == 1){
+                var show_status = 2;
+                obj.text('启用');
+            }else{
+                var show_status = 1;
+                obj.text('禁用');
+            }
+            obj.attr('attr-status',show_status);
+        }
+	}
+	})
+  }
+  //=====================================================账号删除=================================================================
+  function deletes(obj){
+      var account_id = obj.attr('attr-data');
+      var delete_status = 1;
+      $.NotifyBox.NotifyTwoCallOneBlue('提示','你确定要删除吗？','确定','取消',deleteOperation);
+	     function deleteOperation() {
+             $.ajax({
+                 type: 'post',
+                 url: "{:U('UserManagement/deleteStatus')}",
+                 data: {'id': account_id, 'delete_status': delete_status},
+                 dataType: "json",
+                 success: function (data) {
+                     if (data.status == 200) {
+                         location.reload();
+                     } else {
+                         $.NotifyBox.NotifyOne('提示',data.msg,'确定');
+                     }
+                 }
+             })
+         }
+  }
+</script>
+<script>
+  //全选
+    $('.checkAll').click(function(){
+        var childCheck=$('.checkOne');
+        var temp_status=true;
+        if($(this)[0].checked==true){
+            //本次选中
+            temp_status=true;
+        }else{
+            //本次取消
+            temp_status=false;
+        }
+        for(var i=0;i<childCheck.length;i++){
+            childCheck[i].checked=temp_status
+        }
+    });
+
+    //取消全选
+    var lis_m = document.getElementsByClassName('checkOne');
+    for (var j = 0; j < lis_m.length; j++) {
+        lis_m[j].index = j;
+        lis_m[j].onclick = function () {
+            if ($(this)[0].checked == false) {
+        $('.checkAll').removeAttr('checked','checked');
+        $('.checkAll').removeProp('checked','checked');
+            } else if ($(this)[0].checked == true) {
+                if (lis_m.length == $("[name='checkbox']:checked").length) {
+                    $('.checkAll').attr('checked','checked');
+                    $('.checkAll').prop('checked','checked');
+                };
+            }
+        }
+    };
+</script>

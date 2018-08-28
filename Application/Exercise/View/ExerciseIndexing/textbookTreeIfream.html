@@ -1,0 +1,329 @@
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=3.1" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/bjResourceList.css?v=4" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/layout.css" media="screen" title="no title" charset="utf-8">
+<style>
+    #ietanchuang {
+        width: 473px;
+        height: 280px;
+        position: fixed;
+        top: 37%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0 auto;
+        background: url(__PUBLIC__/img/toolTip/ietanchuang.png) no-repeat;
+        border-radius: 10px;
+        z-index: 20161002;
+        font-size: 16px;
+        color: #666;
+        display: none;
+    }
+
+    #ietanchuang span {
+        padding: 7px 50px;
+        background-color: #04c9a8;
+        position: absolute;
+        top: 200px;
+        left: 170px;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .glyphicon-chevron-left:before {
+        content: none;
+    }
+
+    .glyphicon-chevron-right:before {
+        content: none;
+    }
+
+    .glyphicon-chevron-left {
+        background: url(/Public/img/activity/left.png) no-repeat center;
+    }
+
+    .glyphicon-chevron-right {
+        background: url(/Public/img/activity/right.png) no-repeat center;
+    }
+</style>
+ <div class="contentWrapper">
+
+<!-- <div class="resource_box bothBorder"> -->
+
+    <div class="resource_middle" style="border:none">
+
+        <div class="resource_classify "  >
+            <div class="resource_subject" >
+                <?php if(!empty($fascicules)){?>
+                <img src="__PUBLIC__/img/resource/shouqi1.png" class="resource_subjectimg">
+                <?php }?>
+                <a attr_course="" href="###" style="line-height:40px" title=""><?php echo $course[0]['name']?></a>
+                <div>
+                    <ul>
+
+                    <?php foreach($fascicules as $item){?>
+                        <li class="gradeBorder">
+                            <div class="resource_grade">
+                                <?php if($item['count'] > 0){?>
+                                <img src="__PUBLIC__/img/resource/shouqi1.png"
+                                     attr_course_id="<?php echo $courseId ?>" attr_version_id="<?php echo $version?>" attr_grade_id="<?php echo $item['grade_id']?>" attr_school_term="<?php echo $item['school_term']?>" class="resource_gradeimg">
+                                <?php }?>
+                                <a href="###" title=""><?php if($item['school_term'] == 1){ echo $item['grade'].'上册';}elseif($item['school_term'] == 2){ echo $item['grade'].'下册';}else{ echo $item['grade'].'全一册';}?></a>
+                            </div>
+                        </li>
+                    <?php }?>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- </div> -->
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script>
+var culture_resource_id = "{$culture_resource_id}";
+var image_showqi_element = '/Public/img/resource/shouqi1.png';
+function toggleDiv(a, b, level, c) {
+$(a).live('click', function () {
+switch (level) {
+case 0:
+if ($(this).parent().find(b).css('display') == 'none') {
+if ($(this).children('a').attr('attr_course') == culture_resource_id) {
+//传统资源
+return false;
+}
+console.log('1:');
+$(this).attr('src', '__PUBLIC__/img/resource/zhankai1.png');
+$(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+/*if ($('#contentWrapper').attr('class').indexOf('fullscreen') == -1 && $(document).scrollTop() > 265) {
+$('body').animate({
+scrollTop: $(this).parent().index() * 40 + 265
+}, 1000)
+}*/
+$(this).parent().find('.resource_grade,.resource_unt,.resource_les,.resource_points').removeClass('active')
+$(this).parent().find(b).show().children('a,img').show()
+} else {
+$(this).attr('src', '/Public/img/resource/shouqi1.png');
+$(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+$(this).parent().find(b).hide().find('div,p,a,img').hide();
+$(this).parentsUntil('.resource_subject').find('*').removeClass('active')
+console.log('2:');
+$(this).parent().find('.resource_grade,.resource_unt,.resource_les,.resource_points').removeClass('active')
+$(this).parent().find('.resource_lesdiv').hide()
+}
+//
+break;
+default:
+if ($(this).attr('src') == image_showqi_element) {
+$(this).attr('src', '__PUBLIC__/img/resource/zhankai1.png');
+console.log(3);
+// $(this).siblings('div').show().children().show().children('a,img').show()
+$(this).parent(c).addClass('active');
+$(this).parent(c).parent().siblings().find('.active').removeClass('active')
+$(this).parent(c).parent().siblings().find(c).removeClass('active')
+
+
+// $(this).parent().parent().next().children().addClass('active')
+} else {
+$(this).attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+console.log('4:');
+$(this).parent(c).removeClass('active');
+$(this).siblings().find('.resource_unt,.resource_les,.resource_points').removeClass('active')
+// $(this).parent().parent().next().children().removeClass('active')
+}
+
+if ($(this).parent().find(b).length) {
+if ($(this).parent().find(b).css('display') == 'none') { //显示操作
+$(this).attr('src', '__PUBLIC__/img/resource/zhankai1.png');
+if ($(this).siblings('div').find('img').css('display') !== 'none') {
+$(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+$(this).siblings('div').show().find(b).show().children().show();
+console.log('5:' + $(this));
+// $(this).parent().after('div').addClass('active')
+$(this).parent(c).parent().siblings().find(c).removeClass('active');
+$(this).siblings().find('.resource_les').removeClass('active')
+
+
+} else {
+console.log('6:' + $(this));
+// $(this).siblings('div').show().find(b).show().find('div,p,a,img').show();
+$(this).siblings('div').show().find(b).show().children().show();
+}
+//$(this).siblings('div').show().find(b).show().children().show();
+} else { //隐藏操作
+$(this).attr('src', '/Public/img/resource/shouqi1.png');
+
+if ($(this).siblings('div').find('img').css('display') !== 'none') {
+$(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+$(this).siblings('div').hide().find(b).hide().find('div,p,a').hide();
+console.log(7);
+} else {
+$(this).siblings('div').hide().find(b).hide().find('div,p,a,img').hide();
+console.log(8);
+}
+
+}
+} else {
+var id = $(this).attr('attr_id');
+var courseId = $(this).attr('attr_course_id');
+var version = $(this).attr('attr_version_id');
+var grade_id = $(this).attr('attr_grade_id');
+var school_term = $(this).attr('attr_school_term');
+var obj = this;
+    if(level == 1){ //获取章
+        request_url="{:U('TextbookTree/getAllChapter')}&version="+version+'&courseId='+courseId+'&grade_id='+grade_id+'&school_term='+school_term+'&level='+level;
+    }else{
+        request_url="{:U('TextbookTree/getNextLevelKnowledge')}&id="+id+'&level='+level;
+    }
+$.ajax({
+type: 'get',
+url: request_url,
+cache: false,
+async: false,
+dataType: 'json',
+success: function (msg) {
+if (msg.data.length) {
+switch (level) {
+case 1:
+var element = '<div class="resource_untdiv" style="display: block;">' +
+    '<div  class="resource_unt" style="display: block;">' +
+        '<img src="__PUBLIC__/img/resource/shouqi1.png" alt="" class="resource_untimg">\n\
+        <a href="###">unit1</a>' +
+        '</div >' +
+    '</div>';
+break;
+case 2:
+var element = '<div class="resource_lesdiv" style="display: block;">' +
+    '<div  class="resource_les" style="display: block;">' +
+        '<img src="__PUBLIC__/img/resource/shouqi1.png" alt="" class="resource_lesimg">\n\
+        <a href="###">lesson1</a>' +
+        '</div >' +
+    '</div>';
+break;
+case 3:
+var element = '<div class="resource_pointdiv" style="display: block;">' +
+    '<div class="resource_points" style="display: block;">' +
+        '<img src="__PUBLIC__/img/resource/shouqi1.png" alt="" class="resource_pointsimg">\n\
+        <a href="###">知识点不超过20个字</a>' +
+        '</div >' +
+    '</div>';
+break;
+case 4:
+var element = '<div class="resource_pointlist" style="display: block;"><div class="resource_pointlistdiv" style="display: block;">' + '<a href="###" style="display: block;" class="resource_pointlistA">知识点不超过20个字111</a>' + '</div></div>';
+break;
+}
+for (var i = 0; i < msg.data.length; i++) {
+var clone_data = $(element).clone(true);
+$(clone_data).find('img').attr('attr_id', msg.data[i].id);
+$(clone_data).find('a').html(msg.data[i].tree_point_name);
+$(clone_data).find('a').attr('title', msg.data[i].tree_point_name);
+var url = $(clone_data).find('a').attr('href');
+//url = url + msg.data[i].id;
+//$(clone_data).find('a').attr('href', url);
+if (msg.data[i].count == 0) {
+$(clone_data).find('img').css('visibility', 'hidden');
+} else {
+$(clone_data).find('img').show();
+}
+$(obj).parent().append(clone_data);
+// bigHover();
+asd()
+
+}
+
+}
+}
+});
+}
+break;
+}
+
+})
+}
+
+toggleDiv('.resource_subjectimg', '.resource_grade', 0);
+toggleDiv('.resource_gradeimg', '.resource_unt', 1, '.resource_grade');
+toggleDiv('.resource_untimg', '.resource_les', 2, '.resource_unt');
+toggleDiv('.resource_lesimg', '.resource_points', 3, '.resource_les');
+toggleDiv('.resource_pointsimg', '.resource_pointlistdiv', 4, '.resource_points');
+$('.filter_a').on('click', function () {
+$('#bg,.filtepopups').show();
+$('body').css('overflow-y', 'hidden')
+})
+$('.delete').click(function () {
+$('#bg,.filtepopups').hide();
+$('body').css('overflow-y', 'auto')
+});
+</script>
+<script>
+    function bigHover() {
+        $('.resource_classify').find('img').hover(function () {
+            $(this).stop().animate({width: '22px'});
+        }, function () {
+            $(this).stop().animate({width: '20px'})
+        })
+        $('.resource_classify,.resource_subject,.resource_grade,.resource_untdiv').find('a').hover(function () {
+            $(this).stop().animate({fontSize: '20px'})
+        }, function () {
+            $(this).stop().animate({fontSize: '16px'})
+        })
+    }
+
+    function asd() {
+        $('.resource_classify').find('img').click(function () {
+            var listName = $(this).parent().attr('class');
+            switch (listName) {
+                case 'resource_subject':
+                    for (var a = 0; a < $(this).parent().siblings().length; a++) {
+                        if ($(this).parent().siblings().eq(a).children('img').attr('src') == '__PUBLIC__/img/resource/zhankai1.png') {
+                            $(this).parent().siblings().eq(a).children('img').siblings('div').find('div,img,a').hide();
+                            $(this).parent().siblings().eq(a).children('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().siblings().eq(a).children('img').siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+                case 'resource_grade':
+                    for (var b = 0; b < $(this).parent().parent().siblings().length; b++) {
+                        if ($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') == '__PUBLIC__/img/resource/zhankai1.png') {
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+                            $(this).parent().parent().siblings().eq(b).children().children('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+                case 'resource_unt':
+                    for (var b = 0; b < $(this).parent().parent().siblings().length; b++) {
+                        if ($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') == '__PUBLIC__/img/resource/zhankai1.png') {
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+                            $(this).parent().parent().siblings().eq(b).children().children('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+                case 'resource_les':
+                    for (var b = 0; b < $(this).parent().parent().siblings().length; b++) {
+                        if ($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') == '__PUBLIC__/img/resource/zhankai1.png') {
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+                            $(this).parent().parent().siblings().eq(b).children().children('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+                case 'resource_points':
+                    for (var b = 0; b < $(this).parent().parent().siblings().length; b++) {
+                        if ($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') == '__PUBLIC__/img/resource/zhankai1.png') {
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+                            $(this).parent().parent().siblings().eq(b).children().children('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+            }
+        })
+    }
+    asd()
+</script>

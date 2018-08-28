@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<link type="text/css" rel="stylesheet" href="__PUBLIC__/css/registerQuick.css?ver=2">
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<style>
+		.input100 input {
+			width: 100% !important;
+		}
+		
+		.input65 input {
+			width: 65% !important;
+		}
+
+		@media(min-width: 500px) {
+			.input65 input {
+				width: 80% !important;/*写给不支持calc()的浏览器*/ 
+				width: -moz-calc(100% - 100px) !important; 
+				width: -webkit-calc(100% - 100px) !important; 
+				width: calc(100% - 100px) !important;
+			}
+		}
+	</style>
+	<script>
+		$(function(){
+			var newHeight = $(document).height();
+			$('html,body').height(newHeight);
+		})
+	</script>
+</head>
+
+<body>
+	<div class="logOutter">
+		<img src="{$oss_path}public/web_img/Register/regLogo.png" class="regLogo" alt="">
+		<div class="regTab">
+			<ul class="tabUl" id="tabUl">
+				<li class="tabLi tabActive">
+					<img src="{$oss_path}public/web_img/Register/radioChoose.png" alt="" class="radioImg">
+					教师
+				</li>
+				<li class="tabLi">
+					<img src="{$oss_path}public/web_img/Register/radioEmpty.png" alt="" class="radioImg">
+					学生
+				</li>
+				<li class="tabLi">
+					<img src="{$oss_path}public/web_img/Register/radioEmpty.png" alt="" class="radioImg">
+					家长
+				</li>
+			</ul>
+			<div class="tabCon" id="tabCon">
+				<div class="tabDiv tabConActive">
+					<form action="/ApiInterface/Version1_1/RegisterQuick/teacherLogin?{$share_str}" class="from_submit" method="post">
+                        <input type='hidden' name='role' value='1' />
+						<div class="inputBox input65">
+							<input type="text" class="left" id="teachPhone" name='telephone' autocomplete="off" placeholder="手机号" maxlength="11">
+							<a href="/ApiInterface/Version1_1/RegisterQuick/registerQuick?{$share_str}&user=teacher" class="right">立即注册</a>
+						</div>
+						<div class="inputBox input65">
+							<input type="password" class="left" id="teachPwd" name='password' autocomplete="off" placeholder="密码" maxlength="16">
+							<a href="/ApiInterface/Version1_1/RegisterQuick/teacherResetPwd?{$share_str}" class="right">忘记密码？</a>
+						</div>
+						<div class="buttonBox">
+							<button type="submit" class="left login_button button" id="teachLogin">登录</button>
+						</div>
+					</form>
+				</div>
+				<div class="tabDiv">
+					<form action="/ApiInterface/Version1_1/RegisterQuick/studentLogin?{$share_str}" method="post" class="from_submit" >
+                        <input type='hidden' name='role' value='2' />
+						<div class="inputBox input100">
+							<input type="text" class="left" id="studentName" name='name' autocomplete="off" placeholder="姓名">
+						</div>
+						<div class="inputBox input65">
+							<input type="text" class="left" id="studentPhone" name='telephone' autocomplete="off" placeholder="家长手机号" maxlength="11">
+							<a href="/ApiInterface/Version1_1/RegisterQuick/registerQuick?{$share_str}&user=student" class="right">立即注册</a>
+						</div>
+						<div class="inputBox input65">
+							<input type="password" class="left" id="studentPwd" name='password' autocomplete="off" placeholder="密码" maxlength="16">
+							<a href="/ApiInterface/Version1_1/RegisterQuick/studentResetPwd?{$share_str}" class="right">忘记密码？</a>
+						</div>
+						<div class="buttonBox">
+							<button type="submit" class="left login_button button" id="studentLogin">登录</button>
+						</div>
+					</form>
+				</div>
+				<div class="tabDiv">
+					<form action="/ApiInterface/Version1_1/RegisterQuick/parentLogin?{$share_str}" method="post" class="from_submit" >
+                        <input type='hidden' name='role' value='3' />
+						<div class="inputBox input65">
+							<input type="text" class="left" id="parentPhone" name='telephone' autocomplete="off" placeholder="手机号" maxlength="11">
+							<a href="/ApiInterface/Version1_1/RegisterQuick/registerQuick?{$share_str}&user=parent" class="right">立即注册</a>
+						</div>
+						<div class="inputBox input65">
+							<input type="password" class="left" id="parentPwd" name='password' autocomplete="off" placeholder="密码" maxlength="16">
+							<a href="/ApiInterface/Version1_1/RegisterQuick/parentResetPwd?{$share_str}" class="right">忘记密码？</a>
+						</div>
+						<div class="buttonBox">
+							<button type="submit" class="left login_button button" id="parentLogin">登录</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!--提示-->
+	<div class="blackNotify">
+		<span class="bNotify"></span>
+	</div>
+
+	<script src="__PUBLIC__/js/jquery-1.11.0.min.js"></script>
+    <script src="__PUBLIC__/js/jquery.form.js"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	<script>
+        $(function(){  
+            var options = {
+                success:    showResponse,  
+                resetForm:  false,
+                dataType:  'json'
+            };  
+            $('.from_submit').submit(function() {    
+                var li_index=$('.tabActive').index();   
+                if(li_index==0){ 
+                    if(checkLoginTeacher()==false){
+                        return false;
+                    }
+                }else if(li_index==1){ 
+                    if(checkLoginStudent()==false){
+                        return false;
+                    }
+                }else{
+                    if(checkLoginParent()==false){
+                        return false;
+                    } 
+                }
+                $(this).ajaxSubmit(options);
+                $('.login_button').attr('disabled',true);
+                return false;
+            });
+
+        });
+        function showResponse(responseText, statusText) { 
+            $('.login_button').attr('disabled',false);
+            switch(responseText.status)
+            {
+                case 200: //success 
+                        location.href=responseText.data.url; 
+                        break; 
+                case 500: 
+                        blackNotify(responseText.msg); 
+                        break;
+                default: blackNotify(responseText.msg); 
+                        break;
+            }
+		}
+            
+            
+		window.onload = function () {
+			var tabs = document.getElementById("tabUl").getElementsByTagName("li");
+			var divs = document.getElementById("tabCon").getElementsByClassName('tabDiv');
+
+			for (var i = 0; i < tabs.length; i++) {
+				tabs[i].onclick = function () {
+					change(this);
+				}
+			}
+
+			function change(obj) {
+				for (var i = 0; i < tabs.length; i++) {
+					if (tabs[i] == obj) {
+						tabs[i].className = "tabLi tabActive";
+						divs[i].className = "tabDiv tabConActive";
+						$(obj).children('.radioImg').attr('src','{$oss_path}public/web_img/Register/radioChoose.png').end().siblings('li').children('.radioImg').attr('src','{$oss_path}public/web_img/Register/radioEmpty.png')
+					} else {
+						tabs[i].className = "tabLi";
+						divs[i].className = "tabDiv";
+						// $(obj).children('.radioImg').attr('src','{$oss_path}public/web_img/Register/radioEmpty.png')
+					}
+				}
+			}
+		} 
+                
+		function blackNotify(notify) {
+		    $('.blackNotify').show().children('.bNotify').html(notify);
+			$('.blackNotify').stop(true).animate({bottom:'10%'},300).fadeOut(1000).animate({bottom:'-30px'},1)
+		} 
+                
+		var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		function checkLoginTeacher(){
+                    var tel = $('#teachPhone').val();
+                    var pwd = $('#teachPwd').val(); console.log(33);
+                    if (tel == '') {
+                        blackNotify('请输入手机号');
+                        return false;
+                    } else if(regTel.test(tel) == false) {
+                        blackNotify('手机号码格式错误');
+                        return false;
+                    } else if(pwd == '') {
+                        blackNotify('请输入密码');
+                         return false;
+                    } else if(pwd.length < 6) {
+                        blackNotify('密码长度不小于6位');
+                        return false;
+                    } 
+                    return true 	
+		}
+		
+		function checkLoginStudent(){
+                    var name = $('#studentName').val();
+                    var tel = $('#studentPhone').val();
+                    var pwd = $('#studentPwd').val();
+                    if (name == '') {
+                        blackNotify('请输入姓名');
+                        return false;
+                    } else if(regName.test(name) == false) {
+                        blackNotify('姓名格式错误');
+                        return false;
+                    } else if (tel == '') {
+                        blackNotify('请输入家长手机号');
+                        return false;
+                    } else if(regTel.test(tel) == false) {
+                        blackNotify('手机号码格式错误');
+                        return false;
+                    } else if(pwd == '') {
+                        blackNotify('请输入密码');
+                        return false;
+                    } else if(pwd.length < 6) {
+                        blackNotify('密码长度不小于6位');
+                        return false;
+                    } 
+                    return true  
+		}
+                
+		
+		function checkLoginParent(){
+                    var tel = $('#parentPhone').val();
+                    var pwd = $('#parentPwd').val();
+                    if (tel == '') {
+                        blackNotify('请输入手机号');
+                        return false;
+                    } else if(regTel.test(tel) == false) {
+                        blackNotify('手机号码格式错误');
+                        return false;
+                    } else if(pwd == '') {
+                        blackNotify('请输入密码');
+                        return false;
+                    } else if(pwd.length < 6) {
+                        blackNotify('密码长度不小于6位');
+                        return false;
+                    } 
+                    return true 
+		}
+	</script>
+</body>
+
+</html>

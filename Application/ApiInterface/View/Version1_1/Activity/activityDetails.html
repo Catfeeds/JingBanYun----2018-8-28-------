@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>活动详情</title>
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	<script src="https://lkme.cc/js/linkedme.min.js"></script>
+	<link href="__PUBLIC__/css/app/activityDetails.css?v=6" rel="stylesheet" type="text/css"/>
+	<link href="__PUBLIC__/css/appCommon.css" rel="stylesheet" type="text/css"/>
+	<script src="__PUBLIC__/js/notify/notifyApp.js" defer async="true"></script>
+	<script>
+		var currentServerTime = '<?= date('Y-m-d H:i:s',time()+5); ?>';
+		var activityStartTime = '{$data.activitystart|date="Y-m-d H:i:s",###}';
+		var activityEndTime = '{$data.activityend|date="Y-m-d H:i:s",###}';
+		var liveStartTime = '{$data.livestart|date="Y-m-d H:i:s",###}';
+		var liveEndTime = '{$data.liveend|date="Y-m-d H:i:s",###}';
+		var liveUrl = '{$data.url}';
+		var isAndroidInfo = '{$user_id}';
+		var role = '{$role}';
+	</script>
+
+</head>
+
+<body>
+	<div id="content">
+		<div class="">
+			   <!--VIDEO IMAGE-->
+			    <?php  $extList = explode(',',$data['work_extension']);
+			           $displayUpload = 0;
+			           $videoInList = false;
+			           $imageInList = false;
+                       if(in_array('png',$extList) &&
+                          in_array('jpg',$extList))
+                          $imageInList = true;
+                       if($imageInList && 2 == sizeof($extList))
+                          $displayUpload = 1;
+
+                       if(in_array('avi',$extList) &&
+                          in_array('mp4',$extList) &&
+                          in_array('flv',$extList) &&
+                          in_array('wmv',$extList) &&
+                          in_array('mov',$extList) &&
+                          in_array('mpg',$extList))
+                          $videoInList = true;
+                       if($videoInList && 6 == sizeof($extList))
+                          $displayUpload = 1;
+
+                       if($videoInList && $imageInList && 8 == sizeof($extList) )
+                          $displayUpload = 1;
+                ?>
+
+			    <if condition="($registered eq 'yes') AND (time() lt $data['applyend']) AND ($data['is_upload'] eq 1) AND ($displayUpload eq 1)">
+					<if condition="($hasUploadWork eq false)">
+				     <a href="__URL__/workUpload?id={$data['id']}&role={$role}&userId={$user_id}" class="upload_a">上传资料</a>
+						<p class="upload_p">
+							*注：（先报名才能上传资料）
+						</p>
+					<elseif condition="$hasUploadWork.status eq 2"/>
+					 <a href="__URL__/workUpload?id={$data['id']}&role={$role}&userId={$user_id}" class="upload_a">修改资料</a>
+					</if>
+				</if>
+			    <if condition="($hasUploadWork eq true)">
+				 <a href="__URL__/workView?id={$data['id']}&role={$role}&userId={$user_id}" class="upload_a">查看资料</a>
+				</if>
+		    	<?php if ($hasUploadWork == true && $hasUploadWork['status'] == 0 && ($data['is_upload'] == 1)) :?>
+		    	<br>
+		    	<span class="applySpan ">资料审核中...</span>
+		    	<?php elseif ($hasUploadWork['status'] == 1) :?>
+		    	<br>
+		    	<span class="applySpan ">资料已审核通过</span>
+		    	<?php elseif ($hasUploadWork['status'] == 2) :?>
+		    	<br>
+		    	<span class="applySpan ">资料被拒绝通过，请重新上传。拒绝理由：{$hasUploadWork.error_data}</span>
+		    	</p>
+		    	<?php endif; ?>
+
+		</div>
+		<h1 class="h1Text">{$data.title}</h1>
+		<p class="liveTitleTime" style="display: none">活动时间：{$data.activitystart|date="Y-m-d H:i",###}至{$data.activityend|date="Y-m-d H:i",###}</p>
+		<img src="__PUBLIC__/img/live/mainImg.png" alt="" class="mainImg" style="display: none">
+
+		<div class="pText activityConLeft" unselectable="on" style="-moz-user-select:none;-webkit-user-select:none;" onselectstart="return false;">
+			<!--			<p>{$data.publisher}/{$data.approve_at|date="Y-m-d H:i",###}</p>-->
+			<p><span class="span1"><b>活动时间:</b></span><span class="span2">
+
+                        <if condition="$data['activitystart'] neq 0">
+                            {$data.activitystart|date="Y-m-d H:i",###}
+                        </if>
+                        至
+                        <if condition="$data['activityend'] neq 0">
+                            {$data.activityend|date="Y-m-d H:i",###}
+                        </if>
+                        </span>
+			</p>
+			<?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+			<p class="applyTimeBox"><span class="span1"><b>报名时间:</b></span><span class="span2">
+
+                        <if condition="$data['applystart'] neq 0">
+                            {$data.applystart|date="Y-m-d H:i",###}
+                        </if>
+                        至
+                        <if condition="$data['applyend'] neq 0">
+                            {$data.applyend|date="Y-m-d H:i",###}
+                        </if>
+                    </span>
+			</p>
+			<if condition="$data['display_people_register'] eq 1">
+			<p class="applyLimitBox"><span class="span1"><b>限制人数:</b></span><span class="span2">
+                        <if condition="$data['apply_people_number'] eq 0">
+                            无
+                        <else />
+                            {$data.apply_people_number}
+                        </if>
+                    </span></p>
+			</if>
+			<?php endif; ?>
+			<p><span class="span1"><b>备<span style="color: #fff">白色</span>注:</b></span><span class="span2">{$data.remark}</span></p>
+			<?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+			<if condition="$data['display_people_register'] eq 1">
+			<p class="applyNumBox"><span class="span1"><b>已报名:</b></span><span class="span2">{$data.register_numbers}人</span></p>
+			</if>
+			<p><span class="span1"><b>面向人群:</b>
+				</span><span class="span2">
+				<span class="trimSpan">
+				<volist name="activity_course_info" id="course_item">
+					<if condition="$course_item['course'] eq 0">全学科/<else />{$course_item.course_name}/</if>
+					<if condition="$course_item['grade'] eq 0">全年级<else />{$course_item.grade_name}</if>
+				</volist>
+				</span>
+				 {$data.stakeholder}</span>
+			</p>
+			<?php endif; ?>
+			<p class="liveTimeBox" style="display: none">
+				<span class="span1"><b>直播时间:</b></span>
+				<span class="span2">
+	                <script>document.write(window.liveStartTime + ' - ' + window.liveEndTime);</script>
+                </span>
+			</p>
+			<p class="liveTimeBox" style="display: none">
+				<span class="span1"><b>直播状态:</b></span>
+				<span class="span2">
+                	<button class="liveBtn" id="playButton"></button>
+                </span>
+			</p>
+		</div>
+
+		<h3 class="h3Text liveH3Text">活动详情</h3>
+		<div class="blod active_ct">
+			{$data.content}
+		</div>
+		<?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+		<div class="mb30 actFiles">
+		<notempty name="activity_contact_file">
+			<h3 class="h3Text" style="text-align:left">活动资料</h3>
+			<volist name="activity_contact_file" id="activity_contact_file_item">
+				<p class=""><a class='browse_resource' flag="{$activity_contact_file_item['flag']}" attr_type="{$activity_contact_file_item.type}" attr_path="{$oss_path}<?php
+                                        if($activity_contact_file_item['type']=='word' || $activity_contact_file_item['type']=='ppt'){
+                                            $path=explode('.',basename($activity_contact_file_item['activity_file_path']));
+                                            $path=$path[0].'.pdf';
+                                            $path = 'Activity/' .$data['id'].'/' .$path;
+                                            echo $path;
+                                        }else{
+                                            echo $activity_contact_file_item['activity_file_path'];
+                                        }
+                                        ?>">{$activity_contact_file_item.activity_file_name}</a></p>
+			</volist>
+
+			<div class="contentBox" style="display:none;">
+				<switch name="activity_contact_file[0].type">
+					<case value="pdf|word|ppt">
+						<iframe id="resourceFrame" flag="{$activity_contact_file[0]['flag']}" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={$oss_path}<?php
+                                    if($activity_contact_file[0]['type'] == 'word' ||   $activity_contact_file[0]['type'] == 'ppt')
+                                    {
+                                    $path = explode('.',basename($activity_contact_file[0]['activity_file_path']));
+                                    $path=$path[0].'.pdf';
+                                    $path = 'teacher/' .$data['id'].'/'.$activity_contact_file[0]['id'] .'/' .$path;
+                                    echo $path;
+                                    }
+                                    else
+                                    echo $activity_contact_file[0]['activity_file_path'];
+                                    ?>" width="100%" height="500">
+						</iframe>
+					</case>
+					<case value="image">
+						<div class="browse_image">
+							<img src="{$oss_path}{$activity_contact_file[0].activity_file_path}" />
+						</div>
+					</case>
+					<case value="video">
+						<div id='plv'>
+							<video src="{$activity_contact_file[0].vid_fullpath}" controls/>
+						</div>
+					</case>
+					<case value="audio">
+						<div id='plv'>
+							<video src="{$activity_contact_file[0].vid_fullpath}" controls/>
+						</div>
+					</case>
+					<default/>
+					<div>
+					</div>
+				</switch>
+			</div>
+		</notempty>
+		</div>
+		<?php endif; ?>
+	</div>
+	</notempty>
+
+
+	<div class="btnBottom">
+
+		<if condition="$data.works_show_status eq 1">
+			<div class="text-center winningwork" onclick="location.href = '__URL__/winningList?id={$data.id}&userId={$user_id}&role={$role}'">
+				<img src="__PUBLIC__/img/app/icon_huojiangzuopin.png" alt="" class="img24">
+
+				<span class="font_size18">获奖作品</span>
+			</div>
+		</if>
+		<?php if($role != 5) : ?>
+		<div class="text-center" id="favorIcon">
+			<if condition="$existedFavor eq 'yes'">
+				<img src="__PUBLIC__/img/app/icon_shoucang_down.png" alt="" class="img30">
+
+				<span class="font_size18">您已收藏</span>
+				<elseif condition="$existedFavor eq 'no'" />
+				<img src="__PUBLIC__/img/app/icon_shoucang_nor.png" alt="" class="img30">
+
+				<span class="font_size18">我要收藏</span>
+			</if>
+		</div>
+		<?php endif; ?>
+		<?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+		<if condition="$is_true eq 'yes'">
+			<div class=" text-center" onclick="location.href = '__URL__/voteList?id={$data.id}&userId={$user_id}&role={$role}'">
+				<img src="__PUBLIC__/img/app/icon_woyaotoupiao.png" alt="" class="img33">
+
+				<span class="font_size18">我要投票</span>
+			</div>
+		</if>
+		<?php endif; ?>
+		    <?php if(in_array($role,explode(',',$data['role']))) : ?>
+			<if condition="($registered eq 'yes')">
+				<div class=" text-center" id="getRegInfo" attr="__URL__/registrationinformation?id={$data.id}&user_id={$user_id}&role={$role}">
+					<img src="__PUBLIC__/img/app/icon_woyaobaoming2.png" alt="" class="img25">
+
+					<span class="font_size18 red">查看报名</span>
+				</div>
+				<elseif condition="$registered eq 'no'" />
+				<?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+				<?php if ($data['display_people_register'] == 1) : ?>
+				<div class="w50 text-center">
+					<img attr="__URL__/signupInformation?activity_id={$data.id}&user_id={$user_id}&role={$role}" src="__PUBLIC__/img/app/icon_woyaobaoming2.png" alt="" class="img27 baoming new_activity">
+
+					<span class="font_size18"><?php if(time() > $data['applyend']) echo '报名已截止'; else echo  '我要报名'; ?></span>
+				</div>
+				<?php endif; ?>
+				<?php endif; ?>
+			</if>
+		    <?php endif; ?>
+	</div>
+
+	<script>
+		if($('.btnBottom').children().length == 0)
+			$('.btnBottom').hide();
+		var bottomElementPercent = 100 / $('.btnBottom').children().length;
+		$('.btnBottom').children().each(function (i, n) {
+			$(n).attr('style', 'width:' + bottomElementPercent + '%;float:left')
+		})
+		$('#share').click(function () {
+			window.location.href = 'https://www.baidu.com'
+		})
+	</script>
+	<script>
+
+		function rightUI() {
+			return {
+				'type': 0,
+				'share': {
+					'url': "http://{$_SERVER['SERVER_NAME']}__URL__/activityDetails?id={$data['id']}&flag=1",
+					'title': "{$data['title']}",
+					'content': " <?php echo mb_substr(preg_replace("/\r|\n/",'',strip_tags($data['content'])),0,40); ?>"
+				}
+			};
+		}
+		var activity_status = "{$activity_status}";
+		var register_people_satus = "{$register_people_number_status}";
+		var obj = {};
+		var sp_arr = window.location.search.substr(1).split("&");
+		for (var i = 0; i < sp_arr.length; i++) {
+			var arr2 = sp_arr[i].split("=");
+			obj[arr2[0]] = arr2[1];
+		}
+		if (obj.role == 2) {
+			$('.teacherId').val(obj.user_id);
+		}
+
+		$('.submitBtn').click(function () {
+			if (activity_status == 2) { //活动未开始
+				alert('活动未开始');
+				return false;
+			} else if (activity_status == 3) { //活动已结束
+				alert('活动已结束');
+				return false;
+			} else if (register_people_satus == 2) { //报名人数已满
+				alert('报名人数已满');
+				return false;
+			}
+
+			console.log($('#register_info').val())
+			if ($('#register_info').val() != '') {
+				window.location.reload();
+			}
+		})
+		var applyEnd = "<?php if((time() < $data['applystart']) ||  (time() > $data['applyend'] -60) ) echo 1; ?>";
+
+		$('.baoming').click(function () {
+			if (activity_status == 2) { //活动未开始
+				alert('活动未开始');
+				return false;
+			} else if (activity_status == 3) { //活动已结束
+				alert('活动已结束');
+				return false;
+			} else if (register_people_satus == 2) { //报名人数已满
+				alert('报名人数已满');
+				return false;
+			} else if (applyEnd == "1") {
+				alert('报名已经截止');
+				return false;
+			} else {
+				if (1) {
+					var path = $(this).attr('attr');
+					location.href = path;
+				} else {
+					$('#register_info').focus()
+				}
+			}
+		})
+		$('#getRegInfo').click(function () {
+			var path = $(this).attr('attr');
+			location.href = path;
+		})
+	</script>
+	<!--不同角色不同功能-->
+	<script>
+		var user_id = "{$user_id}";
+		var role = "{$role}";
+		var id = "{$data.id}";
+		var zan_count = "{$data.zan_count}";
+		var favor_count = "{$data.favor_count}";
+
+		$('#zanIcon').click(function () {
+			if (user_id == false || role == false || id == false) {
+				return false;
+			} else {
+				$.getJSON("{:U('ApiInterface/Version1_1/activity/operationActivityZan')}", {
+					id: id,
+					role: role,
+					user_id: user_id
+				}, function (msg) {
+					if (msg.status == 200) {
+						if ($('#zanIcon').hasClass('zanBtnRed')) {
+							zan_count--;
+							$('#zanIcon').text(zan_count);
+							$('#zanIcon').removeClass('zanBtnRed').addClass('zanBtnBlack');
+						} else {
+							zan_count++;
+							$('#zanIcon').text(zan_count);
+							$('#zanIcon').removeClass('zanBtnBlack').addClass('zanBtnRed');
+						}
+					} else {
+						alert('操作失败');
+					}
+				});
+			}
+		});
+
+		$("#favorIcon").click(function () {
+			if (user_id == false || role == false || id == false) {
+				return false;
+			} else {
+				$.getJSON("{:U('ApiInterface/Version1_1/activity/operationActivityFavor')}", {
+					id: id,
+					role: role,
+					user_id: user_id
+				}, function (msg) {
+					if (msg.status == 200) {
+						if (msg.result == 'yes') {
+							$('#favorIcon').children('img').attr('src', "__PUBLIC__/img/app/icon_shoucang_down.png");
+							$('#favorIcon').children('span').text('您已收藏');
+						} else {
+							$('#favorIcon').children('img').attr('src', "__PUBLIC__/img/app/icon_shoucang_nor.png");
+							$('#favorIcon').children('span').text('我要收藏');
+						}
+					} else {
+						alert('操作失败');
+					}
+				});
+			}
+		});
+	</script>
+	<script>
+		$('.browse_resource').click(function () {
+			var u = navigator.userAgent;
+			var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+			var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+			console.log('是否是Android：' + isAndroid);
+			console.log('是否是iOS：' + isiOS);
+			//ios系统 除了image,别的都新页面打开
+			var type = $(this).attr('attr_type');
+			switch (type) {
+			case 'image':
+			case 'video':
+			case 'audio':
+				var attr_path = $(this).attr('attr_path');
+				var attr_type = $(this).attr('attr_type');
+				// location.href = attr_path;
+				location.href = "http://" + "{$_SERVER['SERVER_NAME']}" + "/ApiInterface/Version1_1/Activity/activityBox?detailsType="+ attr_type+"?detailsPath="+attr_path;
+				break;
+			case 'ppt':
+			case 'word': //ppt ios是否支持
+			case 'pdf':
+				var flag = $(this).attr('flag');
+				if (2 != flag) {
+					location.href = "/ApiInterface/Version1_1/Activity/dataConversion";
+					return;
+				}
+				if (isiOS) {
+					var attr_path = $(this).attr('attr_path');
+					location.href = attr_path;
+				} else if (isAndroid) {
+					var file_path = $(this).attr('attr_path');
+					location.href = "http://" + "{$_SERVER['SERVER_NAME']}" + "__PUBLIC__/pdfjs/viewer/viewer.html?f=" + file_path;
+
+				}
+				break;
+			case 'swf':
+			case 'condensed':
+				var swfBox = '<span>暂时不支持该格式</span>';
+				$('.contentBox').append(swfBox);
+				break;
+			}
+
+		})
+	</script>
+
+	<script>
+		$('.openadd').click(function () {
+			var url = $(this).attr('url-data');
+			window.location.href = url; //跳到生成的深度链接的url
+		});
+	</script>
+
+	<script>
+		var url = $('.url').val();
+		console.log(url);
+		linkedme.init("fd65bd508366dff5336015e5db872def", {
+			type: "live"
+		}, null);
+		var data = {};
+		data.type = "live"; //表示现在使用线上模式,如果填写"test", 表示测试模式.【可选】
+		data.feature = "功能名称"; // 自定义深度链接功能，多个用逗号分隔，【可选】
+		data.stage = "阶段名称"; // 自定义深度链接阶段，多个用逗号分隔，【可选】
+		data.channel = "渠道名称"; // 自定义深度链接渠道，多个用逗号分隔，【可选】
+		data.tags = "标签名称"; // 自定义深度链接标签，多个用逗号分隔，【可选】
+		data.ios_custom_url = ""; // 自定义iOS平台下App的下载地址，如果是AppStore的下载地址可以不用填写，【可选】
+		data.android_custom_url = ""; // 自定义安卓平台下App的下载地址，【可选】
+		// 下面是自定义深度链接参数，用户点击深度链接打开app之后，params参数将被带入app
+		// 比如详情页面的参数，可以写进去，这样唤起app后可直接跳转到详情页【可选】
+		var value1 = 1;
+		var value2 = 2;
+		data.params = '{"url":"' + url + '","key2":"' + value2 + '"}'; //注意单引号和双引号的位置
+
+		linkedme.link(data, function (err, data) {
+			if (err) {
+				// 生成深度链接失败，返回错误对象err
+				//alert('生成错误');
+			} else {
+				/*
+				 生成深度链接成功，深度链接可以通过data.url得到，
+				 将深度链接绑定到<a>标签，这样当用户点击这
+				 个深度链接，如果是在pc上，那么跳转到深度链接二维
+				 码页面，用户用手机扫描该二维码就会打开app；如果
+				 在移动端，深度链接直接会根据手机设备类型打开ios
+				 或者安卓app
+				 */
+				$('.openadd').attr('url-data', data.url);
+				//document.body.innerHTML += '<a class="linkedme" href="'+data.url+'">打开app</a>'
+			}
+		}, false);
+	</script>
+
+	<script>
+		function removeAllSpace(str) {
+			return str.replace(/\s+/g, "");
+		}
+
+		$(function(){
+			var trimSpan = $('.trimSpan').html();
+			$('.trimSpan').html(removeAllSpace(trimSpan));
+		});
+
+		(function(){
+	     $('.blod').find('a').each(function(i,n){
+	     	if($(n).attr('href').indexOf('?') > -1)
+	     		$(n).attr('href',$(n).attr('href')+ "&role={$role}&userId={$user_id}");
+			else
+				$(n).attr('href',$(n).attr('href')+ "?role={$role}&userId={$user_id}");
+	     })
+		})();
+	</script>
+</body>
+
+</html>

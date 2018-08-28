@@ -1,0 +1,251 @@
+<layout name="student_layout_3"/>
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<style>
+    /*---------------查看答案与解析弹出框------------------*/
+    .checkBox {
+        width: 40%;
+        height: 50%;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        margin-left: -20%;
+        margin-top: -5%;
+        background: #fff;
+        border-radius: 5px;
+        display: none;   
+        
+    }
+    .checkBoxTitle {
+	    width: 100%;
+        line-height: 30px;
+        font-size: 16px; 
+        background: #E9C232;
+        text-indent: 10px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        font-family: "黑体"; 
+    }
+    .answer{
+        padding: 0 10px;
+    }
+    .closeBtn {
+        background: #E9C232 !important;
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    #navThumImg1, #navThumImg3 {
+        -moz-transform:rotate(20deg);
+        -webkit-transform:rotate(20deg);
+        transform:rotate(20deg);
+    }
+    
+    #navThumImg2 {
+        -moz-transform:rotate(-20deg);
+        -webkit-transform:rotate(-20deg);
+        transform:rotate(-20deg);
+    }
+    
+    #navThumImg1:hover,#navThumImg3:hover {
+        -moz-animation:rotate_z 0.8s infinite ease;
+        -webkit-animation:rotate_z 0.8s infinite ease;
+        animation:rotate_z 0.8s infinite ease;
+    }
+    
+    #navThumImg2:hover {
+        -moz-animation:rotate_f 0.8s infinite ease;
+        -webkit-animation:rotate_f 0.8s infinite ease;
+        animation:rotate_f 0.8s infinite ease;
+    }
+    
+    @-moz-keyframes rotate_z{
+        0%{
+          -moz-transform:rotate(20deg);
+         }
+         100%{
+           -moz-transform:rotate(360deg);
+         }
+      }
+    
+      @-webkit-keyframes rotate_z{
+        0%{
+          -webkit-transform:rotate(20deg);
+         }
+         100%{
+           -webkit-transform:rotate(360deg);
+         }
+      }
+    
+      @keyframes rotate_z{
+        0%{
+          transform:rotate(20deg);
+         }
+         100%{
+           transform:rotate(360deg);
+         }
+      }
+    
+    @-moz-keyframes rotate_f{
+        0%{
+          -moz-transform:rotate(20deg);
+         }
+         100%{
+           -moz-transform:rotate(360deg);
+         }
+      }
+    
+      @-webkit-keyframes rotate_f{
+        0%{
+          -webkit-transform:rotate(20deg);
+         }
+         100%{
+           -webkit-transform:rotate(360deg);
+         }
+      }
+    
+      @keyframes rotate_f{
+        0%{
+          transform:rotate(20deg);
+         }
+         100%{
+           transform:rotate(360deg);
+         }
+      }
+</style>
+<div class="main_opr">
+    <a href="{:U('StudentmulHomework/mulHomework')}" title="语音作业" class="btn btn-main-opr">语音作业</a>
+    <a href="{:U('Student/homework')}" title="习题作业"  class="btn btn-main-opr">习题作业</a>
+    <a href="{:U('Student/wrongHomeworkList')}" title="错题集"  class="btn btn-main-opr btn-main-opr-active">错题集</a>
+</div>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn3">返回</a>
+</div>
+
+<form action="{:U('Student/wrongHomework')}" method="post">
+    <div class="row">
+        <!--<div class="col-md-4">
+            <label>题目序号：</label>
+            <input type="text" name="question_number" id="question_number" placeholder="题目序号" class="form-control" value="{$number}">
+        </div>
+        
+        <div class="col-md-4">
+            <label>布置时间:</label>
+            <input type="text" name="datepicker" id="datepicker" placeholder="布置时间" class="form-control" autocomplete="off" required>
+        </div>
+        
+        <div class="col-md-4">
+            <label>&nbsp;</label>
+            <button type="button" class="btn btn-primary" style="display: block;" >搜索</button>
+        </div>-->
+    </div>
+
+
+</form>
+<empty name="list">
+    <div class="emptyResult">暂时没有错题</div>
+</empty>
+<notempty name="list">
+    <table class="table striped hovered border" style="margin-top: 20px;">
+        <thead>
+        <tr>
+<!--            <th style="width: 200px">作业名称</th>-->
+            <th class="text-center">题目序号</th>
+            <th class="text-center">作业名称</th>
+            <th class="text-center" style="width:50%;">错误题目</th>
+            <th class="text-center">作业时间</th>
+            <th class="text-center" style="width:15%;">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="" key="i">
+            <tr id="l_{$data.id}">
+<!--
+                <td title="{$data.homework}">
+                    <a href="{:U('Student/homeworkCompleteDetails?gotoback=false&homeworkId=')}{$data.homework_id}"
+                       target="_blank">{$data.homework}</a>
+                </td>
+-->
+                <!------------题目序号------------>
+                <input class="unique" type="hidden"  value="{$data.question_org_id}"/>
+                <td class="text-center" id="xun_{$i}">
+                    {$i}
+                </td>
+                <!------------作业名称------------>
+                <td class="text-center">
+                    <a href="{:U('Student/homeworkCompleteDetails?homeworkId=')}{$data.homework_id}">{$data.homework}</a>
+                </td>
+                <!------------错误题目------------>
+                <td class="text-center">
+                    {$data.questions}
+                </td>
+                <!------------作业时间------------>
+                <td class="text-center">
+                    {$data.create_at|date="Y-m-d H:i",###}
+                </td>
+                <!------------操作------------>
+                <td class="text-center">
+<!--
+                    <a href="####" title="查看答案与解析" class="button checkAnswer">查看答案与解析</a>
+                    <div class="checkBox">
+                    <p class="checkBoxTitle">
+                        查看答案与解析
+                    </p>
+                    <div class="answer">
+                        {$data.answer}
+                    </div>
+                    <button class="btn closeBtn">确定</button>
+                </div>
+-->
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</notempty>
+
+<!--------查看答案与解析弹出框------------>
+
+
+<script src="__PUBLIC__/js/external/jquery-1.10.2.min.js"></script>
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<!--------------日历----------------->
+<script>
+    var homework_id="{$homework_id}";
+    $(function() {
+        $( "#datepicker" ).datepicker({
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd" 
+        });
+    });
+    
+    //点击搜索
+    $(".btn-primary").click(function(){
+        var question_number=$("#question_number").val();  
+        var string='';
+        if ((/(^[1-9]\d*$)/.test(question_number))==true){
+            //这里去拿到那个对应的ID;
+            if($("#xun_"+question_number).length){
+                var temp=$("#xun_"+question_number).siblings('.unique').val();
+                string+="&qid="+temp+"&number="+question_number;
+                
+            }
+        }  
+        string="index.php?m=Home&c=Student&a=wrongHomework&id="+homework_id+string; 
+        location.href=string; 
+    });
+</script>
+<script>
+    $('.checkAnswer').on('click',function(){
+        $(this).siblings('.checkBox').css('display','block');
+    })
+    $('.closeBtn').on('click',function(){
+        $('.checkBox').css('display','none');
+    })
+</script>
+
+

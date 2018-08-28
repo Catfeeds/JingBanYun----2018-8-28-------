@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html class='no-js'>
+
+<head>
+    <meta charset='utf-8'>
+    <meta name="renderer" content="webkit">
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <title>注册 :: 京版云教育平台</title>
+    <meta content='' name='description'>
+    <meta content='' name='keywords'>
+    <link href="__PUBLIC_THEME__/stylesheets/application-a07755f5.css" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC_THEME__/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC__/css/layout.css?v=7" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC__/css/register.css?v=6" rel="stylesheet" type="text/css" />
+    <script src="__PUBLIC__/js/external/jquery.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/common.js?v=4.0" type="text/javascript"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+    <script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+
+    <style>
+		.middleCon {
+			background: url({$oss_path}public/web_img/Register/schoolBack.png) no-repeat center;
+			background-size: contain;
+		}
+    </style>
+</head>
+
+<body>
+	<div class="regMain">
+		<img src="__PUBLIC__/img/register/teacher.png" alt="" class="left regLeft tea_img" >
+    <img src="__PUBLIC__/img/register/student.png" alt="" class="left regLeft stu_div ">
+    <img src="__PUBLIC__/img/register/patriarch.png" alt="" class="left regLeft parent_div">
+		<div class="right regRight">
+
+			    <table>
+			        <tr>
+						<td width="145" align="left" class="p0">
+							<div class="p10 text-right">我的身份</div>
+						</td>
+						<td>
+							<div class="role_div">
+								<span class="role_input"><input type="radio" attr="role_" checked="checked">教师</span>
+								<span class="ml15 role_input"><input type="radio" attr="role_">学生</span>
+								<span class="ml15 role_input"><input type="radio" attr="role_">家长</span>
+								<span style="color:red; font-size:14px;">&nbsp;*&nbsp;&nbsp;为必填选项</span>
+							</div>
+						</td>
+					</tr>
+			    </table>
+                            <form class="info-list" action="{:U('Teach/register')}&{$share_str}" method="post" class="mr0">
+				<table class="form_table teach_div" style="width: 100%" >
+
+
+					<tr>
+						<td class="f_title" width="130">真实姓名</td>
+						<td class="f_input" width="300">
+							<input type="text" name="name" id="teacher_name" placeholder="请输入姓名" onblur="return roleName(teacher_name);"  >
+							<span class="red">*</span></td>
+						<td>
+							<div class="warning register_error_name">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入您的姓名</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</td>
+						<td class="sexTd">
+							<input name="sex" type="radio" id="man_teacher" value="男" checked>
+							<label for="man_teacher">
+								<img src="__PUBLIC__/img/register/boy.png" alt="" class="sexImg manImg" id="manImgTeacher">男
+							</label>
+							<input name="sex" type="radio" id="woman_teacher" value="女">
+							<label for="woman_teacher">
+								<img src="__PUBLIC__/img/register/girl1.png" alt="" class="sexImg womanImg" id="womanImgTeacher">女
+							</label>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>
+							<div class="beizhu">如果是教研员，请选择一所学校进行体验</div>
+							<div class="beizhu">
+								<input type="radio" value="0" name="role" checked style="width:inherit;">普通教师
+							</div>
+							<div class="beizhu">
+								<input type="radio" value="2" name="role" style="width:inherit;">我是该校所在区县的教研员
+							</div>
+							<div class="beizhu">
+								<input type="radio" value="1" name="role" style="width:inherit;">我是该校所在市的教研员
+							</div>
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td class="f_title">选择学校</td>
+						<td class="f_input">
+							<!--<input type="text" id="school_input" placeholder="选择学校" onkeydown="return false" autocomplete="off" onclick="return showChooseSchoolDlg()"  >-->
+							<a href="javascript:;" id="teacher_school_input" onclick="return showChooseSchoolDlg(teacher_school_input)" style="padding:0 5px">选择学校</a>
+							<span class="red" style="vertical-align: middle; line-height: 28px;">*</span>
+							<input type="hidden" name="school_id" id="teacher_school_id" data-validate-func=" " data-validate-hint="学校不能为空">
+						</td>
+						<td>
+							<div class="warning" id="register_error_school">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请选择学校</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title"></td>
+						<td class="f_input" style="font-size: 14px">
+							如果没有您所在的学校，请先申请<a href="{:U('SchoolJoin/schoolJoin')}" target="_blank" class="nava schJoin">学校加入</a>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td class="f_title">任教年级及学科</td>
+						<td class="f_input">
+							<a href="javascript:;" id="course_input" onkeydown="return false" onclick="return showChooseCourseDlg()" style="padding:0 5px">选择年级及学科</a>
+							<span class="red" style="vertical-align: middle; line-height: 28px;">*</span>
+							<div class="choice">
+
+							</div>
+							<input type="hidden" name="coursegrade" id="coursegrade_id">
+						</td>
+						<td>
+							<div class="warning" id="register_error_course">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请选择年级及学科</span>
+							</div>
+						</td>
+					</tr>
+					<tr class="roletel">
+						<td class="f_title">手机号</td>
+						<td class="f_input">
+							<input type="text" name="telephone" id="tea_telephone" placeholder="请输入手机号" maxlength="11" autocomplete="off" onblur="return tel(tea_telephone);"  >
+							<span class="red">*</span></td>
+						<td>
+							<div class="warning register_error_phone">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">手机号码输入错误</span>
+							</div>
+						</td>
+					</tr>
+                                        <tr class="teacher_image_div">
+						<td class="f_title">图形验证码</td>
+						<td class="f_input">
+							<input style="width: 98px; float:left;" type="text" name="verify_code" id="teach_verify_code" placeholder="图形验证码" maxlength="6" onblur="return image_verify_code('teach_verify_code');" onkeyup="input_blur(teach_verify_code)">
+							<span class="red">*</span>
+                                                        <div id="code" style="float:left;">
+                                                            <img src="/index.php?m=Home&c=Teach&a=produceVerifyCode" alt="" class="teacher_refreshA" title="换一个" >
+                                                        </div>
+							<a href="javascript:;" title="换一个" class="teacher_refreshB" style="">
+								刷新
+							</a>
+						</td>
+						<td>
+							<div class="warning register_error_code">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入图形验证码</span>
+							</div>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="f_title">手机验证码</td>
+						<td class="f_input">
+							<input style="width: 162px;" type="text" name="valid_code" id="teachvalid_code" placeholder="验证码" maxlength="6" onblur="return code(teachvalid_code);" >
+							<span class="red">*</span>
+							<a href="javascript:;" onclick="return sendPhoneCode('tea_sendcodebutton','tea_telephone');" id="tea_sendcodebutton">发送验证码</a>
+						</td>
+						<td>
+							<div class="warning register_error_code">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入验证码</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">登录密码</td>
+						<td class="f_input">
+							<input onfocus="this.type='password'" type="text" name="password" id="tea_password" placeholder="请输入6-16位密码" maxlength="16" onblur="return pas1(tea_password);"   autocomplete="off">
+							<span class="red">*</span>
+						</td>
+						<td>
+							<div class="warning register_error_pwd1">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">密码长度不少于6位</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">密码确认</td>
+						<td class="f_input">
+							<input onfocus="this.type='password'" type="text" name="confirm_password" id="teachconfirm_password" placeholder="请输入6-16位密码" maxlength="16"   autocomplete="off" onblur="return pas2(teachconfirm_password);">
+							<span class="red">*</span></td>
+						<td>
+							<div class="warning register_error_pwd2">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">两次密码输入不一致</span>
+							</div>
+						</td>
+					</tr>
+
+
+					<tr>
+						<td></td>
+						<td>
+							<input type="checkbox" class="yes" onclick="ckbox(teach_yes)" checked="checked" id="teach_yes">我已阅读并同意<a target="_blank" href="{:U('Index/ServiceAgreement')}">《京版云服务协议》</a>
+						</td>
+						<td>
+							<div class="warning register_error_yes">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请勾选京版云服务协议</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td class="text-center">
+							<button class="btn loginbtn" type="submit" onclick="return tea_check();" >注册</button>
+						</td>
+						<td></td>
+					</tr>
+					</div>
+				</table>
+                            </form>
+                            <form class="info-list" action="{:U('Student/register')}&{$share_str}" method="post" class="mr0">
+				<table class="form_table stu_div" style="width: 100%">
+
+					<tr>
+						<td class="f_title" width="130">真实姓名</td>
+						<td class="f_input" width="300">
+							<input type="text" name="name" id="student_name" placeholder="请输入姓名" autocomplete="off" onblur="return roleName(student_name)"  >
+							<span class="red">*</span></td>
+						<td>
+							<div class="warning register_error_name">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入您的姓名</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</td>
+						<td class="sexTd">
+							<input name="sex" type="radio" id="man_student" value="男" checked>
+							<label for="man_student">
+								<img src="__PUBLIC__/img/register/boy.png" alt="" class="sexImg manImg" id="manImgStudent">男
+							</label>
+							<input name="sex" type="radio" id="woman_student" value="女">
+							<label for="woman_student">
+								<img src="__PUBLIC__/img/register/girl1.png" alt="" class="sexImg womanImg" id="womanImgStudent">女
+							</label>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td class="f_title">所在学校</td>
+						<td class="f_input">
+							<a id="student_school_input" style="cursor:pointer;" onclick="return showChooseSchoolDlg(student_school_input)">选择学校</a>
+							<span class="red">*</span>
+
+							<div id="choosed_school_name" style="box-sizing:content-box; margin: 8px 0;"></div>
+							<input type="hidden" name="school_id" id="student_school_id" data-validate-func=" " data-validate-hint="学校不能为空">
+						</td>
+						<td>
+							<div class="warning" id="sturegister_error_school">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请选择学校</span>
+							</div>
+						</td>
+					</tr>
+					<tr class="roletel">
+						<td class="f_title">家长手机号</td>
+						<td class="f_input">
+							<input type="text" name="telephone" id="stu_telephone" onblur="return tel(stu_telephone)" placeholder="请输入家长手机号" maxlength="11" autocomplete="off"  >
+
+							<span class="red">*</span></td>
+						<td>
+							<div class="warning register_error_phone">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">手机号码输入错误</span>
+							</div>
+						</td>
+					</tr>
+                                        <tr class="student_image_div">
+						<td class="f_title">图形验证码</td>
+						<td class="f_input">
+							<input style="width: 98px; float:left;" type="text" name="verify_code" id="student_verify_code" placeholder="图形验证码" maxlength="6" onblur="return image_verify_code('student_verify_code');" onkeyup="input_blur(student_verify_code)">
+							<span class="red">*</span>
+                                                        <div id="code" style="float:left;">
+                                                            <img src="/index.php?m=Home&c=Student&a=produceVerifyCode" alt="" class="student_refreshA" title="换一个" >
+                                                        </div>
+							<a href="javascript:;" title="换一个" class="student_refreshB" style="">
+								刷新
+							</a>
+						</td>
+						<td>
+							<div class="warning register_error_code">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入图形验证码</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">手机验证码</td>
+						<td class="f_input">
+							<input style="width: 162px;" type="text" name="valid_code" id="studentvalid_code" placeholder="验证码" maxlength="6" onblur="return code(studentvalid_code);" >
+							<span class="red">*</span>
+							<a href="javascript:;" onclick="return sendPhoneCode('stu_sendcodebutton','stu_telephone');" id="stu_sendcodebutton">发送验证码</a>
+						</td>
+						<td>
+							<div class="warning register_error_code">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入验证码</span>
+							</div>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="f_title">登录密码</td>
+						<td class="f_input">
+							<input onfocus="this.type='password'" type="text" name="password" id="stu_password" onblur="return pas1(stu_password)" placeholder="请输入6-16位密码" maxlength="16"   autocomplete="off" min="6">
+							<span class="red">*</span></td>
+						<td>
+							<div class="warning register_error_pwd1">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">密码长度不少于6位</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">密码确认</td>
+						<td class="f_input">
+							<input onfocus="this.type='password'" type="text" name="confirm_password" id="studentconfirm_password" placeholder="请输入6-16位密码" maxlength="16"   autocomplete="off" onblur="return pas2(studentconfirm_password)" min="6">
+							<span class="red">*</span></td>
+						<td>
+							<div class="warning register_error_pwd2">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">两次密码输入不一致</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							<input type="checkbox" class="yes " id="stu_yes" onclick="ckbox(stu_yes)" checked="checked">我已阅读并同意<a target="_blank" href="{:U('Index/ServiceAgreement')}">《京版云服务协议》</a>
+						</td>
+						<td>
+							<div class="warning register_error_yes">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请勾选京版云服务协议</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td class="text-center">
+							<button class="btn loginbtn" type="submit" onclick="return stu_check();">注册</button>
+						</td>
+						</td>
+						<td></td>
+					</tr>
+				</table>
+                            </form>
+                            <form class="info-list" action="{:U('Parent/register')}&{$share_str}" method="post" class="mr0">
+				<table class="form_table parent_div" style="width: 100%">
+
+					<tr>
+						<td class="f_title" width="130">真实姓名</td>
+						<td class="f_input" width="300">
+							<input type="text" name="name" id="parent_name" placeholder="请输入姓名" onblur="return roleName(parent_name);"  >
+							<span class="red">*</span>
+						</td>
+						<td>
+							<div class="warning register_error_name">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入您的姓名</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</td>
+						<td class="sexTd">
+							<input name="sex" type="radio" id="man_parent" value="男" checked>
+							<label for="man_parent">
+								<img src="__PUBLIC__/img/register/boy.png" alt="" class="sexImg manImg" id="manImgParent">男
+							</label>
+							<input name="sex" type="radio" id="woman_parent" value="女">
+							<label for="woman_parent">
+								<img src="__PUBLIC__/img/register/girl1.png" alt="" class="sexImg womanImg" id="womanImgParent">女
+							</label>
+						</td>
+						<td></td>
+					</tr>
+					<tr class="roletel">
+						<td class="f_title">手机号</td>
+						<td class="f_input">
+							<input type="text" name="telephone" id="parent_telephone" placeholder="请输入手机号" autocorrect="" maxlength="11" autocomplete="off" onblur="return tel(parent_telephone);"  >
+							<span class="red">*</span>
+						</td>
+						<td>
+							<div class="warning register_error_phone">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">手机号码输入错误</span>
+							</div>
+						</td>
+					</tr>
+                                        <tr class="parent_image_div">
+						<td class="f_title">图形验证码</td>
+						<td class="f_input">
+							<input style="width: 98px; float:left;" type="text" name="verify_code" id="parent_verify_code" placeholder="图形验证码" maxlength="6" onblur="return image_verify_code('parent_verify_code');" onkeyup="input_blur(parent_verify_code)">
+							<span class="red">*</span>
+                                                        <div id="code" style="float:left;">
+                                                            <img src="./index.php?m=Home&c=Parent&a=produceVerifyCode" alt="" class="parent_refreshA" title="换一个" >
+                                                        </div>
+							<a href="javascript:;" title="换一个" class="parent_refreshB" style="">
+								刷新
+							</a>
+						</td>
+						<td>
+							<div class="warning register_error_code">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入图形验证码</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">手机验证码</td>
+						<td class="f_input">
+							<input style="width: 162px;" type="text" name="valid_code" id="parentvalid_code" placeholder="验证码" maxlength="6" onblur="return code(parentvalid_code);">
+							<span class="red">*</span>
+							<a href="javascript:;" onclick="return sendPhoneCode('parent_sendcodebutton','parent_telephone');" id="parent_sendcodebutton">发送验证码</a>
+						</td>
+						<td>
+							<div class="warning register_error_code">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入验证码</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">登录密码</td>
+						<td class="f_input">
+							<input onfocus="this.type='password'" type="text" name="password" id="parent_password" placeholder="请输入6-16位密码" maxlength="16"   autocomplete="off" onblur="return pas1(parent_password);">
+							<span class="red">*</span>
+						</td>
+						<td>
+							<div class="warning register_error_pwd1">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">密码长度不少于6位</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">确认密码</td>
+						<td class="f_input">
+							<input onfocus="this.type='password'" type="text" name="confirm_password" id="parentconfirm_password" placeholder="请输入6-16位密码" maxlength="16"   autocomplete="off" onblur="return pas2(parentconfirm_password);">
+							<span class="red">*</span>
+						</td>
+						<td>
+							<div class="warning register_error_pwd2">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">两次密码输入不一致</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱</td>
+						<td class="f_input">
+							<input type="email" name="email" id="parent_email" placeholder="选填" onblur="return pemail();">
+						</td>
+						<td>
+							<div class="warning" id="register_error_email">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">邮箱输入错误</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							<input type="checkbox" class="yes " id="parent_yes" onclick="ckbox(parent_yes)" checked="checked">我已阅读并同意<a target="_blank" href="{:U('Index/ServiceAgreement')}">《京版云服务协议》</a>
+						</td>
+						<td>
+							<div class="warning register_error_yes">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请勾选京版云服务协议</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td class="text-center">
+							<button class="btn loginbtn" type="submit" onclick="return parent_check();">注册</button>
+						</td>
+						</td>
+						<td></td>
+					</tr>
+				</table>
+			</form>
+
+		</div>
+	</div>
+
+
+   <div id="bg"></div>
+   <div id="bg2"></div>
+   <!--【弹窗】选择学校-->
+   <div class="regNotify" id="show">
+   		<div class="regTop">
+   			<img src="__PUBLIC__/img/register/notify1.png" alt="" class="regTopImg">
+   			<span class="regTopTitle">选择学校</span>
+   			<span class="schoolSpan"></span>
+   			<img src="__PUBLIC__/img/register/regTopClose.png" alt="" class="right regTopClose close_img">
+   		</div>
+   		<div class="regMiddle">
+   			<div id="province" class="school_select">
+                省份：
+                <select name="" id="pro_select" class="notifySelect" onchange="pro()">
+                    <option value="">请选择省市区</option>
+                </select>
+            </div>
+            <div id="city" class="school_select">
+                市区：
+                <select name="" id="city_select" class="notifySelect" onchange="city()">
+                    <option value="">请选择市区</option>
+                </select>
+            </div>
+            <div id="country" class="school_select">
+                区县：
+                <select name="" id="coun_select" class="notifySelect" onchange="coun()">
+                    <option value="">请选择区县</option>
+                </select>
+            </div>
+            <div id="school" class="school_select">
+                学校：
+                <select name="" id="sch_select" class="notifySelect" onchange="sch()">
+                    <option value="">请选择学校</option>
+                </select>
+            </div>
+   		</div>
+   		<div class="regBottom">
+   			 <a id="queding" class="regSureBtn" href="javascript:;">确定</a>
+   		</div>
+   </div>
+
+   <!--【弹窗】选择学科-->
+   <div class="regNotify" id="show_course">
+   		<div class="regTop">
+   			<img src="__PUBLIC__/img/register/notify1.png" alt="" class="regTopImg">
+   			<span class="regTopTitle">选择年级及学科</span>
+   			<img src="__PUBLIC__/img/register/regTopClose.png" alt="" class="right regTopClose close_img">
+   		</div>
+   		<div class="regMiddle">
+            <div id="grade" class="course_select">
+                <select name="" id="gra_select" class="notifySelect">
+                    <option value="">请选择年级</option>
+                    <volist name="grades" id="dataGrade">
+                        <option value="{$dataGrade.id}">{$dataGrade.grade}</option>
+                    </volist>
+                </select>
+            </div>
+   			<div id="course" class="course_select">
+                <select name="" id="cour_select" class="notifySelect">
+                    <option value="">请选择学科</option>
+                    <volist name="courses" id="dataCourse">
+                        <option value="{$dataCourse.id}">
+                            {$dataCourse.course_name}
+                        </option>
+                    </volist>
+                </select>
+            </div>
+            <button class="addClassBtn" id="addClassBtn">添加</button>
+            <div class="notifyClass"></div>
+            <div class="choiceClass">
+            </div>
+   		</div>
+   		<div class="regBottom mt10">
+   			 <a id="course_sure" class="regSureBtn" href="javascript:;">确定</a>
+   		</div>
+   </div>
+
+    <!--【弹窗】加入学校错误-->
+   <div class="regNotify" id="addSchoolError">
+   		<div class="regTop">
+   			<img src="__PUBLIC__/img/register/notify2.png" alt="" class="regTopImg">
+   			<span class="regTopTitle">信息审核提醒</span>
+   			<img src="__PUBLIC__/img/register/regTopClose.png" alt="" class="right regTopClose close_img">
+   		</div>
+   		<div class="regMiddle">
+           <div class="middleCon">
+           		老师您好！
+           		<div>您所选择的学校已经开通了认证，学校管理员将会审核您的身份信息。</div>
+<!--           		<div>您可以选择<a href="javascript:;" class="school_qita" onclick = "other_school()">其他</a>学校进行体验。</div>-->
+           </div>
+   		</div>
+   		<div class="regBottom">
+   			 <a id="addSchoolSure" class="regSureBtn" href="javascript:;">确定</a>
+   		</div>
+   </div>
+
+    <!--【弹窗】服务器繁忙-->
+   <div class="regNotify" id="serverBusy">
+   		<div class="regTop">
+   			<img src="__PUBLIC__/img/register/notify2.png" alt="" class="regTopImg">
+   			<span class="regTopTitle">提示！</span>
+   			<img src="__PUBLIC__/img/register/regTopClose.png" alt="" class="right regTopClose close_img">
+   		</div>
+   		<div class="regMiddle">
+           <div class="serverCon">
+           		<img src="__PUBLIC__/img/register/serverBusy.png" alt="" class="serverImg">
+           		<h3>服务器繁忙，请稍候再试！</h3>
+           </div>
+   		</div>
+   		<div class="regBottom">
+   			 <a id="serverSure" class="regSureBtn" href="javascript:;" onclick="$(this).hide();">确定</a>
+   		</div>
+   </div>
+
+    <!--【弹窗】注册成功-->
+   <div class="regNotify" id="regSuccess">
+   		<div class="regTop">
+   			<img src="__PUBLIC__/img/register/notify3.png" alt="" class="regTopImg" style="height: 32px">
+   			<img src="__PUBLIC__/img/register/regTopClose.png" alt="" class="right regTopClose close_img">
+   		</div>
+   		<div class="regMiddle">
+           <div class="regCon">
+           		<img src="__PUBLIC__/img/register/regSuccess.png" alt="" class="serverImg">
+           		<h3>恭喜您已注册成功！</h3>
+           		<div>
+           			您登录的手机号码是：<span class="loginPhone">15912345678</span><br>（如果忘记密码或是丢失账号，可以通过此手机找回）<br>系统将在<span class="time">5</span>秒后返回首页页面，如果没有请<a href="{:U('Index/index')}">点击手动跳转</a>。
+           		</div>
+           </div>
+   		</div>
+   		<div class="regBottom">
+   			 <a id="regSucSure" class="regSureBtn" href="{:U('Index/index')}">登录</a>
+   		</div>
+   </div>
+
+    <script src="__PUBLIC__/js/external/jquery-ui-1.10.1.min.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/external/modernizr.min.js" type="text/javascript"></script>
+    <script src="__PUBLIC_THEME__/javascripts/application-985b892b.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/bootstrap-notify.js" type="text/javascript"></script>
+    <script>
+    	$('.role_div').find('.role_input').click(function(){
+			$(this).children('input').attr('checked','checked').end().siblings('span').find('input').removeAttr('checked');
+			var index = $(this).index();
+			//$('#info-list').find('.form_table').eq(index).show().siblings('.form_table').hide();
+			$('.info-list').eq(index).end().siblings('.info-list').find('.form_table').hide();
+			$('.info-list').eq(index).find('.form_table').show();
+			if($('.regLeft').eq(index).css('display') != 'none') {
+				$('.regLeft').eq(index).show().siblings('img').hide()
+			}
+		})
+	</script>
+<!--教师JS-->
+    <script>
+        //教师刷新验证码
+        $('.teacher_refreshA,.teacher_refreshB').click(function(){
+            $('.teacher_refreshA').attr('src',"./index.php?m=Home&c=Teach&a=produceVerifyCode&time="+Math.random());
+        });
+        //学生刷新验证码
+        $('.student_refreshA,.student_refreshB').click(function(){
+            $('.student_refreshA').attr('src',"./index.php?m=Home&c=Student&a=produceVerifyCode&time="+Math.random());
+        });
+        //家长刷新验证码
+        $('.parent_refreshA,.parent_refreshB').click(function(){
+            $('.parent_refreshA').attr('src',"./index.php?m=Home&c=Parent&a=produceVerifyCode&time="+Math.random());
+        });
+
+
+        //图形验证
+        var teacher_verify_code_flag=student_verify_code_flag=parent_verify_code_flag=false;
+        var teacher_verify_code=student_verify_code=parent_verify_code='';
+
+
+        function isValidPhone(str) {
+            var re = /^1\d{10}$/
+            if (re.test(str)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        var hasSentPhoneCode = false;
+        var isinerval, times;
+        var current_sendSms_button;
+
+        function sendPhoneCode(role_sendcodebutton,role_telnumber) {
+
+            var produce_code_url;
+            var verify_code;
+            var index=getFormIndex(role_sendcodebutton);
+            if (hasSentPhoneCode == true) {
+                return;
+            }
+
+
+            var telephone = $('#'+role_telnumber).val();
+            if (!isValidPhone(telephone)) {
+                //            alert('手机号格式不正确');
+                if(index==teacher_form_index){
+                    $('#tea_telephone').parent().parent().find('.register_error_phone').find('span').text('手机号格式不正确!');
+                    $('#tea_telephone').parent().parent().find('.register_error_phone').css('display', 'block');
+                }else if(index==student_form_index){
+                    $('#stu_telephone').parent().parent().find('.register_error_phone').find('span').text('家长手机号格式不正确!');
+                    $('#stu_telephone').parent().parent().find('.register_error_phone').css('display', 'block');
+                }else{
+                    $('#parent_telephone').parent().parent().find('.register_error_phone').find('span').text('手机号格式不正确!');
+                    $('#parent_telephone').parent().parent().find('.register_error_phone').css('display', 'block');
+                }
+                return false;
+            }
+            if(index==teacher_form_index){
+                    current_sendSms_button='tea_sendcodebutton';
+                    produce_code_url="/index.php?m=Home&c=Teach&a=sendRegisterPhoneCode";
+                    verify_code=$('#teach_verify_code').val();
+                    if(teacher_verify_code_flag==false){
+                        $('#teach_verify_code').parent().parent().find('.register_error_code').find('span').text('图形验证码有误!');
+                        $('#teach_verify_code').parent().parent().find('.register_error_code').css('display', 'block');
+                        return false;
+                    }
+            }else if(index==student_form_index){
+                    current_sendSms_button='stu_sendcodebutton';
+                    produce_code_url="/index.php?m=Home&c=Student&a=sendRegisterPhoneCode";
+                    verify_code=$('#student_verify_code').val();
+                    if(student_verify_code_flag==false){
+                        $('#student_verify_code').parent().parent().find('.register_error_code').find('span').text('图形验证码有误!');
+                        $('#student_verify_code').parent().parent().find('.register_error_code').css('display', 'block');
+                        return false;
+                    }
+            }else{
+                current_sendSms_button='parent_sendcodebutton';
+                produce_code_url="/index.php?m=Home&c=Parent&a=sendRegisterPhoneCode";
+                verify_code=$('#parent_verify_code').val();
+                if(parent_verify_code_flag==false){
+                    $('#parent_verify_code').parent().parent().find('.register_error_code').find('span').text('图形验证码有误!');
+                    $('#parent_verify_code').parent().parent().find('.register_error_code').css('display', 'block');
+                    return false;
+                }
+            }
+
+            hasSentPhoneCode = true;
+
+            $.ajax({
+                url: produce_code_url, //请求的url地址
+                dataType: "json", //返回格式为json
+                //async: true, //请求是否异步，默认为异步，这也是ajax重要特性
+                data: {
+                    'telephone': telephone,
+                    'code':verify_code,
+                }, //参数值
+                type: "GET", //请求方式
+                beforeSend: function () {
+                    //请求前的处理
+                },
+                success: function (req) {
+                    var res = eval(req);
+                    console.log(res);
+                    if (res.status < 0) {
+                            $.NotifyBox.NotifyRegisterOne("提示！", res.msg, "确定");
+                            hasSentPhoneCode = false;
+                    } else {
+                        $('#'+role_sendcodebutton).html('<span id="GetVerify">60</span>秒后重发');
+                        times = 59;
+                        isinerval = setInterval(CountDown, 1000);
+                    }
+                },
+                complete: function () {
+                    //请求完成的处理
+                },
+                error: function () {
+                    //请求出错处理
+                }
+            });
+
+        }
+
+        function roleName(input_name) {
+            var regName = /^[a-zA-Z\u4e00-\u9fa5]+$/;
+            var name = $(input_name).val();
+            if (regName.test(name) == true) {
+                $(input_name).parent().siblings('td').find('.register_error_name').hide();
+                return true
+            } else if (name == '') {
+               $(input_name).parent().siblings('td').find('.register_error_name').hide();
+                return false;
+            } else {
+               $(input_name).parent().siblings('td').find('.register_error_name').show();
+                return false;
+            }
+        }
+
+        var teacher_form_index=1;
+        var student_form_index=2;
+        var parent_form_index=3;
+        function getFormIndex(par){
+            //这里传的参数是ID
+            return $('#'+par).parents('.info-list').index();
+        }
+
+        function image_verify_code(role_verify_code){
+
+            var index=getFormIndex(role_verify_code);
+            var code=$('#'+role_verify_code).val();
+
+            if(index==teacher_form_index){
+                url="/index.php?m=Home&c=Teach&a=check_verify";
+            }else if(index==student_form_index){
+                url="/index.php?m=Home&c=Student&a=check_verify";
+            }else{
+                url="/index.php?m=Home&c=Parent&a=check_verify";
+            }
+            if(code==''){
+//                console.log($('#'+role_verify_code).parent().parent().find('.register_error_code').find('span').text());
+//                $('#'+role_verify_code).parent().parent().find('.register_error_code').find('span').text('图形验证码有误!');
+//                $('#'+role_verify_code).parent().parent().find('.register_error_code').show();
+                return false;
+            }
+
+
+            $.ajax({
+                url: url, //请求的url地址
+                dataType: "json", //返回格式为json
+                data: {
+                    'code': code
+                }, //参数值
+                type: "GET",
+                success: function (msg) {
+                    if(msg.status==200){
+                        $('#'+role_verify_code).parent().parent().find('.register_error_code').hide();
+                        if(index==teacher_form_index){
+                            teacher_verify_code_flag=true;
+                            $('#teach_verify_code').attr('readonly',true);
+                            $('.teacher_refreshB').hide();
+                            $('.teacher_refreshA').unbind('click')
+                        }else if(index==student_form_index){
+                            student_verify_code_flag=true;
+                            $('#student_verify_code').attr('readonly',true);
+                            $('.student_refreshB').hide();
+                            $('.student_refreshA').unbind('click')
+                        }else{
+                            parent_verify_code_flag=true;
+                            $('#parent_verify_code').attr('readonly',true);
+                            $('.parent_refreshB').hide();
+                            $('.parent_refreshA').unbind('click')
+                        }
+                    }else{
+                        $('#'+role_verify_code).parent().parent().find('.register_error_code').show();
+                        $('#'+role_verify_code).parent().parent().find('.register_error_code').find('span').text('图形验证码有误!');
+                        if(index==teacher_form_index){
+                            teacher_verify_code_flag=false;
+                        }else if(index==student_form_index){
+                            student_verify_code_flag=false;
+                        }else{
+                            parent_verify_code_flag=false;
+                        }
+                    }
+                }
+            });
+
+        }
+
+        function tel(role_tel) {
+
+            var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+            var tel = $(role_tel).val() ;
+            if (regTel.test(tel) == true) {
+                $(role_tel).parent().siblings('td').find('.register_error_phone').hide();
+                return true
+            } else if (tel == '') {
+            	$(role_tel).parent().siblings('td').find('.register_error_phone').hide();
+                return false;
+            } else {
+              	$(role_tel).parent().siblings('td').find('.register_error_phone').show();
+                return false;
+            }
+        }
+
+		function code(role_cole) {
+            if ($(role_cole).val() != '') {
+                $(role_cole).parent().siblings('td').find('.register_error_code').hide();
+                return true;
+            }
+        }
+
+//		function temail() {
+//			var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+//			var temail = $('#teacher_email').val()
+//            if (regEmail.test(temail) == true) {
+//                $('#register_error_email').hide();
+//                return true
+//            } else if (temail == '') {
+//                $('#register_error_email').hide();
+//                return true;
+//            } else {
+//                $('#register_error_email').show();
+//                return false;
+//            }
+//		}
+
+        function pas1(role_password) {
+            var pas1 = $(role_password).val();
+            if (pas1 == '') {
+                $(role_password).parent().siblings('td').find('.register_error_pwd1').find('span').text('密码不能为空');
+                $(role_password).parent().siblings('td').find('.register_error_pwd1').show();
+                return false;
+            } else if (pas1.length < 6) {
+                $(role_password).parent().siblings('td').find('.register_error_pwd1').find('span').text('密码长度不小于6位');
+                $(role_password).parent().siblings('td').find('.register_error_pwd1').show();
+                return false;
+            } else {
+                $(role_password).parent().siblings('td').find('.register_error_pwd1').hide();
+                return true;
+            }
+        }
+
+        function pas2(roleconfirm_password) {
+            var pas1 = $(roleconfirm_password).parent().parent().prev().find('input').val();
+            var pas2 = $(roleconfirm_password).val();
+            if (pas2 == '') {
+                $(roleconfirm_password).parent().siblings('td').find('span').text('确认密码不能为空');
+                $(roleconfirm_password).parent().siblings('td').find('.register_error_pwd2').show();
+                return false;
+            } else if (pas2.length < 6) {
+                $(roleconfirm_password).parent().siblings('td').find('.register_error_pwd2').find('span').text('密码长度不小于6位');
+                $(roleconfirm_password).parent().siblings('td').find('.register_error_pwd2').show();
+                return false;
+            }else if (pas1 != pas2) {
+                $(roleconfirm_password).parent().siblings('td').find('span').text('两次密码输入不一致');
+                $(roleconfirm_password).parent().siblings('td').find('.register_error_pwd2').show();
+                return false;
+            } else {
+                $(roleconfirm_password).parent().siblings('td').find('.register_error_pwd2').hide();
+                return true;
+            }
+        }
+
+        function ckbox_clone() {
+            $('#register_error_yes').hide();
+        }
+
+        function ckbox(role_yes) {
+            var ck = $(role_yes).prop("checked");
+
+            if (ck == true) {
+
+                $(role_yes).parent().siblings('td').find('.register_error_yes').hide();
+                return true
+            } else {
+                 $(role_yes).parent().siblings('td').find('.register_error_yes').show();
+                return false;
+            }
+        }
+
+        function tea_check() {
+                if (roleName(teacher_name) == false) {
+				$('.teach_div').find('.register_error_name').show();
+                return false
+            } else if($('#teacher_school_input').text() == '选择学校' || $('#teacher_school_input').text() == ''){
+                $('#register_error_school').show();
+                return false
+            } else if($('.choice').children('span').length == 0){
+			    $('#register_error_course').show();
+				return false
+			} else if (tel(tea_telephone) == false) {
+				$('.teach_div').find('.register_error_phone').show();
+                return false
+            }else if($("#teach_verify_code").val()==''){
+                $('#teach_verify_code').parent().siblings('td').find('.register_error_code').show();
+                return false;
+            }else if(teacher_verify_code_flag==false){
+                $('#teach_verify_code').parent().siblings('td').find('.register_error_code').show();
+                console.log('die');
+                return false;
+            } else if ($('#teachvalid_code').val() == '') {
+			   $('#teachvalid_code').parent().siblings('td').find('.register_error_code').show();
+                return false
+            }  else if (pas1(tea_password) == false) {
+				$('.teach_div').find('.register_error_pwd1').show();
+                return false
+            } else if (pas2(teachconfirm_password) == false) {
+				$('.teach_div').find('.register_error_pwd2').show();
+                return false
+            } else if (ckbox(teach_yes) == false) {
+				$('.teach_div').find('.register_error_yes').show();
+                return false
+            } else {
+                var courseGradeString ='';
+                $('.choice').find('span').each(function(i,n){
+                    courseGradeString += $(n).attr('courseid') + ',' + $(n).attr('gradeid')+',';
+                })
+
+                $('#coursegrade_id').val(courseGradeString.substr(0,courseGradeString.length-1));
+                return true
+            }
+        }
+
+
+        String.prototype.format = function (args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if (args[key] != undefined) {
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            var reg = new RegExp("({)" + i + "(})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        function hideChooseSchoolDlg() {
+            document.getElementById("bg").style.display = 'none';
+            document.getElementById("show").style.display = 'none';
+        }
+
+
+        function showChooseSchoolDlg(school_input) {
+
+            document.getElementById("bg").style.display = "block";
+            document.getElementById("show").style.display = "block";
+            $('#schoolWrapper').height($('#show').height() - 130);
+			if($(school_input).html() == '选择学校'){
+				$('.regNotify').find('select').val('')
+				$('.regNotify').find('.schoolSpan').html('')
+			}
+        }
+        bindQueryDistrictEvent("__URL__", 'pro_select', 'city_select', 'coun_select', 'sch_select');
+
+        function CountDown() {
+            if (times <= 1) {
+                hasSentPhoneCode = false;
+                clearInterval(isinerval);
+                $('#'+current_sendSms_button).html('重新发送');
+
+                return;
+            }
+            $('#GetVerify').html(times);
+            times--;
+        }
+
+
+		function pro() {
+			if($('#pro_select option:selected').text() != '-请选择-') {
+				$('#show').find('.regTopTitle').html('学校加入');
+				$('.schoolSpan').html($('#pro_select option:selected').text());
+			}
+		}
+		function city() {
+			if($('#pro_select option:selected').text() != '-请选择-' && $('#city_select option:selected').text() != '-请选择-') {
+				$('.schoolSpan').html($('#pro_select option:selected').text()+'/'+$('#city_select option:selected').text())
+			}
+		}
+		function coun() {
+			if($('#pro_select option:selected').text() != '-请选择-' && $('#city_select option:selected').text() != '-请选择-' && $('#coun_select option:selected').text() != '-请选择-') {
+				$('.schoolSpan').html($('#pro_select option:selected').text()+'/'+$('#city_select option:selected').text()+'/'+$('#coun_select option:selected').text())
+			}
+		}
+		function sch() {
+			if($('#pro_select option:selected').text() != '-请选择-' && $('#city_select option:selected').text() != '-请选择-' && $('#coun_select option:selected').text() != '-请选择-' && $('#sch_select option:selected').text() != '-请选择-') {
+				$('.schoolSpan').html($('#pro_select option:selected').text()+'/'+$('#city_select option:selected').text()+'/'+$('#coun_select option:selected').text()+'/'+$('#sch_select option:selected').text())
+			}
+		}
+
+        $('#queding').on('click', function () {
+        	var index_ = $('.role_input').find('input:radio[attr="role_"]:checked').parent().index()+parseInt(1);
+
+            if(1 == $('#sch_select option:selected').attr('hasadmin') && index_ == 1)
+            {
+                $('#bg2,#addSchoolError').show();
+            }
+
+            $('#bg').css('display', 'none');
+            $('#show').css('display', 'none');
+            if($('#sch_select').val() != '' ) {
+                    index=$('.role_input').find('input:radio[attr="role_"]:checked').parent().index()+parseInt(1);
+                    if(index==teacher_form_index){
+                        $('#teacher_school_id').val($('#sch_select option:selected').attr('data-id'));
+                        $('#teacher_school_input').html($('#sch_select option:selected').text());
+                    }else{
+                        $('#student_school_id').val($('#sch_select option:selected').attr('data-id'));
+                        $('#student_school_input').html($('#sch_select option:selected').text());
+                    }
+            }
+
+            if(undefined != $('#sch_select option:selected').attr('data-id'))
+            {
+                $('#register_error_school,#sturegister_error_school').hide();
+            }
+
+        })
+		var removespan;
+
+        $('.close_img').on('click', function () {
+			$('.choiceClass').html('');
+			$('.choiceClass').append($('.choice').html());
+
+
+            $('#bg2,#bg').css('display', 'none');
+            $('.regNotify').css('display', 'none');
+        })
+
+		$('#addSchoolSure, #serverSure').click(function(){
+			$('#bg2,#bg').css('display', 'none');
+            $('.regNotify').css('display', 'none');
+		})
+
+		function input_blur(input_val_blur){
+			if($(input_val_blur).val().length == '4'){
+				$(input_val_blur).blur()
+			}
+		}
+            /*
+	     function other_school(){
+                $('.fullscr').remove()
+                $('#school_input').html('其他');
+                $('#pro_select').val('36');
+                $('#city_select option:selected').text('其他');
+                $('#coun_select option:selected').text('其他');
+                $('#sch_select  option:selected').text('其他学校').attr('value','2000');
+                $('#sch_select  option:selected').text('其他学校').attr('data-id','2000');
+                $('#sch_select  option:selected').text('其他学校').attr('hasadmin','0');
+            }*/
+    </script>
+    <!-------------------选择学科---------------------->
+    <script>
+
+        function showChooseCourseDlg() {
+            document.getElementById("bg").style.display = "block";
+            document.getElementById("show_course").style.display = "block";
+			$('#gra_select').val(0);
+			$('#cour_select').val(0);
+			$('.notifyClass').html('');
+        }
+		var cloneCourse;
+		$('#addClassBtn').click(function(){
+			var grade = $.trim($('#gra_select option:selected').text());
+            var course = $.trim($('#cour_select option:selected').text());
+            var gradeId = $('#gra_select option:selected').val();
+            var courseId = $('#cour_select option:selected').val();
+			var string = course + ' ' + grade;
+            if (string == 0) {
+                return false;
+            } else {
+				var span_all = $('.choiceClass').children('span');
+                var length = span_all.length;
+                for (var i = 0; i <= length; i++) {
+					if (grade == '请选择年级' && course == '请选择学科') {
+                        var notify = '<img src="__PUBLIC__/img/register/classNotify.png" class="notifyEm">' + '请选择年级及学科';
+						$('.notifyClass').html(notify);
+                        return false;
+                    } else if (grade == '请选择年级' && course != '请选择学科') {
+						var notify = '<img src="__PUBLIC__/img/register/classNotify.png" class="notifyEm">' + '请选择年级';
+						$('.notifyClass').html(notify);
+                        return false;
+                    } else if (grade != '请选择年级' && course == '请选择学科') {
+                        var notify = '<img src="__PUBLIC__/img/register/classNotify.png" class="notifyEm">' + '请选择学科';
+						$('.notifyClass').html(notify);
+                        return false;
+                    } else if (grade != '请选择年级' && course != '请选择学科' && $(span_all[i]).text().trim() == string) {
+                        var notify = '<img src="__PUBLIC__/img/register/classNotify.png" class="notifyEm">' + '该年级及学科已经被选择，请重新选择';
+						$('.notifyClass').html(notify);
+                        return false;
+                    } else {
+						$('.notifyClass').html('');
+					}
+                }
+			}
+
+			if(length < 6) {
+				addspan = '<span gradeid=' + gradeId + ' courseid=' + courseId + ' class="choiceSpan">' + string + '<img src="__PUBLIC__/img/register/classClose.png" alt="" class="choiceSpanImg"></span>'
+				$('.choiceClass').append(addspan);
+				cloneCourse = $('.choiceClass').html();
+
+				var preFix = ",";
+				if ("" == $('#coursegrade_id').val())
+					preFix = "";
+				$('#coursegrade_id').val($('#coursegrade_id').val() + preFix + courseId + ',' + gradeId);
+			} else {
+				var notify = '<img src="__PUBLIC__/img/register/classNotify.png" class="notifyEm">' + '最多选择6个任教班级及学科';
+				$('.notifyClass').html(notify);
+			}
+
+		})
+
+		$('#course_sure').on('click', function () {
+			removespan ='';
+			addspan = '';
+			cloneCourse = $('.choiceClass').html();
+			var span_all = $('.choiceClass').children('span');
+			var length = span_all.length;
+			if(length < 1) {
+				var notify = '<img src="__PUBLIC__/img/register/classNotify.png" class="notifyEm">' + '请先添加任教年级及学科';
+				$('.notifyClass').html(notify);
+				return false;
+			} else {
+				$('.choice').empty().append(cloneCourse);
+			}
+            $('#bg').css('display', 'none');
+            $('#show_course').css('display', 'none');
+			$('.choice').show();
+			$('#register_error_course').hide();
+        })
+
+         $('.choice').find(".choiceSpanImg").live("click", function () {
+            var current_index = $(this).parent().index();
+            $('.choice').children('span').eq(current_index).remove();
+            $('.choiceClass').children('span').eq(current_index).remove();
+            var oldCourseGradeStr = $('#coursegrade_id').val();
+            var newCourseGradeStr = oldCourseGradeStr.substring(0, current_index * 4) + oldCourseGradeStr.substring((current_index + 1) * 4);
+            if(newCourseGradeStr.substring(newCourseGradeStr.length-1) == ',')
+            newCourseGradeStr = newCourseGradeStr.substring(0,newCourseGradeStr.length-1);
+            $('#coursegrade_id').val(newCourseGradeStr);
+        });
+
+		 $('.choiceClass').find(".choiceSpanImg").live("click", function () {
+            var current_index = $(this).parent().index();
+
+			removespan = $('.choiceClass').children('span').eq(current_index);
+            $('.choiceClass').children('span').eq(current_index).remove();
+            var oldCourseGradeStr = $('#coursegrade_id').val();
+            var newCourseGradeStr = oldCourseGradeStr.substring(0, current_index * 4) + oldCourseGradeStr.substring((current_index + 1) * 4);
+            if(newCourseGradeStr.substring(newCourseGradeStr.length-1) == ',')
+            newCourseGradeStr = newCourseGradeStr.substring(0,newCourseGradeStr.length-1);
+            $('#coursegrade_id').val(newCourseGradeStr);
+        });
+
+    </script>
+
+	<script>
+		function time() {
+			var s = 5;
+			var timer = setInterval(function () {
+				s--;
+				$('.time').html(s);
+				if (s <= 1) {
+					clearInterval(timer);
+					location.href = "{:U('Index/index')}"
+				}
+			}, 1000);
+		}
+    </script>
+	<script src="__PUBLIC__/js/jquery.form.js"></script>
+	<script src="__PUBLIC__/js/notify/notifyRegister.js"></script>
+	<script>
+		$(function(){
+			var options = {
+				success:    showResponse,  // post-submit callback
+				resetForm:  false,
+				dataType:  'json'
+			};
+
+			// bind to the form's submit event
+			$('.info-list').submit(function() {
+				$(this).ajaxSubmit(options);
+				$('.loginbtn').attr('disabled',true);
+				return false;
+			});
+		});
+		function showResponse(responseText, statusText) {
+			$('.loginbtn').attr('disabled',false);
+			switch(responseText.status)
+			{
+				case 200: //success
+					$('.loginPhone').text(responseText.data.telephone);
+					$('#bg,#regSuccess').show();
+					time();
+					break;
+                                case 201: //success 来自分享
+                                        location.href=responseText.data.url;
+					break;
+				case 500:
+					$.NotifyBox.NotifyRegisterOne("提示！", responseText.message, "确定");
+					break;
+				default: $('#bg2,#serverBusy').show();
+					break;
+			}
+		}
+
+	</script>
+<!--   学生JS-->
+    <script>
+	function stu_check() {
+			$('.warning').hide();
+
+			if (roleName(student_name) == false) {
+				$('.stu_div').find('.register_error_name').show();
+				return false
+			} else if ($('#student_school_input').text() == '选择学校' || $('#student_school_input').text() == '') {
+				$('#sturegister_error_school').show();
+				return false
+			} else if (tel(stu_telephone) == false) {
+				$('.stu_div').find('.register_error_phone').show();
+				return false
+			} else if (student_verify_code_flag==false) {
+				$('#student_verify_code').parent().siblings('td').find('.register_error_code').show();
+                                console.log('stu_die');
+				return false
+			} else if ($('#student_verify_code').val() == '') {
+			    $('#student_verify_code').parent().siblings('td').find('.register_error_code').show();
+                return false
+            } else if ($('#studentvalid_code').val() == '') {
+			    $('#studentvalid_code').parent().siblings('td').find('.register_error_code').show();
+                return false
+            }  else if ( pas1(stu_password)== false) {
+				$('.stu_div').find('.register_error_pwd1').show();
+				return false
+			} else if (pas2(studentconfirm_password) == false) {
+				$('.stu_div').find('.register_error_pwd2').show();
+				return false
+			} else if (ckbox(stu_yes) == false) {
+				$('.stu_div').find('.register_error_yes').show();
+				return false
+			} else {
+				return true
+			}
+
+		}
+	</script>
+<!--	家长JS-->
+   <script>
+	   function pemail() {
+			var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+			var pemail = $('#parent_email').val()
+            if (regEmail.test(pemail) == true) {
+                $('#register_error_email').hide();
+                return true
+            } else if (pemail == '') {
+                $('#register_error_email').hide();
+                return true;
+            } else {
+                $('#register_error_email').show();
+                return false;
+            }
+		}
+	       function parent_check() {
+			$('.warning').hide();
+			if (roleName(parent_name) == false) {
+                $('.parent_div').find('.register_error_name').show();
+                return false
+            } else if (tel(parent_telephone) == false) {
+                $('.parent_div').find('.register_error_phone').show();
+                return false
+            } else if (parent_verify_code_flag==false) {
+			    $('#parent_verify_code').parent().siblings('td').find('.register_error_code').show();
+                            console.log('parent_die');
+                return false
+            }else if ($('#parentvalid_code').val() == '') {
+			    $('#parentvalid_code').parent().siblings('td').find('.register_error_code').show();
+                return false
+            } else if (pas1(parent_password) == false) {
+ 				$('.parent_div').find('.register_error_pwd1').show();
+                return false
+            } else if (pas2(parentconfirm_password)== false) {
+ 				$('.parent_div').find('.register_error_pwd2').show();
+                return false
+            } else if (pemail() == false) {
+ 				$('.parent_div').find('.register_error_email').show();
+                return false
+            } else if (ckbox(parent_yes) == false) {
+ 				$('.parent_div').find('.register_error_yes').show();
+                return false
+            } else {
+                return true
+            }
+        }
+	   $('#man_teacher, #man_student, #man_parent').click(function(){
+			$(this).siblings('label').children('.manImg').attr('src','__PUBLIC__/img/register/boy.png');
+			$(this).siblings('label').children('.womanImg').attr('src','__PUBLIC__/img/register/girl1.png')
+		})
+
+		$('#woman_teacher, #woman_student, #woman_parent').click(function(){
+			$(this).siblings('label').children('.manImg').attr('src','__PUBLIC__/img/register/boy1.png');
+			$(this).siblings('label').children('.womanImg').attr('src','__PUBLIC__/img/register/girl.png')
+		})
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,334 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+<style>
+    .pager td {
+        padding: 4px;
+    }
+
+    a:link {
+        font-size: 0.875rem;
+        color: #000000;
+        text-decoration: none;
+	}
+
+	a:visited {
+		font-size: 0.875rem;
+		color: #000000;
+		text-decoration: none;
+	}
+
+	a:hover {
+		font-size: 0.875rem;
+		color: #999999;
+		text-decoration: underline;
+	}
+
+	/*进度条*/
+	.pmgressbar {
+		display: none;
+		width: 500px;
+		height: 300px;
+		background: #fff;
+		border: 1px solid #000;
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		margin: auto;
+		padding: 0 50px;
+		color: #333;
+	}
+
+	.pmgressbar p {
+		margin: 0;
+	}
+
+	.pmgressbarTitle {
+		line-height: 100px;
+		text-align: center;
+		font-size: 20px;
+		font-weight: 600;
+	}
+
+	.pmgressbarNum {
+		margin-bottom: 20px !important;
+	}
+
+	.pmgressbarOuter {
+		width: 330px;
+		height: 20px;
+		border: 1px solid #000;
+		float: left;
+	}
+
+	.pmgressbarInner {
+		width: 2%;
+		height: 100%;
+		background: #59cde2;
+	}
+
+	.percentage {
+		float: left;
+		margin-left: 20px
+	}
+
+	.cellSpecial {
+		height: 53px;
+		line-height: 53px;
+	}
+
+	.cellSpecial input {
+		width: auto;
+		height: auto;
+		padding: 0;
+	}
+
+	.cellSpecial label {
+		width: auto;
+		height: auto;
+	}
+
+	.cellSpecial .checkbox {
+		width: 16px !important;
+		height: 16px !important;
+		margin-top: -2px;
+		margin-right: 2px;
+		background:none;
+	}
+	
+/*
+	.searchbar input, .searchbar select {
+		height: auto !important
+	}
+*/
+	
+	.label-before {
+		width: initial !important; 
+		max-width: initial !important;
+		text-align: initial !important;
+	}
+	
+	.label-before input{
+		display: inline-block !important;
+		position: relative;
+		top: 5px;
+	}
+
+	.adminNotifyBtn:link, .adminNotifyBtn:visited {
+		color: #fff !important;
+	}
+</style>
+
+<form action="{:U('Message/sendVisitorNews')}" method="get">
+	<input type="hidden" name="m" value="Admin">
+	<input type="hidden" name="c" value="Message">
+	<input type="hidden" name="a" value="sendVisitorNews">
+    <div style="margin: 20px 0;">
+        <div class="grid condensed searchbar">
+            <div class="row cells3 cellBox">
+
+                <div class="cell">
+                    <label>用户状态：</label>
+                    <select id="userstatus" class="input-control input-control-before" name="userstatus">
+
+                        <option value="1" {$userstatus==1?'selected':''} >活跃用户</option>
+                        <option value="2" {$userstatus==2?'selected':''} >流失用户</option>
+                        <option value="3" {$userstatus==3?'selected':''} >新访客</option>
+                        <option value="4" {$userstatus==4?'selected':''} >老访客</option>
+                    </select>
+                </div>
+
+				<div class="cell">
+					<label>时间状态：</label>
+					<select id="set_day" class="input-control input-control-before" name="set_day">
+
+						<option value="1" {$set_day==1?'selected':''} >昨天统计</option>
+						<option value="2" {$set_day==2?'selected':''} >过去7天</option>
+						<option value="3" {$set_day==3?'selected':''} >过去30天</option>
+						<option value="4" {$set_day==4?'selected':''} >过去60天</option>
+					</select>
+				</div>
+
+
+				<div class="cell">
+					<label>&nbsp;</label>
+					<button type="submit" class="button" onclick="" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+				</div>
+
+            </div>
+        </div>
+    </div>
+</form>
+
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center"><input type="checkbox" class="check_all mr5">全选</th>
+			<th class="text-center">姓名</th>
+			<th class="text-center">角色</th>
+			<th class="text-center">电话</th>
+			<th class="text-center">学校</th>
+			<th class="text-center">学科</th>
+			<th class="text-center">年级</th>
+			<th class="text-center">活跃度</th>
+			<th class="text-center">用户属性</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+		<empty name="list">
+            <tr>
+                <td colspan="9" style="color: #999; text-align: center">
+                    暂无信息
+                </td>
+            </tr>
+        </empty>
+        <notempty name="list">
+			<volist name="list" id="data" empty="">
+				<tr id="l_{$data.id}">
+					<td class="text-center">
+						<input type="checkbox" name="checkbox" class="check_child" attr="{$data.role}_{$data.user_id}">
+					</td>
+
+					<td class="text-center">
+						{$data.name}
+					</td>
+					<td>
+						{$data.role_name}
+					</td>
+					<td class="text-center">
+						{$data.telephone}
+					</td>
+					<td class="text-center">
+						{$data.school_name}
+					</td>
+					<td class="text-center">
+						{$data.course_name}
+					</td>
+					<td class="text-center">
+						{$data.grade_name}
+					</td>
+					<td class="text-center">
+						{$data.type_name}
+					</td>
+					<td class="text-center">
+						{$data.ftype_name}
+					</td>
+				</tr>
+			</volist>
+		</notempty>
+	</tbody>
+</table>
+<div class="vipButton button">发送通知</div>
+<div class="Pagination">{$page}</div>
+
+
+
+
+<!--开通VIP权限-->
+<div class="fullscr1 fullLong" id="vipModify">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle" class="button">发送通知</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20">
+				<div class="selectBox">
+					<label for="">通知内容：</label>
+					<textarea rows="5" cols="40" id="content"></textarea>
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureVip">发送</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelVip">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script>
+
+	$(".vipButton").click(function(){
+		var parent_id = $(this).prev('.parent_id').val();
+		$('.select_parent_id').val(parent_id);
+		$("#vipModify").show();
+		$('body').css('overflow-y','hidden')
+	});
+
+	$('#sureVip').click(function(){
+		var id = "";
+		$('input:checkbox[name=checkbox]:checked').each(function(i){
+			if(0==i){
+				id = $(this).attr('attr');
+			}else{
+				id += (","+$(this).attr('attr'));
+			}
+		});
+		var content = $('#content').val();
+		if (id=="") {
+			alert("请勾选要发送的用户");
+			return;
+		}
+		$.ajax({
+			type: "get",
+			url: 'index.php?m=Admin&c=Message&a=sendVisitorNewsData',
+			data:{'message_id':id,"content":content},
+			contentType: "application/json; charset=utf-8",
+			dataType: "json",
+			success: function(msg) {
+				if(msg.code==200){
+					alert("发送成功");
+				}else{
+					alert("发送失败");
+				}
+			}
+		});
+
+		$('#vipModify').hide();
+		$('body').css('overflow-y','auto')
+	})
+	$('#cancelVip').click(function(){
+		$('#vipModify').hide();
+		$('body').css('overflow-y','auto')
+	})
+</script>
+
+<script>
+	//全选
+	$('.check_all').click(function(){
+		var childCheck=$('.check_child');
+		var temp_status=true;
+		if($(this)[0].checked==true){
+			//本次选中
+			temp_status=true;
+		}else{
+			//本次取消
+			temp_status=false;
+		}
+		for(var i=0;i<childCheck.length;i++){
+			childCheck[i].checked=temp_status
+		}
+	});
+
+	//取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				$('.check_all').removeAttr('checked','checked');
+				$('.check_all').removeProp('checked','checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $("[name='checkbox']:checked").length) {
+					$('.check_all').attr('checked','checked');
+					$('.check_all').prop('checked','checked');
+				};
+			}
+		}
+	};
+
+</script>
+
+

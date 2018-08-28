@@ -1,0 +1,350 @@
+<layout name="teacher_layout_withouticon" />
+<script src="__PUBLIC__/js/exercise/sha1.js?" type="text/javascript"></script>
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<script src="__PUBLIC__/js/exercise/render_1.js" type="text/javascript"></script>
+<link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css" />
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css" />
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.js"></script>
+<style>
+	.left {
+		float: left;
+	}
+	
+	.right {
+		float: right;
+	}
+	
+	.row .col-md-4 {
+		margin-bottom: 10px;
+	}
+	
+	.search_exercise {
+		color: #595757 !important;
+		background-color: #fff !important;
+		border: 1px solid #CD7C7E !important;
+		font-weight: 600;
+		display: block;
+		margin: 60px auto;
+	}
+	
+	.search_exercise:hover {
+		background-color: #CD7C7E !important;
+	}
+	
+	.exerciseBox {
+		width: 100%;
+		min-height: 100px;
+		border: 1px solid #ccc;
+		border-radius: 5px
+	}
+	
+	#contentWrapper {
+		height: auto !important;
+		overflow-x: hidden;
+	}
+	
+	.emptyBox {
+		margin-left: -10%;
+		text-align: center;
+	}
+</style>
+
+<include file="./Application/Home/View/Common/myCollectionHeader.html"/>
+
+<!--<div style="margin-bottom: 12px;">
+	<a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>-->
+
+
+<?php if ($kw ==1 || !empty($list)): ?>
+<form action="{:U('Teach/homeworkCompleteDetails')}" method="post" onkeydown="if(event.keyCode==13)return false;">
+	<div style="overflow: hidden;">
+		<div class="row left" style="width: 90%">
+			<div class="col-md-4">
+				<label>年级：</label>
+				<select name="grade" id="grade" class="form-control">
+					<option value="0">-请选择-</option>
+					<volist name="grade_list" id="grade_item" empty="">
+						<option value="{$grade_item.id}" <if condition="$grade_item['id']==$default_grade">selected</if>>{$grade_item.grade}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>学科：</label>
+				<select name="course" id="course" class="form-control">
+					<option value="0">-请选择-</option>
+					<volist name="course_list" id="course_item" empty="">
+						<option value="{$course_item.id}" <if condition="$course_item['id']==$default_course">selected</if>>{$course_item.course_name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>教材分册：</label>
+				<select name="subject" id="subject" class="form-control">
+					<option value="0">-请先选择年级与学科-</option>
+					<volist name="textbook_list" id="textbook_item" empty="">
+						<option value="{$textbook_item.id}" <if condition="$textbook_item['id']==$default_textbook">selected</if>>{$textbook_item.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>章：</label>
+				<select name="chapter" id="chapter" class="form-control">
+					<option value="0">-请选择-</option>
+                                        <volist name="chapter_list" id="chapter_item" empty="">
+						<option value="{$chapter_item.id}" <if condition="$chapter_item['id']==$default_chapter">selected</if>>{$chapter_item.chapter}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>节：</label>
+				<select name="section" id="section" class="form-control">
+					<option value="0">-请选择-</option>
+                                        <volist name="festival_list" id="festival_item" empty="">
+						<option value="{$festival_item.id}" <if condition="$festival_item['id']==$default_festival">selected</if>>{$festival_item.festival}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>习题名称：</label>
+				<input type="text" class="form-control" id='keyword' placeholder="请输入习题名称" value='{$default_keyword}'>
+			</div>
+		</div>
+
+		<div class="left" style="width: 10%; height: 138px;">
+			<button type="button" class="btn btn-primary search_exercise">搜索</button>
+		</div>
+	</div>
+</form>
+
+<?php endif ?>
+
+<notempty name="ids">
+<div id="exerciseWrapper">
+	
+</div>
+</notempty>
+
+<empty name="ids">
+	<div class="emptyDiv">
+		<if condition="$kw eq 1 ">
+            <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+            <p>抱歉，没有搜索到相关的习题！</p>
+		<else />
+            <img src="{$oss_path}public/web_img/Empty/myCollect.png" alt="">
+            <p>您还没有收藏过习题哦！</p>
+			<p>赶紧到<a href="{:U('Teach/homework?auth_id=15')}">作业系统</a>查找您需要的习题吧！</p>
+		</if>
+
+	</div>
+</empty>
+
+<script>
+    //点击搜索
+    $(".search_exercise").click(function(){
+        var condition_str = "";
+        var grade_value = $("#grade").val();
+        var course_value = $("#course").val();
+        var subject_value = $("#subject").val();
+        var chapter_val = $("#chapter").val();
+        var section_val = $("#section").val();
+        var keyword=$("#keyword").val();
+		var mca='action';
+        if (grade_value != 0) {
+            condition_str += "&grade=" + grade_value;
+        } 
+        if (course_value != 0) {
+            condition_str += "&course=" + course_value;
+        }
+        if (subject_value != 0) {
+            condition_str += "&textbook=" + subject_value;
+        }
+        if (chapter_val != 0) {
+            //var chapter_text=$("#chapter").find("option:selected").text();
+            condition_str += "&chapter=" + chapter_val;
+        }
+        if (section_val != 0) {
+            //var section_text=$("#section").find("option:selected").text();
+            condition_str += "&festival=" + section_val;
+        }
+        if(keyword!=''){
+            condition_str += "&keyword=" + keyword;
+        }
+        condition_str = "index.php?m=Home&c=Teach&a=myExercises" + condition_str+'&mca='+mca;
+        location.href = condition_str;
+    });
+    
+    
+    var option = "<option value='0'>-请选择-</option>  ";
+    //年级发生变化
+    $("#grade").change(function(){  
+        var val = $("#grade").val();
+        var course_val=$("#course").val(); 
+        //$("#course option:not(:eq(0))").remove();   
+        $("#subject option:not(:eq(0))").remove(); 
+        $("#chapter option:not(:eq(0))").remove(); 
+        $("#section option:not(:eq(0))").remove();
+        
+        if (val == 0) {
+            return false;
+        } 
+        //getClassCourse 
+        $.getJSON("index.php?m=Home&c=Teach&a=getCourseTextbook", {
+                    'course_id': course_val,
+                    'grade_id': val
+            }, function (msg) {
+                    var length = msg.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg[i].name);
+                            $(temp).val(msg[i].id);
+                            $("#subject").append(temp);
+                    }
+        });
+    });
+    
+    //学科发生变化 
+    $("#course").change(function () {
+            var course_val = $("#course").val(); 
+            var grade_val = $("#grade").val();
+            $("#subject option:not(:eq(0))").remove(); 
+            $("#chapter option:not(:eq(0))").remove(); 
+            $("#section option:not(:eq(0))").remove();
+            if (course_val == 0) {
+                return false;
+            }
+            $.getJSON("index.php?m=Home&c=Teach&a=getCourseTextbook", {
+                    'course_id': course_val,
+                    'grade_id': grade_val
+            }, function (msg) {
+                    var length = msg.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg[i].name);
+                            $(temp).val(msg[i].id);
+                            $("#subject").append(temp);
+                    }
+            });
+    });
+    
+    
+    //教材发生改变
+    $("#subject").change(function () {       
+            var val = $("#subject").val();
+            $("#chapter option:not(:eq(0))").remove(); 
+            $("#section option:not(:eq(0))").remove();
+            if (val == 0) {
+                    return false;
+            }
+            $.getJSON("index.php?m=Home&c=Teach&a=getTextbookChapter", {
+                    'id': val
+            }, function (msg) {
+                    var length = msg.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg[i].chapter);
+                            $(temp).val(msg[i].id);
+                            $("#chapter").append(temp);
+                    }
+            });
+    });
+    
+    //章发生改变
+    $("#chapter").change(function () { //section
+            var val = $("#chapter").val();
+            var text = $("#chapter").find("option:selected").text();
+            var textbook_id = $("#subject").val();
+
+            $("#section option:not(:eq(0))").remove();
+            $.getJSON("index.php?m=Home&c=Teach&a=getExerciseChapter", {
+                    'chapter': text,
+                    'textbook_id': textbook_id
+            }, function (msg) {
+                    var length = msg.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg[i].festival);
+                            $(temp).val(msg[i].id);
+                            $("#section").append(temp);
+                    }
+            });
+    });
+     
+     var exercises = [];
+     var isShowCorrectAnswer = false;
+     var ids="{$ids}";
+     $(document).ready(function(){
+         if(ids==''){
+             return false;
+         }else{
+             renderExerciseInALibrary(ids);
+         }
+     });
+    
+    function renderExerciseInALibrary(ids){
+        createExerciseCollect(ids,'',function(msg){
+            //$('#exerciseWrapper input,#exerciseWrapper textarea').remove(); //去掉了习题里的操作框
+            $('#exerciseWrapper .exerciseQuestion').each(function(i,n){
+                $(n).append('<img class="collectImg" onclick="collectExercise(this)" src="/Public/img/icon/collect2.png">');
+                var audioType= typeof($('.mp3_player'));
+//                    if(audioType == 'object'){
+//                        $('.mp3_player').parent().css({
+//                                position:'relative'
+//                        })
+//                        $('.mp3_player').siblings('.collectImg').css({
+//                                position:'absolute',
+//                                left: '50%',
+//                                top: '0'
+//                        })
+//                    }
+            })
+        });
+    }
+    
+    function collectExercise(obj){  
+        var question=$(obj).parents('.exerciseQuestion');
+        var exercise_id=$(question).attr('data-originalid');
+        var number=$(question).attr('data-id');
+        
+        $.get("index.php?m=Home&c=Teach&a=collectExercise",{id:exercise_id},function(msg){  
+            if(msg==2){
+
+                while(true){
+                    if($(question).next().hasClass('exerciseQuestion')){
+
+                        var all_exercise=$(".exerciseQuestion");
+                        //这里把所有的序号+1 
+                        for(var i=0;i<all_exercise.length;i++){
+                            if($(all_exercise[i]).attr('data-id')>number){
+                                var innerHtml=$(all_exercise[i]).text()
+                                var innerHtml_arr=innerHtml.split('.')
+                                var ori_html=innerHtml_arr[0];
+                                
+                                innerHtml_arr[0]=parseInt(innerHtml_arr[0])-1; 
+                                
+                                var tt=$(all_exercise[i]).html().replace(ori_html+'. (',innerHtml_arr[0]+'. (')
+                                $(all_exercise[i]).html(tt) 
+                            }
+                        } 
+                        $(question).remove();
+                        break;
+                    }else if($(question).next().length==0){
+                        $(question).remove();
+
+                        break;
+                    }else{
+                        $(question).next().remove();
+						var quelen = $('.exerciseQuestion').length;
+						if (quelen== 1) {
+							window.location.reload();
+						}
+                    }
+                } 
+            }else{
+                alert('取消收藏失败');
+            }
+        })
+        
+    }
+</script>

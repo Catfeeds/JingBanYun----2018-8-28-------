@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>快速注册</title>
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<link type="text/css" rel="stylesheet" href="__PUBLIC__/css/registerQuick.css?ver=5">
+</head>
+
+<body>
+	<div class="regOutter">
+		<form action="/ApiInterface/Version1_1/RegisterQuick/registerQuick?{$share_str}" method="post" id='form_submit' >
+			<ul class="tabUl" id="tabUl">
+				<li class="tabLi tabActive">
+                    <img src="{$oss_path}public/web_img/Register/radioChoose.png" alt="" class="radioImg">
+                    教师
+                </li>
+				<li class="tabLi">
+                    <img src="{$oss_path}public/web_img/Register/radioEmpty.png" alt="" class="radioImg">
+                    学生
+                </li>
+				<li class="tabLi">
+                    <img src="{$oss_path}public/web_img/Register/radioEmpty.png" alt="" class="radioImg">
+                    家长
+                </li>
+			</ul>
+            <input type='hidden' name='role' value='2' class="role" />
+			<div class="tabCon" id="tabCon">
+				<div class="inputBoxSpecial inputQuickNoRight roleName" style="display: none">
+					<span class="left"><label for="regName">姓<span class="emptyWhite">空</span>名：</label></span>
+                    <div class="inputLine">
+					   <input type="text" class="" id="regName" name='name' autocomplete="off" placeholder="请输入">
+                    </div>
+				</div>
+				<div class="inputBoxSpecial inputQuickNoRight">
+					<span class="left"><label for="regPhone">手机号：</label></span>
+                    <div class="inputLine">
+					   <input type="text" class="inputSpecial" id="regPhone" name='telephone' autocomplete="off" placeholder="请输入" maxlength="11">
+                    </div>
+				</div>
+				<div class="inputBoxSpecial inputBoxSpecialImg inputQuickRight">
+					<span class="left"><label for="verifyCode">图形验证码：</label></span>
+                    <div class="inputLine">
+    					<input type="text" class="left inputSpecial" id="verifyCode" name='verify_code' autocomplete="off" placeholder="请输入" maxlength="4">
+    					<img id="image_verify_code" src="/ApiInterface/Version1_1/RegisterQuick/registerProduceCode" class="right imgCode">
+                    </div>
+				</div>
+                <!-- <div id="slider" class="slider"></div> -->
+				<div class="inputBoxSpecial inputQuickRight">
+					<span class="left"><label for="regCode">验证码：</label></span>
+                    <div class="inputLine">
+    					<input type="text" class="left inputSpecial" id="regCode" name='valid_code' autocomplete="off" placeholder="请输入">
+    					<a href="javascript:;" onclick="sendPhoneCode()" class="right sendSmsButton" id="code">获取验证码</a>
+                    </div>
+				</div>
+				<div class="inputBoxSpecial inputQuickRight visibleRight">
+					<span class="left"><label for="regpwd1">密<span class="emptyWhite">空</span>码：</label></span>
+                    <div class="inputLine">
+    					<input type="password" class="left" id="regpwd1" name='password' autocomplete="off" placeholder="请输入6-16位密码"  onkeyup="value=value.replace(/[^\w\.\/]/ig,'')">
+                        <span class="right visibleBox">
+                            <img src="{$oss_path}public/web_img/Register/visible.png" alt="" class="visibleImg">
+                        </span>
+                    </div>
+				</div>
+<!-- 				<div class="inputBoxSpecial inputQuickNoRight">
+					<span class="left"><label for="regpwd2">确认密码</label></span>
+                    <div class="inputLine">
+					   <input type="password" class="left" id="regpwd2" name='confirm_password' autocomplete="off" placeholder="请输入6-16位密码"  onkeyup="this.value=this.value.replace(/\s+/g,'')">
+                    </div>
+				</div> -->
+				<div class="checkBox inputQuickNoRight">
+					<input type="checkbox" class="checkbox" id="checkbox" checked>
+					<label for="checkbox">
+						<img src="{$oss_path}public/web_img/Register/check.png" alt="" class="checkImg">
+					</label>
+					<a href='/index.php?m=Home&c=Help&a=protocol_app' class="agreeA">我已阅读并同意《京版云服务协议》</a>
+				</div>
+				<div class="buttonBox">
+					<button type="submit" class="button" id="register_button">快速注册</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	
+	<!--提示-->
+	<div class="blackNotify">
+		<span class="bNotify"></span>
+	</div>
+	
+	<!--丑兮兮的小弹窗-->
+	<div class="regBg" >
+		<div class="regSuccess">
+			<div class="regTitle">提示</div>
+			<img src="__PUBLIC__/img/register/regIcon.png" alt="" class="regIcon">
+			<div class="regCon">快速注册成功！</div>
+			<a href="javascript:;" class="regSure">确定</a>
+		</div>
+	</div>
+
+	<script src="__PUBLIC__/js/jquery-1.11.0.min.js"></script>
+    <script src="__PUBLIC__/js/jquery.form.js"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	
+    <script>
+        $(function(){
+            var newHeight = $(document).height();
+            $('html,body').height(newHeight);
+            var obj = {};
+            var sp_arr = window.location.search.substr(1).split("&");
+            for (var i = 0; i < sp_arr.length; i++) {
+                var arr2 = sp_arr[i].split("=");
+                obj[arr2[0]] = arr2[1];
+            }
+            console.log(obj.user)
+            if(obj.user == 'student') {
+                $('.tabLi').eq(1).click();
+            } else if(obj.user == 'parent') {
+                $('.tabLi').eq(2).click();
+            }
+        })
+    </script>
+	<script>
+        var registerClick;
+        $(function(){  
+            var options = {
+                success:    showResponse,  
+                resetForm:  false,
+                dataType:  'json'
+            };  
+            $('#form_submit').submit(function() {  
+                if(checkRegister()==false){
+                    return false;
+                }
+                var index = $('.tabActive').index()*1 + 1; 
+                index++;
+                $('.role').val(index);
+                
+                $(this).ajaxSubmit(options);
+                $('#pwdSure').attr('disabled',true);
+                return false;
+            });
+
+        });
+        function showResponse(responseText, statusText) { 
+            if(registerClick == undefined || registerClick == 0) {
+                $('#pwdSure').attr('disabled',false);
+                switch(responseText.status)
+                {
+                    case 200: //success 
+                        $('.regBg').show();
+                        target_url=responseText.data.url; 
+                        registerClick = 1;
+                        break; 
+                    case 500:
+                        blackNotify(responseText.msg); 
+                        break;
+                    default: blackNotify(responseText.msg); 
+                        break;
+                }
+            }
+		}
+            
+        var target_url;
+        var times,timer,click_flag=true;; 
+        $('.tabLi').click(function(){
+            if(!$(this).hasClass('tabActive')) {
+                $('input').val('');
+                $('.sendSmsButton').html('获取验证码'); 
+            }
+            $(this).addClass('tabActive').siblings('.tabLi').removeClass('tabActive');
+            $(this).children('.radioImg').attr('src','{$oss_path}public/web_img/Register/radioChoose.png').end().siblings('li').children('.radioImg').attr('src','{$oss_path}public/web_img/Register/radioEmpty.png');
+            if($(this).index() == 1) {
+                $('.roleName').show()
+            } else {
+                $('.roleName').hide()
+            }
+
+            registerClick = 0;
+            
+        })
+        
+        $("#image_verify_code").click(function(){
+            $(this).attr('src','/ApiInterface/Version1_1/RegisterQuick/registerProduceCode?time='+Math.random());
+        });
+
+        var role = 1;
+        //发送短信
+        function sendPhoneCode(){ 
+            if(click_flag==false){
+                return false;
+            }
+            var url="/ApiInterface/Version1_1/RegisterQuick/resiterSendSms";
+            var name = $('#regName').val();
+            var telephone=$("#regPhone").val();
+            var verify_code=$("#verifyCode").val();
+            role=$('.tabActive').index()*1 + 1; 
+            role++;
+                
+            if(telephone==''){
+                blackNotify('请输入手机号');
+                return false;
+            } else if(regTel.test(telephone) == false) {
+                blackNotify('手机号码格式错误');
+                return false;
+            }else if(verify_code==''){
+                blackNotify('请输入图形验证码');
+                return false;
+            } 
+            click_flag=false;
+            
+            $.ajax({
+                url: url, //请求的url地址
+                dataType: "json", //返回格式为json 
+                data: {
+                    'name': name,
+                    'telephone': telephone,
+                    'code':verify_code,
+                    'role':role
+                }, //参数值
+                type: "GET", //请求方式 
+                success: function (msg) { 
+                    if (msg.status < 0) {
+                        blackNotify(msg.msg);
+                        click_flag = true;
+                        return false; 
+                    } else {
+                        $('.sendSmsButton').html('<span class="image_code">60</span>秒后重发');
+                        times = 59;
+                        timer = setInterval(timeCount, 1000);
+                    } 
+                }
+            });
+        }
+        
+        function timeCount() {
+            if (times < 1) { 
+                click_flag=true;
+                clearInterval(timer);
+                $('.sendSmsButton').html('重新发送'); 
+                return;
+            } 
+            $('.image_code').html(times);
+            times--; 
+        }
+		
+		$('.checkImg').click(function(){
+			if($('.checkbox').prop("checked") == true) {
+				$(this).attr("src","{$oss_path}public/web_img/Register/checkNot.png")
+			} else{
+				$(this).attr("src","{$oss_path}public/web_img/Register/check.png")
+			}
+		})
+		
+		$('.regSure').click(function(){
+            location.href=target_url;
+            $('.regBg').hide()
+		}) 
+                
+		function blackNotify(notify) {
+		    $('.blackNotify').show().children('.bNotify').html(notify);
+			$('.blackNotify').stop(true).animate({bottom:'10%'},300).fadeOut(1000).animate({bottom:'-30px'},1)
+		} 
+                
+		var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		function removeAllSpace(str) {
+			return str.replace(/\s+/g, "");
+		}
+
+		function checkRegister(){
+            var name = $('#regName').val();
+            var tel = $('#regPhone').val(); 
+            var verifyCode=$("#verifyCode").val();
+            var code = $('#regCode').val();
+            var pwd1 = $.trim($('#regpwd1').val());
+            // var pwd2 = $.trim($('#regpwd2').val());
+            var check = $('.checkbox').prop("checked");
+            if($('.tabActive').index() == 1) {
+                if(name == '') {
+                    blackNotify('请输入姓名');
+                    return false;
+                } else if(regName.test(name) == false) {
+                    blackNotify('姓名格式错误');
+                    return false;
+                } else if(tel == '') {
+                    blackNotify('请输入手机号');
+                    return false;
+                } else if(regTel.test(tel) == false) {
+                    blackNotify('手机号码格式错误');
+                    return false;
+                } else if(verifyCode == '') {
+                    blackNotify('请输入图形验证码');
+                    return false;
+                } else if(code == '') {
+                    blackNotify('请输入验证码');
+                    return false;
+                } else if(pwd1 == '') {
+                    blackNotify('请输入登录密码');
+                    return false;
+                } else if(pwd1.length < 6) {
+                    blackNotify('密码长度不小于6位');
+                    return false;
+                // } else if(pwd2 == '') {
+                //     blackNotify('请输入确认密码');
+                //     return false;
+                // } else if(pwd1 != pwd2) {
+                //     blackNotify('两次密码输入不一致');
+                //     return false;
+                } else if(check == false){
+                    blackNotify('请勾选京版云服务协议');
+                    return false;
+                }  
+            } else {
+                if(tel == '') {
+                    blackNotify('请输入手机号');
+                    return false;
+                } else if(regTel.test(tel) == false) {
+                    blackNotify('手机号码格式错误');
+                    return false;
+                } else if(verifyCode == '') {
+                    blackNotify('请输入图形验证码');
+                    return false;
+                } else if(code == '') {
+                    blackNotify('请输入验证码');
+                    return false;
+                } else if(pwd1 == '') {
+                    blackNotify('请输入登录密码');
+                    return false;
+                } else if(pwd1.length < 6) {
+                    blackNotify('密码长度不小于6位');
+                    return false;
+                // } else if(pwd2 == '') {
+                //     blackNotify('请输入确认密码');
+                //     return false;
+                // } else if(pwd1 != pwd2) {
+                //     blackNotify('两次密码输入不一致');
+                //     return false;
+                } else if(check == false){
+                    blackNotify('请勾选京版云服务协议');
+                    return false;
+                }  
+            }
+            
+                return true 
+		}
+	</script>
+
+    <script>
+        //密码可见不可见
+        $('.visibleBox').click(function(){
+            if($(this).siblings('input').attr('type') == 'password') {
+                $(this).siblings('input').attr('type','text');
+                $(this).children('.visibleImg').attr('src','{$oss_path}public/web_img/Register/invisible.png')
+            } else {
+                $(this).siblings('input').attr('type','password');
+                $(this).children('.visibleImg').attr('src','{$oss_path}public/web_img/Register/visible.png')
+            }
+        })
+    </script>
+</body>
+
+</html>

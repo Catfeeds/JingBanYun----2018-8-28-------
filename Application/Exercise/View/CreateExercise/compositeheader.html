@@ -1,0 +1,58 @@
+<ul class="subjectUl">
+
+    <li class="subjectLi">
+        <span class="color3baeabFixed">试题类型</span>
+        <?php foreach (C('exercisesType') as $exercisesK => $exercisesV): ?>
+
+        <a href="{:U('CreateExercise/createChoiceExercise?type=')}{$exercisesV.id}&big_paper_id={$big_paper_id}&paper_id={$paper_id}">
+            <?php if ($exercisesV['id'] == $type): ?>
+            <span class="color333 color3baeab"><?=$exercisesV['name']?></span>
+            <?php else: ?>
+            <span class="color333"><?=$exercisesV['name']?></span>
+            <?php endif ?>
+        </a>
+        <?php endforeach ?>
+    </li>
+
+    <li class="subjectLi">
+        <span class="color3baeabFixed">学段</span>
+
+        <?php foreach (C('Studysection') as $studyK => $studyV): ?>
+        <span class="color333" v-on:click='study(<?=$studyV["id"]?>)'><?=$studyV['name']?></span>
+        <?php endforeach ?>
+
+        <div class="red classred" v-if="section">*该项为必选项</div>
+    </li>
+    <li class="subjectLi">
+        <div class="subjectDiv color3baeabFixed">科目</div>
+        <span class="color333" v-for="(coursedata,index) in course" v-on:click='courseClick(coursedata.id)'>{{coursedata.name}}</span>
+        <div class="red classred" v-if="subject">*该项为必选项</div>
+    </li>
+
+
+    <li class="createCompletionLicontent">
+        <div class="mt10 mb10">
+            <span class="color3baeabFixed textSpan">题目</span>
+            <!--<span class="textSpan">题干</span>-->
+            <div style="width: 580px;height: 105px;" class="dib">
+                <script type="text/plain" id="message" name="message" style="width:100%;height:50px;"></script>
+            </div>
+
+            <div class="dib left mt10 red classred" v-if="subjecterror">
+                *该项不可为空
+            </div>
+        </div>
+    </li>
+
+    <div class="mtb10">
+        <span class="color3baeabFixed mr0">题型展示</span>
+        <select class="selectSize" name="" v-model="presentation_type">
+            <option v-for="pt in presentation" v-bind:value="pt.id">{{ pt.name }}</option>
+        </select>
+        <div class="dib left mt10 red classred" v-if="Problempresentation">
+            *该项不可为空
+        </div>
+    </div>
+    <input type="hidden" class="question_type" value="{$type}">
+    <input type="hidden" class="subject_type" value="{$exercise_info['subject']}">
+    <input type="hidden" class="id" value="{$exercise_info['id']}">

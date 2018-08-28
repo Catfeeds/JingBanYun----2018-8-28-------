@@ -1,0 +1,91 @@
+<layout name="admin_layout_exercise"/>
+<div class="boxOutter">
+	<div class="borderBottom of">
+		<?php if(in_array('KnowledgeBaseManagement/subjectManagement',session('exercises_permissions'))){ ?>
+		<a href="#" class="tabBtn left text-center active">学科管理</a>
+		<?php }?>
+		<?php if(in_array('KnowledgeBaseManagement/fasciculeManagement',session('exercises_permissions'))){ ?>
+		<a href="{:U('KnowledgeBaseManagement/fasciculeManagement')}" class="tabBtn left text-center">分册管理</a>
+		<?php }?>
+		<?php if(in_array('KnowledgeBaseManagement/versionManagement',session('exercises_permissions'))){ ?>
+		<a href="{:U('KnowledgeBaseManagement/versionManagement')}" class="tabBtn left text-center">版本管理</a>
+		<?php }?>
+	</div>
+	<div class="mt20">
+		<?php if(in_array('KnowledgeBaseManagement/courseInfo',session('exercises_permissions'))){ ?>
+		<button type="button" class="btn"  id="add" name="button">添加学科</button>
+		<?php }?>
+	</div>
+	<table class="tableCommon mt20">
+				<thead>
+					<tr>
+						<th width="25%">学科</th>
+						<th width="50%">所含题型</th>
+						<th width="25%">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				<?php foreach($list as $item){?>
+					<tr>
+						<td><?php echo $item['name']?></td>
+						<td><span><?php echo $item['pname']?></span></td>
+						<td>
+							<?php if(in_array('KnowledgeBaseManagement/saveCourseInfo',session('exercises_permissions'))){ ?>
+							<a href="<?php echo U('KnowledgeBaseManagement/saveCourseInfo').'&id='.$item['id']?>" class="tableABtn">修改／添加题型</a>
+							<?php }?>
+						</td>
+
+					</tr>
+					<?php }?>
+				</tbody>
+	</table>
+	<div class="fullBack"></div>
+	<div class="adminNotifyBox" id="teacherAssign">
+		<div class="adminNotifyTitle">
+			添加学科
+		</div>
+		<div class="adminNotifyContent">
+			<div class="teacherChoose">
+				<label for="">学科名称</label>
+				<input type="text" name="name" id="courseName" class="inputCommon">
+			</div>
+		</div>
+		<p class="adminNotifyButton">
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="teacherAssignSure">完成</a>
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="teacherAssignCancel">取消</a>
+		</p>
+	</div>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script type="text/javascript">
+	//*****************************************************学科添加操作*******************************************************************
+    $('#add').click(function(){
+        $('.fullBack,#teacherAssign').show();
+    });
+    $('#teacherAssignSure').click(function () {
+        var courseName = $('#courseName').val();
+        $.ajax({
+            url:"{:U('KnowledgeBaseManagement/courseInfo')}",
+            data:{'courseName':courseName},
+            type:'post',
+            dataType:'json',
+            success:function(data){
+                //console.log(data);return false;
+                if(data.status == '200'){
+                    location.reload();
+                }else if(data.status == '403'){
+                    $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+				}else{
+                    $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+				}
+            }
+        })
+    });
+    $('#teacherAssignCancel').click(function(){
+        $('#hidden').val('');
+        $('#schoolTerm').val('');
+        $('#grade').val('');
+        $('.fullBack,#teacherAssign').hide()
+    });
+    </script>

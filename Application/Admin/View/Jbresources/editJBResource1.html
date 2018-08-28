@@ -1,0 +1,2759 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<script src="/Public/theme/2016/front/js/bootstrap.min.js"></script>
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.3.3/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.3.3/cropper.js"></script>
+<style>
+    .contactDisplay{
+        width:100%;
+        height:100%;
+    }
+    .marginLeft55{
+        margin-left:55px;
+    }
+    .coverList{
+        overflow: hidden;
+    }
+    .coverList li{
+        list-style:none; /* 将默认的列表符号去掉 */
+        float:left;
+        margin-left:10px;
+    }
+    .coverList li a{
+        border: 3px solid #FFF;
+        display: block;
+    }
+    .coverList li a.active{
+        border: 3px solid red;
+        display: block;
+    }
+
+    .dn{
+        display:none;
+    }
+    #plv{
+        max-height:300px;
+    }
+    #button{
+        text-align: center;width: 148px;margin-left: 162px !important;cursor: pointer;
+    }
+    .cursor_pointer{
+        cursor:pointer;
+    }
+    .qq-uploader {
+        margin-left: 40px;
+		width: auto;
+		max-height: inherit;
+		overflow-x: hidden;
+		padding: 0;
+    }
+
+	.qq-upload-button {
+		margin: 10px;
+	}
+
+	.qq-upload-list {
+		max-height: inherit;
+		overflow-y: hidden;
+	}
+
+	.qq-upload-size {
+		display: none;
+	}
+
+	.qq-upload-size, .qq-upload-cancel, .qq-upload-retry, .qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
+		position: relative;
+		top: -4px;
+	}
+
+	.resource_image {
+		height: 100%;
+		position: relative;
+	}
+
+	.resource_image img {
+		display: inline-block;
+		width: auto;
+		height: auto;
+		max-width: 100%;
+		max-height: 100%;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		margin: auto;
+	}
+
+	.aBoxHeight {
+		height: 444px;
+	}
+
+	.aConHeight {
+		height: 400px;
+	}
+
+	.show_div {
+		padding: 9px;
+		border-bottom: 1px solid #eee;
+		font-size: 16px;
+	}
+
+	.show_div .spanCheckbox {
+		width: 18px;
+		height: 18px;
+		position: relative;
+		top: -2px;
+		margin-right: 5px;
+	}
+
+	.show_div .spanName {
+		display: inline-block;
+		margin-bottom: 10px;
+	}
+
+	.labelPrice {
+		margin-left: 23px;
+	}
+
+	.labelTry, .labelTime {
+		margin-left: 10px;
+	}
+
+	.resource_contact_charge_status, .resource_trial, .browse_time {
+		width: 110px;
+		margin-bottom: 5px;
+	}
+
+	.browse_time {
+		margin-right: 5px;
+	}
+
+	.show_div delete_button {
+		display: inline-block
+	}
+
+	.labelName {
+		margin-left: 23px;
+	}
+
+	.contact_resource_name.myName {
+		margin: 10px 0;
+		width: 400px;
+	}
+
+    .input-control-red {
+        width: 186px !important;
+    }
+
+    .notifyRemind {
+        color: #999;
+        font-size: 14px;
+        line-height: 30px;
+        text-indent: 1em
+    }
+
+    #pointsBox .adminNotifyButton {
+        bottom: 15px;
+    }
+
+    .spanName {
+        color: #2086bf;
+    }
+
+    .spanName:hover {
+        color: #23527c;
+        text-decoration: underline;
+    }
+
+    .resName {
+        width: 500px;
+        margin-top: 10px;
+        text-align: center;
+    }
+</style>
+
+<div class="titleBox">
+    <p class="blueText fs18 underline1">
+        资源管理
+        <span class="blueSpan">
+			<a href="javascript:;">教学+</a>>>
+			<a href="{:U('Jbresources/jbresources')}">资源管理</a>>>
+			<a href="javascript:;">资源修改</a>
+		</span>
+    </p>
+    <div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="" method="post" enctype="multipart/form-data">
+    <p class="blueText fs16">上传资源</p>
+    <input type="hidden" name="id" value="{$id}">
+    <div class="blueDashed">
+        <div class="blueTitle">
+            基本信息
+        </div>
+        <div class="grid condensed cellBox blueBox">
+            <div class="row cells3">
+                <div class="cell">
+                    <label>资源名称：</label>
+                    <input type="text" id="names" class="input-control" name="name" value="{$content.name}" placeholder="请输入资源名称" required>
+                    <span class="redStar">*</span>
+                </div>
+                <div class="cell">
+                    <label>创作年：</label>
+                    <select id="" class="input-control" name="creation_year">
+                        <option value=''>-请选择-</option>
+                        <option value='2018' {$content['creation_year'] =='2018' ?'selected':''}>-2018年-</option>
+                        <option value='2017' {$content['creation_year'] =='2017' ?'selected':''}>-2017年-</option>
+                        <option value='2016' {$content['creation_year'] =='2016' ?'selected':''}>-2016年-</option>
+                        <option value='2015' {$content['creation_year'] =='2015' ?'selected':''}>-2015年-</option>
+                    </select>
+                </div>
+                <div class="cell">
+                    <label>来源：</label>
+                    <select id="" class="input-control" name="source">
+                        <option value=''>-请选择-</option>
+                        <option value='1' {$content['source'] =='1' ?'selected':''}>-教师资源分享-</option>
+                        <option value='2' {$content['source'] =='2' ?'selected':''}>-京版活动获奖设计-</option>
+                    </select>
+                </div>
+                <div class="cell">
+                    <label>作者：</label>
+                    <input type="text" class="input-control" name="author" value="{$content['author']}" placeholder="请输入作者姓名">
+                </div>
+                <div class="cell">
+                    <label>关联获奖作品ID：</label>
+                    <input type="text" class="input-control" name="activity_work_id" value="{$content['activity_work_id']}" placeholder="请输入奖作品ID">
+                </div>
+                <div class="cell">
+                    <label>内容提供商：</label>
+                    <select id="resource_type" class="input-control" onchange="showhide(resource_type)" name="resource_type" required>
+                        <option value=''>-请选择-</option>
+                        <option value='1' {$content['resource_type'] =='1' ?'selected':''}>-京版资源-</option>
+                        <option value='2' {$content['resource_type'] =='2' ?'selected':''}>-nobook-</option>
+                        <option value='3' {$content['resource_type'] =='3' ?'selected':''}>-万邦华堂资源-</option>
+                        <option value='4' {$content['resource_type'] =='4' ?'selected':''}>-京版资源网页-</option>
+                    </select>
+                    <span class="redStar">*</span>
+                </div>
+                <!--<div class="cell" style="line-height: 2.75rem; margin: .325rem 0;">
+                    <input type="checkbox" class="cellCheck ml10">
+                    是否显示在前台
+                </div>-->
+            </div>
+            <div class="row cells1">
+                <div class="cell">
+                    <label>资源描述：</label>
+                    <textarea name="description" class="input-control input-textarea" id="" rows="5"  maxlength="500">{$content.description}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="blueDashed">
+        <div class="blueTitle">
+            知识点关联
+        </div>
+        <div class="grid condensed cellBox blueBox">
+            <div class="notifyRemind">提示：传统文化资源只关联到学科即可！</div>
+            <div class="row cells3">
+                <div class="cell">
+                    <label>关联教材：</label>
+                    <select id="publishing" class="input-control" name="publishing" onchange="getCourseAndGrade()">
+                        <option value=''>-请选择-</option>
+                        <volist name="publishingDate" id="publishing">
+                            <option value='{$publishing.publishing_house_id}'>{$publishing.publishing_house}</option>
+                        </volist>
+                    </select>
+                    <span class="redStar">*</span>
+                </div>
+                <div class="cell">
+                    <label>关联学科：</label>
+                    <select id="course" class="input-control" name="course" onchange="getTextbooks('course')">
+                        <option value=''>-请选择-</option>
+                        <!--<volist name="courses" id="dataCourse">
+                            <option value="{$dataCourse.id}" {$content['course'] == $dataCourse['id'] ?'selected':''}>
+                                {$dataCourse.code} : {$dataCourse.course_name}
+                            </option>
+                        </volist>-->
+                    </select>
+                    <span class="redStar">*</span>
+                </div>
+                <div class="cell">
+                    <label>关联年级：</label>
+                    <select id="grade" class="input-control" name="grade" onchange="getTextbooks('grade')" >
+                        <option value=''>-请选择-</option>
+                        <!--<volist name="grades" id="dataGrade">
+                            <option value="{$dataGrade.id}" {$content['grade'] == $dataGrade['id'] ?'selected':''}>
+                                {$dataGrade.grade}
+                            </option>
+                        </volist>-->
+                    </select>
+                    <span class="redStar">*</span>
+                </div>
+                <div class="cell">
+                    <label>教学分册：</label>
+                    <select id="textbook" class="input-control" name="textbook" onchange="getChapter()" >
+                        <option value=''>-请选择-</option>
+                        <volist name="textbook_result" id="item">
+                            <option value="{$item.id}" {$content['textbook'] == $item['id'] ?'selected':''}>-{$item.name}-</option>
+                        </volist>
+                    </select>
+                    <span class="redStar">*</span>
+                </div>
+                <div class="cell">
+                    <label>关联章/单元：</label>
+                    <select id="chapter" class="input-control" name="chapter" onchange="getFestival()" >
+                        <option value=''>-请选择-</option>
+                        <volist name="chapter" id="item">
+                            <option value="{$item.id}" {$content['chapter'] == $item['id'] ?'selected':''}>-{$item.knowledge_name}-</option>
+                        </volist>
+                    </select>
+                    <span class="redStar">*</span>
+                </div>
+                <div class="cell">
+                    <label>关联节/课：</label>
+                    <select id="festival" class="input-control" name="festival"onchange="getFestival1()" >
+                        <option value=''>-请选择-</option>
+                        <volist name="festival" id="item">
+                            <option value="{$item.id}" {$content['festival'] == $item['id'] ?'selected':''}>-{$item.knowledge_name}-</option>
+                        </volist>
+                    </select>
+                </div>
+                <div class="cell">
+                    <label>关联知识点1：</label>
+                    <select id="knowledge" class="input-control" name="knowledge" onchange="getFestivall()" >
+                        <option value=''>-请选择-</option>
+                        <volist name="knowledge" id="item">
+                            <option value="{$item.id}" {$content['knowledge'] == $item['id'] ?'selected':''}>-{$item.knowledge_name}-</option>
+                        </volist>
+                    </select>
+                </div>
+                <div class="cell">
+                    <label>关联知识点2：</label>
+                    <select id="child_knowledge" class="input-control" name="child_knowledge" >
+                        <option value=''>-请选择-</option>
+                        <volist name="child_knowledge" id="item">
+                            <option value="{$item.id}" {$content['child_knowledge'] == $item['id'] ?'selected':''}>-{$item.knowledge_name}-</option>
+                        </volist>
+                    </select>
+                </div>
+                <div class="cell">
+					<label>&nbsp;</label>
+					<a href="javascript:;" class="blueBtn m0" id="addPoints">添加知识点</a>
+					<input class="input-control none-input">
+				</div>
+            </div>
+
+            <table id="listWrapper" class="table striped hovered border w98">
+				<thead>
+					<tr>
+						<th class="text-center">序号</th>
+						<th class="text-center">知识点</th>
+						<th class="text-center">操作</th>
+					</tr>
+				</thead>
+        		<tbody id="body">
+                <volist name="knowledge_resource_point" id="items">
+            		<tr class="l_{$items.id}" attr-data="{$items['publishing_house_id']},{$items['course']},{$items['grade']},{$items['textbook']},{$items['chapter']},{$items['festival']},{$items['knowledge']},{$items['child_knowledge']}">
+						<td class="text-center">
+							{$i}
+						</td>
+           				<td class="text-center">
+							{$items['knowledge_info_point']}
+						</td>
+           				<td class="text-center">
+							<a href="javascript:;" class="operBtn compilePoints" attr-own="{$items['publishing_house_id']},{$items['course']},{$items['grade']},{$items['textbook']},{$items['chapter']},{$items['festival']},{$items['knowledge']},{$items['child_knowledge']}">编辑</a>
+							<a href="javascript:;" class="operBtn deletePoints deletes" attr-owns="{$items['id']}">删除</a>
+						</td>
+            		</tr>
+                </volist>
+        		</tbody>
+    		</table>
+        </div>
+    </div>
+
+    <div class="blueDashed">
+        <div class="blueTitle">
+            上架信息
+        </div>
+        <table class="blueTable"> 
+            <tr>
+                <td colspan="3" class="borderb">
+                    <div class="resourceType left">
+                        <span class="redStar">*</span>
+                        <span class="spanType">资源类型</span>
+                        <volist name="data" id="item">
+						<span class="spanCheck">
+                            <if condition="in_array($item['id'],$types) eq 'true' ">
+                                <input type="checkbox" name="types[]" class="spanCheckbox types" value="{$item.id}" checked="checked" >
+                                {$item.type_name}
+                            <else/>
+                                <input type="checkbox" name="types[]" class="spanCheckbox types" value="{$item.id}" >
+                                {$item.type_name}
+                            </if>
+						</span>
+                        </volist>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" class="borderb">
+					<span class="spanCheck pl20">
+						<input type="checkbox" class="spanCheckbox" value="1" {$content['is_allowed_download'] == '1' ? 'checked="checked"' : ''} name="is_allowed_download">
+						是否允许下载
+					</span>
+                    <span class="spanCheck pl20">
+						<input type="checkbox" class="spanCheckbox" value="1" {$content['is_allowed_share'] == '1' ? 'checked="checked"' : ''} name="is_allowed_share">
+						是否允许分享
+					</span>
+                    <span class="spanCheck pl20">
+						<input type="checkbox" class="spanCheckbox" value="1" {$content['is_allowed_app_download'] == '1' ? 'checked="checked"' : ''} name="is_allowed_app_download">
+						是否允许APP缓存
+					</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="borderr tdWidth">
+					<span class="spanCheck">
+						<input type="checkbox" class="spanCheckbox" value="1" {$content['putaway_status'] == '1' ?'checked="checked"':''} name="putaway_status">
+						是否上架
+					</span>
+                </td>
+                <td class="borderr tdWidth pb15 text-center">
+                    <span class="redStar">*</span><span style="font-weight: 600"> 所属栏目</span>
+                </td>
+                <td>
+                    <volist name="column_all" id="data">
+					<span class="spanCheck">
+                        <if condition="in_array($data['id'],$attrs) eq 'true'">
+						<input type="checkbox" name="column_ids[]" checked="checked" value="{$data.id}" class="spanCheckbox" >
+						{$data.column_name}
+                        <else/>
+                         <input type="checkbox" name="column_ids[]" value="{$data.id}" class="spanCheckbox" >
+						{$data.column_name}
+                        </if>
+					</span>
+                    </volist>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <!--定价信息-->
+    <div class="blueDashed price_setup">
+            <div class="blueTitle">
+                    定价信息
+            </div>
+            <div class="grid condensed cellBox blueBox">
+				<div class="row cells3">
+					<div class="cell">
+                        <span class="redStar">*</span>
+						<label for="">资源收费设置 <span></span></label>
+						<select class="input-control" id="resource_charge_status" name="resource_charge_status" >
+							<option value="0" >请选择</option>
+							<option value="1" {$content['charge_status']=='1'?'selected':''}>免费</option>
+							<option value="2" {$content['charge_status']=='2'?'selected':''}>收费</option>
+						</select>
+					</div>
+					<div class="cell">
+						<label for="">资源收费模式 <span></span></label>
+						<select class="input-control" id="resource_time" name="resource_time" >
+							<option value="0">请选择</option>
+							<option value="1" {$content['charge_type']=='1'?'selected':''}>永久</option>
+							<option value="2" {$content['charge_type']=='2'?'selected':''}>半年</option>
+							<option value="3" {$content['charge_type']=='3'?'selected':''}>三个月</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+            <table class="blueTable" border="1 solid red" style="margin-bottom: 2px;">
+                    <tr >
+                        <td class="borderr tdWidth" rowspan="2">
+                                    <span class="spanCheck">
+                                            价格设置
+                                    </span> 
+                            </td>
+                            <td class="borderr tdWidth pb15 text-center">
+                                <span class="spanCheck">
+                                    原价
+                                </span>
+                                <if condition="$content['real_price'] eq 0">
+                                    <input type="text" name="resource_price" class="resource_price" value=""/>
+                                <else />
+                                    <input type="text" name="resource_price" class="resource_price" value="{$content.resource_price}"/>
+                                </if>
+                            </td>
+                    </tr>
+                    <tr >
+                            <td class="borderr tdWidth pb15 text-center">
+                                <span class="spanCheck">
+                                    优惠价格
+                                </span>
+                                <if condition="$content['real_price'] eq 0">
+                                    <input type="text" name="promote_price" class="promote_price" value=""/>
+                                <else />
+                                    <input type="text" name="promote_price" class="promote_price" value="{$content.promote_price}"/>
+                                </if>
+                            </td>
+                    </tr>
+            </table>
+    </div>
+
+    <!--上传资源-->
+    <div class="blueDashed upload" display="block">
+        <div class="blueTitle">
+            文件上传
+        </div>
+
+        <div class="sectionMain">
+
+
+            <div class="newSection" id="file_type">
+                <label for="">文件类型</span></label>
+                <select class="input-control" id="type" name="type" required onchange="changeType()">
+                    <option value="0">--请选择--</option>
+                    <option extval=".mp4,.mov,.wmv,.flv,.avi" value="video" {$content['file_type']=='video'?'selected':''}>视频</option>
+                    <option extval=".mp3" value="audio" {$content['file_type']=='audio'?'selected':''}>音频</option>
+                    <option extval=".doc,.docx" value="word" {$content['file_type']=='word'?'selected':''}>WORD</option>
+                    <option extval=".ppt,.pptx" value="ppt" {$content['file_type']=='ppt'?'selected':''}>PPT</option>
+                    <option extval=".pdf" value="pdf" {$content['file_type']=='pdf'?'selected':''}>PDF</option>
+                    <option extval=".swf" value="swf" {$content['file_type']=='swf'?'selected':''}>SWF文件</option>
+                    <option extval=".jpg,.png" value="image" {$content['file_type']=='image'?'selected':''}>图片</option>
+                    <!--<option extval=".gsp" value="gsp">几何画板</option>-->
+                    <option extval=".zip,.rar" value="condensed" {$content['file_type']=='condensed'?'selected':''}>压缩包</option>
+                    <option extval=".mp4,.mov,.wmv,.flv,.avi,.mp3,.doc,.docx,.ppt,.pptx,.pdf,.swf,.jpg,.png,.zip,.rar" value="mixed" {$content['file_type']=='mixed'?'selected':''}>混合类型</option>
+                </select>
+                <span class="redStar">*</span>
+            </div>
+        </div>
+        <input type="hidden" value="" name="vid" id="vid">
+        <input type="hidden" value="" name="vid_file_path" id="vid_file_path">
+        <input type="hidden" value="" name="playerwidth" id="playerwidth">
+        <input type="hidden" value="" name="playerduration" id="playerduration">
+        <input type="hidden" value="" name="vid_fullpath" id="vid_fullpath">
+        <input type="hidden" value="" name="vid_image_path" id="vid_image_path">
+        <input type="hidden" value="" name="is_transition" id="is_transition">
+        <input type="hidden" value="" name="vid_fullsize" id="vid_fullsize">
+        <!--<input type="hidden" value="" name="mp4Source" id="mp4Source">-->
+        <input type='hidden' name='real_type' id='real_type' />
+        <!--<div id="fine-uploader"></div>-->
+
+        <div class="row" id="uplode-botton" style="margin: 0 !important; margin-bottom: 20px !important">
+            <div id="fine-uploader" class="col-md-7">
+
+            </div>
+
+            <div class="col-md-5 resource_right_div resourceBox p0">
+
+                    <div id="image" class="contactDisplay dn">
+                        <div style="width:100%;" class="resource_image">
+                            <img src=""/>
+                        </div>
+                    </div>
+                    <div id="pdf" class="contactDisplay dn">
+                        <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.pdf</a>-->
+                        <div style="width:100%;" class="resource_pdf">
+                            <a target="_blank" href="">点击查看</a>
+                        </div>
+                    </div>
+                    <div id="word" class="contactDisplay dn">
+                        <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.doc</a>-->
+                        <div style="width:100%;" class="resource_word">
+                            <a target="_blank" href="">点击查看{$real_file_path}{$vals.resource_path}</a>
+                        </div>
+                    </div>
+                    <div id="swf" class="contactDisplay dn">
+                        <div style="width:100%;" class="resource_swf">
+                            <a target="_blank" href="">点击查看{$real_file_path}{$vals.resource_path}</a>
+                        </div>
+                        <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.swf</a>-->
+                    </div>
+                    <div id="condensed" class="contactDisplay dn">
+                        <div style="width:100%;" class="resource_condensed">
+                            <a target="_blank" href="/index.php?m=Home&c=Teach&a=downloadResource&url={$real_file_path}{$vals.resource_path}">点击查看{$real_file_path}{$vals.resource_path}</a>
+                        </div>
+                        <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.swf</a>-->
+                    </div>
+                    <div id="ppt" class=" contactDisplay dn">
+                        <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.ppt</a>-->
+                        <div style="width:100%;" class="resource_ppt">
+                            <a target="_blank" href="/index.php?m=Home&c=Teach&a=downloadResource&url={$real_file_path}{$vals.resource_path}">点击查看{$real_file_path}{$vals.resource_path}</a>
+                        </div>
+                    </div>
+                    <div id="video" class="contactDisplay dn" >
+                        <!--<div id='plv' style="margin-right:20px;"></div>-->
+                        <video id='plv' crossOrigin = "Anonymous" controls vid_fullpath="{$vals.vid_fullpath}"></video>
+
+                    </div>
+                    <div id="audio" class="contactDisplay dn">
+                        <div id="audioDiv"></div>
+                    </div>
+
+                <p class="resName"></p>
+            </div>
+        </div>
+        <div class="newSection marginLeft55">
+            <span class="redStar">*</span>
+            <label for="">上传封面 <span>(PC端显示尺寸225*182)</span></label>
+
+            <ul id="pc_coverList" class="coverList" style="display:block">
+
+            </ul>
+            <input class="hiddenFile" type="hidden" name="pc_cover" id="selectedPCCover"/>
+            <input type="file" name="pc_cover" id="pcFile" accept=".png,.jpg,.jpeg,.image">
+
+            <div class="box" style="height:266px;width:50%">
+                <img src="<?php if(strpos($content['pc_cover'],'videocc.net/') !== false || strpos($content['pc_cover'],'nobook.com') !== false) echo '/proxy.php?url='; if(strpos($content['pc_cover'],'http') === false){ echo $real_file_path.$content['pc_cover']; }else{echo $content['pc_cover']; }?>" id="pc_cover"  >
+            </div>
+            <input type="hidden" name="pc_cover_dataurl" id="pc_cover_dataurl"/>
+
+        </div>
+
+        <div class="newSection marginLeft55">
+            <span class="redStar">*</span>
+            <label for="">上传封面 <span>(APP显示宽高比例为1:1)</span><span></span></label>
+            <ul id="mobile_coverList" class="coverList" style="display:block">
+
+            </ul>
+            <input type="file" name="mobile_cover" id="appFile" accept=".png,.jpg,.jpeg,.image">
+            <input class="hiddenFile" type="hidden" name="mobile_cover" id="selectedMobileCover"/>
+            <div class="box"  style="height:200px;width:50%">
+                <img src="<?php if(strpos($content['mobile_cover'],'videocc.net/') !== false || strpos($content['pc_cover'],'nobook.com') !== false) echo '/proxy.php?url='; if(strpos($content['mobile_cover'],'http') === false){ echo $real_file_path.$content['mobile_cover']; }else{echo $content['mobile_cover']; }?>" id="mobile_cover"  >
+            </div>
+            <input type="hidden" name="mobile_cover_dataurl" id="mobile_cover_dataurl"/>
+        </div>
+    </div>
+
+    <div class="hidden_ids">
+        <volist name="resource_list" id="resource_item" empty="" key="i">
+            <if condition="$content['file_type'] eq 'video'">
+                <input  filetype="{$resource_item.filetype}" vid_fullpath="{$resource_item.vid_fullpath}" trial_time="{$resource_item.trial_time}" trial_status="{$resource_item.trial_status}" charge_status="{$resource_item.charge_status}" type="hidden" attr_id="{$resource_item.id}" attr_selected="{$resource_item.putaway_status}" value="{$resource_item.id}" name="hidden_resource[]" vid_image='{$resource_item.vid_image_path}' attr_type='{$resource_item.file_type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.vid}" attr_file_name="{$resource_item.file_name}" attr-vip="{$resource_item.vip_status}"/>
+                <elseif condition="$content['file_type'] eq 'audio'"/>
+                <input  filetype="{$resource_item.filetype}" trial_time="{$resource_item.trial_time}" trial_status="{$resource_item.trial_status}" charge_status="{$resource_item.charge_status}"  type="hidden" attr_id="{$resource_item.id}" attr_selected="{$resource_item.putaway_status}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.file_type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.vid}" attr_file_name="{$resource_item.file_name}"  attr-vip="{$resource_item.vip_status}"/>
+                <else />
+                <input filetype="{$resource_item.filetype}" vid_fullpath="{$resource_item.vid_fullpath}" trial_time="{$resource_item.trial_time}" trial_status="{$resource_item.trial_status}" charge_status="{$resource_item.charge_status}"  type="hidden" attr_id="{$resource_item.id}" attr_selected="{$resource_item.putaway_status}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.file_type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="{$real_file_path}" attr_path="{$resource_item.resource_path}" attr_file_name="{$resource_item.file_name}"  attr-vip="{$resource_item.vip_status}" />
+            </if>
+        </volist>
+    </div>
+
+    <!--万邦华堂-->
+
+    <div class="blueDashed upload2">
+        <div class="blueTitle">
+            文件上传
+        </div>
+
+        <div class="sectionMain">
+            <!--<div class="newSection">
+                <label for="">上传封面 <span>(PC端显示尺寸248*164)</span></label>
+                <input type="file" name="" id="pcFile" required>
+            </div>
+
+            <div class="newSection">
+                <label for="">上传封面 <span>(移动端显示尺寸137*160)</span></label>
+                <input type="file" name="" id="appFile" required>
+            </div>
+
+            <div class="newSection">
+                <label for="">文件类型</span></label>
+                <select class="input-control" id="type" name="type" required>
+                    <option value="0">&#45;&#45;请选择&#45;&#45;</option>
+                    <option extval=".mp4,.mov,.wmv,.flv,.avi" value="video">视频</option>
+                    <option extval=".mp3" value="audio">音频</option>
+                    <option extval=".doc,.docx" value="word">WORD</option>
+                    <option extval=".ppt,.pptx" value="ppt">PPT</option>
+                    <option extval=".pdf" value="pdf">PDF</option>
+                    <option extval=".swf" value="swf">SWF文件</option>
+                    <option extval=".jpg,.png" value="image">图片</option>
+                    &lt;!&ndash;<option extval=".gsp" value="gsp">几何画板</option>&ndash;&gt;
+                    <option extval=".zip,.rar" value="condensed">压缩包</option>
+                </select>
+                <span class="redStar">*</span>
+            </div>-->
+
+            <div class="newSection">
+                <span class="redStar">*</span>
+                <label for="">URL地址</span></label>
+                <if condition="$content['resource_type'] neq 1">
+                    <input type="text" class="input-control urlInput" name="url" value="{$vals['resource_path']}">
+                <else />
+                    <input type="text" class="input-control urlInput" name="url" value="">
+                </if>
+                <!--<input type='button' value='保存' class='blueBtn' style="margin: 0 !important;"/>-->
+            </div>
+
+            <!--<ul class="urlUl">
+                <li>
+                    <span class="spanCheck">
+                        <input type="checkbox" class="spanCheckbox">
+                        是否上架
+                    </span>
+                    <span class="urlSpan mr10">
+                        http://www.baidu.com
+                    </span>
+                    <img src="{$oss_path}public/web_img/Admin/icon-delete.png" alt="" class="urlImg" title="删除">
+                </li>
+                <li>
+                    <span class="spanCheck">
+                        <input type="checkbox" class="spanCheckbox">
+                        是否上架
+                    </span>
+                    <span class="urlSpan mr10">
+                        http://www.baidu.com
+                    </span>
+                    <img src="{$oss_path}public/web_img/Admin/icon-delete.png" alt="" class="urlImg" title="删除">
+                </li>
+            </ul>-->
+        </div>
+
+    </div>
+
+
+    <div class="text-center">
+        <input type='submit' value='保存' onclick="return check()" class='blueBtn'/>
+    </div>
+
+</form>
+
+<!--关联知识点弹窗-->
+<div class="fullscr1" id="pointsBox">
+	<div class="adminNotifyBox1 aBoxHeight">
+		<div class="adminNotifyTitle">关联知识点</div>
+		<div class="adminNotifyContent aConHeight">
+            <div class="notifyRemind">提示：传统文化资源只关联到学科即可！</div>
+			<div class="adminSelect">
+                <div class="selectBox mb5">
+                <label>关联教材：</label>
+                    <select id="publishing2" class="input-control input-control-red" name="publishing" onchange="getCourseAndGrade2()">
+                        <option value=''>-请选择-</option>
+                        <volist name="publishingDate" id="publishing">
+                            <option value='{$publishing.publishing_house_id}'>{$publishing.publishing_house}</option>
+                        </volist>
+                    </select>
+                    <span class="redStar">*</span>
+                </div>
+				<div class="selectBox mb5">
+					<label for="">关联学科：</label>
+                    <select id="course2" class="input-control input-control-red" name="course" onchange="getTextbooks2('course')" required>
+						<option value='0'>-请选择-</option>
+                        <!--<volist name="courses" id="dataCourse">
+                            <option value="{$dataCourse.id}">
+                            {$dataCourse.code} : {$dataCourse.course_name}
+                            </option>
+                        </volist>-->
+					</select>
+                    <span class="redStar">*</span>
+				</div>
+				<div class="selectBox mb5">
+					<label for="">关联年级：</label>
+					<select  id="grade2" class="input-control input-control-red" name="grade" onchange="getTextbooks2('grade')">
+						<option value='0'>-请选择-</option>
+                        <!--<volist name="grades" id="dataGrade">
+                            <option value="{$dataGrade.id}">
+                            {$dataGrade.grade}
+                            </option>
+                        </volist>-->
+					</select>
+                    <span class="redStar">*</span>
+				</div>
+				<div class="selectBox mt5 mb5">
+					<label for="">教材分册：</label>
+					<select id="textbook2" class="input-control input-control-red" name="textbook" onchange="getChapter2()">
+						<option value='0'>-请选择-</option>
+                            <option value="{$item.id}"></option>
+                        <volist name="textbook_result" id="item">
+                            <option value="{$item.id}" {$content['textbook'] == $item['id'] ?'selected':''}>-{$item.name}-</option>
+                        </volist>
+					</select>
+                    <span class="redStar">*</span>
+				</div>
+				<div class="selectBox mb5">
+					<label for="">关联章/单元：</label>
+					<select id="chapter2" class="input-control input-control-red" name="chapter" onchange="getFestival2()">
+						<option value='0'>-请选择-</option>
+                            <option value="{$item.id}"></option>
+                        <volist name="chapter" id="item">
+                            <option value="{$item.id}" {$content['chapter'] == $item['id'] ?'selected':''}>-{$item.knowledge_name}-</option>
+                        </volist>
+					</select>
+                    <span class="redStar">*</span>
+				</div>
+                <div class="selectBox mb5">
+                    <label for="">关联节/课：</label>
+                    <select id="festival2" class="input-control" name="festival"onchange="getFestival12()">
+                        <option value='0'>-请选择-</option>
+                            <option value="{$item.id}"></option>
+                        <volist name="festival" id="item">
+                            <option value="{$item.id}" {$content['festival'] == $item['id'] ?'selected':''}>-{$item.knowledge_name}-</option>
+                        </volist>
+                    </select>
+                </div>
+				<div class="selectBox mb5">
+					<label for="">关联知识点1：</label>
+					<select  id="knowledge2" class="input-control" name="knowledge" onchange="getFestival22()">
+						<option value='0'>-请选择-</option>
+                            <option value="{$item.id}"></option>
+                        <volist name="knowledge" id="item">
+                            <option value="{$item.id}" {$content['knowledge'] == $item['id'] ?'selected':''}>-{$item.knowledge_name}-</option>
+                        </volist>
+					</select>
+				</div>
+				<div class="selectBox mt5 mb5">
+					<label for="">关联知识点2：</label>
+					<select id="child_knowledge2" class="input-control" name="child_knowledge">
+						<option value='0'>-请选择-</option>
+                            <option value="{$item.id}"></option>
+                        <volist name="child_knowledge" id="item">
+                            <option value="{$item.id}" {$content['child_knowledge'] == $item['id'] ?'selected':''}>-{$item.knowledge_name}-</option>
+                        </volist>
+					</select>
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="surePoints">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelPoints">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<!--修改名称-->
+<div class="fullscr1" id="save-box">
+    <div class="adminNotifyBox1">
+        <div class="adminNotifyTitle">修改文件名</div>
+        <div class="adminNotifyContent" style="padding-top: 40px">
+            <div class="adminSelect">
+                <label for="">名称：</label>
+                <input id="save-name" type="text" class="input-control">
+            </div>
+            <p class="adminNotifyButton">
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="save-sure">确定</a>
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="save-cance">取消</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!--<script src="__PUBLIC__/metro/js/metro.js"></script>-->
+<!--<script src="__PUBLIC__/js/jquery.form.js"></script>-->
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script type="text/template" id="qq-template">
+    <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+        <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+            <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+        </div>
+        <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+            <span class="qq-upload-drop-area-text-selector"></span>
+        </div>
+        <div class="qq-upload-button-selector qq-upload-button">
+            <div>上传文件</div>
+        </div>
+        <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+        <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+            <li>
+                <span class="spanCheck">
+                        <input type="checkbox" class="spanCheckbox contact_file_checkbox" onclick="javascript:checkd(this)"  name='void_field[]'>
+                        <input type="hidden" class="spanCheckboxHidden contact_file_checkbox_hid" name="choose_id[]" value="0"  >
+                        是否上架
+                </span>
+                <div class="qq-progress-bar-container-selector">
+                    <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                </div>
+                <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+                <span class="qq-upload-file-selector qq-upload-file"></span>
+                <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                <span class="qq-upload-size-selector qq-upload-size"></span>
+				<br>
+				<label class="labelName">自定义名称：</label>
+                <input type='text' name='contact_resource_name[]' class='contact_resource_name myName'/>
+				<br>
+				<label class="labelPrice">是否收费：</label>
+                <select class='resource_contact_charge_status' name='resource_contact_charge_status[]'>
+                    <option value='0'>请选择</option>
+                    <option value='1'>免费</option>
+                    <option value='2'>收费</option>
+                </select>
+				<label class="labelTry">是否允许试用：</label>
+                <select class='resource_trial' name='resource_trial[]'>
+                    <option value='0'>请选择</option>
+                    <option value='1'>是</option>
+                    <option value='2'>否</option>
+                </select>
+                <label class="labelTry">是否允许团体VIP下载：</label>
+                <select class='vip_status' name='vip_status[]'>
+                    <option value='0'>请选择</option>
+                    <option value='1'>是</option>
+                </select>
+				<!--<label class="labelTime">试用时间：</label>
+                <span class="spanCheck browse_time_span">
+                	<input type="number" class="browse_time" name="browse_time[]"  onclick="">秒
+                </span>-->
+
+				<button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
+                <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
+
+                <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+
+
+            </li>
+        </ul>
+
+        <dialog class="qq-alert-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">Close</button>
+            </div>
+        </dialog>
+
+        <dialog class="qq-confirm-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">No</button>
+                <button type="button" class="qq-ok-button-selector">Yes</button>
+            </div>
+        </dialog>
+
+        <dialog class="qq-prompt-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <input type="text">
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                <button type="button" class="qq-ok-button-selector">Ok</button>
+            </div>
+        </dialog>
+    </div>
+</script>
+
+<script>
+    function activePic(obj)
+    {
+        $(obj).addClass('active').parent().siblings('li').find('a').removeClass('active')
+        $(obj).parent().parent().siblings('.file').val('');
+        $(obj).parent().parent().siblings('.hiddenFile').val($(obj).attr('attr_path'));
+        var name =  $(obj).parent().parent().siblings('.hiddenFile').attr('name');
+        setCanvasToImage($(obj).children('img')[0],$('#' + name)[0]);
+        if(name == 'pc_cover') {
+            $('#pc_cover').parent().height(266);
+            initCropper('cropperPC', 400 / 266, 'pc_cover');
+        }
+        else{
+            $('#mobile_cover').parent().height(200);
+            initCropper('cropperAPP', 200 / 200, 'mobile_cover');
+        }
+
+    }
+    
+     var record={
+        num:""
+        }
+    checkDecimal=function(n){
+        var decimalReg=/^\d{0,8}\.{0,1}(\d{1,2})?$/;//var decimalReg=/^[-\+]?\d{0,8}\.{0,1}(\d{1,2})?$/;
+
+        if(n!="" && decimalReg.test(n)){
+            record.num=n;
+        }else{
+            if(n!=""){
+                n=record.num;
+            }
+        }
+        return n;
+    }
+
+    var record1={
+        num:""
+        }
+    checkDecimal1=function(n){
+        var decimalReg=/^\d{0,8}\.{0,1}(\d{1,2})?$/;//var decimalReg=/^[-\+]?\d{0,8}\.{0,1}(\d{1,2})?$/;
+        if(n!=""&&decimalReg.test(n)){
+            record1.num=n;
+        }else{
+            if(n!=""){
+                n=record1.num;
+            }
+        }
+    }
+
+    var global_resource_charge_status=false;
+    if($('#resource_charge_status').val()=='1'){
+        $('#resource_time').attr('disabled',true);
+        $('.resource_price').attr('disabled',true);
+        $('.promote_price').attr('disabled',true);
+        global_resource_charge_status=true;
+    }else{
+        $('#resource_time').attr('disabled',false);
+        $('.resource_price').attr('disabled',false);
+        $('.promote_price').attr('disabled',false);
+        global_resource_charge_status=false;
+    }
+
+    $("#resource_charge_status").change(function(){
+        var resource_charge_status=$("#resource_charge_status").val();
+        if(resource_charge_status==1){
+            $('#resource_time').attr('disabled',true);
+            $('#resource_time').find('option[value=0]').attr('selected',true);
+            $('.resource_price').val('');
+            $('.promote_price').val('');
+            $('.resource_price').attr('disabled',true);
+            $('.promote_price').attr('disabled',true);
+            global_resource_charge_status=true;
+            $('.resource_contact_charge_status').find('option[value=1]').attr('selected',true);
+            $('.resource_trial').find('option[value=2]').attr('selected',true);
+            $('.browse_time').val('');
+        }else{
+            $('#resource_time').attr('disabled',false);
+            $('.resource_price').attr('disabled',false);
+            $('.promote_price').attr('disabled',false);
+            global_resource_charge_status=false;
+        }
+    });
+
+
+    $('.resource_price').keyup(function(){
+        var price=checkDecimal($('.resource_price').val());
+        $('.resource_price').val(price);
+    });
+
+    $('.promote_price').keyup(function(){
+        var price=checkDecimal($('.promote_price').val());
+        $('.promote_price').val(price);
+    });
+
+    var resource_contact_charge_status=1;
+    var resource_trial=2;
+    $('.resource_contact_charge_status').live('change',function(){
+        if(global_resource_charge_status==true){
+            $(this).val(resource_contact_charge_status);
+        }else{
+            if($(this).val()=='1'){
+                $(this).siblings('.resource_trial').find('option[value=2]').attr('selected',true);
+                $(this).siblings('.browse_time_span').find('.browse_time').val('');
+            }
+        }
+    });
+
+
+    $('.resource_trial').live('change',function(){
+        if(global_resource_charge_status==true){
+            $(this).val(resource_trial);
+        }else{
+            var prev_charge_element=$(this).siblings('.resource_contact_charge_status').val();
+            if(prev_charge_element=='1'){
+                if($(this).val()=='1'){
+                    $(this).find('option[value=2]').attr('selected',true);
+                    $(this).siblings('.browse_time_span').find('.browse_time').val('');
+                }
+            }else{
+                if($(this).val()=='2'){
+                    $(this).siblings('.browse_time_span').find('.browse_time').val('');
+                }
+            }
+        }
+    });
+
+    $('.browse_time').live('click',function(){
+        if(global_resource_charge_status==true){
+            $(this).trigger('blur');
+        }else{
+            var resource_trial=$('.resource_trial').val();
+            if(resource_trial=='2'){
+                $(this).trigger('blur');
+            }
+            //resource_trial
+        }
+    });
+
+
+    var resource_ytpe="{$content.file_type}";
+    before_type=$("#type").val();
+    function changeType() {
+        var type=$("#type").val();
+        $("#uplode-botton").show();
+        //$("#fine-uploader").show();
+        if(before_type!=0){
+            if(confirm('您确认改变资源类型吗?改变后之前的资源将会被清除')){
+                uploadInfo={};
+                $('#vid').val('');
+                $('#vid_file_path').val('');
+                $('#playerwidth').val('');
+                $('#playerduration').val('');
+                $('.qq-upload-list').children('li').remove();
+                $(".show_div").remove();
+                $('.resourceBox').children().addClass('dn');
+                $(".hidden_ids").remove();
+                if(type == 0)
+                    $("#fine-uploader").hide();
+
+            }else{
+                $("#type").find("option[value="+before_type+"]").attr('selected',true);
+            }
+        }
+        before_type=$("#type").val();
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').eq(0).attr('accept',acceptStr);
+    }
+
+
+     $('#appFile').bind('change', function () {
+         if ((file = this.files[0])) {
+             img = new Image();
+             img.onload = function () {
+                     appCheck(this);
+             };
+             img.setAttribute('crossOrigin', 'Anonymous');
+             img.src = URL.createObjectURL(file);
+         }else{
+             //当没选中图片时，清除预览
+             if($('#appFile')[0].files.length === 0){
+                 document.querySelector('#mobile_cover').src = "<?php if(strpos($content['mobile_cover'],'http') === false){ echo $real_file_path.$content['mobile_cover']; }else{echo $content['mobile_cover']; }?>";
+                 return;
+             }
+         }
+     });
+    function check() {
+
+        if($('.qq-upload-list-selector li').hasClass('qq-upload-fail')){
+            alert("有文件上传错误,请修复上传文件错误再提交");
+            return false;
+        }
+        if($('.qq-upload-list-selector li').hasClass('qq-in-progress')){
+            alert("文件未上传完毕,无法提交");
+            return false;
+        }
+        $('#vid').val('');
+        $('#vid_file_path').val('');
+        $('#playerwidth').val('');
+        $('#playerduration').val('');
+        $('#vid_fullpath').val('');
+        $('#vid_fullsize').val('');
+        $('#vid_image_path').val('');
+        $('#is_transition').val('');
+
+        for(var key in uploadInfo){
+            $('#vid_file_path').val($('#vid_file_path').val() + uploadInfo[key].vid_file_path +',');
+            var width = typeof(uploadInfo[key].playerwidth) != 'undefined' ? uploadInfo[key].playerwidth : '0*0';
+
+            $('#playerwidth').val($('#playerwidth').val() + width +',');
+            var duration = typeof(uploadInfo[key].playerduration) != 'undefined' ? uploadInfo[key].playerduration : '00:00:00';
+
+            $('#playerduration').val($('#playerduration').val() + duration +',');
+            var vid = typeof(uploadInfo[key].vid) != 'undefined' ? uploadInfo[key].vid : '0';
+            $('#vid').val($('#vid').val() + vid +',');
+
+            var vid_fullpath= typeof(uploadInfo[key].vid_fullpath) != 'undefined' ? uploadInfo[key].vid_fullpath : '0';
+            $('#vid_fullpath').val($('#vid_fullpath').val()+vid_fullpath+',');
+
+            var vid_image_path= typeof(uploadInfo[key].vid_image_path) != 'undefined' ? uploadInfo[key].vid_image_path : '0';
+            $('#vid_image_path').val($('#vid_image_path').val()+vid_image_path+',');
+
+            var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+            $('#is_transition').val($('#is_transition').val()+vid_transition+',');
+
+            var vid_fullsize = typeof(uploadInfo[key].vid_fullsize) != 'undefined' ? uploadInfo[key].vid_fullsize : '0';
+            $('#vid_fullsize').val($('#vid_fullsize').val()+vid_fullsize+',');
+
+        }
+        $('#vid_file_path').val($('#vid_file_path').val().substr(0 ,$('#vid_file_path').val().length-1));
+        $('#playerwidth').val($('#playerwidth').val().substr(0 ,$('#playerwidth').val().length-1));
+        $('#playerduration').val($('#playerduration').val().substr(0 ,$('#playerduration').val().length-1));
+        $('#vid').val($('#vid').val().substr(0 ,$('#vid').val().length-1));
+        $('#vid_fullpath').val($('#vid_fullpath').val().substr(0 ,$('#vid_fullpath').val().length-1));
+        $('#vid_image_path').val($('#vid_image_path').val().substr(0 ,$('#vid_image_path').val().length-1));
+        $('#is_transition').val($('#is_transition').val().substr(0 ,$('#is_transition').val().length-1));
+        $('#vid_fullsize').val($('#vid_fullsize').val().substr(0 ,$('#vid_fullsize').val().length-1));
+
+
+        var name = $(":input[name='name']").val();
+        if( name == ''){
+            alert('请填写资源名称!');return false;
+        }
+        var resource_type = $(":input[name='resource_type']").val();
+        if( resource_type == ''){
+            alert('请填写内容提供商!');return false;
+        }
+
+
+        if($("input:checkbox[name='types[]']:checked").length == 0){
+            alert('至少选择一种资源类型');return false;
+        }else if($("input:checkbox[name='column_ids[]']:checked").length == 0){
+            alert('至少选择一种所属栏目');return false;
+        }
+
+        var ary = new Array();
+        var test = new Array();
+        var tips = true;
+        var strs = '<input type="hidden" name="arr" value="">';
+        for(i=0;i<$('#body').find('tr').length;i++){
+            test = $('#body').find('tr').eq(i).attr('attr-data').split(',');
+            for(r=0;r<5;r++){
+                if(test[r] == '' || test[r] == 0){
+                    alert('请选择完整知识点后再关联');return false;
+                }
+            }
+            ary.push($('#body').find('tr').eq(i).attr('attr-data')+'|'+$('#body').find('tr').eq(i).attr('class')+'|'+$('#body').find('tr').eq(i).children('td').eq(1).text());
+        }
+        console.log(ary);
+        for(a=0;a<ary.length;a++){
+            $('#form_submit').append('<input type="hidden" class="vals" name="arr[]" value="'+ary[a]+'">')
+        }
+
+        //京版资源或nobook等
+        var resource_type=$("#resource_type").val();
+
+        if(resource_type==1) {
+            //判断价格
+            var new_resource_charge_status=$("#resource_charge_status").val()
+            var new_resource_time=$("#resource_time").val();
+            var new_resource_price=$(".resource_price").val();
+            var new_promote_price=$('.promote_price').val();
+            if(new_resource_charge_status=='0'){
+                alert('请勾选收费设置');
+                return false;
+            }else if(new_resource_charge_status=='2'){
+                //判断收费模式等
+                if(new_resource_time=='0'){
+                    alert('请选择收费模式');
+                    return  false;
+                }
+                if(new_resource_price==''){
+                    alert('请填写原价');
+                    return false;
+                }
+                if(new_promote_price!=''){
+                    if(Number(new_promote_price) >= Number(new_resource_price)){
+                        alert('优惠价不能大于原价');
+                        return false;
+                    }
+                }
+                var all_resource_contact_charge_status=$('.resource_contact_charge_status');
+                var all_resource_trial=$('.resource_trial');
+                var all_browse_time=$('.browse_time');
+                var all_browse_time_value=new Array();
+                for(var i=0;i<all_resource_contact_charge_status.length;i++){
+                    if($(all_resource_contact_charge_status[i]).val()=='0'){
+                        alert('请选择单个资源是否收费');
+                        return false;
+                    }
+                    if($(all_resource_trial[i]).val()=='0'){
+                        alert('请选择是否允许试用');
+                        return false;
+                    }
+                    /* if($(all_resource_contact_charge_status[i]).val()=='2' && $(all_resource_trial[i]).val()=='1'){
+                     if($(all_browse_time[i]).val()==''){
+                     alert('请填写试用时间');
+                     return false;
+                     }
+                     all_browse_time_value.push($(all_browse_time[i]).val());
+                     }*/
+                }
+                //这里判断时间是否一致
+                /*var all_browse_time_value_length=all_browse_time_value.length;
+                 for(var j=0;j<all_browse_time_value_length;j++){
+                 if(j+1<all_browse_time_value_length ){
+                 if($(all_browse_time_value[j])!=$(all_browse_time_value[j+1]) ){
+                 alert('所有试用时间请填写一致');
+                 return false;
+                 }
+                 }
+                 } */
+            }
+            /*
+             var all_contact_putaway_status=$('.edit_contact_putaway_status');
+             for(var i=0;i<all_contact_putaway_status.length;i++){
+             if($(all_contact_putaway_status[i])[0].checked==true){
+             console.log($(all_contact_putaway_status[i]).val()+'_'+'1');
+             $(all_contact_putaway_status[i]).siblings('.exists_contact_file_checkbox_hid').val($(all_contact_putaway_status[i]).val()+'_'+'1');
+
+             }else{
+             $(all_contact_putaway_status[i]).siblings('.exists_contact_file_checkbox_hid').val($(all_contact_putaway_status[i]).val()+'_'+'0');
+             }
+             }*/
+        }
+
+        if(resource_type==1) {
+            if (type == 'video' || type == 'audio') {
+                var vid = $('#vid').val();
+                if (vid == '') {
+                    if ($(".resource_class").length < 1) {
+
+                        alert('上传视频或音频不能为空');return false;
+                    }
+                }
+            } else {
+                var vid_file_path=$('#vid_file_path').val();
+                if ($(".resource_class").length<1) {
+                    if (vid_file_path == '') {
+
+                        alert('上传文件不能为空');return false;
+                    }
+                }
+            }
+        }else{
+            if($('.urlInput').val()==''){
+
+                alert('请填写路径地址');return false;
+            }
+        }
+
+        if ($("input:checkbox[name='types[]']:checked").length > 0) {
+            if ($('.show_div').length > 0) {
+                /* console.log($("input:checkbox[name='choose_id[]']:checked").length);return false;*/
+                if ($("input:checkbox[name='exists_void_field[]']:checked").length == 0) {
+                    if ($("input:checkbox[name='void_field[]']:checked").length == 0) {
+                        alert('至少选择一个文件上架');
+                        return false;
+                    }
+                }
+            }
+        }
+        if(!generateImage())
+        {
+            alert('请设置PC与APP的封面!');
+            return false;
+        }
+        return true;
+    }
+
+    function checkd(obj){
+        if($(obj).is(':checked')){
+            //$(obj).attr('checked','checked');
+            $(obj).siblings('.spanCheckboxHidden').val(1);
+            $(obj).val(1);
+        }else{
+            //$(obj).removeAttr('checked');
+            $(obj).siblings('.spanCheckboxHidden').val(0);
+            $(obj).val(0);
+        }
+    }
+
+    var uploadInfo = {};
+    function changeInputFilter(){
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').eq(0).attr('accept',acceptStr);
+    }
+
+
+    //根据资源类型不同显示不同的上传文件方式
+     before_resource_type=$("#resource_type").val();
+    function showhide(obj) {
+        if (confirm('您确认改变内容提供商吗?改变后之前的资源将会被清除')) {
+            var a = $(obj).val();
+            if (a == 2) {
+                //$('.upload').hide();
+                $('#file_type').hide();
+                $('#uplode-botton').hide();
+                $('.upload2').show();
+                $('.hidden_ids').remove();
+                $('.price_setup').hide();
+            } else if (a == 3 || a == 4) {
+                //$('.upload').hide();
+                $('#file_type').hide();
+                $('#uplode-botton').hide();
+                $('.upload2').show();
+                $('.hidden_ids').remove();
+                $('.price_setup').hide();
+            } else {
+                $('.upload').show();
+                $('#file_type').show();
+                $('#type').val('');
+                $('.upload2').hide();
+                $('.hidden_ids').remove();
+                $('.price_setup').show();
+            }
+        }else{
+            $("#resource_type").find("option[value="+before_resource_type+"]").attr('selected',true);
+        }
+        before_resource_type=$("#resource_type").val();
+    }
+
+    if($('#resource_type').val() == '1'){
+
+        $('.upload2').hide();
+    }else if($('#resource_type').val() == '2'){
+        //$('.upload').hide();
+        $('#file_type').hide();
+        $('#uplode-botton').hide();
+        $('.upload2').show();
+        $('.price_setup').hide();
+    }else{
+        //$('.upload').hide();
+        $('#file_type').hide();
+        $('#uplode-botton').hide();
+        $('.upload2').show();
+        $('.price_setup').hide();
+    }
+
+    //新上传封面操作就隐藏老的封面图片
+    /*$('#pcFile').change(function () {
+        $('#pc_cover').hide();
+    });*/
+
+
+    function onFileCheck(){
+        if($('li').hasClass('qq-upload-fail')){
+            alert('有文件上传错误');
+            return false;
+        }
+        return true;
+    }
+    var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById('fine-uploader'),
+        request1Enable : true,
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','cataid':1499236692726,'JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mov","mp4","mp3",'wmv','avi','flv'),
+            inputName:'Filedata',
+        },
+        request: {
+            endpointnum: 0,
+            endpoint: '/index.php?m=Admin&c=Jbresources&a=upload_file&watermark_status=1',
+            params:{},
+            inputName:'file[]',
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'
+        },
+        retry: {
+            enableAuto: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[id];
+        },
+        responseCallBack: function(id,specNum,xhr){
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                alert('上传失败!错误原因'+e);
+                return false;
+            }
+            if(specNum == 0){
+                if(result.code == 0){
+                    if(typeof(uploadInfo[id])== 'undefined'){
+                        uploadInfo[id] = {};
+                    }
+
+					var file_name_arr=result.name.split('.');
+                    var file_name = '';
+                    var num = file_name_arr.length;
+                    for(var i = 0;i<num-1;i++){
+
+                        if(i == num-2){
+                            file_name += file_name_arr[i];
+                        }else{
+                            file_name += file_name_arr[i]+'.';
+                        }
+                    }
+                    //var file_name=file_name_arr[num-2];
+					$('.qq-file-id-'+id).find('.contact_resource_name').val(file_name);
+                    if( $('#pc_coverList').children('li').length != 0 && result.message_video_image.length != 0) {
+                        if (confirm('是否重新设置封面候选列表当中的图片？')) {
+                            $('#pc_coverList').children('li').remove();
+                            $('#mobile_coverList').children('li').remove();
+                        }
+                    }
+                    if( $('#pc_coverList').children('li').length == 0) {
+
+                        var pc_coverLiTemplate = '<li><a href="javascript:void(0)" onclick="activePic(this)" attr_path="{0}"><img crossorigin="Anonymous" style="height:91px;width:113px"  src="{$oss_path}{0}"></a></li>';
+                        var mobile_coverLiTemplate = '<li><a href="javascript:void(0)" onclick="activePic(this)" attr_path="{0}"><img crossorigin="Anonymous" style="height:90px;width:90px" src="{$oss_path}{0}"></a></li>';
+                        var pc_coverHtml = $('#pc_coverList').html();
+                        var mobile_coverHtml = $('#mobile_coverList').html();
+                        $(result.message_video_image).each(function (i, n) {
+                            pc_coverHtml += pc_coverLiTemplate.format(n.pc_cover);
+                            mobile_coverHtml += mobile_coverLiTemplate.format(n.mobile_cover);
+                        })
+                        $('#pc_coverList').html(pc_coverHtml);
+                        $('#mobile_coverList').html(mobile_coverHtml);
+                    }
+                    uploadInfo[id]['vid_file_path'] = result.res;
+                    uploadInfo[id]['is_transition'] = result.is_transition;            //这里是视频转换状态。
+                    return true;
+                }else{
+                    alert(result.msg);
+                }
+            }else if(specNum == 1){
+                if(result.error == 0){
+                    //alert("上传成功!VID:"+result.data[0].vid);
+                    //TODO: add result.res to XXX
+                    if(typeof(uploadInfo[id])== 'undefined')
+                    {
+                        uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid_fullsize'] = result.data[0].source_filesize;
+                    uploadInfo[id]['vid'] = result.data[0].vid;
+                    uploadInfo[id]['playerwidth'] = result.data[0].playerwidth + '*' +result.data[0].playerheight;
+                    uploadInfo[id]['duration'] = result.data[0].duration;
+                    uploadInfo[id]['vid_fullpath'] = result.data[0].mp4;
+                    uploadInfo[id]['vid_image_path'] = result.data[0].first_image;
+                    // add mp4 path to
+                    $('.qq-file-id-'+id).find('.qq-upload-file').addClass('cursor_pointer').attr('vid_fullpath',result.data[0].mp4_2 != undefined ? result.data[0].mp4_2 : result.data[0].mp4_1);
+                    return true;
+                }else{
+                    alert("上传失败!错误码:"+result.error);
+                }
+            }
+            return false;
+        }
+    });
+
+    function getTextbooks(str) {
+
+        //判断教材版本是否一致
+        /*if($('#body').find('tr').length >=1 ){
+            var course_temp =  $('#body').find('tr').eq(0).attr('attr-data');
+            var course_temp_arr = course_temp.split(",");
+            var course_temp_id = course_temp_arr[1];
+        }
+        var temp_course = $('#course').val();
+        if($('.odd').length == 0 && str !== 'grade' && temp_course !== course_temp_id){
+            if(confirm('您确认改变学科吗?改变后之前关联的知识点将被删除')){
+                $('#body').find('tr').remove();
+            }else{
+                $('#course').find("option[value="+before_course+"]").attr('selected',true);
+            }
+        }
+        before_course = $('#course').val();*/
+
+        var publishing_id = $('#publishing').val();
+        var courseId = $('#course').val();
+        var gradeId = $('#grade').val();
+
+        $("#textbook option:not(:eq(0))").remove();
+        $("#chapter option:not(:eq(0))").remove();
+        $("#festival option:not(:eq(0))").remove();
+        $("#knowledge option:not(:eq(0))").remove();
+        $("#child_knowledge option:not(:eq(0))").remove();
+
+        if (courseId == '' || gradeId == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_textbooks', {
+                    'course_id': courseId,
+                    'grade_id': gradeId,
+                    'publishing_id' : publishing_id
+                },
+                function (res) {
+                    var options = [];
+                    options.push('<option value="">-请选择-</option>');
+                    $.each(res, function (index, item) {
+                        options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+                    });
+                    console.log(options);
+                    if (options.length > 0) {
+                        $('#textbook').html(options.join(''));
+                    } else {
+                        $('#textbook').html('<option value="">-请选择-</option>');
+                    }
+
+                })
+        }
+    }
+
+    function getChapter() {
+        var textbook_id = $('#textbook').val();
+
+        $("#chapter option:not(:eq(0))").remove();
+        $("#festival option:not(:eq(0))").remove();
+        $("#knowledge option:not(:eq(0))").remove();
+        $("#child_knowledge option:not(:eq(0))").remove();
+        if (textbook_id == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_chapter', {
+                'textbook_id': textbook_id,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#chapter').html(options.join(''));
+                } else {
+                    $('#chapter').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    function getFestival() {
+        var chapter = $('#chapter').val();
+
+        $("#festival option:not(:eq(0))").remove();
+        $("#knowledge option:not(:eq(0))").remove();
+        $("#child_knowledge option:not(:eq(0))").remove();
+        if (chapter == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival', {
+                'chapter': chapter,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#festival').html(options.join(''));
+                } else {
+                    $('#festival').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    //获取知识点一
+    function getFestival1() {
+        var festival = $('#festival').val();
+
+        //$("#festival option:not(:eq(0))").remove();
+        $("#knowledge option:not(:eq(0))").remove();
+        $("#child_knowledge option:not(:eq(0))").remove();
+        if (festival == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival1', {
+                'festival': festival,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#knowledge').html(options.join(''));
+                } else {
+                    $('#knowledge').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    //获取知识点二
+    function getFestivall() {
+
+        var knowledge = $('#knowledge').val();
+
+        //$("#knowledge option:not(:eq(0))").remove();
+        $("#child_knowledge option:not(:eq(0))").remove();
+        if (knowledge == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival2', {
+                'knowledge': knowledge,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#child_knowledge').html(options.join(''));
+                } else {
+                    $('#child_knowledge').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+
+//第二套js
+
+     var before_course2 = '';
+    function getTextbooks2(str) {
+
+        //判断教材版本是否一致
+        /*if($('#body').find('tr').length >=1 ){
+            var course_temp =  $('#body').find('tr').eq(0).attr('attr-data');
+            var course_temp_arr = course_temp.split(",");
+            var course_temp_id = course_temp_arr[1];
+        }
+        var temp_course = $('#course2').val();
+        if($('.odd').length == 0 && str !== 'grade' && temp_course !== course_temp_id){
+            if(confirm('您确认改变学科吗?改变后之前关联的知识点将被删除')){
+                $('#body').find('tr').remove();
+            }else{
+                $('#course2').find("option[value="+before_course2+"]").attr('selected',true);
+            }
+        }
+        before_course2 = $('#course2').val();*/
+
+
+        var publishing_id = $('#publishing2').val();
+
+        var courseId = $('#course2').val();
+        var gradeId = $('#grade2').val();
+
+        $("#textbook2 option:not(:eq(0))").remove();
+        $("#chapter2 option:not(:eq(0))").remove();
+        $("#festival2 option:not(:eq(0))").remove();
+        $("#knowledge2 option:not(:eq(0))").remove();
+        $("#child_knowledge2 option:not(:eq(0))").remove();
+
+        if (courseId == '' || gradeId == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_textbooks', {
+                    'course_id': courseId,
+                    'grade_id': gradeId,
+                    'publishing_id' : publishing_id
+                },
+                function (res) {
+                    var options = [];
+                    options.push('<option value="">-请选择-</option>');
+                    $.each(res, function (index, item) {
+                        options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+                    });
+                    console.log(options);
+                    if (options.length > 0) {
+                        $('#textbook2').html(options.join(''));
+                    } else {
+                        $('#textbook2').html('<option value="">-请选择-</option>');
+                    }
+
+                })
+        }
+    }
+
+    function getChapter2() {
+        var textbook_id = $('#textbook2').val();
+
+        $("#chapter2 option:not(:eq(0))").remove();
+        $("#festival2 option:not(:eq(0))").remove();
+        $("#knowledge2 option:not(:eq(0))").remove();
+        $("#child_knowledge2 option:not(:eq(0))").remove();
+        if (textbook_id == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_chapter', {
+                'textbook_id': textbook_id,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#chapter2').html(options.join(''));
+                } else {
+                    $('#chapter2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    function getFestival2() {
+        var chapter = $('#chapter2').val();
+
+        $("#festival2 option:not(:eq(0))").remove();
+        $("#knowledge2 option:not(:eq(0))").remove();
+        $("#child_knowledge2 option:not(:eq(0))").remove();
+        if (chapter == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival', {
+                'chapter': chapter,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#festival2').html(options.join(''));
+                } else {
+                    $('#festival2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    //获取知识点一
+    function getFestival12() {
+        var festival = $('#festival2').val();
+
+        //$("#festival2 option:not(:eq(0))").remove();
+        $("#knowledge2 option:not(:eq(0))").remove();
+        $("#child_knowledge2 option:not(:eq(0))").remove();
+        if (festival == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival1', {
+                'festival': festival,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#knowledge2').html(options.join(''));
+                } else {
+                    $('#knowledge2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    //获取知识点二
+    function getFestival22() {
+        var knowledge = $('#knowledge2').val();
+
+        //$("#knowledge2 option:not(:eq(0))").remove();
+        $("#child_knowledge2 option:not(:eq(0))").remove();
+        if (knowledge == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival2', {
+                'knowledge': knowledge,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#child_knowledge2').html(options.join(''));
+                } else {
+                    $('#child_knowledge2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+
+//第三套js
+
+    function getTextbooks3() {
+
+        var publishing_id = $('#publishing2').val();
+        var courseId = $('#course2').val();
+        var gradeId = $('#grade2').val();
+        if (courseId == '' || gradeId == '') {
+            return false;
+        }else {
+            $.ajaxSettings.async = false;
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_textbooks', {
+                    'course_id': courseId,
+                    'grade_id': gradeId,
+                    'publishing_id' : publishing_id
+                },
+                function (res) {
+                    var options = [];
+                    options.push('<option value="">-请选择-</option>');
+                    $.each(res, function (index, item) {
+                        options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+                    });
+                    console.log(options);
+                    if (options.length > 0) {
+                        $('#textbook2').html(options.join(''));
+                    } else {
+                        $('#textbook2').html('<option value="">-请选择-</option>');
+                    }
+
+                })
+        }
+    }
+
+    function getChapter3() {
+        var textbook_id = $('#textbook2').val();
+        if (textbook_id == '') {
+            return false;
+        }else {
+            $.ajaxSettings.async = false;
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_chapter', {
+                'textbook_id': textbook_id,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#chapter2').html(options.join(''));
+                } else {
+                    $('#chapter2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    function getFestival3() {
+        var chapter = $('#chapter2').val();
+        if (chapter == '') {
+            return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival', {
+                'chapter': chapter,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#festival2').html(options.join(''));
+                } else {
+                    $('#festival2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    //获取知识点一
+    function getFestival13() {
+        var festival = $('#festival2').val();
+        if (festival == '') {
+            return false;
+        }else {
+            $.ajaxSettings.async = false;
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival1', {
+                'festival': festival,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#knowledge2').html(options.join(''));
+                } else {
+                    $('#knowledge2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    //获取知识点二
+    function getFestival23() {
+        var knowledge = $('#knowledge2').val();
+        if (knowledge == '') {
+            return false;
+        }else {
+            $.ajaxSettings.async = false;
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival2', {
+                'knowledge': knowledge,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#child_knowledge2').html(options.join(''));
+                } else {
+                    $('#child_knowledge2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+
+    var resource_path='';
+    var resNameText;
+    //点击查看大图
+
+    $(".show_div").find('span').live('click',function(){
+        resNameText = $(this).text();
+        $('.contactDisplay').addClass('dn');
+        var main_Type = $('#type').val();
+        if(main_Type == 'mixed')
+            resource_ytpe = $(this).siblings('input:hidden').eq(1).attr('filetype');
+        switch(resource_ytpe){
+            case 'image':
+                $('#image').removeClass('dn');
+                resource_path=$(this).siblings('input').eq(2).val();
+                $(".resource_image").children('img').attr('src',resource_path);
+                break;
+            case 'video':
+                $('#video,.resName').removeClass('dn');
+                $('#plv')[0].src = $(this).siblings('input:hidden').eq(1).attr('vid_fullpath');
+                if($('#plv').parent().find('#button').length ==0)
+                   $('#plv').parent().append('<div class="blueBtn m0" id="button">生成封面图</div>');
+                break;
+            case 'audio':
+                $('#audio,.resName').removeClass('dn');
+                resource_path=$(this).siblings('input:hidden').eq(1).val();
+                var player = polyvObject('#audioDiv').videoPlayer({
+                                'vid' : resource_path
+                            });
+                break;
+            case 'swf':
+                $('#swf').removeClass('dn');
+                resource_path=$(this).siblings('input').eq(2).val();
+                $(".resource_swf").children('a').attr('href',resource_path).text(resource_path);
+                break;
+            case 'pdf':
+                $('#pdf').removeClass('dn');
+                resource_path=$(this).siblings('input').eq(2).val();
+                $(".resource_pdf").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                break;
+            case 'word':
+                $('#word').removeClass('dn');
+                resource_path=$(this).siblings('input').eq(2).val();
+                $(".resource_word").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text('点击查看'+resource_path);
+                break;
+            case 'ppt':
+                $('#ppt').removeClass('dn');
+                resource_path=$(this).siblings('input').eq(2).val();
+                $(".resource_ppt").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text('点击查看'+resource_path);
+                break;
+            case 'condensed':
+                $('#condensed').removeClass('dn');
+                resource_path=$(this).siblings('input').eq(2).val();
+                $(".resource_condensed").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                break;
+        }
+        if($('.resourceBox').children('.resName').length == 0) {
+            $('.resourceBox').append('<p class="resName">'+resNameText+'</p>')
+        } else {
+             $('.resourceBox').children('.resName').text(resNameText)
+        }
+    });
+    //点击修改文件名称
+     $(".save_button").live('click',function () {
+         //出现弹框操作
+        $('#save-box').show();
+        $('#save-name').val($(this).siblings('span').text());
+        //点击取消
+        $('#save-cance').click(function () {
+            $('#save-box').hide();
+        });
+        save_this = $(this);
+        //alert($(this).siblings('span').text());
+         //点击确定后生成隐藏域赋值操作
+            $('#save-sure').click(function () {
+                var strName = $('#save-name').val();
+                //alert(save_this.siblings('span').text());return false;
+                save_this.siblings('input').eq(3).val(strName);
+                save_this.siblings('span').text(strName);
+                $('.resName').text(strName);
+                $('#save-box').hide();
+            });
+     });
+    
+
+    //点击删除
+    $(".delete_button").live('click',function(){
+        var contact_class=$(this).attr('attr_class');
+        $("."+contact_class).remove();
+        $(this).parent().remove();
+        //判断是否还有已存在的,并操作
+        if($('.show_div').length>0){
+            //这里替换右侧
+            resource_path=$('.show_div').eq(0).find('input').eq(2).val();
+            resNameText = $('.show_div').eq(0).find('.spanName').text();
+
+            switch(resource_ytpe){
+                case 'image':
+                    $(".resource_image").children('img').attr('src',resource_path);
+                    break;
+                case 'audio':
+                    var player = polyvObject('#plv').videoPlayer({
+                        'vid' : resource_path
+                    });
+                    break;
+                case 'swf':
+                    $(".resource_swf").children('a').attr('href',resource_path).text(resource_path);
+                    break;
+                case 'pdf':
+                    $(".resource_pdf").children('a').attr('href',resource_path).text(resource_path);
+                    break;
+                case 'word':
+                    $(".resource_word").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text(resource_path);
+                    break;
+                case 'ppt':
+                    $(".resource_ppt").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text(resource_path);
+                    break;
+                case 'condensed':
+                    $(".resource_condensed").children('a').attr('href',resource_path).text(resource_path);
+                    break;
+            }
+            $('.resName').text(resNameText);
+        }else{
+            //这里删除
+            //$(".resource_right_div").remove();
+        }
+    });
+
+
+    function init_funtion(){
+        //var temp_ul='<div class="qq-uploader-selector qq-uploader"></div>'
+        var temp_li='<div class="show_div" style=""><input type="checkbox" class="spanCheckbox edit_contact_putaway_status" name="exists_void_field[]" onclick="javascript:checkd(this)">是否上架'+
+                '<input type="hidden" class="spanCheckboxHidden exists_contact_file_checkbox_hid" name="exists_choose_id[]" value="0"  >'+
+                '<img src=""><input type="hidden" /><span class="spanName" style="margin-left:20px;cursor:pointer;"></span>'+'<a class="save_button"style="margin-left:10px;cursor:pointer;">修改</a>'+
+                '<input type="hidden" class="spanCheckboxHidden exists_contact_file_checkbox_hid" name="contact_resource_name_choose[]" value=""  >'+
+				'<br><br>'+
+                '<label class="labelPrice">是否收费：</label><select class="resource_contact_charge_status" name="exists_resource_contact_charge_status[]">'+
+                    '<option value="0">请选择</option>'+
+                    '<option value="1">免费</option>'+
+                    '<option value="2">收费</option>'+
+                '</select>'+
+                '<label class="labelTry">是否允许试用：</label><select class="resource_trial" name="exists_resource_trial[]">'+
+                    '<option value="0">请选择</option>'+
+                    '<option value="1">是</option>'+
+                    '<option value="2">否</option>'+
+                '</select>'+
+                //TODO:添加VIP可下载
+               "<label class=\"labelTry\">是否允许团体VIP下载：</label>\n" +
+            "\t\t\t\t<select class='vip_status' name='vip_status[]'>\n" +
+            "\t\t\t\t\t<option value='0'>请选择</option>\n" +
+            "\t\t\t\t\t<option value='1'>是</option>\n" +
+            "\t\t\t\t</select>" +
+                /*'<label class="labelTime">试用时间：</label><span class="spanCheck browse_time_span">'+
+                '   <input type="number" class="browse_time" name="exists_browse_time[]"  onclick="">秒'+
+                '</span>'+*/
+                '<a class="delete_button" style="margin-left:10px;cursor:pointer;">删除</a></div>';
+        var other_file_id=3;
+        var copy_li,copy_ul;
+
+        //这里开始复制
+        var all_exists_input=$('.hidden_ids').children('input');
+        for(var i=0;i<all_exists_input.length;i++) {
+            copy_li = $(temp_li).clone(true);
+            $(copy_li).find('a').attr('attr_class', ($(all_exists_input[i]).attr('attr_class')));
+            $(copy_li).find('img').css('width', 100);
+            $(copy_li).find('span').eq(0).text($(all_exists_input[i]).attr('attr_file_name'));
+            if ($(all_exists_input[i]).attr('attr_selected')==1) {
+                $(copy_li).find('.spanCheckbox').attr('checked', true);
+                $(copy_li).find('input').eq(1).val(1);
+            }else{
+                $(copy_li).find('input').eq(1).val(0);
+            }
+            $(copy_li).find('input').eq(3).val($(all_exists_input[i]).attr('attr_file_name'));//名字赋值操作
+            $(copy_li).find('.spanCheckbox').val($(all_exists_input[i]).attr('attr_id'));
+
+            if($(all_exists_input[i]).attr('attr_type')=='video'){
+                var vid_image_path='';
+                if($(all_exists_input[i]).attr('vid_image').indexOf('http')== -1){
+                    vid_image_path="{$oss_path}"+$(all_exists_input[i]).attr('vid_image');
+                }else{
+                    vid_image_path=$(all_exists_input[i]).attr('vid_image');
+                }
+
+                $(copy_li).find('img').attr('src',vid_image_path);
+                $(copy_li).find('input').eq(2).attr('vid_fullpath',$(all_exists_input[i]).attr('vid_fullpath'));
+                $(copy_li).find('input').eq(2).val($(all_exists_input[i]).attr('attr_path'));
+
+            }else if($(all_exists_input[i]).attr('attr_type')=='audio'){
+                $(copy_li).find('img').remove();
+                $(copy_li).find('input').eq(2).val($(all_exists_input[i]).attr('attr_path'));
+
+            }else{
+                $(copy_li).find('img').remove();
+                $(copy_li).find('input').eq(2).attr('filetype',$(all_exists_input[i]).attr('filetype'));
+                $(copy_li).find('input').eq(2).val($(all_exists_input[i]).attr('attr')+$(all_exists_input[i]).attr('attr_path'));
+                $(copy_li).find('input').eq(2).attr('vid_fullpath',$(all_exists_input[i]).attr('vid_fullpath'));
+            }
+            $(copy_li).find('.resource_contact_charge_status').find('option[value='+$(all_exists_input[i]).attr('charge_status')+']').attr('selected',true);
+            $(copy_li).find('.resource_trial').find('option[value='+$(all_exists_input[i]).attr('trial_status')+']').attr('selected',true);
+            $(copy_li).find('.vip_status').find('option[value='+$(all_exists_input[i]).attr('attr-vip')+']').attr('selected',true);
+            if($(all_exists_input[i]).attr('trial_time')!=0){
+                $(copy_li).find('.browse_time').val($(all_exists_input[i]).attr('trial_time'));
+            }
+            $('.qq-upload-list-selector').append(copy_li);
+            $('.resName').text($('.spanName').eq(0).text())
+        }
+    }
+
+
+    if($('#resource_type').val() == '1'){
+        init_funtion();
+    }
+
+</script>
+
+
+<script>
+    //添加知识点
+    var temp_arr = new Array();
+	$('#addPoints').click(function(){
+            $('#body').find('.odd').remove();
+            var publishing = $('#publishing').val();//教材版本
+            var course = $('#course').val();
+            var grade = $('#grade').val();
+            var textbook = $('#textbook').val();
+            var chapter = $('#chapter').val();
+            var festival = $('#festival').val();
+            var knowledge = $('#knowledge').val();
+            var child_knowledge = $('#child_knowledge').val();
+
+            if(grade == ''){
+                grade = '-1';
+            }
+            if(textbook == ''){
+                textbook = '-1';
+            }
+            if(chapter == ''){
+                chapter = '-1';
+            }
+            if(festival == ''){
+                festival = '-1';
+            }
+            if(knowledge == ''){
+                knowledge = '-1';
+            }
+            if(child_knowledge == ''){
+                child_knowledge = '-1';
+            }
+            var arr_id = publishing+','+course+','+grade+','+textbook+','+chapter+','+festival+','+knowledge+','+child_knowledge;
+            /*if(course=='' || grade=='' || textbook=='' || chapter=='') {
+                return false;
+            }*/
+            //var arr_id = course+','+grade+','+textbook+','+chapter+','+festival+','+knowledge+','+child_knowledge;
+
+            if(publishing==undefined || publishing=="" || publishing==null){
+                alert('请选择关联教材');
+                return false;
+            }
+
+            if(course==undefined || course=="" || course==null){
+                alert('请选择关联学科');
+                return false;
+            }
+
+        /*if($('#course option:selected').text().indexOf('传统文化') == -1 ) {
+            if(publishing==undefined || publishing=="" || publishing==null){
+                alert('请选择关联年级');
+                return false;
+            }
+
+            if(publishing==undefined || publishing=="" || publishing==null){
+                alert('请选择教学分册');
+                return false;
+            }
+
+            if(publishing==undefined || publishing=="" || publishing==null){
+                alert('请选择关联章/单元');
+                return false;
+            }
+
+        }*/
+
+
+            /*if($('#course option:selected').text().indexOf('传统文化') == -1 ) {
+                if (publishing == '' || course == '' || grade == '' || textbook == '' || chapter == '') {
+                    return false;
+                }
+            }
+            else
+                arr_id = publishing+','+course + ',-1,-1,-1,-1,-1,-1';*/
+            var tr_length=$('#body').find('tr').length;
+            if($('#body').find('tr').length >=1 ){
+                for(i=0;i<tr_length;i++){
+                    if($('#body').find('tr').eq(i).attr('attr-data') == arr_id){
+                        alert('请不要添加相同知识点');return false;
+                    }
+                }
+            }
+
+            //var course_html = $('#course').find('option').attr('value="'+ course + '"');
+            var publishing_html = $('#publishing').find("option:selected").text();//教材版本
+            var course_html = $('#course').find("option:selected").text();
+            var grade_html = $('#grade').find("option:selected").text();
+            var textbook_html = $('#textbook').find("option:selected").text();
+            var chapter_html = $('#chapter').find("option:selected").text();
+            var festival_html = $('#festival').find("option:selected").text();
+            var knowledge_html = $('#knowledge').find("option:selected").text();
+            var child_knowledge_html = $('#child_knowledge').find("option:selected").text();
+            //$('#pointsBox').show()
+            $('.odd').remove();
+            var num = $('#body').children('tr').length + 1;
+            /*if($('#course option:selected').text().indexOf('传统文化') == -1 )*/
+            var str = '<tr id="l_{$data.id}" class="l_0" name="datas" attr-data="'+publishing+','+course+','+grade+','+textbook+','+chapter+','+festival+','+knowledge+','+child_knowledge+'"><td class="text-center">'+ num +'</td><td class="text-center">'+publishing_html+','+course_html+','+grade_html+','+textbook_html+','+ chapter_html+','+festival_html+','+knowledge_html+','+child_knowledge_html+'</td><td class="text-center"><a href="javascript:;" onclick="$(this).parent().parent().remove()" class="operBtn deletePoints">删除</a> </td></tr>';
+           /* else
+            var str = '<tr id="l_{$data.id}" class="l_0" name="datas" attr-data="'+publishing+','+course+','+'-1'+','+'-1'+','+'-1'+','+'-1'+','+'-1'+','+'-1'+'"><td class="text-center">'+ num +'</td><td class="text-center">'+course_html +'</td><td class="text-center"><a href="javascript:;" onclick="$(this).parent().parent().remove()" class="operBtn deletePoints">删除</a> </td></tr>';*/
+
+        $('#body').append(str);
+	});
+        //编辑知识点
+	$('.compilePoints').click(function(){
+	    var class_id = $(this).parent().parent().attr('class');
+	     tips_obj = $(this).parent().parent();
+        var strs= new Array(); //定义一数组
+        strs=class_id.split("_"); //字符分割
+        var attr_ids= $(this).parent().parent().attr('attr-data');
+        var str_arr = new Array();//用于接受学科、年级、知识点等的ID
+        str_arr = attr_ids.split(",");
+        //赋值操作
+        $('#publishing2').val(str_arr[0]);
+        getCourseAndGrade3();
+        $("#course2").val(str_arr[1]);
+        $("#grade2").val(str_arr[2]);
+
+        getTextbooks3();
+        $("#textbook2").val(str_arr[3]);
+        getChapter3();
+        $("#chapter2").val(str_arr[4]);
+        getFestival3();
+        $("#festival2").val(str_arr[5]);
+        getFestival13();
+        $("#knowledge2").val(str_arr[6]);
+        getFestival23();
+        $("#child_knowledge2").val(str_arr[7]);
+		$('#pointsBox').show();
+
+		//确定键点击事件
+        $('#surePoints').click(function(){
+            //获取修改后的数据
+            var publishing2 =$("#publishing2").val();
+            var course2 =$("#course2").val();
+            var grade2 = $("#grade2").val();
+            var textbook2 = $("#textbook2").val();
+            var chapter2 = $("#chapter2").val();
+            var festival2 = $("#festival2").val();
+            var knowledge2 = $("#knowledge2").val();
+            var child_knowledge2 = $("#child_knowledge2").val();
+            var names = $("#names").val();
+
+            if(grade2 == ''){
+                grade2 = '-1';
+            }
+            if(textbook2 == ''){
+                textbook2 = '-1';
+            }
+            if(chapter2 == ''){
+                chapter2 = '-1';
+            }
+            if(festival2 == ''){
+                festival2 = '-1';
+            }
+            if(knowledge2 == ''){
+                knowledge2 = '-1';
+            }
+            if(child_knowledge2 == ''){
+                child_knowledge2 = '-1';
+            }
+
+            if(publishing2==undefined || publishing2=="" || publishing2==null){
+                alert('请选择关联教材');
+                return false;
+            }
+
+            if(course2==undefined || course2=="" || course2==null){
+                alert('请选择关联学科');
+                return false;
+            }
+            /*if($('#course2 option:selected').text().indexOf('传统文化') == -1 ) {
+                if(grade2==undefined || grade2=="" || grade2==null){
+                    alert('请选择关联年级');
+                    return false;
+                }
+
+                if(textbook2==undefined || textbook2=="" || textbook2==null){
+                    alert('请选择教学分册');
+                    return false;
+                }
+
+                if(chapter2==undefined || chapter2=="" || chapter2==null){
+                    alert('请选择关联章/单元');
+                    return false;
+                }
+            }*/
+
+            var publishing2_html = $('#publishing2').find("option:selected").text();
+            var course_html = $('#course2').find("option:selected").text();
+            var course_str = new Array();
+            course_str = course_html.split(":");//关联的学科
+            var grade_html = $('#grade2').find("option:selected").text();
+            var textbook_html = $('#textbook2').find("option:selected").text();
+            var chapter_html = $('#chapter2').find("option:selected").text();
+            var festival_html = $('#festival2').find("option:selected").text();
+            var knowledge_html = $('#knowledge2').find("option:selected").text();
+            var child_knowledge_html = $('#child_knowledge2').find("option:selected").text();
+            var strings = publishing2+','+course2+','+grade2+','+textbook2+','+chapter2+','+festival2+','+knowledge2+','+child_knowledge2;
+
+
+            /*var num = $('#body').children('tr').length;
+
+            if ( num > 0) {
+                tips_obj.attr('attr-data',strings);
+                tips_obj.children('td').eq(1).html(publishing2_html+','+course_html+','+grade_html+','+textbook_html+','+chapter_html+','+festival_html+','+knowledge_html+','+child_knowledge_html);
+            } else {
+                $('.odd').remove();
+                var num = $('#body').children('tr').length + 1;*/
+               /* if($('#course2 option:selected').text().indexOf('传统文化') == -1 ) {*/
+                    tips_obj.attr('attr-data', strings);
+                    tips_obj.children('td').eq(1).html(publishing2_html + ',' + course_html + ',' + grade_html + ',' + textbook_html + ',' + chapter_html + ',' + festival_html + ',' + knowledge_html + ',' + child_knowledge_html);
+                /*}else{
+                    strings = publishing2+','+course2+','+'-1'+','+'-1'+','+'-1'+','+'-1'+','+'-1'+','+'-1';
+                    tips_obj.attr('attr-data', strings);
+                    tips_obj.children('td').eq(1).html(publishing2_html+','+course_html);
+            }
+*/
+            $('#pointsBox').hide();
+        });
+        $('#cancelPoints').click(function(){
+            $('#pointsBox').hide()
+        })
+	});
+
+	//删除知识点
+        $(".deletes").click(function () {
+            var id = $(this).attr('attr-owns');
+            var class_id = $(this).parent().parent().attr('class');
+            $("."+class_id+"").remove();
+            select_disabled();//清除置灰的操作
+        });
+
+    //根据教材版本获取教材版本下的学科和年级
+    var before_publishing = '';
+    function getCourseAndGrade(){
+        //判断教材版本是否一致
+        /*if($('#body').find('tr').length >=1 ){
+            var publishing_temp =  $('#body').find('tr').eq(0).attr('attr-data');
+            var publishing_temp_arr = publishing_temp.split(",");
+            var publishing_temp_id = publishing_temp_arr[0];
+        }
+        var temp_publishing = $('#publishing').val();
+        if($('.odd').length == 0 && publishing_temp_id !== temp_publishing){
+            if(confirm('您确认改变关联教材吗?改变后之前关联的知识点将被删除')){
+                $('#body').find('tr').remove();
+            }else{
+                $('#publishing').find("option[value="+before_publishing+"]").attr('selected',true);
+            }
+        }
+        before_publishing = $('#publishing').val();*/
+
+        var publishing = $('#publishing').val();
+
+        //$("#publishing option:not(:eq(0))").remove();
+        if (publishing == '') {
+            return false;
+        }else {
+            $.ajaxSettings.async = false;
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_grade_course_by_publishing', {
+                'publishing': publishing,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res.grade, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.grade));
+                });
+                if (options.length > 0) {
+                    $('#grade').html(options.join(''));
+                } else {
+                    $('#grade').html('<option value="">-请选择-</option>');
+                }
+
+                var options2 = [];
+                options2.push('<option value="">-请选择-</option>');
+                $.each(res.course, function (index, item2) {
+                    options2.push('<option value="{0}">{1}</option>'.format(item2.id, item2.course_name));
+                });
+                if (options2.length > 0) {
+                    $('#course').html(options2.join(''));
+                } else {
+                    $('#course').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+
+    var before_publishing2 = '';
+    function getCourseAndGrade2() {
+        //判断教材版本是否一致
+       /* if($('#body').find('tr').length >=1 ){
+            var publishing_temp =  $('#body').find('tr').eq(0).attr('attr-data');
+            var publishing_temp_arr = publishing_temp.split(",");
+            var publishing_temp_id = publishing_temp_arr[0];
+        }
+        var temp_publishing = $('#publishing2').val();
+        if($('.odd').length == 0 && publishing_temp_id !== temp_publishing){
+            if(confirm('您确认改变关联教材吗?改变后之前关联的知识点将被删除')){
+                $('#body').find('tr').remove();
+            }else{
+                $('#publishing').find("option[value="+before_publishing2+"]").attr('selected',true);
+            }
+        }
+        before_publishing2 = $('#publishing2').val();*/
+
+        var publishing2 = $('#publishing2').val();
+
+        //$("#publishing option:not(:eq(0))").remove();
+        if (publishing2 == '') {
+            return false;
+        }else {
+            $.ajaxSettings.async = false;
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_grade_course_by_publishing', {
+                'publishing': publishing2,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res.grade, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.grade));
+                });
+                if (options.length > 0) {
+                    $('#grade2').html(options.join(''));
+                } else {
+                    $('#grade2').html('<option value="">-请选择-</option>');
+                }
+
+                var options2 = [];
+                options2.push('<option value="">-请选择-</option>');
+                $.each(res.course, function (index, item2) {
+                    options2.push('<option value="{0}">{1}</option>'.format(item2.id, item2.course_name));
+                });
+                if (options2.length > 0) {
+                    $('#course2').html(options2.join(''));
+                } else {
+                    $('#course2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+
+    function getCourseAndGrade3() {
+        var publishing2 = $('#publishing2').val();
+
+        //$("#publishing option:not(:eq(0))").remove();
+        if (publishing2 == '') {
+            return false;
+        }else {
+            $.ajaxSettings.async = false;
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_grade_course_by_publishing', {
+                'publishing': publishing2,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res.grade, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.grade));
+                });
+                if (options.length > 0) {
+                    $('#grade2').html(options.join(''));
+                } else {
+                    $('#grade2').html('<option value="">-请选择-</option>');
+                }
+
+                var options2 = [];
+                options2.push('<option value="">-请选择-</option>');
+                $.each(res.course, function (index, item2) {
+                    options2.push('<option value="{0}">{1}</option>'.format(item2.id, item2.course_name));
+                });
+                if (options2.length > 0) {
+                    $('#course2').html(options2.join(''));
+                } else {
+                    $('#course2').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+
+    /*
+    *下拉框置灰操作
+    */
+    function select_disabled() {
+        if($('#body').find('tr').length > 0){
+            var publishing_arr = new Array();
+            publishing_arr  = $('#body').find('tr').eq(0).attr('attr-data').split(',');
+            var publishing_id = publishing_arr[0];
+            var course_id = publishing_arr[1];
+            $('#publishing').val(publishing_id);
+            getCourseAndGrade();
+            $('#course').val(course_id);
+            $('#publishing').attr('disabled','disabled');
+            $('#course').attr('disabled','disabled');
+        }else{
+            $('#publishing').removeAttr("disabled");
+            $('#course').removeAttr("disabled");
+        }
+    }
+
+    /*
+     *下拉框置灰操作2
+     */
+    function select_disabled2() {
+            $('#publishing2').attr('disabled','disabled');
+            $('#course2').attr('disabled','disabled');
+    }
+
+    select_disabled();
+    select_disabled2();
+
+    $(window).scroll(function(){
+        if($(window).scrollTop()>1950){
+            $('.resourceBox').css({
+                position:'fixed',
+                top:'10px',
+                right:'0px'
+            })
+        }else {
+            $('.resourceBox').css({
+                position:'inherit',
+                top:'none',
+                right:'none'
+            })
+        }
+    })
+
+</script>
+<script type="text/javascript">
+    /********************************************实时更换图片*********************************************************/
+    document
+        .querySelector('#pcFile')
+        .addEventListener('change', function(){
+            //当没选中图片时，清除预览
+            if(this.files.length === 0){
+                document.querySelector('#pc_cover').setAttribute('crossOrigin', 'Anonymous');
+                document.querySelector('#pc_cover').src = "<?php if(strpos($content['pc_cover'],'http') === false){ echo $real_file_path.$content['pc_cover']; }else{echo $content['pc_cover']; }?>";
+                return;
+            }
+
+            //实例化一个FileReader
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                //当reader加载时，把图片的内容赋值给
+                document.querySelector('#pc_cover').setAttribute('crossOrigin', 'Anonymous');
+                document.querySelector('#pc_cover').src = e.target.result;
+                //cropper init
+                initCropper('cropperPC',400/266,'pc_cover');
+            };
+
+            //读取选中的图片，并转换成dataURL格式
+            reader.readAsDataURL(this.files[0]);
+        }, false);
+
+        function appCheck(){
+            document
+                .querySelector('#appFile');
+            //实例化一个FileReader
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                //当reader加载时，把图片的内容赋值给
+                document.querySelector('#mobile_cover').setAttribute('crossOrigin', 'Anonymous');
+                document.querySelector('#mobile_cover').src = e.target.result;
+                initCropper('cropperAPP',200/200,'mobile_cover');
+            };
+
+            //读取选中的图片，并转换成dataURL格式
+            reader.readAsDataURL($('#appFile')[0].files[0]);
+        }
+
+
+</script>
+<!--看瓦斯-->
+<script>
+    function initCanvas(width,height)
+    {
+
+        this.canvas = document.createElement('canvas');
+        this.canvas.height = height;
+        this.canvas.width = width;
+        this.ctx = this.canvas.getContext('2d');
+        return this;
+    }
+    function setCanvasToImage(source,destImage)
+    {
+        var canvas ;
+        if(source.videoWidth != undefined)
+            canvas = new initCanvas(source.videoWidth,source.videoHeight);
+        else
+            canvas = new initCanvas(source.naturalWidth,source.naturalHeight);
+        canvas.ctx.drawImage(source,0, 0, canvas.canvas.width, canvas.canvas.height);
+        destImage.src = canvas.canvas.toDataURL('image/jpeg');
+        delete canvas;
+    }
+    $('.show_div .spanName').eq(0).click();
+
+    var video = $('#plv')[0];
+    var button = $('#button')[0];
+    $('#button').live('click',function(){
+
+        setCanvasToImage(video,$('#pc_cover')[0]);
+        initCropper('cropperPC',400/266,'pc_cover');
+        setCanvasToImage(video,$('#mobile_cover')[0]);
+        initCropper('cropperAPP',200/200,'mobile_cover');
+    });
+
+    var cropperPC;
+    var cropperAPP;
+    var oldPCDataUrl ;
+    var oldAPPDataUrl;
+    initCropper('cropperPC',400/266,'pc_cover',"oldPCDataUrl");
+    initCropper('cropperAPP',200/200,'mobile_cover',"oldAPPDataUrl");
+    function initCropper(varName,ratio,elementId,dataUrlObj)
+    {
+        var obj = eval(varName);
+        if(obj != '' && obj != null)
+        eval(varName + '.destroy();'+varName+'=null;');
+        eval(varName + "=new Cropper(document.getElementById('"+elementId+"'), { \
+            aspectRatio: "+ratio+", \
+            checkCrossOrigin:true, \
+            background:false, \
+            autoCropArea :1,\
+            dragCrop:false,       \
+            cropBoxResizable:false,      \
+            wheelZoomRatio:0.02, \
+            ready: function(event) { \
+                if(dataUrlObj != undefined) \
+              "+ dataUrlObj +"="+varName+".getCroppedCanvas().toDataURL('image/jpeg'); \
+            } \
+        });");
+    }
+
+    function generateImage()
+    {
+        var casPC = cropperPC.getCroppedCanvas();
+        var casAPP = cropperAPP.getCroppedCanvas();
+        try {
+            var pcUrl = casPC.toDataURL('image/jpeg');
+            var appUrl = casAPP.toDataURL('image/jpeg');
+        }catch(e){return false;}
+        pcUrl = pcUrl == oldPCDataUrl ? '': pcUrl;
+        appUrl = appUrl == oldAPPDataUrl ? '': appUrl;
+        $('#pc_cover_dataurl').val(pcUrl);
+        $('#mobile_cover_dataurl').val(appUrl);
+        return true;
+    }
+</script>
+<script>
+!function(t){"use strict";var e=t.HTMLCanvasElement&&t.HTMLCanvasElement.prototype,o=t.Blob&&function(){try{return Boolean(new Blob)}catch(t){return!1}}(),n=o&&t.Uint8Array&&function(){try{return 100===new Blob([new Uint8Array(100)]).size}catch(t){return!1}}(),r=t.BlobBuilder||t.WebKitBlobBuilder||t.MozBlobBuilder||t.MSBlobBuilder,a=/^data:((.*?)(;charset=.*?)?)(;base64)?,/,i=(o||r)&&t.atob&&t.ArrayBuffer&&t.Uint8Array&&function(t){var e,i,l,u,c,f,b,d,B;if(!(e=t.match(a)))throw new Error("invalid data URI");for(i=e[2]?e[1]:"text/plain"+(e[3]||";charset=US-ASCII"),l=!!e[4],u=t.slice(e[0].length),c=l?atob(u):decodeURIComponent(u),f=new ArrayBuffer(c.length),b=new Uint8Array(f),d=0;d<c.length;d+=1)b[d]=c.charCodeAt(d);return o?new Blob([n?b:f],{type:i}):((B=new r).append(f),B.getBlob(i))};t.HTMLCanvasElement&&!e.toBlob&&(e.mozGetAsFile?e.toBlob=function(t,o,n){var r=this;setTimeout(function(){t(n&&e.toDataURL&&i?i(r.toDataURL(o,n)):r.mozGetAsFile("blob",o))})}:e.toDataURL&&i&&(e.toBlob=function(t,e,o){var n=this;setTimeout(function(){t(i(n.toDataURL(e,o)))})})),"function"==typeof define&&define.amd?define(function(){return i}):"object"==typeof module&&module.exports?module.exports=i:t.dataURLtoBlob=i}(window);
+</script>
+<script>
+    $(document).on("click",".qq-upload-file",function() {
+        var mp4Path = $(this).attr('vid_fullpath');
+        if(mp4Path != undefined && mp4Path.indexOf('.mp4') != 0) {
+            $('#video,.resName').removeClass('dn');
+            $('#plv')[0].src = mp4Path;
+            if ($('#plv').parent().find('#button').length == 0)
+                $('#plv').parent().append('<div class="blueBtn m0" id="button">生成封面图</div>');
+        }
+        else
+        {
+            $('.resourceBox').children().addClass('dn');
+        }
+
+    });
+    var vid = document.getElementById("plv");
+    vid.onerror = function() {
+        $('#video,.resName').addClass('dn');
+        alert("视频正在转码中，请稍候再试");
+
+    };
+    var acceptStr = $('#type').find("option:selected").attr('extval');
+    $(':file').eq(0).attr('accept',acceptStr);
+</script>

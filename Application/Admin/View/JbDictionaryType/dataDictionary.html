@@ -1,0 +1,190 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+
+</style>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		数据字典分类
+		<span class="blueSpan">
+			<a href="javascript:;">数据字典管理</a>>>
+			<a href="javascript:;">京版资源类型管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<!--<div class="blueBox">
+	<span class="blueText left fs16">查看分类信息</span>
+</div>
+<hr class="thin bg-grayLighter"> 
+
+<div class="grid condensed">
+	<div class="row cells3 infoBox">
+		<div class="cell">分类编号：Resource sytle</div>
+		<div class="cell">标签名称：资源类型</div>
+		<div class="cell">用处：京版资源-检索分类</div>
+	</div>
+</div>-->
+
+<form action="">
+	<div class="grayBox">
+		<div class="left">
+			<span class="btns" id="addBtn">
+				<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt=""> 
+				<a href="javascript:;">新增分类</a>
+			</span>
+		</div>
+	</div>
+	
+	<p class="blueText fs16">分类列表</p>
+	<table id="listWrapper" class="table striped hovered border">
+		<thead>
+			<tr>
+				<th class="text-center">序号</th>
+				<th class="text-center">分类名称</th>
+				<th class="text-center">操作</th>
+			</tr>
+		</thead>
+		<tbody id="body">
+		<volist name="list" id="data">
+			<tr>
+				<td class="text-center">
+					{$i}
+				</td>
+				<td class="text-center">
+					{$data.type_name}
+				</td>
+				<td class="text-center">
+					<a href="javascript:;" class="operBtn modifyBtn" id="" attr="{$data.id}" attr_parms="{$data.type_name}">修改</a>
+					<a href="javascript:;" class="operBtn" id="delete_click" attr="{$data.id}">删除</a>
+				</td>
+			</tr>
+		</volist>
+		</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+</form>
+
+<!--新增子分类-->
+<div class="fullscr1" id="addSort">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">新增分类</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20"> 
+				<div class="selectBox mb10">
+					<label for="">标签名称：</label>
+					<input type="text" class="input-control" name="" value="" id="increase" placeholder="请输入标签名称">
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sure1">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancel1">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<!--修改子分类-->
+<div class="fullscr1" id="modifySort">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">修改分类</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20"> 
+				<div class="selectBox mb10">
+					<label for="">标签名称：</label>
+					<input type="text" class="input-control" name="" value="" id="save_value" placeholder="请输入标签名称">
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" attr="" id="sure2">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancel2">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"20%"},
+                {"width":"50%"},
+                {"width":"30%"}
+            ]
+        });
+    });
+</script>
+
+<script>
+	//新增分类
+	$('#addBtn').click(function(){
+		$('#addSort').show()
+	});
+	$('#sure1').click(function () {
+        var value = $('#increase').val();
+        increase(value,this);
+    })
+	function increase(value,obj) {
+		$.getJSON("{:U('JbDictionaryType/dictionary_add')}",{'value':value},function (msg) {
+            if (msg == 'success') {
+                history.go();
+            } else {
+                alert('新增失败，请稍后重新尝试');
+            }
+        })
+    }
+	
+	$('#cancel1').click(function(){
+		$('#addSort').hide()
+	})
+	
+	//修改分类
+	$('.modifyBtn').click(function () {
+        var id=$(this).attr('attr');
+        var type_name = $(this).attr('attr_parms');
+		$("#save_value").val(type_name);
+		$('#sure2').attr('attr',id);
+        $('#modifySort').show();
+    });
+	$('#sure2').click(function () {
+        var id=$(this).attr('attr');
+        var type_name = $("#save_value").val();
+        $.getJSON('index.php?m=Admin&c=JbDictionaryType&a=dictionary_save',{'id':id,'type_name':type_name},function (data) {
+			if(data == 'success'){
+			    history.go();
+			}else{
+			    alert('修改失败，请稍后重试');
+			}
+        });
+    });
+
+    //删除分类
+    $('#delete_click').live('click',function(){
+        var id=$(this).attr('attr');
+        deleteJBResource(id,this);
+    });
+
+    function deleteJBResource(id,obj) {
+        if (confirm('确定要删除吗？删除后，该资源将不能被查看，请务必谨慎处理，不要误删！！！')) {
+            $.get('index.php?m=Admin&c=JbDictionaryType&a=dictionary_delete', {id: id}, function (res) {
+                if (res == 'success') {
+                    history.go();
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+
+	$('#cancel2').click(function(){
+		$('#modifySort').hide()
+	})
+</script>

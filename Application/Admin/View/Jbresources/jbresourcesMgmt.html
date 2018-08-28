@@ -1,0 +1,372 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<style>
+    .pager td {
+        padding: 4px;
+    }
+	
+	.table td {
+		white-space: inherit;
+	}
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Jbresources/createBJResource')}" title="上传资源" class="button primary {:session('btntheme')}">上传资源</a>
+</div>
+<form action="{:U('Jbresources/jbresources')}" method="post">
+    <div style="margin: 20px 0;">
+        <div class="grid condensed searchbar">
+            <div class="row cells3 cellBox">
+                <div class="cell">
+                    <label>学科：</label>
+                    <select id="course_id" class="input-control input-control-before" name="course_id" onchange="getTextbooks()">
+                        <option value="">-请选择-</option>
+                        <volist name="courses" id="dataCourse">
+                            <option value="{$dataCourse.id}" {$dataCourse['id']==$course_id?'selected':''}>
+                                {$dataCourse.code} : {$dataCourse.course_name}
+                            </option>
+                        </volist>
+                    </select>
+                </div>
+                
+                <div class="cell">
+                    <label>年级：</label>
+                    <select id="grade_id" class="input-control input-control-before" name="grade_id" onchange="getTextbooks()">
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade">
+                            <option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+                                {$dataGrade.grade}
+                            </option>
+                        </volist>
+                    </select>
+                </div>
+                
+                <div class="cell">
+                    <label>教材分册：</label>
+                    <select id="textbook_id" class="input-control input-control-before" name="textbook_id">
+                        <option value="">-请先选择学科和年级-</option>
+                        <volist name="textbook_list" id="textbook_item">
+                            <option value="{$textbook_item.id}" {$textbook_id == $textbook_item['id']?'selected':''}>
+                            {$textbook_item.name}
+                            </option>
+                        </volist>
+                    </select>
+                </div>
+                
+                <div class="cell">
+                    <label>类型：</label>
+                    <select id="type" class="input-control input-control-before" name="type">
+                        <option value="">-请选择-</option>
+                        <option value="image" {$type=='image'?'selected':''}>图片</option>
+                        <option value="video" {$type=='video'?'selected':''}>视频</option>
+                        <option value="audio" {$type=='audio'?'selected':''}>音频</option>
+                        <option value="word" {$type=='word'?'selected':''}>WORD</option>
+                        <option value="ppt" {$type=='ppt'?'selected':''}>PPT</option>
+                        <option value="pdf" {$type=='pdf'?'selected':''}>PDF</option>
+                        <option value="swf" {$type=='swf'?'selected':''}>SWF文件</option>
+                        <option value="condensed" {$type=='condensed'?'selected':''}>压缩包</option>
+                        <!--<option value="others" {$type=='others'?'selected':''}>其他</option>-->
+                    </select>
+                </div>
+                
+                <div class="cell">
+                    <label>栏目：</label>
+                    <select id="channel_id" class="input-control input-control-before" name="channel_id" onchange="">
+                        <option value="">-请选择-</option>
+                        <volist name="channel" id="dataChannel">
+                            <option value="{$dataChannel.id}" {$channel_id == $dataChannel['id']?'selected':''}>
+                            {$dataChannel.name}
+                            </option>
+                        </volist>
+                    </select>
+                </div>
+               
+                <div class="cell">
+                    <label>关键词：</label>
+                    <input type="text" class="input-control input-control-before" name="keyword" value="{$keyword}" placeholder="-关键词-">
+                </div>
+                
+                <div class="cell">
+                    <label>排序：</label>
+                    <select id="sort_column" class="input-control input-control-before" name="sort_column">
+                        <!--<option value="">-请选择-</option> -->
+                        <option value="create_at" {$sort_column ==create_at?'selected':''}  >发布时间</option>
+                        <option value="follow_count" {$sort_column ==follow_count?'selected':''} >观看数</option>
+                        <option value="zan_count" {$sort_column ==zan_count?'selected':''} >点赞数</option>
+                        <option value="favorite_count" {$sort_column ==favorite_count?'selected':''} >收藏数</option>
+                    </select>
+                </div>
+                
+                <div class="cell">
+                    <label>状态：</label>
+                    <select id="lock_status" class="input-control input-control-before" name='status'>
+                        <option value='0'>-请选择-</option> 
+                        <option value="1" <if condition="$status==1">selected</if> >审核未通过</option> 
+                        <option value="2" <if condition="$status==2">selected</if> >审核已通过</option>   
+                        <option value="3" <if condition="$status==3">selected</if> >审核已拒绝</option> 
+                    </select> 
+                </div>
+                
+                <div class="cell">
+                    <label for="">&nbsp;</label>
+                    <button type="submit" class="button" onclick="" style="margin:.325rem 0"><span class="mif-search"></span>搜索</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!--
+<empty name="list">
+    <div class="emptyResult">暂时没有资源</div>
+</empty>
+-->
+    <table id="listWrapper" class="table striped hovered border">
+        <thead>
+        <tr>
+<!--
+            <th class="text-center">学科</th>
+            <th class="text-center">年级</th>
+-->
+            <th class="text-center">教材分册</th>
+            <th class="text-center">名称</th>
+            <th class="text-center">类型</th>
+            <th class="text-center">观看数</th>
+            <th class="text-center">点赞数</th>
+            <th class="text-center">收藏数</th>
+            <th class="text-center">时间</th>
+            <th class="text-center">状态</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody id="body">
+        <volist name="list" id="data" empty="">
+            <tr id="l_{$data.id}"> 
+<!--
+                <td class="text-center">
+                    {$data.course_name}
+                </td>
+                <td class="text-center">
+                    {$data.grade}
+                </td>
+-->
+                <td class="text-center">
+                    {$data.textbook}
+                </td>
+                
+                <td> 
+                    <a href="{:U('Jbresources/editJBResource?id=')}{$data.id}">{$data.name}</a> 
+                </td>
+                <td class="text-center">
+                    {$data.type}
+                </td>
+                <td class="text-center">
+                    {$data.follow_count}
+                </td>
+                <td class="text-center">
+                    {$data.zan_count}
+                </td>
+                <td class="text-center">
+                    {$data.favorite_count}
+                </td>
+                <td class="text-center" title="{$data.create_at|date="Y-m-d H:i",###}">
+                    {$data.create_at|date="Y-m-d H:i",###}
+                </td>
+                <td class="text-center reviewJ"> 
+                    <if condition="$data.status eq 1">
+                        未通过审核
+                    <elseif condition="$data.status eq 2"/>    
+                        通过审核
+                    <elseif condition="$data.status eq 3"/>
+                        已拒绝
+                    </if>
+                </td>
+                
+                <td class="text-center">
+                    <input type="hidden"  value="{$data.id}" class="hidden_val"/>
+                    <in name="Think.session.admin.role" value="2">
+                        <if condition="$data.status eq 1">
+                            <span class="button yes_status info">通过</span>
+                            <span class="button no_status danger">拒绝</span>
+                        <elseif condition="$data.status eq 2"/> 
+                            <span class="button down_status">下架</span>
+                            <span class="button push_message">推送</span>
+                        </if> 
+                    </in> 
+                    <!---->
+                    <in name="Think.session.admin.role" value="1,2">
+                        <in name="Think.session.admin.role" value="1">
+                            <a href="{:U('Jbresources/editJBResource?id=')}{$data.id}" class="button">编辑</a>
+                            <a  class="button delete_click danger" attr="{$data.id}">删除</a>
+                        </in>
+                        <if condition="$data.status eq 3">
+                            <in name="Think.session.admin.role" value="2">
+                                <a  class="button delete_click danger" attr="{$data.id}">删除</a>
+                            </in>
+                        </if>
+                    </in>
+                    
+                    
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+    <div style="float:left;margin-top:20px;width:100%;">
+        <h4>全部资源信息统计</h3>
+        <volist name="all_resource_count_arr" id="all_resource_item" key="key">
+            <span style="margin-right:10px;">{$all_resource_item.key}:{$all_resource_item.value}个</span>
+        </volist>
+    </div>
+    <div style="float:left;margin:20px 0;width:100%;">
+        <h4>筛选资源信息统计</h3>
+        <volist name="search_resource_arr" id="search_resource_item" key="key">
+            <span style="margin-right:10px;">{$search_resource_item.key}:{$search_resource_item.value}个</span>
+        </volist>
+    </div>
+<script>
+    $(document).ready(function(){ 
+        //getTextbooks()
+        var textbook_id="{$textbook_id}";   
+        var grade_id=$("#grade_id").val();
+        var course_id=$("#course_id").val();
+        var timer='';
+         
+            
+        /*if(grade_id && course_id){
+            getTextbooks();
+            timer=setTimeout(function(){
+                $("#textbook_id").find('option[value='+textbook_id+']').attr('selected',true);
+                clearTimeout(timer);
+            },100); 
+             
+        }*/
+        
+        
+        
+        var temp_down_span='<span class="down_status button" >下架</span>'; 
+                    
+        $('.down_status').live('click',function(){
+            var obj=this;
+            var id=$(this).siblings('.hidden_val').val();
+            $.get('index.php?m=Admin&c=Jbresources&a=downJBResource',{id:id},function(msg){
+                if(msg==1){ 
+                    var yes_span='<span class="button yes_status info" >通过</span>&nbsp;';
+                    var no_span='<span class="button no_status danger" >拒绝</span>';
+                    $(obj).before(yes_span,no_span);
+                    $(obj).parent().siblings('.reviewJ').text('未通过审核');
+                    $(obj).siblings('.push_message').remove();
+                    $(obj).remove();
+                }else{
+                    alert('下架失败，请刷新页面后重新尝试');
+                }
+            });
+        });
+
+        $('.push_message').live('click',function(){
+            var id=$(this).siblings('.hidden_val').val();
+            $.get('index.php?m=Home&c=Message&a=pushJBResource',{id:id},function(msg){
+                if(msg.status==200){
+                    alert('推送成功');
+                }else{
+                    alert('推送失败');
+                }
+            });
+        });
+        $('.yes_status,.no_status').live('click',function(){
+            if($(this).hasClass('yes_status')){
+                var status=1;
+            }else{
+                var status=2;
+            }  
+            var obj=this;
+            var id=$(this).siblings('.hidden_val').val();
+            $.get('index.php?m=Admin&c=Jbresources&a=reviewJBResource',{'status':status,'id':id},function(msg){
+                if(msg==1){  
+                    if(status==1){
+                        var down_span=$(temp_down_span).clone(true); 
+                        $(obj).parent().siblings('.reviewJ').text('通过审核')
+                        $(obj).before(down_span);
+                        $(obj).siblings('.no_status').remove();
+                        var push_span = '<span class="button push_message">推送</span>';
+                        $(obj).before(push_span);
+                        //var span='<a class="button delete_click danger" attr='+id+'>删除</a>';
+                        $(obj).parent().siblings('.reviewJ').text('通过审核');
+                       // $(obj).before(span);
+                        $(obj).siblings('.yes_status').remove();
+                        
+                    } 
+                    $(obj).remove();
+                }else{
+                    alert('修改失败，请刷新页面后重新尝试');
+                }
+            });
+        });
+        
+        //点击跳转链接
+        
+    });
+        
+</script>
+
+
+<in name="Think.session.admin.role" value="1,2,4">
+    <script>
+        $('.delete_click').live('click',function(){
+            var id=$(this).attr('attr');
+            deleteJBResource(id,this);
+        });
+        
+        function deleteJBResource(id,obj) { 
+            if (confirm('确定要删除吗？删除后，该资源将不能被查看，请务必谨慎处理，不要误删！！！')) {
+                $.get('index.php?m=Admin&c=Jbresources&a=deleteJBResource', {id: id}, function (res) {
+                    if (res == 'success') {
+                        //alert('删除成功')
+                        //window.location.reload();
+                        $(obj).parent().parent().remove();
+                    } else {
+                        alert('删除失败，请刷新页面后重新尝试');
+                    }
+                })
+            }
+        }
+    </script>
+</in>
+<script>
+    var page = parseInt('{$page}');
+    function nextPage() {
+        $('#page').val(page + 1);
+        $('form').submit();
+    }
+
+    function prePage() {
+        if (page > 1) {
+            $('#page').val(page - 1);
+            $('form').submit();
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 475) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+//                {"width":"6%"},
+//                {"width":"6%"},
+                {"width":"12%"},
+                {"width":"20%"},
+                {"width":"8%"},
+                {"width":"6%"},
+                {"width":"6%"},
+                {"width":"6%"},
+                {"width":"12%"},
+                {"width":"10%"},
+                {"width":"20%"}
+            ]
+        });
+    });
+</script>

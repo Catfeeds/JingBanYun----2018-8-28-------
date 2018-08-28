@@ -1,0 +1,82 @@
+<layout name="student_layout_withouticon"/>
+<style>
+    .list_avatar {
+        border-radius: 6px;
+    }
+
+    .navTitle {
+        display: none !important;
+    }
+
+    .navTitleImg {
+        width:100px;
+    }
+    
+    
+    .m_title {
+        text-align: right;
+        padding-right: 20px !important;
+        font-size: 18px;
+    }
+    
+    .m_input input, .m_input textarea, .m_input select {
+        background-color: #fbeded;
+        padding: 5px 10px;
+        margin:5px 0;
+        border: none;
+        width: 265px;
+        font-size: 18px;
+    }
+    
+    .back_btn{ background: #cf7c7d; font-size: 20px; padding: 5px 20px; border-radius: 5px; color:#fff; }
+    .back_btn:hover{ color:#fff; text-decoration: none;}
+    .student_message{ overflow: hidden; width: 100%; margin-top: 20px; }
+    .student_message p{ width: 100%; line-height: 70px; padding:0 30px; background: #fbeded; border-radius: 5px; font-size: 20px; overflow:hidden; }
+    .font_black{ color: #000;cursor:pointer}
+    .font_red{ color: #ce5f5f; }
+    .mes { float: left; }
+    .dat { float: right; }
+</style>
+
+<div class="modi_info" data-text="编辑资料" style="padding:30px;margin:0 auto;">
+    <div style="margin:0 auto;text-align:center;">
+        <img onerror="img_teacher(this)" class="list_avatar navListImg" style="width:10%;">
+    </div>
+    <div class="student_message">
+        <volist name="data" id="msg_list">
+            <if condition = '$msg_list.read_status eq 0'>
+                <p class="font_black" msg_id={$msg_list.id}>
+                    <span class="mes">{$msg_list.msg_title}</span>
+                    <span class="dat">{$msg_list.create_at}</span>
+                </p>
+                <else/>
+                <p class="font_red" msg_id={$msg_list.id}>
+                    <span class="mes">{$msg_list.msg_title}</span>
+                    <span class="dat">{$msg_list.create_at}</span>
+                </p>
+            </if>
+        </volist>
+    </div>
+    <div style="text-align:right;margin-top:20px;">
+        <a href="/index.php?m=Home&c=Student&a=me" class="back_btn">返回</a>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script type="text/javascript">
+    //navTitleImg图片路径
+    $('.navTitleImg').attr('src', '__ROOT__/Uploads/Avatars/1-01.png?v=' + Date.parse(new Date()));
+    //navTranImg图片路径
+    $('.navTranImg').attr('src', '__ROOT__/Uploads/Avatars/1-02.png?v=' + Date.parse(new Date()));
+    
+//    $('.navListImg').attr('src', '__ROOT__/Uploads/Avatars/{$data.avatar}_t.jpg?v=' + Date.parse(new Date()));
+    
+    $('.navListImg').attr('src', '__ROOT__/Uploads/StudentAvatars/{$dataAvatar.id}.jpg?v=' + Date.parse(new Date()));
+    $('.font_black').click(function(){
+        var id = $(this).attr('msg_id');
+        $.post('__URL__'+'/message',{ id: id },function (res) {
+            if(eval('('+res+')').status == 200)
+                location.reload();
+        });
+    });
+</script>

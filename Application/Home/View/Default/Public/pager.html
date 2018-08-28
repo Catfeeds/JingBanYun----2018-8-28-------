@@ -1,0 +1,45 @@
+<if condition="$page neq '1'">
+    <div style="float: right;">
+        <table class="pager">
+            <tr>
+                <td>
+                    第<b>{$page}</b>页
+                </td>
+                <td>
+                    <button class="btn btn-primary prepage" style="display: block;" onclick="prePage()">上一页</button>
+                </td>
+                <td>
+                    <button class="btn btn-primary nextpage" style="display: block;" onclick="nextPage()">下一页</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</if>
+<script>
+    var page = parseInt('{$page}');
+    function nextPage() {
+        $('#page').val(page + 1);
+        $('form').submit();
+    }
+
+    function prePage() {
+        if (page > 1) {
+            $('#page').val(page - 1);
+            $('form').submit();
+        }
+    }
+    $(function () {
+        var count = $('.table>tbody>tr').length;
+        if (count < 20) {
+            $('.nextpage').hide();
+        }
+        if (page == 1) {
+            $('.prepage').hide();
+        }
+    });
+
+    function clearPager() {
+        $('#page').val('1');
+        return true;
+    }
+</script>

@@ -1,0 +1,1156 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+
+	.homeworkLeft {
+		border-bottom: 1px solid #efca33
+	}
+</style>
+
+<div class="main_opr">
+    <a href="{:U('TeacherHomework/homeworkList')}" title="作业列表" class="btn btn-main-opr">作业列表</a>
+    <a href="javascript:;" title="布置作业" class="btn btn-main-opr btn-main-opr-active">布置作业</a>
+    <a href="{:U('TeacherHomework/myCollectionList')}" title="我的收藏" class="btn btn-main-opr">我的收藏</a>
+    <a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+    <a href="{:U('TeacherHomework/testPaperList')}" title="试卷库" class="btn btn-main-opr">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="homeworkLeft">
+		<div class="leftCommon chooseSubject" @click="showHideSubject()"><span class="textHidden">请选择学科</span></div>
+		<div class="subjectBack" @click="showHideSubject()"></div>
+		<div class="subjectBox">
+			<div class="leftCommon subject" @click="chooseSubject(3)" :setcourseId="3">英语</div>
+			<div class="leftCommon subject" @click="chooseSubject(1)" :setcourseId="1">语文</div>
+			<div class="leftCommon subject" @click="chooseSubject(2)" :setcourseId="2">数学</div>
+		</div>
+		<div class="menuOutter">
+			<div class="leftCommon typeMenuBox">
+				<div class="typeMenu active setclick" @click="changeType($event)" :modelId=1>预习助手</div>
+				<div class="typeMenu" @click="changeType($event)" :modelId=2>同步练习</div>
+				<div class="typeMenu" @click="changeType($event)" :modelId=3>强化试题</div>
+			</div>
+			<!-- 从这里开始循环 循环册-->
+
+
+			<div class="volumeOutter" v-for="(model2Data, index) in modelList2">
+				<div class="leftCommon volumeTitle" :gradeId="model2Data.grade_id" :schoolTerm="model2Data.school_term" @click="showHideChapter($event)">
+					<span class="textHidden" @click="stopClick($event)">{{ model2Data.grade }} {{ model2Data.term_name }}</span>
+				</div>
+				<!-- 循环章 -->
+				<div class="chapterOutter" v-for="(chaptermodel2Data, index) in model2Data.chapter_list">
+					<div class="leftCommon chapterTitle" :chapterId="chaptermodel2Data.chapter_id" @click="showHideKnob($event)">
+						<span class="textHidden" @click="stopClick($event)">{{ chaptermodel2Data.tree_point_name }}</span>
+					</div>
+					<!-- 循环节 -->
+					<div class="knobOutter" v-for="(sectionmodel2Data, index) in chaptermodel2Data.section_list">
+						<div class="leftCommon knobTitle" @click="getSendId($event)" :getId= sectionmodel2Data.section_id>
+							<span class="textHidden" @click="stopClick($event)" >{{ sectionmodel2Data.tree_point_name }}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="homeworkRight">
+		<!-- 如果还未选择学科 -->
+		<img src="__PUBLIC__/img/homeworkV1/empty1.png" alt="" class="emptyImgCommon">
+
+		<div class="rightMain" style="display: none">
+			<!-- 同步练习/强化试题 -->
+			<div class="tileFilterOutter unPreviewOutter" style="display: none">
+				<div class="tileFilterBox">
+					<div class="tileFilterTitle">题&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型：</div>
+					<div class="tileFilterMain" type="type"> 
+						<span class="tileFilterOne active" @click=tileFilter($event) typeId=" ">全部</span>
+						<span class="tileFilterOne" v-for="(exerciseTypeList, index) in exerciseTypeData" :typeId="exerciseTypeList.id" @click=tileFilter($event)>{{ exerciseTypeList.name }}</span>
+					</div>
+				</div>
+				<div class="tileFilterBox">
+					<div class="tileFilterTitle">难&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;度：</div>
+					<div class="tileFilterMain" type="difficulty">
+						<span class="tileFilterOne active" @click=tileFilter($event)  difficultyId="">全部</span>
+						<span class="tileFilterOne" difficultyId="1" @click=tileFilter($event)>基础</span>
+						<span class="tileFilterOne" difficultyId="2" @click=tileFilter($event)>中等</span>
+						<span class="tileFilterOne" difficultyId="3" @click=tileFilter($event)>难度</span>
+						<span class="tileFilterOne" difficultyId="4" @click=tileFilter($event)>竞赛</span>
+					</div>
+				</div>
+				<div class="tileFilterBox">
+					<div class="tileFilterTitle">来&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;源：</div>
+					<div class="tileFilterMain" type="status">
+						<span class="tileFilterOne active" @click=tileFilter($event) status=" ">全部</span>
+						<span class="tileFilterOne" status="1" @click=tileFilter($event)>已收藏</span>
+						<span class="tileFilterOne" status="2" @click=tileFilter($event)>曾出过</span>
+						<span class="tileFilterOne" status="3" @click=tileFilter($event)>未出过</span>
+						<span class="tileFilterOne" status="4" @click=tileFilter($event)>学生错题</span>
+					</div>
+				</div>
+			</div>
+			<!-- 预习助手 -->
+			<div class="tileFilterOutter previewOutter">
+				<div class="tileFilterBox">
+					<div class="tileFilterTitle">题&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型：</div>
+					<div class="tileFilterMain" type="typestatus">
+						<span class="tileFilterOne active" @click=tileFilter($event) typestatus=" ">全部</span>
+						<span class="tileFilterOne" :typestatus="cData.id" v-for="(cData, index) in couldData" @click=tileFilter($event)>{{ cData.category_name }}</span>
+					</div>
+				</div>
+			</div>
+
+			<include file="./Application/Home/View/TeacherHomework/exerciseOutter.html"/>
+			
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/store.js"></script>
+
+<script>
+	var userId = "{:session('teacher.id')}";
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+			url: '',
+			// 这些地方应该都用ID，用姓名不准确，暂时先这么写
+			subject: '',
+			volume: '',
+            modelId:1,
+            modelWhere2:{},
+            modelWhere3:{},
+			courseId:3,
+            version_id:1,
+			url1:"/index.php/ApiInterface/Version1_3/TeacherHomework/getVoiceGradeAndF",
+            url2:"/index.php/ApiInterface/Version1_3/TeacherHomework/getGradeAndF",
+            url3:"/index.php?m=Home&c=TeacherHomework&a=getGradeAndFList",
+            modelList2:{},
+            userId:0,
+            exerciseTypeUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/getExerciseType',
+            exerciseTypeData: '',
+
+            exerciseUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/setSearchgetExerciseList',
+			varexerciseUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/setSearchgetExerciseList',
+            exerciseData: '',
+            knowledgeId:'',
+
+            typeId: '',
+            difficultyId: '',
+            status: '',
+            typestatus: '',
+
+            exerciseCollectUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/IWantToCollect',
+            iscancel: '',
+            exerciseId: '',
+
+            gradeId: '',
+			schoolTerm: '',
+			chapterId: '',
+			sectionId:'',
+
+            cloudExerciseUrl: '/index.php?m=Home&c=TeacherHomework&a=cloudExerciseUrl',
+            couldData:{},
+
+            voiceUrl:'/index.php/ApiInterface/Version1_2/HomeworkTeacher/getExerciseLevelInfo', //获取具体习题
+			setVoiceUrl:'/index.php/ApiInterface/Version1_2/HomeworkTeacher/getAvailableExerciseCategory',
+            voiceData:{},
+            cloudExerciseAllUrl:"/index.php?m=Home&c=TeacherHomework&a=getCloudExerciseList", //初始化全部习题
+			selectExerciseList:[],
+            selectExerciseListMap:{},
+            selectExerciseGroupList:{},
+            exerciseScore:0,
+            topicType:0,
+            exerciseNumLength:0,
+            exerciseNumScore:0,
+            workData:{},
+            errorExerciseId:0,
+            errorContent:"",
+            pageIndex: 1, 
+            pageSize: 20,
+            scrollAllow: false,
+            scrollData: ''
+
+		},
+		created: function () {
+			this.userId = userId;
+
+
+            //初始化缓存
+			if(store.get(this.userId+"selectExerciseList")!= '' && store.get(this.userId+"selectExerciseList") != undefined) {
+                this.selectExerciseList = store.get(this.userId+"selectExerciseList");
+			}
+
+            if(store.get(this.userId+"selectExerciseGroupList")!= '' && store.get(this.userId+"selectExerciseGroupList") != undefined) {
+                this.selectExerciseGroupList = store.get(this.userId+"selectExerciseGroupList");
+            }
+
+            console.log(store.get(this.userId+"exerciseNumLength"));
+
+            if(store.get(this.userId+"exerciseNumLength")!= '' && store.get(this.userId+"exerciseNumLength") != undefined) {
+                this.exerciseNumLength = store.get(this.userId+"exerciseNumLength");
+            }
+
+            if(store.get(this.userId+"exerciseNumScore")!= '' && store.get(this.userId+"exerciseNumScore") != undefined) {
+                this.exerciseNumScore = store.get(this.userId+"exerciseNumScore");
+            }
+
+            if(store.get(this.userId+"selectExerciseListMap")!= '' && store.get(this.userId+"selectExerciseListMap") != undefined) {
+                this.selectExerciseListMap = store.get(this.userId+"selectExerciseListMap");
+            }
+
+            if(store.get(this.userId+"selectcourseId")!= '' && store.get(this.userId+"selectcourseId") != undefined) {
+                this.courseId = store.get(this.userId+"selectcourseId");
+            }
+
+            if (this.courseId!="" && this.courseId>0 ) { //已经有学科了
+				console.log('courseId是：'+this.courseId);
+				$('.chooseSubject').addClass('active');
+				this.chooseSubject(this.courseId);
+
+				// 预习助手点击
+	            this.$nextTick(function(){
+	            	$('.setclick').click();
+	            })
+				
+			}
+            // 右侧的布置习题框
+            this.$nextTick(function(){
+            	this.changeRightBox();
+            })
+
+            this.getExerciseTypeList();
+            this.getCloudExerciseType(this.courseId);
+            
+
+		},
+		methods: {
+
+		    //纠错
+    		errorCorrection:function(){
+				this.errorExerciseId = $(event.target).attr("exerciseId");
+			},
+
+			//发送纠错
+			sendErrorCorrection:function(){
+                var id_array=new Array();
+                $('input[name="checkbox"]:checked').each(function(){
+                    id_array.push($(this).val());//向数组中添加元素
+                });
+
+				var flagt = id_array.join(",");
+				this.errorContent = $.trim($('.errorRecoveryFixed').find('.textareaCommon').val());
+
+                if(flagt=="") {
+                    $('.homeworkFixedError').show().text('* 请选择错误模块');
+                    return;
+                }
+
+                if (this.errorContent=="") {
+                    $('.homeworkFixedError').show().text('* 请输入您的错误描述');
+                    return;
+                }
+
+                this.$http.post("/index.php?m=Home&c=TeacherHomework&a=errorCorrection", {
+                    exerciseId:this.errorExerciseId,
+                    userId:this.userId,
+                    role:2,
+                    content:this.errorContent,
+					flag_type:flagt
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        $('.homeworkBlack, .errorRecoveryFixed').hide();
+                        $.NotifyBox.NotifyPromptOne('提示', '纠错成功,感谢您！', '确定');
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+			},
+
+			// 选择学科框
+			showHideSubject: function(){
+				if($('.chooseSubject').hasClass('active')) {
+					$('.chooseSubject').removeClass('active');
+					$('.subjectBack').hide();
+					$('.subjectBox').stop(false,true).slideUp();
+				} else {
+					$('.chooseSubject').addClass('active');
+					$('.subjectBack').show();
+					$('.subjectBox').stop(false,true).slideDown();
+				}
+			},
+			// 选择学科
+			chooseSubject: function(courseId_){
+                this.getExerciseTypeList();
+
+			    if(courseId_ == 1) {
+			    	this.subject = '语文';
+			    } else if(courseId_ == 2) {
+			    	this.subject = '数学'
+			    } else if(courseId_ == 3) {
+			    	this.subject = '英语'
+			    }
+
+			    var that = this;
+
+				if(courseId_ != this.courseId && this.selectExerciseList.length>0) {
+
+				    // alert("不能改换学科");
+				    $.NotifyBox.NotifyPromptTwoCo('提示', '还有试题未布置，确认更换学科吗？', '确定', '取消', function(){
+				    	that.couldData = {};
+
+						// that.subject = $(event.target).text();
+						$('.chooseSubject').text(that.subject);
+						that.showHideSubject();
+						$('.menuOutter').show();
+						$('.emptyImgCommon').hide();// 请选择学科的空白占位图消失
+						$('.rightMain').show();// 右侧题出现
+
+
+				    	that.selectExerciseList=[];
+	                    that.selectExerciseGroupList={};
+	                    that.exerciseNumLength=0;
+	                    that.exerciseNumScore=0;
+
+	                    store.set(that.userId+"selectExerciseList","");
+	                    store.set(that.userId+"selectExerciseGroupList","");
+	                    store.set(that.userId+"exerciseNumLength","");
+	                    store.set(that.userId+"exerciseNumScore","");
+	                    store.set(that.userId+"selectExerciseListMap","");
+
+	                    that.courseId = courseId_;
+
+		                store.set(that.userId+"selectcourseId",that.courseId);
+
+						$('.setclick').click();
+
+		                that.getCloudExerciseType(that.courseId);
+
+				    })
+
+				} else {
+					this.couldData = {};
+
+					// this.subject = $(event.target).text();
+					$('.chooseSubject').text(this.subject);
+					this.showHideSubject();
+					$('.menuOutter').show();
+					$('.emptyImgCommon').hide();// 请选择学科的空白占位图消失
+					$('.rightMain').show();// 右侧题出现
+
+
+	                this.courseId = courseId_;
+
+	                store.set(this.userId+"selectcourseId",this.courseId);
+
+					$('.setclick').click();
+
+	                this.getCloudExerciseType(this.courseId);
+				}
+
+
+
+			},
+			// 选择某一册，出现章
+			showHideChapter: function(event){
+				if($(event.target).hasClass('active')) {
+					$(event.target).removeClass('active');
+					$(event.target).siblings('.chapterOutter').stop(false,true).slideUp().find('.knobOutter').stop(false,true).slideUp();//本册对应的章节收起
+					$(event.target).siblings('.chapterOutter').find('.chapterTitle').removeClass('active');//本册对应的章节标题去掉active
+				} else {
+					$(event.target).addClass('active');
+					$(event.target).parent().siblings('.volumeOutter').find('.chapterOutter, .knobOutter').stop(false,true).slideUp();//其他册的章节收起
+					$(event.target).parent().siblings('.volumeOutter').find('.volumeTitle, .chapterTitle').removeClass('active');//其他册对应的册章节标题去掉active
+					$(event.target).siblings('.chapterOutter').stop(false,true).slideDown();
+				}
+			},
+			// 选择某一章，出现节
+			showHideKnob: function(event){
+				if($(event.target).hasClass('active')) {
+					$(event.target).removeClass('active');
+					$(event.target).siblings('.knobOutter').stop(false,true).slideUp();
+				} else {
+					$(event.target).addClass('active');
+					$(event.target).parent().siblings('.chapterOutter').find('.knobOutter').stop(false,true).slideUp();
+					$(event.target).parent().siblings('.chapterOutter').find('.chapterTitle').removeClass('active');
+					$(event.target).siblings('.knobOutter').stop(false,true).slideDown();
+				}
+			},
+			// 点击禁止穿透
+			stopClick: function(event){
+				event.stopPropagation();
+				$(event.target).parent().click();
+			},
+			// 改变类型
+			changeType: function(event){
+
+				if(!$(event.target).hasClass('active')) {
+					$(event.target).addClass('active').siblings().removeClass('active');
+
+					$('.volumeOutter').find('.chapterOutter, .knobOutter').stop(false,true).slideUp();//所有的章节收起
+					$('.volumeOutter').find('.volumeTitle, .chapterTitle').removeClass('active');//所有的册章节标题去掉active
+
+					$('.tileFilterMain').children("span:first-child").addClass('active').siblings('span').removeClass('active'); // 筛选项重置为全部
+					this.typeId = '';
+					this.difficultyId = '';
+					this.status = '';
+					this.typestatus = '';
+					this.knowledgeId = '';
+                    this.gradeId= '';
+					this.schoolTerm='';
+					this.chapterId= '';
+					this.sectionId='';
+
+					// 所有的节取消选中状态
+					$('.knobTitle ').removeClass('active')
+				}
+                
+                if($(event.target).index() == 0) {
+                	// 预习助手
+					$('.previewOutter').show();
+					$('.unPreviewOutter').hide();
+                    this.modelId = $(event.target).attr('modelId');
+
+                    this.modelWhere1 = {"modelId":1,"courseId":this.courseId,"version_id":this.version_id}
+
+                    this.$http.post(this.url1, this.modelWhere1, {
+                        emulateJSON: 'application/x-www-form-urlencoded'
+                    }).then(function (response) {
+                        if(response.status == '200'){
+                            this.modelList2 = response.data.data;
+                        } else {
+                            console.log('错误1')
+                        }
+                    }, function (response) {
+                        console.log('错误2')
+                    })
+					this.getCloudExerciseType(this.courseId);
+                    this.getAllCloudExerciseList();
+
+				} else if($(event.target).index() == 1) {
+					// 同步练习
+					$('.previewOutter').hide();
+					$('.unPreviewOutter').show();
+                    this.modelId = $(event.target).attr('modelId');
+
+					this.modelWhere2 = {"modelId":2,"courseId":this.courseId,"version_id":this.version_id}
+
+					this.$http.post(this.url2, this.modelWhere2, {
+                        emulateJSON: 'application/x-www-form-urlencoded'
+                    }).then(function (response) {
+                        if(response.status == '200'){
+                            this.modelList2 = response.data.data;
+                        } else {
+                            console.log('错误1')
+                        }
+                    }, function (response) {
+                        console.log('错误2')
+                    })
+                    this.getExerciseList(this.modelId);
+				} else {
+					// 强化试题
+					$('.previewOutter').hide();
+					$('.unPreviewOutter').show();
+                    this.modelId = $(event.target).attr('modelId');
+
+                    this.modelWhere3 = {"modelId":3,"courseId":this.courseId,"version_id":this.version_id,"userId":this.userId}
+
+                    this.$http.post(this.url3, this.modelWhere3, {
+                        emulateJSON: 'application/x-www-form-urlencoded'
+                    }).then(function (response) {
+                        if(response.status == '200'){
+                            this.modelList2 = response.data.data;
+                        } else {
+                            console.log('错误1')
+                        }
+                    }, function (response) {
+                        console.log('错误2')
+                    })
+					//获取试题列表
+					this.getExerciseList(this.modelId);
+				}
+
+                this.getExerciseTypeList();
+			},
+
+            // 获取题型
+            getExerciseTypeList: function(){
+                this.$http.post(this.exerciseTypeUrl, {
+                    id : this.courseId
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.exerciseTypeData = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+			//获取语音习题列表
+            getExerciseList: function(modelId){
+				if (modelId==1) {
+				    this.exerciseUrl = this.voiceUrl; //请求云作业的url
+                	this.scrollData = 'voiceExerciseList';
+                } else {
+                    this.exerciseUrl = this.varexerciseUrl;
+                    this.scrollData = 'normalExerciseList';
+                }
+
+                this.pageIndex = 1;
+                this.scrollAllow = true;
+
+
+				this.$http.post(this.exerciseUrl, {
+					version_id : this.version_id,
+					course_id : this.courseId,
+					grade_id : this.gradeId,
+					school_term : this.schoolTerm,
+					chapter_id : this.chapterId,
+					section_id : this.sectionId,
+					type_id: this.typeId,
+					difficulty_id: this.difficultyId,
+					status : this.status,
+                    knowledge_id : this.knowledgeId,
+                    userId:this.userId,
+					role:2,
+                    level:3,
+                    infoId:this.sectionId,
+                    category:this.typestatus,
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize
+
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+                        var imgArr = [];
+
+					    if (modelId ==1) {
+                            this.voiceData = response.data.data;
+                            console.log( this.voiceData)
+						} else {
+                            this.exerciseData = response.data.data;
+	                        for( var i = 0; i < this.exerciseData.length; i++) {
+	                            if(this.exerciseData[i].eid != null) {
+	                                // shoucang
+	                                imgArr.push('0')
+	                            } else {
+	                                imgArr.push('1')
+	                            }
+	                        }
+						}
+
+						this.scrollAllow = true;
+                        this.scroll();
+
+                        if(response.data.data.length < this.pageSize) {
+                            this.scrollAllow = false
+                        }
+
+                        this.$nextTick(function(){
+                            for( var i = 0; i < imgArr.length; i++) {
+                                if(imgArr[i]=='0') {
+                                    $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/shoucang.png').addClass('active');
+                                } else {
+                                    $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/2shoucang.png').removeClass('active');
+                                }
+                            }
+                            // 左右侧习题框相等
+                            this.leftRightEqual();
+                        })
+					} else {
+						console.log('错误1')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+            },
+
+			// 筛选
+			tileFilter: function(event){
+				if(!$(event.target).hasClass('active')) {
+					$(event.target).addClass('active').siblings().removeClass('active');
+					// 所有的解析收起
+                 	$('.showAnalysis').removeClass('active').text('查看解析').siblings('.analysisOutter').stop(false,true).slideUp();
+
+					//判断是筛选的哪里
+					var type = $(event.target).parent('.tileFilterMain').attr('type');
+					if(type == 'typestatus') {
+						//预习助手题型筛选
+						this.typestatus =  $(event.target).attr('typestatus');
+
+						if (this.sectionId > 0) {
+                            this.getExerciseList(this.modelId);
+						} else {
+						    this.getAllCloudExerciseList();//查看全部
+						}
+
+					} else if(type == 'type') {
+						//同步练习/强化试题题型筛选
+						this.typeId =  $(event.target).attr('typeId');
+						console.log(this.typeId)
+                        this.getExerciseList(this.modelId);
+					} else if(type == 'difficulty') {
+						//同步练习/强化试题难度筛选
+						this.difficultyId =  $(event.target).attr('difficultyId');
+						console.log(this.difficultyId)
+                        this.getExerciseList(this.modelId);
+					} else if(type == 'status') {
+						//同步练习/强化试题来源筛选
+						this.status =  $(event.target).attr('status');
+						console.log(this.status)
+                        this.getExerciseList(this.modelId);
+					}
+
+
+				}
+			},
+			//收藏图片
+			favorExercise: function(event){
+				var that = $(event.target);
+				if(that.hasClass('active')) {
+					that.removeClass('active').attr('src','__PUBLIC__/img/resource/2shoucang.png');
+					this.iscancel = 1;
+				} else {
+					that.addClass('active').attr('src','__PUBLIC__/img/resource/shoucang.png');
+					this.iscancel = 2;
+				}
+
+				this.exerciseId = that.parents('.exerciseBox').attr('id');
+
+				this.$http.post(this.exerciseCollectUrl, {
+					iscancel : this.iscancel,
+					exercise_id : this.exerciseId,
+                    userId:this.userId,
+					role:2,
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					console.log('成功')
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+            getSendId : function(event){
+                 var modelId = this.modelId;
+                 $('.knobTitle').removeClass('active');
+                 $(event.target).addClass('active');
+                 // 所有的解析收起
+                 $('.showAnalysis').removeClass('active').text('查看解析').siblings('.analysisOutter').stop(false,true).slideUp();
+                 
+                 if (modelId  == 3 ) {
+                     this.knowledgeId= $(event.target).attr('getId');
+                     this.getExerciseList(this.modelId);
+				 }
+
+				 if (modelId==2) {
+                     this.sectionId= $(event.target).attr('getId');
+                     this.chapterId = $(event.target).parent().siblings(".chapterTitle").attr('chapterId');
+                     this.gradeId = $(event.target).parent().parent().siblings(".volumeTitle").attr('gradeId');
+                     this.schoolTerm = $(event.target).parent().parent().siblings(".volumeTitle").attr('schoolTerm');
+                     this.getExerciseList(this.modelId);
+				 }
+
+				 if (modelId ==1 ){
+                     //请求
+                     this.sectionId= $(event.target).attr('getId');
+                     this.chapterId = $(event.target).parent().siblings(".chapterTitle").attr('chapterId');
+                     this.gradeId = $(event.target).parent().parent().siblings(".volumeTitle").attr('gradeId');
+                     this.schoolTerm = $(event.target).parent().parent().siblings(".volumeTitle").attr('schoolTerm');
+                     this.getExerciseList(this.modelId);
+					 this.getCloudExerciseTypeSelect();
+				 }
+
+				// 左右侧习题框相等
+	            this.$nextTick(function(){
+	            	this.leftRightEqual();
+	            })
+
+            },
+
+            getCloudExerciseTypeSelect : function(event){
+                this.$http.post(this.setVoiceUrl, {
+                    courseId:this.courseId,
+					infoId:this.sectionId,
+                    userId:this.userId,
+					role:2,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.couldData = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+
+            getCloudExerciseType : function(courseId){
+
+                this.$http.post(this.cloudExerciseUrl, {
+                    courseId:courseId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.couldData = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            getAllCloudExerciseList : function(event){
+                this.pageIndex = 1;
+                this.scrollAllow = true;
+                this.scrollData = 'allCloudExerciseList';
+
+                this.$http.post(this.cloudExerciseAllUrl, {
+                    ordinary_type:this.typestatus,
+					courseId:this.courseId,
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.voiceData = response.data.data;
+
+                        this.scrollAllow = true;
+                        this.scroll();
+
+                        if(response.data.data.length < this.pageSize) {
+                            this.scrollAllow = false
+                        }
+
+                        // 左右侧习题框相等
+			            this.$nextTick(function(){
+			            	this.leftRightEqual();
+			            })
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            //
+            selectExercise : function(event){
+				//selectExerciseList
+				//selectExerciseGroupList
+                var istrue = $(event.target).is(':checked');
+                var exerciseId = $(event.target).attr('exerciseId');
+                var topicType = $(event.target).attr('topicType');
+                var topic_type_name = $(event.target).attr('topic_type_name');
+                var exerciseScore = $(event.target).attr('exerciseScore');
+                exerciseScore = parseInt(exerciseScore);
+
+                // 这里是加题效果1 ↓↓↓
+                var cloneEvent = $(event.currentTarget).parents('.exerciseBox').clone(); // 克隆一个点击的元素
+	            var cloneWidth = $(event.currentTarget).parents('.exerciseBox').width(); // 点击之前的宽度
+	            var cloneHeight = $(event.currentTarget).parents('.exerciseBox').height(); // 点击之前的宽度
+	            var cloneTop = $(event.currentTarget).parents('.exerciseBox').offset().top - $(window).scrollTop(); // 点击位置距离顶端的位置
+	            var cloneLeft = $(event.currentTarget).parents('.exerciseBox').offset().left - $(window).scrollLeft(); // 点击位置距离左侧的位置
+	            var fixedTop = $('.publishBoxFixed').offset().top - $(window).scrollTop() + 110; // 购物车距离顶端的位置
+	            var fixedLeft = $('.publishBoxFixed').offset().left - $(window).scrollLeft() - 50; // 购物车距离左侧的位置
+	            $(event.currentTarget).parents('.exerciseOutter').append(cloneEvent);
+	            // 这里是加题效果1 ↑↑↑
+
+                if (istrue == true) { //选中
+                    this.addExerciseList(exerciseId);
+                    this.selectExerciseListMap[exerciseId] = this.modelId;
+					//判断key是否存在
+                    if(this.selectExerciseGroupList[topicType] == undefined) {
+                        var map = {}
+                        map["typename"] = topic_type_name;
+                        map["num"] = 1;
+                        map["score"] = exerciseScore;
+                        this.selectExerciseGroupList[topicType] = map;
+                    } else {
+                        this.selectExerciseGroupList[topicType]["num"] += 1;
+                        this.selectExerciseGroupList[topicType]["score"] += parseInt(exerciseScore);
+					}
+
+                    // console.log(this.selectExerciseList);
+                    // console.log(this.selectExerciseGroupList);
+
+                    store.set(this.userId+"selectExerciseList",this.selectExerciseList);
+                    store.set(this.userId+"selectExerciseGroupList",this.selectExerciseGroupList);
+                    store.set(this.userId+"selectExerciseListMap",this.selectExerciseListMap);
+
+                    this.exerciseNumScore += exerciseScore;
+
+                    // 这里是加题效果2 ↓↓↓
+	                cloneEvent.css({
+		            	'width': cloneWidth,
+		            	'height': cloneHeight,
+		            	'box-sizing': 'content-box',
+		            	'background': '#fff',
+		            	'border': '2px solid #efca33',
+		            	'overflow': 'hidden',
+		            	'position': 'fixed',
+		            	'top': cloneTop,
+		            	'left': cloneLeft,
+		            	'z-index': 101
+		            }).animate({
+		            	'width': '20px',
+		            	'height': '150px',
+		            	'top': fixedTop,
+		            	'left': fixedLeft
+		            }, 'slow', function(){
+		            	cloneEvent.remove()
+		            });
+		            // 这里是加题效果2 ↑↑↑
+
+				} else { //取消
+                    this.selectExerciseList.removeByValue(exerciseId);
+                    delete this.selectExerciseListMap[exerciseId]
+                    //删除key
+					//console.log(this.selectExerciseGroupList[topicType]["num"] ==1);
+					if (this.selectExerciseGroupList[topicType]["num"] ==1) { //就一个习题的时候
+                        delete this.selectExerciseGroupList[topicType];
+                    } else {
+                        this.selectExerciseGroupList[topicType]["num"] -= 1;
+                        this.selectExerciseGroupList[topicType]["score"] -= parseInt(exerciseScore);
+					}
+
+                    store.set(this.userId+"selectExerciseList",this.selectExerciseList);
+                    store.set(this.userId+"selectExerciseGroupList",this.selectExerciseGroupList);
+                    store.set(this.userId+"selectExerciseListMap",this.selectExerciseListMap);
+                    this.exerciseNumScore -= exerciseScore;
+
+                    // 这里是删题效果3 ↓↓↓
+	                cloneEvent.css({
+		            	'width': '20px',
+		            	'height': '150px',
+		            	'box-sizing': 'content-box',
+		            	'background': '#fff',
+		            	'border': '2px solid #efca33',
+		            	'position': 'fixed',
+		            	'top': fixedTop,
+		            	'left': fixedLeft,
+		            	'z-index': 101
+		            }).animate({
+		            	'width': cloneWidth,
+		            	'height': cloneHeight,
+		            	'top': cloneTop,
+		            	'left': cloneLeft
+		            }, 'slow', function(){
+		            	cloneEvent.remove()
+		            });
+		            // 这里是删题效果3 ↑↑↑
+				}
+
+				this.exerciseNumLength = this.selectExerciseList.length;
+
+                // console.log(this.exerciseNumLength);
+                // console.log(this.exerciseNumScore);
+                store.set(this.userId+"exerciseNumLength",this.exerciseNumLength);
+                store.set(this.userId+"exerciseNumScore",this.exerciseNumScore);
+
+                this.$nextTick(function(){
+	            	this.changeRightBox()
+	            })
+
+            },
+            addExerciseList : function(exerciseId){
+			    // console.log(this.selectExerciseList);
+                if(! (this.selectExerciseList.indexOf(exerciseId)>-1) ) {
+                    this.selectExerciseList.push(exerciseId);
+                }
+            },
+            // 右侧的固定框
+            changeRightBox : function(){
+			    var typeLength = $('.chooseBox').length;
+            	var newHeight = 276 + ($('.chooseBox').length - 3) * 32;
+            	var winHeight = $(window).height();
+
+            	if(newHeight >= winHeight ) {
+            		$('.publishBoxFixed').height(winHeight - 100);
+            		$('.publishBoxFixed .chooseOutter').css('overflow-y', 'scroll')
+            	} else if(newHeight < 276 ) {
+            		$('.publishBoxFixed').height(276);
+            	} else {
+            		$('.publishBoxFixed').height(newHeight);
+            	}
+            },
+            // 左右高度相等
+            leftRightEqual : function(){
+            	var leftHeight = $('.homeworkRight').height() + 48;
+            	$('.homeworkLeft').css('min-height', leftHeight)
+            },
+            // 播放音频
+            play: function(e){
+            	var that = $(e.currentTarget);
+            	var player = that.parent('.wordMain').siblings('.audioHide')[0];
+            	var newUrl = that.attr('audioSrc');
+
+				if (player.paused){
+					// 其余音频停止播放
+					$('audio').trigger('pause');
+					// 其余去掉背景颜色
+					$('.wordMain').removeClass('active');
+					// 所有音频图标重置
+					$('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+					that.parent('.wordMain').siblings('.audioHide').attr('src', newUrl);
+					player.play();
+					that.parent('.wordMain').addClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoYellow36×30.gif');
+					player.loop = false;
+					player.addEventListener('ended', function () {
+						that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+					}, false);
+				} else {
+					player.pause();//暂停
+					that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+				}
+            },
+            scroll:function(){
+                var that = this
+                $(window).scroll(function () {
+                    //已经滚动到上面的页面高度
+                    var scrollTop = $(this).scrollTop();
+                    //页面高度
+                    var scrollHeight = $(document).height();
+                    //浏览器窗口高度
+                    var windowHeight = $(this).height();
+
+                    //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+                    if (scrollTop + windowHeight == scrollHeight) {
+                        if(that.scrollAllow == true) {
+                            $('.downLoading').show();
+                            that.pageIndex++;
+                            // 如果是请求全部习题
+                            if(that.scrollData == 'allCloudExerciseList') {
+                            	that.$http.post(that.cloudExerciseAllUrl, {
+				                    ordinary_type: that.typestatus,
+									courseId: that.courseId,
+				                    pageIndex: that.pageIndex,
+				                    pageSize: that.pageSize
+				                }, {
+				                    emulateJSON: 'application/x-www-form-urlencoded'
+				                }).then(function (response) {
+				                    if(response.status == '200'){
+				                        for(var a=0;a<response.data.data.length;a++){
+	                                        that.voiceData.push(response.data.data[a]);
+	                                    }
+
+	                                    $('.downLoading').hide();
+
+	                                    if(response.data.data == '') {
+	                                        that.scrollAllow = false
+	                                    }
+
+	                                    var imgArr = [];
+	                                    for( var i = 0; i < that.exerciseData.length; i++) {
+	                                        if(that.exerciseData[i].eid != null) {
+	                                            // shoucang
+	                                            imgArr.push('0')
+	                                        } else {
+	                                            imgArr.push('1')
+	                                        }
+	                                    }
+
+	                                    that.$nextTick(function(){
+	                                        for( var i = 0; i < imgArr.length; i++) {
+	                                            if(imgArr[i]=='0') {
+	                                                $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/shoucang.png').addClass('active');
+	                                            } else {
+	                                                $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/2shoucang.png').removeClass('active');
+	                                            }
+	                                        }
+
+	                                        // 左右侧习题框相等
+				                            that.leftRightEqual();
+	                                    })
+				                    } else {
+				                        console.log('错误1')
+				                    }
+				                }, function (response) {
+				                    console.log('错误2')
+				                })
+                            } else if(that.scrollData == 'voiceExerciseList') {
+							    that.exerciseUrl = that.voiceUrl; //请求云作业的url
+			                    // this.exerciseUrl = this.varexerciseUrl;
+			                    // this.scrollData = normalExerciseList;
+
+                            	that.$http.post(that.exerciseUrl, {
+									version_id : that.version_id,
+									course_id : that.courseId,
+									grade_id : that.gradeId,
+									school_term : that.schoolTerm,
+									chapter_id : that.chapterId,
+									section_id : that.sectionId,
+									type_id: that.typeId,
+									difficulty_id: that.difficultyId,
+									status : that.status,
+				                    knowledge_id : that.knowledgeId,
+				                    userId:that.userId,
+									role:2,
+				                    level:3,
+				                    infoId:that.sectionId,
+				                    category:that.typestatus,
+				                    pageIndex: that.pageIndex,
+				                    pageSize: that.pageSize
+
+								}, {
+									emulateJSON: 'application/x-www-form-urlencoded'
+								}).then(function (response) {
+									if(response.status == '200'){
+										for(var a=0;a<response.data.data.length;a++){
+	                                        that.voiceData.push(response.data.data[a]);
+	                                    }
+
+	                                    $('.downLoading').hide();
+
+	                                    if(response.data.data == '') {
+	                                        that.scrollAllow = false
+	                                    }
+
+	                                    var imgArr = [];
+	                                    for( var i = 0; i < that.exerciseData.length; i++) {
+	                                        if(that.exerciseData[i].eid != null) {
+	                                            // shoucang
+	                                            imgArr.push('0')
+	                                        } else {
+	                                            imgArr.push('1')
+	                                        }
+	                                    }
+
+	                                    that.$nextTick(function(){
+	                                        for( var i = 0; i < imgArr.length; i++) {
+	                                            if(imgArr[i]=='0') {
+	                                                $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/shoucang.png').addClass('active');
+	                                            } else {
+	                                                $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/2shoucang.png').removeClass('active');
+	                                            }
+	                                        }
+
+	                                        // 左右侧习题框相等
+				                            that.leftRightEqual();
+	                                    })
+
+									} else {
+										console.log('错误1')
+									}
+								}, function (response) {
+									console.log('错误2')
+								})
+                            } else if(that.scrollData == 'normalExerciseList') {
+							    that.exerciseUrl = that.varexerciseUrl;
+
+                            	that.$http.post(that.exerciseUrl, {
+									version_id : that.version_id,
+									course_id : that.courseId,
+									grade_id : that.gradeId,
+									school_term : that.schoolTerm,
+									chapter_id : that.chapterId,
+									section_id : that.sectionId,
+									type_id: that.typeId,
+									difficulty_id: that.difficultyId,
+									status : that.status,
+				                    knowledge_id : that.knowledgeId,
+				                    userId:that.userId,
+									role:2,
+				                    level:3,
+				                    infoId:that.sectionId,
+				                    category:that.typestatus,
+				                    pageIndex: that.pageIndex,
+				                    pageSize: that.pageSize
+
+								}, {
+									emulateJSON: 'application/x-www-form-urlencoded'
+								}).then(function (response) {
+									if(response.status == '200'){
+										for(var a=0;a<response.data.data.length;a++){
+	                                        that.exerciseData.push(response.data.data[a]);
+	                                    }
+
+	                                    $('.downLoading').hide();
+
+	                                    if(response.data.data == '') {
+	                                        that.scrollAllow = false
+	                                    }
+
+	                                    var imgArr = [];
+	                                    for( var i = 0; i < that.exerciseData.length; i++) {
+	                                        if(that.exerciseData[i].eid != null) {
+	                                            // shoucang
+	                                            imgArr.push('0')
+	                                        } else {
+	                                            imgArr.push('1')
+	                                        }
+	                                    }
+
+	                                    that.$nextTick(function(){
+	                                        for( var i = 0; i < imgArr.length; i++) {
+	                                            if(imgArr[i]=='0') {
+	                                                $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/shoucang.png').addClass('active');
+	                                            } else {
+	                                                $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/2shoucang.png').removeClass('active');
+	                                            }
+	                                        }
+
+	                                        // 左右侧习题框相等
+				                            that.leftRightEqual();
+	                                    })
+
+									} else {
+										console.log('错误1')
+									}
+								}, function (response) {
+									console.log('错误2')
+								})
+                            }
+                           
+                        }
+                    }
+                });
+            }
+		}
+	})
+</script>
+
+
+<script>
+    Array.prototype.removeByValue = function(id) {
+        var id = parseInt( id );
+        for(var i=0; i<this.length; i++) {
+            if(this[i] == id) {
+                this.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+	// 设置左右最小高度
+	$(function(){
+		var contentWrapperHeight = $('#contentWrapper').height();
+		$('.homeworkLeft, .homeworkRight, .subjectBack').css('min-height', contentWrapperHeight)
+	})
+</script>

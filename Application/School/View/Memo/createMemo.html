@@ -1,0 +1,87 @@
+<layout name="admin_layout_school"/>
+
+<style>
+	.contentMain {
+		padding: 0;
+	}
+
+	[v-cloak] {
+		display: none;
+	}
+</style>
+
+<div id="admin" v-cloak>
+	<div class="indexOutter">
+		<div class="standardMain hrefContent">
+			<a href="{:U('Memo/memoList')}" class="returnBack">备忘录</a>
+			>
+			<span class="thePage">新建备忘录</span>
+		</div>
+
+		<div class="standardMain memoNewContent">
+			<div class="memoNewTop">新建备忘录</div>
+			<div class="memoNewMain">
+				<div class="indexTitle">备忘录标题</div>
+				<textarea name="" id="" cols="30" rows="10" class="menoNewTitle" placeholder="请输入备忘录标题"></textarea>
+				<script type="text/plain" id="message" name="message" style="width:100%; height:340px;"></script>
+				<button type="button" class="commonBtnBlue saveButton" id="saveButton" v-on:click="sunmitMemo">保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.all.js"></script>
+
+<script>
+	var ue = UE.getEditor('message');
+</script>
+
+<script>
+	var admin = new Vue({
+		el: '#admin',
+		data: {
+			// 备忘录地址
+			newMemoUrl: '/index.php?m=School&c=Memo&a=memorandumAdd',
+			// 备忘录标题
+			newMemoTitle: '',
+			// 备忘录内容
+			newMemoContent: ''
+		},
+		methods: {
+			// 提交备忘录
+			sunmitMemo: function(){ 
+				this.newMemoTitle = $('.menoNewTitle').val();
+				this.newMemoContent = ue.getContent();
+				if($.trim(this.newMemoTitle) == '') {
+					$.NotifyBox.NotifyOne('提示', '请填写备忘录标题', '确定');
+					return false
+				} else if($.trim(this.newMemoContent) == '') {
+					$.NotifyBox.NotifyOne('提示', '请填写备忘录内容', '确定');
+					return false
+				}
+
+				this.$http.post(this.newMemoUrl, {
+					memorandum_title: this.newMemoTitle,
+					memorandum_content: this.newMemoContent
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					$.NotifyBox.NotifyOneCall('提示', '保存成功', '回到首页', function(){
+    						window.location.href = "{:U('Memo/memoList')}";
+    					});
+                    } else {
+                        $.NotifyBox.NotifyOne('提示', '保存失败，请重试', '确定');
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			}
+		}
+	})
+</script>
+
+

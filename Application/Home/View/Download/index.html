@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>下载京版云</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+<style>
+    html,
+    body,
+    div,
+    img {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden
+    }
+    
+    #wind {
+        position: relative
+    }
+    
+    #download2 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: none;
+        z-index: 3
+    }
+    
+    #btn1 {
+        width: 35%;
+        height: 7%;
+        position: absolute;
+        top: 33%;
+        left: 11%;
+    }
+    
+    #btn2 {
+        width: 35%;
+        height: 7%;
+        position: absolute;
+        top: 33%;
+        right: 11%;
+    }
+    
+    #IpadBtn {
+        position: absolute;
+        top: 42%;
+        left: 35%;
+        text-decoration: none;
+        color: #333;
+        font-size: 14px
+    }
+</style>
+
+<body scroll="no">
+    <div id="wind">
+        <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Download/downApp1.png" alt="">
+        <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Download/downApp2.png" alt="" id="download2">
+        <div id="btn1">
+        </div>
+        <div id="btn2">
+        </div>
+<!--        <a href="{:U('Download/ipad')}" id="IpadBtn">ipad下载直通车>></a>-->
+    </div>
+    <script src="__PUBLIC__/js/jquery-1.11.0.min.js"></script>
+    <script>
+        $('#download2').click(function () {
+            $(this).hide()
+        })
+
+        var iosurl = 'https://itunes.apple.com/us/app/jin-ri-ke-tang-bei-jing-chu/id1060492678?l=zh&ls=1&mt=8';
+        var androidurl =  "<?php echo $path ;?>";
+        var download_url = androidurl;
+
+        function isWeixinBrowser() {
+            var ua = navigator.userAgent.toLowerCase();
+            return (/micromessenger/.test(ua)) ? true : false;
+        }
+
+        function isAndroidBrowser() {
+            var ua = navigator.userAgent.toLowerCase();
+            var isAndroid = false;
+            if (/android/.test(ua)) {
+                isAndroid = true;
+            }
+            return isAndroid;
+        }
+
+        function isAppleBrowser() {
+            var ua = navigator.userAgent.toLowerCase();
+            var isApple = false;
+            if (/iphone/.test(ua)) {
+                isApple = true;
+            }
+            if (/ipad/.test(ua)) {
+                isApple = true;
+            }
+            return isApple;
+        }
+
+        var idname = "btn2";
+
+        if (isAppleBrowser()) {
+            download_url = iosurl;
+            idname = "btn1";
+        } else if (isAndroidBrowser()) {
+            download_url = androidurl;
+            idname = "btn2";
+        }
+
+        document.getElementById(idname).onclick = function (e) {
+            if (isWeixinBrowser()) {
+                $('#download2').show();
+                return;
+            }
+
+            if (idname=='btn1') { //ios跳转
+
+                $.ajax({
+                    url:'index.php?m=Home&c=Download&a=addAdNum',
+                    type:'POST', //GET
+                    async:false,    //或false,是否异步
+                    data:{
+                        name:'ios'
+                    },
+                    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+                    success:function(data,textStatus,jqXHR){
+                        console.log(data)
+                        console.log(textStatus)
+                        console.log(jqXHR)
+                    }
+                })
+
+            } else {
+                $.ajax({
+                    url:'index.php?m=Home&c=Download&a=addAdNum',
+                    type:'POST', //GET
+                    async:false,    //或false,是否异步
+                    data:{
+                        name:'ad'
+                    },
+                    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+                    success:function(data,textStatus,jqXHR){
+
+                    }
+                })
+            }
+
+
+            window.location = download_url;
+            //            var loadDateTime = new Date();
+            //            window.setTimeout(function() {
+            //                var timeOutDateTime = new Date();
+            //                if (timeOutDateTime - loadDateTime < 3000) {
+            //                    if (download_url) {
+            //                        window.location = download_url;
+            //                    }
+            //                } else {
+            //                    window.close();
+            //                }
+            //            }, 1000);
+        }
+
+        if (document.all) {
+            document.getElementById(idname).click();
+        }
+    </script>
+</body>
+
+</html>

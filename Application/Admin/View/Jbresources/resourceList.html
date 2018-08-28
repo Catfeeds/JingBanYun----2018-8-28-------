@@ -1,0 +1,686 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<style>
+	.cellBox .cell label {
+		max-width: 170px;
+	}
+
+	.cellNew .cell1 {
+		width: 33.33% !important;
+	}
+	
+	.cellNew .cell2 {
+		width: 66% !important;
+	}
+
+	.cell2 label {
+		width: 13.3% !important;
+	}
+	
+	.cell2 .input-control {
+		width: 18.3% !important;
+	}
+	
+	.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+		box-sizing: content-box;
+	}
+	
+	.qq-uploader {
+		max-height: 540px
+	}
+	
+	#laydate_hms {
+		display: none !important;
+	}
+</style>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		资源管理
+		<span class="blueSpan">
+			<a href="javascript:;">教学+</a>>>
+			<a href="javascript:;">资源管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="{:U('Jbresources/jbresources')}" method="post">
+	<p class="blueText fs16">资源查询</p>
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>资源名称：</label>
+				<input type="text" class="input-control" name="keyword" value="{$keyword}" id="key" placeholder="请输入资源名称">
+			</div>
+			<div class="cell">
+				<label>资源ID：</label>
+				<input type="text" class="input-control" name="id" value="{$id}" id="id" placeholder="请输入资源ID">
+			</div>
+			<div class="cell">
+				<label>资源提供商：</label>
+				<select id="file_type" class="input-control" name="file_type">
+					<option value=''>-请选择-</option>
+					<option value='1' {$file_type =='1' ?'selected':''}>京版资源</option>
+					<option value='2' {$file_type =='2' ?'selected':''}>nobook</option>
+					<option value='3' {$file_type =='3' ?'selected':''}>万邦华堂资源</option>
+					<option value='4' {$file_type =='4' ?'selected':''}>京版资源网页</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>学科：</label>
+				<select id="course_id" class="input-control" name="course_id" onchange="getTextbooks()">
+					<option value="">-请选择-</option>
+					<volist name="courses" id="dataCourse">
+						<option value="{$dataCourse.id}" {$dataCourse['id']==$course_id?'selected':''}>
+						{$dataCourse.code} : {$dataCourse.course_name}
+						</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>年级：</label>
+				<select id="grade_id" class="input-control" name="grade_id" onchange="getTextbooks()">
+					<option value="">-请选择-</option>
+					<volist name="grades" id="dataGrade">
+						<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+						{$dataGrade.grade}
+						</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>教材分册：</label>
+				<select id="textbook_id" class="input-control" name="textbook_id" onchange="getChapter()">
+					<option value="">-请先选择学科和年级-</option>
+					<volist name="textbook_list" id="textbook_item">
+						<option value="{$textbook_item.id}" {$textbook_id == $textbook_item['id']?'selected':''}>
+						{$textbook_item.name}
+						</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>章/单元：</label>
+				<select id="chapter" class="input-control" name="chapter" onchange="getFestival()">
+					<option value=''>-请选择-</option>
+					<volist name="chapter_list" id="chapter_item">
+						<option value="{$chapter_item.id}" {$chapter == $chapter_item['id']?'selected':''}>
+						{$chapter_item.knowledge_name}
+						</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>节/课：</label>
+				<select id="festival" class="input-control" name="festival">
+					<option value='0'>-请选择-</option>
+					<volist name="festival_list" id="festival_item">
+						<option value="{$festival_item.id}" {$festival == $festival_item['id']?'selected':''}>
+						{$festival_item.knowledge_name}
+						</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>是否已经标引知识点：</label>
+				<select id="knowledgePoint" class="input-control" name="knowledgePoint">
+					<option value=''>-请选择-</option>
+					<option value='1' {$knowledgePoint =='1' ?'selected':''}>是</option>
+					<option value='2' {$knowledgePoint =='2' ?'selected':''}>否</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>显示状态：</label>
+				<select id="displayStatus" class="input-control" name="displayStatus">
+					<option value=''>-请选择-</option>
+					<option value='1' {$displayStatus =='1' ?'selected':''}>-在前台显示-</option>
+					<option value='2' {$displayStatus =='2' ?'selected':''}>-不在前台显示-</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>资源状态：</label>
+				<select id="status" class="input-control" name="status" {$displayStatus !=''?'disabled':''} >
+					<option value=''>-请选择-</option>
+					<option value='0' {$status =='0' ?'selected':''}>-待审核-</option>
+					<option value='1' {$status =='1' ?'selected':''}>-审核通过-</option>
+					<option value='2' {$status =='2' ?'selected':''}>-审核拒绝-</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>资源类型：</label>
+				<select id="resourceType" class="input-control" name="resourceType"  >
+				<option value=''>-请选择-</option>
+					<volist name="resourceType" id="resourceType">
+						<option value="{$resourceType.id}" {$resourceTypeSelected == $resourceType['id'] ?'selected':''}>{$resourceType.type_name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>资源格式：</label>
+				<select id="resourceFileType" class="input-control" name="resourceFileType" >
+					<option value=''>-请选择-</option>
+				<volist name="resourceFileType" id="resourceFileType" >
+					<option value="{$resourceFileType.value}" {$resourceFileTypeSelected == $resourceFileType['value'] ?'selected':''}>{$key}</option>
+				</volist>
+				</select>
+			</div>
+
+			<div class="cell">
+				<label>是否上架：</label>
+				<select id="putaway_status" class="input-control" name="putaway_status" {$displayStatus !=''?'disabled':''} >
+					<option value=''>-请选择-</option>
+					<option value='0' {$putaway_status =='0' ?'selected':''}>不上架</option>
+					<option value='1' {$putaway_status =='1' ?'selected':''}>已上架</option>
+				</select>
+			</div>
+		</div>
+
+			<div class="cell cell2">
+				<label>上架时间：</label>
+				<input type="text" value="{$start}" class="input-control" id="startTime" name="start" placeholder="开始时间">
+				&nbsp;至&nbsp;
+				<input type="text" value="{$end}" class="input-control" id="endTime" name="end" placeholder="结束时间">
+			</div>
+		<!--<div class="row cells1">
+			<div class="cell">
+				<label>所属端口：</label>
+				<input type="checkbox" class="cellCheck">
+				<span class="cellSpan">京版资源</span>
+				<input type="checkbox" class="cellCheck">
+				<span class="cellSpan">教师分享</span>
+				<input type="checkbox" class="cellCheck">
+				<span class="cellSpan">京版活动</span>
+			</div>
+		</div>-->
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+                -->
+                <input type='submit' value='查询' class='blueBtn'/>
+                <input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+
+<div class="grayBox">
+	<div class="left">
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt=""> 
+			<a href="{:U('Jbresources/createBJResource')}">上传资源</a>
+		</span>
+		<if condition="($role eq 2)">
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-pass.png" alt=""> 
+            <a href="javascript:;" class="passBtn" id="batchAccept" status="1">批量通过审核</a>
+		</span>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-noPass.png" alt=""> 
+            <a href='javascript:;' class="noPassBtn" id="batchDecline" status="2">批量拒绝通过审核</a>
+		</span>
+		</if>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-shelve.png" alt=""> 
+            <a href="javascript:;" class="shelveBtn" id="batchUp" status="1">批量上架</a>
+		</span>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-unShelve.png" alt=""> 
+            <a href="javascript:;" class="unShelveBtn" id="batchDown" status="0">批量下架</a>
+		</span>
+
+	</div>
+	<span class="btns" style="float:right;">
+			<img src="{$oss_path}public/web_img/Admin/icon-unShelve.png" alt="">
+		    <form action="/index.php?m=Admin&c=Jbresources&a=exportResourceList" method="post" target="iframeName1" style="display:inline">
+            <a href="javascript:void(0)" onclick="this.parentNode.submit();" class="unShelveBtn" id="export" status="0">导出</a>
+            <input type="hidden" name="whereCondition" value="{$whereCondition}">
+			</form>
+	</span>
+	<iframe name="iframeName1" id="iframeID1" src="about:blank" width="0" height="0" frameborder="0" ></iframe>
+</div>
+
+<p class="blueText fs16">资源列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+        <tr>
+			<th class="text-center"><input type="checkbox" class="check_all mr5">全选</th>
+            <th class="text-center">序号</th>
+            <th class="text-center">资源名称</th>
+            <!--<th class="text-center">教材分册</th>-->
+			<th class="text-center">资源ID</th>
+            <th class="text-center">资源提供商</th>
+            <th class="text-center">资源状态</th>
+            <th class="text-center">是否上架</th> 
+            <th class="text-center">上架时间</th>
+            <th class="text-center">观看数</th>
+            <!-- <th class="text-center">点赞数</th> -->
+            <th class="text-center">收藏数</th>
+            <th class="text-center">操作</th>
+        </tr>
+	</thead>
+	<tbody id="body">
+	<volist name="list" id="item">
+		<tr>
+			<td class="text-center">
+				<input type="checkbox" class="checkSelect check_child" attr_id="{$item.id}"/>
+			</td>
+			<td class="text-center">
+				{$i}
+			</td>
+			<td class="text-center">
+				<a href="{:U('Jbresources/jbResourceDetails')}&id={$item.id}">{$item.name}</a>
+			</td>
+			<!--<td class="text-center">
+				<?php  if(count(explode(',',$item['bn'])) > 1){
+					$bn = explode(',',$item['bn']);
+					echo $bn[0].'<br/>'.$bn[1].'....';
+				}else{
+					echo $item['bn'];
+				}?>
+			</td>-->
+			<td class="text-center">
+				{$item.id}
+			</td>
+			<td class="text-center">
+				<if condition="$item['resource_type'] eq 1">
+					普通资源
+					<elseif condition="$item['resource_type'] eq 2"/>
+					nobook
+					<elseif condition="$item['resource_type'] eq 3"/>
+					万邦华堂资源
+					<elseif condition="$item['resource_type'] eq 4"/>
+					京版资源网页
+				</if>
+			</td>
+			<td class="text-center reviewJ">
+				<if condition="$item['status'] eq 0">
+				待审核
+				<elseif condition="$item['status'] eq 1"/>
+				审核通过
+				<elseif condition="$item['status'] eq 2"/>
+				审核拒绝
+			</if>
+			</td>
+			<td class="text-center up-down">
+				<if condition="$item['putaway_status'] eq 0">
+					不上架
+					<else/>
+					上架
+				</if>
+			</td>
+			<td class="text-center">
+				{$item.putaway_time|date="Y-m-d",###}
+			</td>
+			<td class="text-center">
+				{$item.browse_count}
+			</td>
+<!-- 			<td class="text-center">
+				{$item.zan_count}
+			</td> -->
+			<td class="text-center">
+				{$item.favorite_count}
+			</td>
+			<td class="text-center">
+				<input type="hidden"  value="{$item.id}" class="hidden_val"/>
+				<!--<a href="javascript:;" class="operBtn" id="">查看</a>-->
+				<a href="{:U('Jbresources/editJBResource?id=')}{$item.id}" class="button" id="">修改</a>
+				<a href="javascript:;" class="button" id="delete_click" attr="{$item.id}">删除</a>
+				<if condition="($role eq 2)">
+					<if condition="($item['status'] eq 2)">
+				<a href="javascript:;" class="button yes_status info" id="">通过审核</a>
+					<elseif condition="($item['status'] eq 0)"/>
+						<a href="javascript:;" class="button yes_status info" id="">通过审核</a>
+						<a href="javascript:;" class="button no_status" id="">不通过审核</a>
+					<else/>
+					<a href="javascript:;" class="button no_status" id="">不通过审核</a>
+					</if>
+				</if>
+					<if condition="($item['putaway_status'] eq 1)">
+				<a href="javascript:;" class="button down_status" id="">不上架</a>
+					<else/>
+				<a href="javascript:;" class="button up_status info" id="">上架</a>
+					</if>
+			</td>
+		</tr>
+	</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"6%"},
+                {"width":"9%"},
+                {"width":"10%"},
+                {"width":"8%"},
+                {"width":"8%"},
+                {"width":"10%"},//5
+                {"width":"10%"},
+                {"width":"8%"},
+                {"width":"8%"},
+                {"width":"8%"}, 
+                {"width":"15%"}
+            ]
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    function getTextbooks() {
+        var courseId = $('#course_id').val();
+        var gradeId = $('#grade_id').val();
+
+		$("#textbook_id option:not(:eq(0))").remove();
+		$("#chapter option:not(:eq(0))").remove();
+		$("#festival option:not(:eq(0))").remove();
+
+        if (courseId == '' || gradeId == '') {
+			return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_textbooks', {
+                    'course_id': courseId,
+                    'grade_id': gradeId
+                },
+                function (res) {
+                    var options = [];
+                    options.push('<option value="">-请选择-</option>');
+                    $.each(res, function (index, item) {
+                        options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+                    });
+                    if (options.length > 0) {
+                        $('#textbook_id').html(options.join(''));
+                    } else {
+                        $('#textbook_id').html('<option value="">-请选择-</option>');
+                    }
+
+                })
+        }
+    }
+
+    function getChapter() {
+        var textbook_id = $('#textbook_id').val();
+
+		$("#chapter option:not(:eq(0))").remove();
+		$("#festival option:not(:eq(0))").remove();
+
+		if (textbook_id == '') {
+			return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_chapter', {
+                'textbook_id': textbook_id,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#chapter').html(options.join(''));
+                } else {
+                    $('#chapter').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+    function getFestival() {
+
+        var chapter = $('#chapter').val();
+
+		$("#festival option:not(:eq(0))").remove();
+		if (chapter == '') {
+			return false;
+        }else {
+            $.getJSON('index.php?m=Admin&c=Jbresources&a=ajax_get_festival', {
+                'chapter': chapter,
+            }, function (res) {
+                var options = [];
+                options.push('<option value="">-请选择-</option>');
+                $.each(res, function (index, item) {
+                    options.push('<option value="{0}">{1}</option>'.format(item.id, item.knowledge_name));
+                });
+                if (options.length > 0) {
+                    $('#festival').html(options.join(''));
+                } else {
+                    $('#festival').html('<option value="">-请选择-</option>');
+                }
+
+            })
+        }
+    }
+
+    $('.down_status,.up_status').live('click',function(){
+        if($(this).hasClass('up_status')){
+            var status=1;
+        }else{
+            var status=0;
+        }
+
+        var obj=this;
+        var id=$(this).siblings('.hidden_val').val();
+        $.get('index.php?m=Admin&c=Jbresources&a=downJBResource',{id:id,'status':status},function(msg){
+            if(msg==1){
+                if(status==0){
+                    $(obj).parent().siblings('.up-down').text('不上架');
+
+                    $(obj).attr('class','button info up_status');
+                    $(obj).text('上架');
+
+                }else if(status==1){
+                    $(obj).parent().siblings('.up-down').text('上架');
+                    $(obj).attr('class','button down_status');
+					/*$(obj).html('<a href="javascript:;" class="operBtn yes_status" id="">通过审核</a>')*/
+                    $(obj).text('不上架');
+                }
+            }else{
+                alert('上/下架失败，请刷新页面后重新尝试');
+            }
+        });
+    });
+    $('#batchUp,#batchDown').click(function(){
+       var checkBoxList = $('.checkSelect:checked');
+		if(checkBoxList.length == 0) {
+			alert('请勾选待上/下架的资源');
+			return;
+		}
+		var idArray = [];
+		checkBoxList.each(function(i,n){
+		  idArray.push($(n).attr('attr_id'));
+		});
+		var status = $(this).attr('status');
+		$.get('index.php?m=Admin&c=Jbresources&a=downJBResource',{id:idArray.join(),'status':status},function(msg){
+			if(msg==1){
+                location.reload();
+			}
+			else
+			{
+				alert('操作失败，请刷新页面后重新尝试');
+			}
+		});
+
+	})
+
+    //审核资源
+    $('.yes_status,.no_status').live('click',function(){
+        if($(this).hasClass('yes_status')){
+            var status=1;
+            $(this).siblings('.no_status').hide();
+        }else{
+            var status=2;
+            $(this).siblings('.yes_status').hide();
+        }
+        var obj=this;
+        var id=$(this).siblings('.hidden_val').val();
+        $.get('index.php?m=Admin&c=Jbresources&a=reviewJBResource',{'status':status,'id':id},function(msg){
+            if(msg==1){
+                if(status==1){
+                    $(obj).parent().siblings('.reviewJ').text('审核通过');
+
+                    $(obj).attr('class','operBtn no_status');
+                    $(obj).text('不通过审核');
+
+                }else if(status==2){
+                    $(obj).parent().siblings('.reviewJ').text('审核拒绝');
+                    $(obj).attr('class','operBtn yes_status');
+                    /*$(obj).html('<a href="javascript:;" class="operBtn yes_status" id="">通过审核</a>')*/
+                    $(obj).text('通过审核');
+				}
+               // $(obj).remove();
+            }else{
+                alert('修改失败，请刷新页面后重新尝试');
+            }
+        });
+    });
+	$('#batchAccept,#batchDecline').click(function(){
+		var checkBoxList = $('.checkSelect:checked');
+		if(checkBoxList.length == 0) {
+			alert('请勾选待审核的资源');
+			return;
+		}
+		var idArray = [];
+		checkBoxList.each(function(i,n){
+			idArray.push($(n).attr('attr_id'));
+		});
+		var status = $(this).attr('status');
+		$.get('index.php?m=Admin&c=Jbresources&a=reviewJBResource',{id:idArray.join(),'status':status},function(msg){
+			if(msg==1){
+				location.reload();
+			}
+			else
+			{
+				alert('操作失败，请刷新页面后重新尝试');
+			}
+		});
+
+	})
+    //删除
+    $('#delete_click').live('click',function(){
+        var id=$(this).attr('attr');
+        deleteJBResource(id,this);
+    });
+
+    function deleteJBResource(id,obj) {
+        if (confirm('确定要删除吗？删除后，该资源将不能被查看，请务必谨慎处理，不要误删！！！')) {
+            $.get('index.php?m=Admin&c=Jbresources&a=deleteJBResource', {id: id}, function (res) {
+                if (res == 'success') {
+                    //alert('删除成功')
+                    window.location.reload();
+                    //$(obj).parent().parent().remove();
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+
+    //重置
+    $('.resetButton').click(function()
+    {
+        $('#key').attr('value','');
+        $('#startTime').attr('value','');
+        $('#endTime').attr('value','');
+		$('#id').attr('value','');
+        $('#course_id').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#grade_id').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#textbook_id').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#chapter').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#festival').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#file_type').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+		$('#status').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+		$('#knowledgePoint').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#displayStatus').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+        $('#putaway_status').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+		$('#resourceType').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+		$('#resourceFileType').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+    });
+
+	!function(){
+		laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD ',
+		// min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD ',
+		// min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+	$('#displayStatus').change(function() {
+		var value = $(this).val();
+		if (value == '' || value == 0)
+		{
+			$('#status,#putaway_status').attr('disabled',false);
+		}
+		else
+		{
+			$('#status,#putaway_status').attr('disabled',true);
+		}
+	})
+	//全选
+	$('.check_all').click(function(){
+		var childCheck=$('.check_child');
+		var temp_status=true;
+		if($(this)[0].checked==true){
+			//本次选中
+			temp_status=true;
+		}else{
+			//本次取消
+			temp_status=false;
+		}
+		for(var i=0;i<childCheck.length;i++){
+			childCheck[i].checked=temp_status
+		}
+	});
+
+	//取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				$('.check_all').removeAttr('checked','checked');
+				$('.check_all').removeProp('checked','checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $(".checkSelect:checked").length) {
+					$('.check_all').attr('checked','checked');
+					$('.check_all').prop('checked','checked');
+				};
+			}
+		}
+	};
+</script>
+<script>
+
+</script>

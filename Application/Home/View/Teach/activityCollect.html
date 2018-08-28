@@ -1,0 +1,99 @@
+<layout name="teacher_layout_1"/>
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+
+<div class="main_opr">
+    <a href="javascript:;" title="我收藏的活动" target="_blank" class="btn btn-main-opr" style="background:#fff;color:#333;">我收藏的活动</a>
+</div>
+
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/activities')}" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<form action="{:U('Teach/activities')}" method="post">
+    <div style="text-align: center;padding:17px; ">
+        <select class="form-control" name="class_id" id="class_id" style="width: 300px;display: inline-block;margin-right:50px;">
+            <option value="0" {$class_id==0?'selected':''}>--所有版块--</option>
+            <volist name="classes" id="dataClass">
+                <option value="{$dataClass.id}" {$dataClass[
+                'id']==$class_id?'selected':''}>{$dataClass.class}</option>
+            </volist>
+        </select>
+        
+        <span>排序&nbsp;</span>
+        <select class="form-control" name="sort_id" id="sort_id" style="width: 300px;display: inline-block;">
+            <option value="0" {$default_sort==0?'selected':''}>获赞数倒序</option>
+            <option value="1" {$default_sort==1?'selected':''}>获赞数正序</option>
+            <option value="2" {$default_sort==2?'selected':''}>收藏数倒序</option>
+            <option value="3" {$default_sort==3?'selected':''}>收藏数正序</option>
+            <option value="4" {$default_sort==4?'selected':''}>查看数倒序</option>
+            <option value="5" {$default_sort==5?'selected':''}>查看数正序</option>
+            <option value="6" {$default_sort==6?'selected':''}>时间正序</option>
+            <option value="7" {$default_sort==7?'selected':''}>时间倒序</option>
+        </select>
+    </div>
+</form>
+<empty name="list">
+    <div class="emptyResult">对不起，您想要搜索的内容不存在</div>
+</empty>
+<notempty name="list">
+    <table class="table striped hovered border">
+        <thead>
+        <tr>
+            <th class="text-center" style="width:15%;">发布单位/人</th>
+            <th class="text-center" style="width:24%;">标题</th>
+            <th class="text-center" style="width:22%;">面向</th>
+            <th class="text-center" style="width:8%;">获赞数</th>
+            <th class="text-center" style="width:8%;">收藏数</th>
+            <th class="text-center" style="width:8%;">查看数</th>
+            <th class="text-center" style="width:15%;">发布时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="">
+            <tr id="l_{$data.id}">
+                <td class="text-center">
+                    {$data.publisher}
+                </td>
+                <td>
+                    <h3 class="list_title" title="{$data.title}">
+                        <a href="{:U('Teach/activityDetails?id=')}{$data.sid}">{$data.title}</a>
+                    </h3>
+
+                    <div class="list_sub_title">{$data.short_content}</div>
+                </td>
+                <td>
+                    {$data.stakeholder}
+                </td>
+                <td class="text-center">
+                    {$data.zan_count}
+                </td>
+                <td class="text-center">
+                    {$data.favor_count}
+                </td>
+                <td class="text-center">
+                    {$data.browse_count}
+                </td>
+                <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</notempty>
+<script>
+    $(document).ready(function(){
+        $("#class_id,#sort_id").change(function(){
+            var class_id=$("#class_id").val();
+            var sort_id=$("#sort_id").val();
+            var string="";
+            
+            if(class_id!=0){
+                string="&class_id="+class_id;
+            } 
+            if(sort_id!=0){
+                string+="&sort="+sort_id;
+            }
+            location.href="{:U('Teach/activityCollect')}"+string;
+        });
+    });
+</script>

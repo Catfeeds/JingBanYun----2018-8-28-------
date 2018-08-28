@@ -1,0 +1,804 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<style>
+	.qq-uploader {
+        margin-left: 50px;
+		width: auto;
+		max-height: inherit;
+		overflow-x: hidden;
+		padding: 0;
+    }
+
+	.qq-upload-list {
+		max-height: inherit;
+		overflow-y: hidden;
+	}
+
+	.qq-upload-button {
+		margin: 10px;
+	}
+
+	.qq-upload-size {
+		display: none;
+	}
+
+	.qq-upload-size, .qq-upload-cancel, .qq-upload-retry, .qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
+		position: relative;
+		top: -4px;
+	}
+
+	.cellRelative {
+		position: relative;
+	}
+
+	.redStar {
+		font-size: 12px;
+	    position: absolute;
+		top: 0;
+		bottom: 0;
+		margin: auto;
+		width: 70px;
+		height: 15px;
+		padding-left: 5px;
+	}
+
+	.labelPrice {
+		margin-left: 23px;
+	}
+
+	.labelTry, .labelTime {
+		margin-left: 10px;
+	}
+
+	.resource_contact_charge_status, .resource_trial, .browse_time {
+		width: 200px;
+		margin-bottom: 5px;
+	}
+
+	.browse_time {
+		margin-right: 5px;
+	}
+
+	.show_div delete_button {
+		display: inline-block
+	}
+
+	.contact_resource_name.myName {
+		margin: 10px 0;
+		width: 400px;
+	}
+
+	.qq-upload-file {
+		max-width: 300px;
+		width: inherit;
+	}
+
+	.qq-thumbnail-selector {
+		margin-bottom: 10px;
+	}
+
+	.notifyRemind {
+        color: #999;
+        font-size: 14px;
+        line-height: 30px;
+        text-indent: 1em
+    }
+	.coverList{
+		overflow: hidden;
+	}
+
+	.blueTable td{
+		    padding: 30px;
+	}
+	.spanCheck{
+		margin-bottom:0
+	}
+	.blueTable .borderb{
+		border: none
+	}
+	.articlediv{
+		display: none
+	}
+	.edui-container{
+		width: 100% !important
+	}
+
+	.articleRemark {
+    	color: #999;
+    	line-height: 30px;
+	}
+
+	.edui-body-container {
+		width: 100% !important;
+		padding: 10px !important;
+	}
+</style>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		编教直通车管理
+		<span class="blueSpan">
+			<a href="javascript:;">励耘圈</a>>>
+			<a href="javascript:;">编者专栏</a>>>
+			<a href="javascript:;">添加专栏</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="" method="post" enctype="multipart/form-data">
+
+	<div class="blueDashed">
+		<div class="blueTitle">
+			基本信息
+		</div>
+		<div class="grid condensed cellBox blueBox">
+			<div class="row cells3">
+				<div class="cell cellRelative">
+					<label>专栏标题 ：</label>
+					<input type="text" class="input-control columnName" name="special_column_question_title" value="{$details['special_column_question_title']}" placeholder="请输入专栏标题 " required>
+					<span class="redStar">*</span>
+				</div>
+
+				<div class="cell cellRelative">
+					<label>专栏作者：</label>
+					<select id="columnName" class="input-control" name="special_column_editor_quizzer_id">
+						<option value=''>-请选择-</option>
+						<volist name="editors_list" id="editors">
+							<if condition="$editors['phase_of_studying_id'] eq 1">
+							<option value={$editors['teacher_id']} {$details['special_column_editor_quizzer_id'] == $editors['teacher_id'] ?'selected':''}><?php echo $editors['name'].'--'.$editors['course_name'].'--小学'?></option>
+							<elseif condition="$editors['phase_of_studying_id'] eq 2"/>
+								<option value={$editors['teacher_id']} {$details['special_column_editor_quizzer_id'] == $editors['teacher_id'] ?'selected':''}><?php echo $editors['name'].'--'.$editors['course_name'].'--初中'?></option>
+							</else>
+								<option value={$editors['teacher_id']} {$details['special_column_editor_quizzer_id'] == $editors['teacher_id'] ?'selected':''}><?php echo $editors['name'].'--'.$editors['course_name'].'--高中'?></option>
+							</if>
+						</volist>
+					</select>
+					<span class="redStar">*</span>
+				</div>
+				<div class="cell cellRelative">
+					<label>所属学段：</label>
+					<select id="phase_of_studying_id" class="input-control" name="phase_of_studying_id">
+						<option value=''>-请选择-</option>
+						<option value='1' {$details['phase_of_studying_id'] =='1' ?'selected':''}>小学</option>
+						<option value='2' {$details['phase_of_studying_id'] =='2' ?'selected':''}>初中</option>
+						<option value='3' {$details['phase_of_studying_id'] =='3' ?'selected':''}>高中</option>
+					</select>
+					<span class="redStar">*</span>
+				</div>
+				<div class="cell cellRelative">
+					<label>学科：</label>
+					<select id="course_id" class="input-control" name="course_id">
+						<option value=''>-请选择-</option>
+						<volist name="course_list" id="dataCourse">
+							<option value="{$dataCourse.id}" {$details['course_id']==$dataCourse['id']?'selected':''}>
+							{$dataCourse.name}
+							</option>
+						</volist>
+					</select>
+					<span class="redStar">*</span>
+				</div>
+				<div class="cell">
+					<label>年级：</label>
+					<select id="" class="input-control" name="grade_id">
+						<option value="">-请选择-</option>
+						<volist name="grade_list" id="dataGrade">
+							<option value="{$dataGrade.id}" {$details['grade_id']==$dataGrade['id']?'selected':''}>
+							{$dataGrade.name}
+							</option>
+						</volist>
+					</select>
+				</div>
+				<div class="cell">
+					<label>分册：</label>
+					<select id="" class="input-control" name="fascicule_id">
+						<option value="">-请选择-</option>
+						<option value="1" {$details['fascicule_id'] == 1 ? 'selected':''}>上册</option>
+						<option value="2" {$details['fascicule_id'] == 2 ? 'selected':''}>下册</option>
+						<option value="3" {$details['fascicule_id'] == 3 ? 'selected':''}>全一册</option>
+					</select>
+				</div>
+				<div class="cell cellRelative">
+					<label>观看价格：</label>
+					<input type="text" class="input-control columnprice" name="special_column_price" value="{$details['special_column_price']}" placeholder="请输入观看价格">
+					<span class="redStar">*0元为免费</span>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+
+
+
+	<!--上传资源-->
+	<div class="blueDashed upload" display="block">
+		<div class="blueTitle">
+			文件上传
+		</div>
+
+		<div class="sectionMain">
+			<div class="newSection" id="file_type">
+
+				<label for="">文件类型</span></label>
+				<select class="input-control" id="type" name="type" onchange="changeType(this)">
+                    <option value="0">--请选择--</option>
+                    <option extval=".mp4,.mov,.wmv,.flv,.avi" {$details['special_column_type'] == 1 ? 'selected' : ''} value="1">视频</option>
+                    <option extval=".mp3" {$details['special_column_type'] == 3 ? 'selected' : ''} value="3">音频</option>
+					<option  {$details['special_column_type'] == 2 ? 'selected' : ''} value="2">文章</option>
+                </select>
+				<input type="hidden" value="" name="vid" id="vid">
+				<input type="hidden" value="" name="vid_file_path" id="vid_file_path">
+				<input type="hidden" value="" name="playerwidth" id="playerwidth">
+				<input type="hidden" value="" name="playerduration" id="playerduration">
+				<input type="hidden" value="" name="vid_fullpath" id="vid_fullpath">
+				<input type="hidden" value="" name="vid_image_path" id="vid_image_path">
+				<input type="hidden" value="" name="is_transition" id="is_transition">
+				<input type="hidden" value="" name="vid_fullsize" id="vid_fullsize">
+				<!--<input type="hidden" value="" name="mp4Source" id="mp4Source">-->
+				<input type='hidden' name='real_type' id='real_type' />
+				<div id="fine-uploader" style="display:none;"></div>
+				<div class="sectionMain articlediv">
+					<div class="articleRemark">文章（全篇）</div>
+					<textarea type="text/plain" id="contentLong" name="special_column_article" form="form_submit" style="width:100%;height:340px;">
+					<?php echo html_entity_decode($details['special_column_article']) ?>
+					</textarea>
+				</div>
+				<div class="sectionMain articlediv">
+					<div class="articleRemark">文章（片段）</div>
+					<textarea type="text/plain" id="contentShort" name="special_column_article_show" form="form_submit" style="width:100%;height:340px;">
+					<?php echo html_entity_decode($details['special_column_article_show']) ?>
+					</textarea>
+				</div>
+			</div>
+			<div class="sectionMain textInput" style="display:none;">
+				<div class="articleRemark">专栏描述</div>
+				<textarea rows="8" cols="40" style="width:100%;border-color:#ccc" name="special_column_question_reply_description" form="form_submit"><?php echo $details['special_column_question_reply_description'] ?></textarea>
+			</div>
+		</div>
+	</div>
+	<div class="row" id="uplode-botton" style="margin: 0 !important; margin-bottom: 20px !important">
+		<!--<div id="fine-uploader" class="col-md-7">
+
+		</div>-->
+
+		<div class="col-md-5 resource_right_div resourceBox p0 look">
+
+			<div id="image" class="contactDisplay dn">
+				<div style="width:100%;" class="resource_image">
+					<img src=""/>
+				</div>
+			</div>
+			<div id="video" class="contactDisplay dn" >
+				<!--<div id='plv' style="margin-right:20px;"></div>-->
+				<video id='plv' crossOrigin = "Anonymous" controls vid_fullpath="<?php echo $resource_list[0]['vid_fullpath']?>" src="<?php echo $resource_list[0]['vid_fullpath']?>"></video>
+
+			</div>
+			<div id="audio" class="contactDisplay dn">
+				<div id="audioDiv"></div>
+			</div>
+
+			<p class="resName"></p>
+		</div>
+	</div>
+	<div class="hidden_ids">
+		<volist name="resource_list" id="resource_item" empty="" key="i">
+			<if condition="$details['special_column_type'] eq 1">
+				<input  filetype="{$resource_item.file_type}" vid_fullpath="{$resource_item.vid_fullpath}" trial_time="{$resource_item.trial_time}" trial_status="{$resource_item.trial_status}" charge_status="{$resource_item.charge_status}" type="hidden" attr_id="{$resource_item.id}" attr_selected="{$resource_item.putaway_status}" value="{$resource_item.id}" name="hidden_resource[]" vid_image='{$resource_item.vid_image_path}' attr_type='{$resource_item.file_type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.vid}" attr_file_name="{$resource_item.file_name}"/>
+				<elseif condition="$details['special_column_type'] eq 3"/>
+				<input  filetype="{$resource_item.file_type}" trial_time="{$resource_item.trial_time}" trial_status="{$resource_item.trial_status}" charge_status="{$resource_item.charge_status}"  type="hidden" attr_id="{$resource_item.id}" attr_selected="{$resource_item.putaway_status}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.file_type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.vid}" attr_file_name="{$resource_item.file_name}"/>
+				<else />
+				<input filetype="{$resource_item.file_type}" vid_fullpath="{$resource_item.vid_fullpath}" trial_time="{$resource_item.trial_time}" trial_status="{$resource_item.trial_status}" charge_status="{$resource_item.charge_status}"  type="hidden" attr_id="{$resource_item.id}" attr_selected="{$resource_item.putaway_status}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.file_type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="{$real_file_path}" attr_path="{$resource_item.resource_path}" attr_file_name="{$resource_item.file_name}" />
+			</if>
+		</volist>
+	</div>
+	<!--上传资源-->
+	<div class="text-center">
+		<input type='submit' value='保存' onclick="return check()" class='blueBtn'/>
+	</div>
+</form>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js?v=1" type="text/javascript"></script>
+<script type="text/template" id="qq-template">
+    <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+        <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+            <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+        </div>
+        <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+            <span class="qq-upload-drop-area-text-selector"></span>
+        </div>
+        <div class="qq-upload-button-selector qq-upload-button">
+            <div>上传文件</div>
+        </div>
+        <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+        <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+            <li>
+                <div class="qq-progress-bar-container-selector">
+                    <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                </div>
+                <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+                <span class="qq-upload-file-selector qq-upload-file"></span>
+                <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                <span class="qq-upload-size-selector qq-upload-size"></span>
+				<label class="labelName">自定义名称：</label>
+				<input type='text' name='contact_resource_name[]' class='contact_resource_name myName'/>
+                <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel" onclick="shows()">Cancel</button>
+                <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
+
+                <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+            </li>
+        </ul>
+
+        <dialog class="qq-alert-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">Close</button>
+            </div>
+        </dialog>
+
+        <dialog class="qq-confirm-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">No</button>
+                <button type="button" class="qq-ok-button-selector">Yes</button>
+            </div>
+        </dialog>
+
+        <dialog class="qq-prompt-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <input type="text">
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                <button type="button" class="qq-ok-button-selector">Ok</button>
+            </div>
+        </dialog>
+    </div>
+</script>
+<script type="text/javascript">
+    var umShort = UM.getEditor('contentShort');
+    var umLong = UM.getEditor('contentLong');
+
+	function check(){
+
+        $('#vid').val('');
+        $('#vid_file_path').val('');
+        $('#playerwidth').val('');
+        $('#playerduration').val('');
+        $('#vid_fullpath').val('');
+        $('#vid_image_path').val('');
+        $('#is_transition').val('');
+
+        for(var key in uploadInfo){
+            $('#vid_file_path').val($('#vid_file_path').val() + uploadInfo[key].vid_file_path +',');
+            var width = typeof(uploadInfo[key].playerwidth) != 'undefined' ? uploadInfo[key].playerwidth : '0*0';
+
+            $('#playerwidth').val($('#playerwidth').val() + width +',');
+            var duration = typeof(uploadInfo[key].playerduration) != 'undefined' ? uploadInfo[key].playerduration : '00:00:00';
+
+            $('#playerduration').val($('#playerduration').val() + duration +',');
+            var vid = typeof(uploadInfo[key].vid) != 'undefined' ? uploadInfo[key].vid : '0';
+            $('#vid').val($('#vid').val() + vid +',');
+
+            var vid_fullpath= typeof(uploadInfo[key].vid_fullpath) != 'undefined' ? uploadInfo[key].vid_fullpath : '0';
+            $('#vid_fullpath').val($('#vid_fullpath').val()+vid_fullpath+',');
+
+            var vid_image_path= typeof(uploadInfo[key].vid_image_path) != 'undefined' ? uploadInfo[key].vid_image_path : '0';
+            $('#vid_image_path').val($('#vid_image_path').val()+vid_image_path+',');
+
+            var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+            $('#is_transition').val($('#is_transition').val()+vid_transition+',');
+
+        }
+        $('#vid_file_path').val($('#vid_file_path').val().substr(0 ,$('#vid_file_path').val().length-1));
+        $('#playerwidth').val($('#playerwidth').val().substr(0 ,$('#playerwidth').val().length-1));
+        $('#playerduration').val($('#playerduration').val().substr(0 ,$('#playerduration').val().length-1));
+        $('#vid').val($('#vid').val().substr(0 ,$('#vid').val().length-1));
+        $('#vid_fullpath').val($('#vid_fullpath').val().substr(0 ,$('#vid_fullpath').val().length-1));
+        $('#vid_image_path').val($('#vid_image_path').val().substr(0 ,$('#vid_image_path').val().length-1));
+        $('#is_transition').val($('#is_transition').val().substr(0 ,$('#is_transition').val().length-1));
+
+		var regNumber = /^\d+(\.\d+)?$/;
+
+		if($.trim($('.columnName').val()) == ''){
+			// alert('请填写专栏名字');
+			$.NotifyBox.NotifyOne('提示', '请填写专栏名字', '确定') 
+			return false
+		} else if($('#columnName').val() == 0){
+			$.NotifyBox.NotifyOne('提示', '请选择专栏作者', '确定') 
+			return false
+		} else if($('#phase_of_studying_id').val() == 0){
+			$.NotifyBox.NotifyOne('提示', '请选择所属学段', '确定') 
+			return false
+		} else if($('#course_id').val() == 0){
+			$.NotifyBox.NotifyOne('提示', '请选择学科', '确定') 
+			return false
+		} else if ($('.columnprice').val() < 0 || $.trim($('.columnprice').val()) == '' || !regNumber.test($('.columnprice').val())) {
+			// alert('请填写正确的观看价格');
+			$.NotifyBox.NotifyOne('提示', '请填写正确的观看价格', '确定') 
+			return false
+		}
+	}
+	var fileTypes = "<?php echo $details['special_column_type']?>";
+	if(fileTypes != 2){
+        $("#fine-uploader,.textInput").show();
+        $('.articlediv').hide()
+	}else{
+        $("#fine-uploader,.textInput").hide();
+        $('.articlediv').show()
+	}
+	var before_type=0;
+	function changeType(obj) {
+        changeTypes();
+        var checkType = "<?php echo $details['special_column_type']?>";
+        alert(checkType);
+        if(checkType == $(obj).val()){
+            $('.look').show();
+		}else{
+            $('.look').hide();
+		}
+
+		if($(obj).val() == 1 || $(obj).val() == 3){
+			$("#fine-uploader,.textInput").show();
+			$('.articlediv').hide()
+		}else{
+			$("#fine-uploader,.textInput").hide();
+			$('.articlediv').show()
+		}
+
+
+	}
+
+</script>
+<script>
+    function changeInputFilter(){
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').eq(0).attr('accept',acceptStr);
+    }
+
+</script>
+
+<script>
+    var uploadInfo = {};
+var before_resource_type=1;
+    function onFileCheck(){
+        if($('li').hasClass('qq-upload-fail')){
+            alert('有文件上传错误');
+            return false;
+        }
+        return true;
+    }
+
+	var gloabl_index='';
+    var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById('fine-uploader'),
+        request1Enable : true,
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','cataid':1499236692726,'JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mov","mp4","mp3",'wmv','avi','flv'),
+            inputName:'Filedata',
+        },
+        request: {
+            endpointnum: 0,
+            endpoint: '/index.php?m=Admin&c=Jbresources&a=upload_file&watermark_status=1',
+            params:{},
+            inputName:'file[]',
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'
+        },
+        retry: {
+            enableAuto: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[id];
+        },
+        responseCallBack: function(id,specNum,xhr){
+            if($('.qq-in-progress').length > 0){
+                $('.qq-upload-button').css('display','none');
+            }
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                alert('上传失败!错误原因'+e);
+                return false;
+            }
+            if(specNum == 0){
+                if(result.code == 0){
+                    if(typeof(uploadInfo[id])== 'undefined'){
+                        uploadInfo[id] = {};
+                    }
+                    //qq-file-id-2
+                    var file_name_arr=result.name.split('.');
+                    var file_name=file_name_arr[0];
+                    $('.qq-file-id-'+id).find('.contact_resource_name').val(file_name);
+
+					var pc_coverLiTemplate     = '<li><a href="javascript:void(0)" onclick="activePic(this)" attr_path="{0}"><img style="height:91px;width:113px"  src="{$oss_path}{0}"></a></li>';
+					var mobile_coverLiTemplate = '<li><a href="javascript:void(0)" onclick="activePic(this)" attr_path="{0}"><img style="height:90px;width:90px" src="{$oss_path}{0}"></a></li>';
+					var pc_coverHtml = $('#pc_coverList').html();
+					var mobile_coverHtml = $('#mobile_coverList').html();
+                    $(result.message_video_image).each(function(i,n){
+						pc_coverHtml += pc_coverLiTemplate.format(n.pc_cover);
+						mobile_coverHtml += mobile_coverLiTemplate.format(n.mobile_cover);
+					})
+					$('#pc_coverList').html(pc_coverHtml);
+					$('#mobile_coverList').html(mobile_coverHtml);
+                    uploadInfo[id]['vid_file_path'] = result.res;
+					var type = typeof(result.message_video_image);
+					if(type == "object")
+						uploadInfo[id]['vid_image_path'] = result.message_video_image[0].pc_cover;     //这里是视频截图,如果不是视频这里就是空
+					else if(type == 'string')
+						uploadInfo[id]['vid_image_path'] = result.message_video_image;
+                    uploadInfo[id]['is_transition'] = result.is_transition;            //这里是视频转换状态。
+                    return true;
+                }else{
+                    alert(result.msg);
+                }
+            }else if(specNum == 1){
+                    if(result.error == 0){
+                        //alert("上传成功!VID:"+result.data[0].vid);
+                        //TODO: add result.res to XXX
+                        if(typeof(uploadInfo[id])== 'undefined')
+                        {
+                            uploadInfo[id] = {};
+                        }
+                        uploadInfo[id]['vid'] = result.data[0].vid;
+                        uploadInfo[id]['playerwidth'] = result.data[0].playerwidth + '*' +result.data[0].playerheight;
+                        uploadInfo[id]['duration'] = result.data[0].duration;
+                        uploadInfo[id]['vid_fullpath'] = result.data[0].mp4;
+                        return true;
+                    }else{
+                        alert("上传失败!错误码:"+result.error);
+                    }
+            }
+            return false;
+        }
+    });
+
+var before_course = '';
+</script>
+<script>
+    var name = $('#type option:selected').text();
+    var html = '<input type="hidden" id="typeName" name="typeName" value="'+name+'">';
+    $('#form_submit').append(html);
+	function shows() {
+        $('.qq-upload-button').css('display','block');
+    }
+    before_type=$("#type").val();
+    function changeTypes() {
+        changeInputFilter();
+        var type=$("#type").val();
+        if(type != 0){
+            var name = $(this).text();
+           $('#typeName').val(name);
+        }
+        $("#uplode-botton").show();
+        //$("#fine-uploader").show();
+        if(before_type!=0){
+            if(confirm('您确认改变资源类型吗?改变后之前的资源将会被清除')){
+                uploadInfo={};
+                $('#vid').val('');
+                $('#vid_file_path').val('');
+                $('#playerwidth').val('');
+                $('#playerduration').val('');
+                $('.qq-upload-list').children('li').remove();
+                $(".show_div").remove();
+                $('.resourceBox').children().addClass('dn');
+                $(".hidden_ids").remove();
+                if(type == 0)
+                    $("#fine-uploader").hide();
+
+            }else{
+                $("#type").find("option[value="+before_type+"]").attr('selected',true);
+            }
+        }
+        before_type=$("#type").val();
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').eq(2).attr('accept',acceptStr);
+    }
+</script>
+<script>
+	var fileType = "<?php echo $details['special_column_type']?>";
+	if(fileType == '2'){
+        $(".look").hide();
+	}else{
+        $(".look").show();
+	}
+    var resource_path='';
+    var resNameText;
+    //点击查看大图
+
+    $(".show_div").find('span').live('click',function(){
+        resNameText = $(this).text();
+        $('.contactDisplay').addClass('dn');
+        var main_Type = $('#type').val();
+        if(main_Type == 'mixed')
+            resource_ytpe = $(this).siblings('input:hidden').eq(1).attr('filetype');
+        switch(resource_ytpe){
+            case 'video':
+                $('#video,.resName').removeClass('dn');
+                $('#plv')[0].src = $(this).siblings('input:hidden').eq(1).attr('vid_fullpath');
+                if($('#plv').parent().find('#button').length ==0)
+                   // $('#plv').parent().append('<div class="blueBtn m0" id="button">生成封面图</div>');
+                break;
+            case 'audio':
+                $('#audio,.resName').removeClass('dn');
+                resource_path=$(this).siblings('input:hidden').eq(1).val();
+                var player = polyvObject('#audioDiv').videoPlayer({
+                    'vid' : resource_path
+                });
+                break;
+            case 'condensed':
+                $('#condensed').removeClass('dn');
+                resource_path=$(this).siblings('input').eq(2).val();
+                $(".resource_condensed").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                break;
+        }
+        if($('.resourceBox').children('.resName').length == 0) {
+            $('.resourceBox').append('<p class="resName">'+resNameText+'</p>')
+        } else {
+            $('.resourceBox').children('.resName').text(resNameText)
+        }
+    });
+    //点击删除
+    $(".delete_button").live('click',function(){
+        var contact_class=$(this).attr('attr_class');
+        $("."+contact_class).remove();
+        $(this).parent().remove();
+        //判断是否还有已存在的,并操作
+        if($('.show_div').length>0){
+            //这里替换右侧
+            resource_path=$('.show_div').eq(0).find('input').eq(2).val();
+            resNameText = $('.show_div').eq(0).find('.spanName').text();
+
+            switch(resource_ytpe){
+                case 'image':
+                    $(".resource_image").children('img').attr('src',resource_path);
+                    break;
+                case 'audio':
+                    var player = polyvObject('#plv').videoPlayer({
+                        'vid' : resource_path
+                    });
+                    break;
+                case 'swf':
+                    $(".resource_swf").children('a').attr('href',resource_path).text(resource_path);
+                    break;
+                case 'pdf':
+                    $(".resource_pdf").children('a').attr('href',resource_path).text(resource_path);
+                    break;
+                case 'word':
+                    $(".resource_word").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text(resource_path);
+                    break;
+                case 'ppt':
+                    $(".resource_ppt").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text(resource_path);
+                    break;
+                case 'condensed':
+                    $(".resource_condensed").children('a').attr('href',resource_path).text(resource_path);
+                    break;
+            }
+            $('.resName').text(resNameText);
+        }else{
+            //这里删除
+            //$(".resource_right_div").remove();
+        }
+    });
+    function init_funtion(){
+        var temp_li='<div class="show_div" style="">'+
+			'<br/><br/>'+
+			'<span class="spanName" style="margin-left:20px;cursor:pointer;"></span>'+
+            '<a class="delete_button" style="margin-left:10px;cursor:pointer;">删除</a></div>';
+        var other_file_id=3;
+        var copy_li,copy_ul;
+
+        //这里开始复制
+        var all_exists_input=$('.hidden_ids').children('input');
+        for(var i=0;i<all_exists_input.length;i++) {
+            copy_li = $(temp_li).clone(true);
+            $(copy_li).find('a').attr('attr_class', ($(all_exists_input[i]).attr('attr_class')));
+            $(copy_li).find('img').css('width', 100);
+            $(copy_li).find('span').eq(0).text($(all_exists_input[i]).attr('attr_file_name'));
+            if ($(all_exists_input[i]).attr('attr_selected')==1) {
+                $(copy_li).find('.spanCheckbox').attr('checked', true);
+                $(copy_li).find('input').eq(1).val(1);
+            }else{
+                $(copy_li).find('input').eq(1).val(0);
+            }
+            $(copy_li).find('input').eq(3).val($(all_exists_input[i]).attr('attr_file_name'));//名字赋值操作
+            $(copy_li).find('.spanCheckbox').val($(all_exists_input[i]).attr('attr_id'));
+
+            if($(all_exists_input[i]).attr('attr_type')=='video'){
+                var vid_image_path='';
+                if($(all_exists_input[i]).attr('vid_image').indexOf('http')== -1){
+                    vid_image_path="{$oss_path}"+$(all_exists_input[i]).attr('vid_image');
+                }else{
+                    vid_image_path=$(all_exists_input[i]).attr('vid_image');
+                }
+
+                $(copy_li).find('img').attr('src',vid_image_path);
+                $(copy_li).find('input').eq(2).attr('vid_fullpath',$(all_exists_input[i]).attr('vid_fullpath'));
+                $(copy_li).find('input').eq(2).val($(all_exists_input[i]).attr('attr_path'));
+
+            }else if($(all_exists_input[i]).attr('attr_type')=='audio'){
+                $(copy_li).find('img').remove();
+                $(copy_li).find('input').eq(2).val($(all_exists_input[i]).attr('attr_path'));
+
+            }else{
+                $(copy_li).find('img').remove();
+                $(copy_li).find('input').eq(2).attr('filetype',$(all_exists_input[i]).attr('filetype'));
+                $(copy_li).find('input').eq(2).val($(all_exists_input[i]).attr('attr')+$(all_exists_input[i]).attr('attr_path'));
+                $(copy_li).find('input').eq(2).attr('vid_fullpath',$(all_exists_input[i]).attr('vid_fullpath'));
+            }
+            $(copy_li).find('.resource_contact_charge_status').find('option[value='+$(all_exists_input[i]).attr('charge_status')+']').attr('selected',true);
+            $(copy_li).find('.resource_trial').find('option[value='+$(all_exists_input[i]).attr('trial_status')+']').attr('selected',true);
+            if($(all_exists_input[i]).attr('trial_time')!=0){
+                $(copy_li).find('.browse_time').val($(all_exists_input[i]).attr('trial_time'));
+            }
+            $('.qq-upload-list-selector').append(copy_li);
+            $('.resName').text($('.spanName').eq(0).text())
+        }
+    }
+    if($('#type').val() != '2'){
+        init_funtion();
+    }
+   //
+    if($('#type').val() != 2 && $('#type').val() != '0'){
+        $("#fine-uploader").show();
+    }else{
+        $('.articlediv').show();
+    }
+
+    var acceptStr = $('#type').find("option:selected").attr('extval');
+    $(':file').eq(0).attr('accept',acceptStr);
+</script>
+<script>
+    $('#columnName').onchange(function () {
+        var name = $(this).text();
+        if($(this).val() != 0){
+            var html = '<input type="hidden" name="columnName" value="'+name+'">';
+            $('#form_submit').append(html);
+        }
+    });
+    $('#phase_of_studying_id').onchange(function () {
+        var name = $(this).text();
+        if($(this).val() != 0){
+            var html = '<input type="hidden" name="phase_of_studying_name" value="'+name+'">';
+            $('#form_submit').append(html);
+        }
+    });
+    $('#course_id').onchange(function () {
+        var name = $(this).text();
+        if($(this).val() != 0){
+            var html = '<input type="hidden" name="courseName" value="'+name+'">';
+            $('#form_submit').append(html);
+        }
+    });
+    $('#grade_id').onchange(function () {
+        var name = $(this).text();
+        if($(this).val() != 0){
+            var html = '<input type="hidden" name="gradeName" value="'+name+'">';
+            $('#form_submit').append(html);
+        }
+    });
+    $('#fascicule_id').onchange(function () {
+        var name = $(this).text();
+        if($(this).val() != 0){
+            var html = '<input type="hidden" name="fasciculeName" value="'+name+'">';
+            $('#form_submit').append(html);
+        }
+    });
+</script>

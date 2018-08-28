@@ -1,0 +1,535 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+
+	.homeworkRight {
+		padding:0 28px;
+	}
+
+	body {
+		overflow-y: scroll
+	}
+
+    .homeworkLeft.homeworkLeftFixed .homeworkLeftMain {
+        min-height: 400px
+    }
+</style>
+
+<a href="Javascript:history.go(-1);" title="返回" class="btn btnReturn1" style="position: absolute;">返回</a>
+
+<div class="main_opr">
+	<a href="{:U('TeacherHomework/homeworkList')}" title="作业列表" class="btn btn-main-opr btn-main-opr-active">作业列表</a>
+	<a href="{:U('TeacherHomework/publishHomework')}" title="布置作业" class="btn btn-main-opr">布置作业</a>
+	<a href="{:U('TeacherHomework/myCollectionList')}" title="我的收藏" class="btn btn-main-opr">我的收藏</a>
+	<a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+	<a href="{:U('TeacherHomework/testPaperList')}" title="试卷库" class="btn btn-main-opr">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="homeworkLeft homeworkLeftFixed homeworkLeftCorrect">
+		<div class="homeworkLeftTitle">
+			<span class="title">待批改</span>
+			<span class="boldNum">{{ this.Ypigai.length }}</span><span class="normalNum">/{{ Dpigai }}</span>
+
+		</div>
+		<div class="homeworkLeftMain">
+			<div class="studentBox" v-for="(student, index) in studentData.allStudentList">
+				<img :src="student.avatar" alt="" class="avatarImg">
+				<span class="name">{{ student.student_name }}</span>
+				<span class="score">{{ student.exercises_score }}</span>
+			</div>
+		</div>
+	</div>
+	<div class="homeworkRight">
+		<div class="exerciseOutter exerciseOutterNoBorder exerciseOutterCorrect">
+			<div class="toggleStudentBox">
+				<button class="btnCommon btnCommonSmall prevBtn" @Click="prevBtn($event)" :class="{disabled: prevStudent == false}">上一名</button>
+				<div class="name">{{ studentName }}</div>
+				<div class="scoreBox">
+					得分:
+					<input type="number" class="inputCommon scoreInput" v-model="setScore" max="100" min="0">分
+				</div>
+				<button class="btnCommon btnCommonSmall nextBtn" @Click="nextBtn($event)">下一名并提交</button>
+			</div>
+			<div class="exerciseContent">
+				<div class="exerciseTop">
+					<div class="exercise" v-html="exerciseData.subject_name"></div>
+					<div class="exerciseScore">({{ exerciseData.count_score }}分)</div>
+					<div class="exerciseAnswer">
+						<span class="title">解析：</span>
+						<span class="main" v-html="exerciseData.analysis"></span>
+					</div>
+					<div class="exerciseAnswer">
+						<span class="title">答案：</span>
+						<span class="main" v-html="exerciseData.answer"></span>
+					</div>
+				</div>
+				<div class="exerciseBottom">
+					<span class="checkBefore" @Click="checkBefore($event)">展开原题</span>
+				</div>
+			</div>
+			<div class="answerContent">
+				<div class="imgContent" v-if="answer != '' && answer != null">
+                    <!-- <img src="__PUBLIC__/img/homeworkV1/avatar.jpg" alt="" class="answerImg" title="点击可查看大图" onclick="zoomIn(this)"> -->
+					<img :src="'/proxy.php?url='+answer" alt="" class="answerImg" title="点击可查看大图" onclick="zoomIn(this)">
+                    <img src="__PUBLIC__/img/homeworkV1/xuanzhuan.png" alt="" class="rotateImg" @click="rotateImg">
+				</div>
+				<div class="imgContentEmpty" v-else>
+					<img src="__PUBLIC__/img/homeworkV1/studentNoSubmit.png" alt="" class="emptyImg">
+				</div>
+			</div>
+			<div class="remarkContent">
+				<button class="btnCommon btnCommonBig" id="addRemark" v-show="remark == ''" @click="showRemark">添加评语</button>
+				<div class="remarkText" v-show="remark != ''" v-html="remark"></div>
+				<button class="btnCommon btnCommonBig" id="changeRemark" v-show="remark != ''" @click="changeShowRemark">修改评语</button>
+
+				<div class="remarkMain">
+					<div class="remarkTitle">{{ remarkTitle }}</div>
+					<script type="text/plain" id="message" name="message" style="width:100%; height:300px;"></script>
+                    <div class="btnBox">
+                        <button type="button" class="btnCommon" id="sureButton" @click="addRemarkSure">确定</button>
+                        <button type="button" class="btnCommon" id="cancelButton" @click="addRemarkCancel">取消</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 课本图片放大区域 -->
+    <div class="zoomInOutter">
+        <div class="zoomInBox" onclick="closeZoomIn()"></div>
+        <div class="imgContent">
+            <img src="" alt="" class="zoomInImgMain">
+            <img src="__PUBLIC__/img/homeworkV1/xuanzhuan.png" alt="" class="rotateImg" @click="rotateImgBig">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.all.js"></script>
+
+<script>
+    var ue = UE.getEditor('message');
+</script>
+
+<script>
+
+    var userId = "{:session('teacher.id')}";
+    var homeworkId = "{$homeworkId}";
+    var classId = "{$classId}";
+    var exerciseId = "{$exerciseId}";
+
+    var homework = new Vue({
+        el: '#homework',
+        data: {
+            url: '/index.php?m=Home&c=TeacherHomework&a=getStudentCorrectStatusList',
+            remark: '',
+            remarkTitle: '添加评语',
+            workData:{},
+            studentData:{},
+            submitId:0,
+            studentName:"",
+            studentId:0,
+            answer:"",
+            exercises_score:0,
+            nextExerciseNum:0,
+            getExerciseIdUrl : "/index.php/ApiInterface/Version1_3/TeacherHomework/getExerciseIdAllDetails",
+            exerciseData:{},
+            setScore:0,
+            isRight:-1,
+            comment:'',
+            prevStudent: false,
+            isSourceScore:-1,
+            Ypigai:[],
+            Dpigai:0,
+
+
+        },
+        created: function () {
+            this.getStudentList();
+            this.getHomeworkDetails();
+        },
+        methods: {
+
+            getHomeworkDetails:function(){
+                this.$http.post(this.getExerciseIdUrl, {
+                    exercise_id_list : exerciseId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.exerciseData = response.data.data;
+                        this.setScore = this.exerciseData.count_score;
+                        this.isSourceScore = this.exerciseData.count_score;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            prevBtn:function(){
+
+                if( this.nextExerciseNum != (this.studentData.DCountStudent.length)-2 ) {
+                    $('.nextBtn').text("下一名并提交");
+                }
+
+                ue.setContent("");
+
+                this.nextExerciseNum = this.nextExerciseNum -1;
+                if (this.nextExerciseNum >= 0 ) {
+                    this.studentId = this.studentData.DCountStudent[this.nextExerciseNum].student_id;
+                    this.studentName = this.studentData.DCountStudent[this.nextExerciseNum].student_name;
+                    this.submitId	= this.studentData.DCountStudent[this.nextExerciseNum].submit_id;
+                    this.answer	= this.studentData.DCountStudent[this.nextExerciseNum].answer;
+                    this.exercises_score	= this.studentData.DCountStudent[this.nextExerciseNum].exercises_score;
+                    this.comment = this.studentData.DCountStudent[this.nextExerciseNum].comment;
+
+                } else {
+                    this.nextExerciseNum=0;
+                }
+
+                if(this.nextExerciseNum == 0) {
+                    this.prevStudent = false
+                }
+
+                // ue.setContent(this.comment);
+                ue.ready(function() {
+                    ue.setContent(homework.comment);
+                });
+
+                this.remark = homework.comment;
+            },
+
+            nextBtn:function(event){
+                this.remark = "";
+                var text = $(event.target).text();
+                // if (text=="完成并提交") {
+                //    window.location.replace("/index.php?m=Home&c=TeacherHomework&a=homeworkNotCorrect&homeworkId="+homeworkId+"&classId="+classId);
+                //    return;
+                // }
+
+                var r = /^\+?[0-9]\d*$/;　　//正整数
+                var flag =r.test(this.setScore);
+                if (flag != true) {
+                    // alert("请输入正确的整数");
+                    $.NotifyBox.NotifyPromptOne('提示', '请输入正确的整数', '确定');
+                    return;
+                }
+
+                if (parseInt(this.exercises_score) != parseInt(this.setScore)) { //修改了分数
+
+                    if (parseInt(this.setScore) > parseInt(this.exercises_score)) {  //分数错误
+                        // alert("分数不能大于原题的分数");
+                        $.NotifyBox.NotifyPromptOne('提示', '分数不能大于原题的分数', '确定');
+                        return;
+                    }
+
+                    this.isRight = 2;
+                } else {
+                    this.isRight = 1;
+                }
+
+                ue.setContent("");
+                //开始打分
+                this.$http.post("/index.php?m=Home&c=TeacherHomework&a=editExerciseScore", {
+                    homeWorkId : homeworkId,
+                    classId:classId,
+                    exercise_id:exerciseId,
+                    score:this.setScore,
+                    studentId:this.studentId,
+                    isRight:this.isRight,//1正确 2错误
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+
+                        if (this.Ypigai.indexOf(this.studentId) === -1) { //每次批改一个学生添加进去一个
+                            this.Ypigai.push(this.studentId)
+                        }
+
+                        if (this.Dpigai - this.Ypigai.length ==1 ) { //批改到了最后一个
+                            $('.nextBtn').text("完成并提交");
+                        }
+
+                        if (text == "完成并提交") { //打完分跳走
+                            window.location.href="/index.php?m=Home&c=TeacherHomework&a=homeworkNotCorrect&homeworkId="+homeworkId+"&classId="+classId;
+                        } else {
+
+                            this.nextExerciseNum = this.nextExerciseNum + 1;
+                            if (this.nextExerciseNum < this.studentData.DCountStudent.length ) {
+                                this.studentId = this.studentData.DCountStudent[this.nextExerciseNum].student_id;
+                                this.studentName = this.studentData.DCountStudent[this.nextExerciseNum].student_name;
+                                this.submitId	= this.studentData.DCountStudent[this.nextExerciseNum].submit_id;
+                                this.answer	= this.studentData.DCountStudent[this.nextExerciseNum].answer;
+                                this.exercises_score	= this.studentData.DCountStudent[this.nextExerciseNum].exercises_score;
+                                this.comment = this.studentData.DCountStudent[this.nextExerciseNum].comment;
+                                this.studentData.allStudentList[this.nextExerciseNum-1].exercises_score =this.setScore;
+                            } else {
+                                this.nextExerciseNum = (this.studentData.DCountStudent.length)-1;
+                                this.studentData.allStudentList[this.nextExerciseNum].exercises_score =this.setScore;
+                            }
+
+                            if (this.setScore == this.exerciseData.count_score) {
+                                this.isRight = 1;
+                            } else {
+                                this.isRight = 2;
+                            }
+                            // ue.setContent(this.comment);
+                            console.log("打分成功");
+                            this.prevStudent = true
+
+                            ue.ready(function() {
+                                ue.setContent(homework.comment);
+                            });
+
+                        }
+                    } else {
+                        console.log('打分失败');
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+
+                if( this.nextExerciseNum == (this.studentData.DCountStudent.length)-1 ) {
+                    $('.nextBtn').text("完成并提交");
+                }
+
+            },
+
+            //获取左边学生列表
+            getStudentList:function(){
+                this.$http.post(this.url, {
+                    homeworkId : homeworkId,
+                    classId:classId,
+                    exerciseId:exerciseId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.studentData = response.data.data;
+                        this.Dpigai = this.studentData.DCountStudent.length;
+
+                        if (this.studentData.DCountStudent.length==1) {
+                            $('.nextBtn').text("完成并提交");
+                        }
+
+                        if (this.studentData.DCountStudent.length != 1 ) {
+
+                            //执行赋值操作
+                            this.studentId = this.studentData.DCountStudent[0].student_id;
+                            this.studentName = this.studentData.DCountStudent[0].student_name;
+                            this.submitId	= this.studentData.DCountStudent[0].submit_id;
+                            this.answer	= this.studentData.DCountStudent[0].answer;
+                            this.exercises_score	= this.studentData.DCountStudent[0].exercises_score;
+                            this.comment = this.studentData.DCountStudent[0].comment;
+                            // ue.setContent(this.comment);
+                            ue.ready(function() {
+                                ue.setContent(homework.comment);
+                            });
+                        } else { //没有待批改的学生
+                            //nextBtn 变成 已批改完成
+                            //执行赋值操作
+                            //$('.nextBtn').text("已完成");
+
+                            this.studentId = this.studentData.DCountStudent[0].student_id;
+                            this.studentName = this.studentData.DCountStudent[0].student_name;
+                            this.submitId	= this.studentData.DCountStudent[0].submit_id;
+                            this.answer	= this.studentData.DCountStudent[0].answer;
+                            this.exercises_score	= this.studentData.DCountStudent[0].exercises_score;
+                            this.comment = this.studentData.DCountStudent[0].comment;
+                            // ue.setContent(this.comment);
+                            ue.ready(function() {
+                                ue.setContent(homework.comment);
+                            });
+                        }
+
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            //展开收起原题
+            checkBefore: function(e){
+                if($(e.target).hasClass('active')) {
+                    $(e.target).removeClass('active').text('展开原题');
+                    $('.exerciseTop').stop(false,true).slideUp();
+                } else {
+                    $(e.target).addClass('active').text('收起原题');
+                    $('.exerciseTop').stop(false,true).slideDown();
+                }
+            },
+            // 添加评语框出现
+            showRemark: function(){
+                this.remarkTitle = '添加评语';
+                $('#addRemark').hide();
+                $('.remarkMain').stop(false,true).slideDown();
+            },
+            // 修改评语框出现
+            changeShowRemark: function(){
+                this.remarkTitle = '修改评语';
+                $('#changeRemark, .remarkText').hide();
+                $('.remarkMain').stop(false,true).slideDown();
+            },
+            // 添加评语
+            addRemarkSure: function(){
+                // 如果编辑器纯文本
+                if(ue.getContentTxt() != '' || ue.getContent() != '') {
+                    this.remark = ue.getContent();
+                    $('#changeRemark, .remarkText').show();
+                    $('.remarkMain').stop(false,true).slideUp();
+
+                    this.$http.post("/index.php?m=Home&c=TeacherHomework&a=teacherSendMessage", {
+                        submitId : this.submitId,
+                        comment : this.remark,
+                    }, {
+                        emulateJSON: 'application/x-www-form-urlencoded'
+                    }).then(function (response) {
+                        if(response.status == '200'){
+                            console.log("发布成功");
+                            //更新数组中的评语内容
+                            for (var i=0;i<this.studentData.DCountStudent.length;i++) {
+                                if (this.submitId == this.studentData.DCountStudent[i].submit_id) {
+                                    this.studentData.DCountStudent[i].comment = this.remark;
+                                    break;
+                                }
+                            }
+
+                        } else {
+                            console.log('错误1')
+                        }
+                    }, function (response) {
+                        console.log('错误2')
+                    })
+
+                } else {
+                    // alert('空的')
+                    this.remark = '';
+                    $('#addRemark').show();
+                    $('.remarkMain').stop(false,true).slideUp();
+                }
+            },
+            // 取消添加评语框
+            addRemarkCancel: function(){
+                if(this.remark == '') {
+                    $('#addRemark').show();
+                    $('.remarkMain').stop(false,true).slideUp();
+                } else {
+                    $('#changeRemark, .remarkText').show();
+                    $('.remarkMain').stop(false,true).slideUp();
+                }
+            },
+            // 放大图片
+            bigImg: function(){
+
+            },
+            // 旋转图片
+            rotateImg: function(){
+                rotateImage($('.answerImg')[0],90)
+            },
+            // 旋转放大的图片
+            rotateImgBig: function(){
+                rotateImage($('.zoomInImgMain')[0],90)
+            }
+        }
+    })
+</script>
+
+<script>
+    $(function(){
+        var contentHeight = $('#contentWrapper').height();
+        $('.exerciseOutter').css('min-height', contentHeight);
+    })
+
+    function rotateImage(image,angle) {
+        var image1 = new Image();
+        image1.src=image.src;
+        var width = image1.width;
+        var height = image1.height;
+        $('.zoomInOutter').find('.imgContent').css({
+            'width': height,
+            'height': width
+        });
+        var canvas = document.createElement("canvas")
+        var ctx = canvas.getContext('2d');
+        var newImage = new Image();
+        if(angle == 90)
+        {
+            canvas.height = width;
+            canvas.width = height;
+            ctx.rotate(Math.PI/2);
+            ctx.translate(0,-height);
+            ctx.drawImage(image,0,0)
+            imageDate = canvas.toDataURL('Image/jpeg',0.7)
+            newImage.src = imageDate;
+        }
+        else if(angle == 270)
+        {
+            canvas.height = width;
+            canvas.width = height;
+            ctx.rotate(3*Math.PI/2);
+            ctx.drawImage(image,-width,0,width,height)
+            imageDate = canvas.toDataURL('Image/jpeg',0.7)
+            newImage.src = imageDate;
+        }
+        image.src = newImage.src
+    }
+
+    function compress(image) {
+        var canvas = document.createElement('canvas')
+        var ctx = canvas.getContext('2d');
+
+        var imageLength = image.src.length;
+        var width = image.width;
+        var height = image.height;
+
+        canvas.width = width;
+        canvas.height = height;
+
+        ctx.drawImage(image, 0, 0, width, height);
+        ctx.scale(0.5,0.5);
+        //压缩操作
+        var quality = 0.7;//图片质量  范围：0<quality<=1 根据实际需求调正
+        var imageData = canvas.toDataURL("image/jpeg", quality);
+
+        console.log("压缩前：" + imageLength);
+        console.log("压缩后：" + imageData.length);
+        console.log("压缩率：" + ~~(100 * (imageLength - imageData.length) / imageLength) + "%");
+        return imageData;
+    }
+
+    // 放大课本图片
+    function zoomIn(obj) {
+        var imgUrl = $(obj).attr('src');
+        var objWidth = $(obj).width();
+        var objHeight = $(obj).height(); 
+        $('.zoomInOutter').find('.imgContent').css({
+            'width': objWidth,
+            'height': objHeight
+        });
+        $('.zoomInOutter').show().find('.zoomInImgMain').attr('src', imgUrl);
+        $('body').css('overflow-y', 'hidden')
+    }
+
+    // 缩小课本图片
+    function closeZoomIn() {
+        $('.zoomInOutter').hide();
+        $('body').css('overflow-y', 'auto')
+    }
+</script>
+

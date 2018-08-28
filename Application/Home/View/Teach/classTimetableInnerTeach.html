@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/css/external/easyui.css">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/css/external/icon.css">
+    <script type="text/javascript" src="__PUBLIC__/js/external/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/external/jquery.easyui.min.js"></script>
+    <style type="text/css">
+        .left {
+            width: 80px;
+        }
+
+     
+		body {
+			width: 630px;
+			position: relative;
+			font-family: "Lantinghei SC", "Open Sans", Arial, "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", "STHeiti", "WenQuanYi Micro Hei", SimSun, sans-serif;
+			font-size: 14px;
+			line-height: 1.428571429;
+			color: #333333;
+			margin: 0;
+			overflow-x: hidden
+		}
+		.left td {
+			background: #eee;
+		}
+		
+		.right {
+			width: 630px;
+		}
+		
+		.right table {
+			background: #E0ECFF;
+			width: 630px;
+		}
+		
+		.right td {
+			background: #fafafa;
+			text-align: center;
+			height: 33px;
+		}
+		
+		.right td {
+			background: #fff;
+			padding: 4px;
+		}
+		
+		.right td.drop {
+			background: #fafafa;
+			width: 70px;
+		}
+		
+		.right td.over {
+			background: #FBEC88;
+		}
+		
+		.item {
+			text-align: center;
+			border: 1px solid #333;
+			background: #fff;
+			
+			width: 66px;
+			font-size: 14px;
+		}
+
+        .assigned {
+            border: 0px solid transparent;
+            background-color: transparent;
+        }
+
+    </style>
+    <style>
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 60px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.428571429;
+            color: #555555;
+            background-color: white;
+            background-image: none;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        }
+		.btn {
+			padding: 6px 12px;
+		}
+		
+		.btn-primary {
+			color: white;
+			background-color: #eaca33;
+			border-color: #eaca33;
+		}
+
+        .btn {
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: normal;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            padding: 10px 20px;
+            font-size: 14px;
+            line-height: 1.428571429;
+            border-radius: 4px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+      
+    </style>
+    <script>
+        $(function () {
+            $('.left .item').draggable({
+                revert: true,
+                proxy: 'clone'
+            });
+
+
+            $('.right td.drop').droppable({
+                onDragEnter: function () {
+                    $(this).addClass('over');
+                },
+                onDragLeave: function () {
+                    $(this).removeClass('over');
+                },
+                onDrop: function (e, source) {
+                    $(this).removeClass('over');
+                    if ($(source).hasClass('assigned')) {
+                        $(this).append(source);
+                    } else {
+                        var c = $(source).clone().addClass('assigned');
+                        $(this).empty().append(c);
+                        c.draggable({
+                            revert: true
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+<form id="mainForm" action="__URL__/editTimetable" method="post">
+    <input type="hidden" name="class_id" value="{$classId}">
+    <input type="hidden" name="content" id="content">
+    <input type="hidden" name="is_pan" value="1">
+    <input type="hidden" name="big" value="2">
+<table style="width:630px;border: none;" cellpadding="0" cellspacing="0">
+    <tr>
+        <td width="78" align="center" valign="top">
+            <div class="left">
+                <table>
+                    <?php if ($class_data_info['flag'] !=0): ?>
+                    <tr>
+                        <td>
+                            <div class="item">语文</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">数学</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">英语</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">物理</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">化学</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">生物</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">历史</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">政治</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">地理</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">音乐</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">美术</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">体育</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">自然</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">写作</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">劳动技术</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">信息技术</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">体育与健康</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">研究性学习实践与评价</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="item">&nbsp;</div>
+                        </td>
+                    </tr>
+                    <?php endif ?>
+                </table>
+            </div>
+        </td>
+        <td valign="top">
+            <div id="timeTable" class="right">
+
+            </div>
+        </td>
+    </tr>
+</table>
+
+    <?php if ($class_data_info['flag'] !=0): ?>
+    <div style="padding: 15px 0 0 15px;width:669px;" style="text-align:center">
+        <div style="margin-bottom: 6px;" >注：如果要删除一个排课，则将空白课程拖动到需要删除的一个排课上即可</div>
+        <textarea name="comments" rows="5" maxlength="200" placeholder="课表备注，不超过200字"
+                  class="form-control">{$timetable.comments}</textarea>
+    </div>
+    <div class="form-actions" style="text-align: center; padding-top: 20px;">
+        <button type="button" class="btn btn-primary" onclick="submitForm()">保存</button>
+    </div>
+    <?php else: ?>
+    <p>课表备注信息： {$timetable.comments_teacher}</p>
+    <?php endif ?>
+</form>
+<script>
+    var status = '{$status}'
+    if (status == 1) {
+        //alert('保存成功,可继续编辑');
+    }
+    function submitForm() {
+        $('button').attr("disabled", "disabled");
+        var html = $('#timeTable').html();
+        html = html.replace(/\s+|\n/g, " ").replace(/>\s</g, "><");
+        $('#content').val(html);
+        $('#mainForm').submit();
+    }
+</script>
+
+<script src="__PUBLIC__/js/timetable/timetable.js"></script>
+<script>
+    $.ajaxSetup({
+        async : false
+    });
+    timeTableObject.refreshClassTimeTable("{$classId}",'timeTable','comments');
+    $(function () {
+        $('.left .item').draggable({
+            revert: true,
+            proxy: 'clone'
+        });
+
+
+        $('.right td.drop').droppable({
+            onDragEnter: function () {
+                $(this).addClass('over');
+            },
+            onDragLeave: function () {
+                $(this).removeClass('over');
+            },
+            onDrop: function (e, source) {
+                $(this).removeClass('over');
+                if ($(source).hasClass('assigned')) {
+                    $(this).empty().append(c);
+                    $(this).append(source);
+                } else {
+                    var c = $(source).clone().addClass('assigned');
+                    $(this).empty().append(c);
+                    c.draggable({
+                        revert: true
+                    });
+                }
+            }
+        });
+    });
+    document.oncontextmenu = function () { return false; };
+        document.onkeydown = function () {
+            if (window.event && window.event.keyCode == 123) {
+                event.keyCode = 0;
+                event.returnValue = false;
+                return false;
+            }
+        };
+</script>
+</body>
+</html>

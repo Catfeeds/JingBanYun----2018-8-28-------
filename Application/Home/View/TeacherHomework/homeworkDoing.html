@@ -1,0 +1,283 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+
+	.exerciseOutter.exerciseOutterNoBorder .exerciseOutterTop .nameImg {
+	    display: inline-block;
+	}
+</style>
+
+<a href="{:U('TeacherHomework/homeworkList')}" title="返回" class="btn btnReturn1" style="position: absolute;">返回</a>
+
+<div class="main_opr">
+    <a href="{:U('TeacherHomework/homeworkList')}" title="作业列表" class="btn btn-main-opr btn-main-opr-active">作业列表</a>
+    <a href="{:U('TeacherHomework/publishHomework')}" title="布置作业" class="btn btn-main-opr">布置作业</a>
+    <a href="{:U('TeacherHomework/myCollectionList')}" title="我的收藏" class="btn btn-main-opr">我的收藏</a>
+    <a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+    <a href="{:U('TeacherHomework/testPaperList')}" title="试卷库" class="btn btn-main-opr">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="homeworkWrapper">
+		<div class="exerciseOutter exerciseOutterNoBorder">
+			<div class="exerciseOutterTop">
+				<div class="exerciseBigTitle">
+					<span class="beforeName">{{NameData.fname}}{{NameData.name}}</span>
+					<img src="__PUBLIC__/img/homeworkV1/zuoyezhong.png" alt="" class="nameImg">
+				</div>
+				<div class="exerciseRemark">
+					共<span class="num">{{ exerciseNumLength }}</span>题 分数<span class="num">{{ exerciseNumScore }}</span>分
+				</div>
+			</div>
+
+			<div class="dashOutter">
+				<div class="gradeDate">
+					<div>班&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：{{ classIno.grade }}{{ classIno.name }}</div>
+					<div>开始时间：{{ NameData.release_time}}</div>
+					<div>收作业时间：{{ NameData.deadline}}</div>
+				</div>
+				<a href="javascript:;" class="btnCommon btnCommonBig checkHomeworkBtn">查看作业题</a>
+			</div>
+
+			<div class="dashOutter">
+				<div class="dashTitle">待批改试题</div>
+				<table class="tableCorrect">
+					<thead>
+						<tr>
+							<th>题目名字</th>
+							<th>类型</th>
+							<th>待批改学生数量</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+                        <tr v-if="exerciseList == ''">
+                            <td colspan="4">暂无数据</td>
+                        </tr>
+						<tr v-for="(edata, index) in exerciseList">
+						    <td class="text-left" v-html="edata.subject_name"></td>
+						    <td style="width: 215px">{{ edata.type_name }}</td>
+						    <td style="width: 215px">{{ edata.student_count }}</td>
+						    <td style="width: 215px">
+								<a :href="'/index.php?m=Home&c=TeacherHomework&a=correctStudentHomework&status=作业中&homeworkId={$homeworkId}&classId={$classId}&exerciseId='+edata.exercises_id" class="btnCommon btnCommonSmall correctHomeworkBtn">批改</a>
+						    </td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="dashOutter">
+				<div class="dashTitle">提交情况 （{{ SAllNum }}/{{ AllNum }}）</div>
+
+				<div class="studentOutter" v-if="YList != ''">
+					<div class="dashTitleGray">已批改</div>
+					<div class="studentInner">
+						<!-- 循环这里 -->
+						<a :href="'/index.php?m=Home&c=TeacherHomework&a=studentHomework&homeworkId='+homeworkId+'&classId='+classId+'&submitId='+Ydata.submitid+'&studentId='+Ydata.id" class="studentBox" v-for="(Ydata, index) in YList">
+							<div class="avatarBox">
+								<img :src="Ydata.avatar" alt="" class="avatarImg">
+							</div>
+							<div class="studentName">{{ Ydata.student_name }}</div>
+							<div class="studentScore">{{ Ydata.total_score }}分</div>
+						</a>
+					</div>
+				</div>
+				
+				<div class="studentOutter" v-if="WList != ''">
+					<div class="dashTitleGray">待批改</div>
+					<div class="studentInner">
+						<!-- 循环这里 -->
+						<a href="javascript:;" class="studentBox" v-for="(Ydata, index) in WList">
+							<div class="avatarBox">
+								<img :src="Ydata.avatar" alt="" class="avatarImg">
+							</div>
+							<div class="studentName">{{ Ydata.student_name }}</div>
+						</a>
+					</div>
+				</div>
+
+				<div class="studentOutter" v-if="NList != ''">
+					<div class="dashTitleRed">未提交</div>
+					<div class="studentInner">
+						<!-- 循环这里 -->
+						<a href="javascript:;" class="studentBox" v-for="(Ydata, index) in NList">
+							<div class="avatarBox">
+								<img :src="Ydata.avatar" alt="" class="avatarImg">
+							</div>
+							<div class="studentName">{{ Ydata.student_name }}</div>
+						</a>
+					</div>
+				</div>
+				
+				<button class="btnCommon btnCommonBig" @click="push($event)" id="urgeBtn" v-if="NList != ''">催作业</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+    var userId = "{:session('teacher.id')}";
+    var homeworkId = "{$homeworkId}";
+    var classId = "{$classId}";
+
+	var homework = new Vue({
+		el: '#homework',
+        data: {
+            url: '',
+            // 这些地方应该都用ID，用姓名不准确，暂时先这么写
+            subject: '',
+            volume: '',
+            NameData:{},
+            exerciseListVocieData:{},
+            exerciseListData:{},
+            DataInfo:[],
+            delexerciseId:0,
+            modelId:0,
+            topicType:0,
+            exerciseScore:0,
+            exerciseNumLength:0,
+            exerciseNumScore:0,
+            DanData:[],
+            classData:[],
+            getHomeworkDetailUrl:"/index.php?m=Home&c=TeacherHomework&a=getHomeworkDetail",
+            homeworkId:0,
+            classId:0,
+            classIno:{},
+            Url:"/index.php/ApiInterface/Version1_3/TeacherHomework/getCorrectHomeWorkListEx",
+            selectExerciseIdList:"",
+            selectExerciseIdArr:[],
+            exerciseListData:[],
+            exerciseListVocieData:[],
+            courseId:0,
+            userId:0,
+            exerciseCollectUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/IWantToCollect',
+            iscancel: '',
+            exerciseId: '',
+            exerciseList:[],
+			studentUrl : "/index.php?m=Home&c=TeacherHomework&a=getAllCorrectedExerciseList",
+            studentList:{},
+			AllNum:0,
+            SAllNum:0,
+			YList:[],
+            WList:[],
+            NList:[],
+            workData:{},
+        },
+        created: function () {
+            this.userId = userId;
+            this.homeworkId = homeworkId;
+            this.classId = classId;
+            this.getHomeworkDetail();
+			this.getCorrectHomeWorkListEx();
+			this.getstudentList();
+        },
+		methods: {
+
+            //催作业
+            push:function(){
+                this.$http.post("/index.php/ApiInterface/Version1_3/TeacherHomework/push", {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.data.status == 200){
+                       //console.log("成功");
+                        // alert("催作业成功");
+                        $.NotifyBox.NotifyPromptOne('提示', '已给未提交作业的学生发送作业提醒', '确定');
+                    } else {
+                        // alert("催作业失败");
+                        $.NotifyBox.NotifyPromptOne('提示', '已催过作业了', '确定');
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            getHomeworkDetail: function(){
+                this.$http.post(this.getHomeworkDetailUrl, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.NameData = response.data.data;
+                        this.courseId = this.NameData.course_id;
+                        this.exerciseNumLength = this.NameData.exerciseList.length;
+                        this.exerciseNumScore = this.NameData.total_score;
+                        this.classIno = this.NameData.class_ino;
+                        for (var i=0;i<this.NameData.exerciseList.length;i++) {
+                            this.selectExerciseIdArr.push(this.NameData.exerciseList[i].exercises_id);
+                        }
+                        this.selectExerciseIdList = this.selectExerciseIdArr.join(',');
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            getCorrectHomeWorkListEx: function(){
+                this.$http.post(this.Url, {
+                    homeworkId : this.homeworkId,
+                    classId:classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.exerciseList = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            getstudentList: function(){
+                this.$http.post(this.studentUrl, {
+                    homeworkId : this.homeworkId,
+                    classId:classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.studentList = response.data.data;
+                        this.SAllNum = this.studentList.Slist.length;
+                        this.AllNum = this.studentList.Alist.length;
+                        this.YList =  this.studentList.Ylist;
+                        this.WList =  this.studentList.Wlist;
+                        this.NList =  this.studentList.Nlist;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+		}
+	})
+
+    $(document).on('click','.checkHomeworkBtn',function(){
+        window.location.href = "/index.php?m=Home&c=TeacherHomework&a=lookHomeWorkExercise&status=作业中&homeworkId="+homeworkId+"&classId="+classId;
+    })
+</script>
+
+<script>
+	$(function(){
+		var contentHeight = $('#contentWrapper').height();
+		$('.exerciseOutter').css('min-height', contentHeight-20)
+	})
+</script>

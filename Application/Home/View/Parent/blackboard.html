@@ -1,0 +1,93 @@
+<layout name="parent_layout_3"/>
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/blackboard.css" type="text/css" rel="stylesheet">
+
+<div class="main_opr">
+	<a href="javascript:;" title="" class="btn btn-main-opr btn-main-opr-active" title="我收到的消息">我收到的消息</a>
+</div>
+
+<div class="oh pl20 pr20">
+	<div class="left">
+		<img src="{$oss_path}public/web_img/Blackboard/horn.png" alt="">
+		<div class="messageOutter">
+			<a href="{:U('Parent/blackboard?flag=1')}" class="aUnread" title="您的未读消息">
+				您的未读消息
+				<span class="numberUnread">{$count_isread}</span>
+			</a>
+
+			<if condition="$flag eq 1">
+				<a href="{:U('Parent/blackboard')}" class="examineAll" title="您的未读消息">
+					查看全部
+				</a>
+			</if>
+
+		</div>
+	</div>
+	<div class="right searchOutter">
+		<input type="text" name="keyword" value="{$keyword}" class="searchText left" placeholder="请输入标题关键字">
+		<button type="button" class="searchButton right">搜索</button>
+	</div>
+</div>
+
+<hr>
+
+<empty name="list">
+    <div class="emptyDiv">
+    	<if condition="$kw eq 1 ">
+	        <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+			<p>抱歉，没有搜索到相关的消息！</p>
+		<else />
+			<img src="{$oss_path}public/web_img/Empty/blackboard.png" alt="">
+			<p>暂时还没有收到消息哦！</p>
+		</if>
+    </div>
+</empty>
+<notempty name="list">
+    <table class="messageTable">
+		<volist name="list" id="data" empty="">
+			<tr id="l_{$data.id}">
+				<td class="messageTd1 text-center">
+					<if condition="$data.is_read eq null">
+						<img src="{$oss_path}public/web_img/Blackboard/messageUnread.png" alt="">
+					<else />
+						<img src="{$oss_path}public/web_img/Blackboard/messageRead.png" alt="">
+					</if>
+				</td>
+				<td>
+					<div class="messageDiv">
+						 <a href="{:U('Parent/blackboardMessageDetails?id=')}{$data.id}&read_person_number={$data.read_person_number}&class_id={$data.class_id}" class="dataTitle">
+						 	{$data.message_title}
+						 	<if condition="$data.is_read eq null">
+								<img src="{$oss_path}public/web_img/Blackboard/new.png" alt="" class="imgNew">
+							</if>
+						 </a>
+					</div>
+					<div class="messageDiv">
+						{$data.grade}{$data.class_name}
+					</div>
+					<div class="messageDiv">
+						<span>发布人：{$data.publisher}</span>；
+						<span>发布时间：{$data.create_at|date="Y-m-d H:i",###}</span>
+					</div>
+				</td>
+				<td class="messageTd2 text-center">
+					<a href="{:U('Parent/blackboardMessageDetails?id=')}{$data.id}&read_person_number={$data.read_person_number}&class_id={$data.class_id}" class="btnYellow" title="详情">详情</a>
+				</td>
+			</tr>
+		</volist>
+	</table>
+    <div class="Pagination">{$page}</div>
+</notempty>
+
+<script>
+    $('.searchButton').click(function(){
+        var keyword = $(".searchText").val();
+        var condition_str = "";
+        
+        if (keyword != '') {
+                condition_str += "&keyword=" + keyword;
+            }
+            condition_str = "index.php?m=Home&c=Parent&a=blackboard" + condition_str;
+            location.href = condition_str;
+    });
+</script>

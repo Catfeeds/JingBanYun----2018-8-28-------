@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{$subnav}:{$nav} :: 京版云教育平台</title>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC_METRO__/css/app/ebook.css"/>
+    <script src="__PUBLIC__/js/external/jquery.min.js"></script>
+    <script src="__PUBLIC__/js/common.js"></script>
+	
+	<style>
+		.magBox {
+			position: fixed;
+			right: 60px;
+			top: 10px;
+		}
+		
+		.magClose {
+			width: 19px;
+			height: 19px;
+			position: absolute;
+			right: 10px;
+			top: 10px;
+			cursor: pointer;
+			background: url({$oss_path}public/web_img/Textbook/magClose2.png) no-repeat center;
+		}
+		
+		.magClose:hover {
+			background: url({$oss_path}public/web_img/Textbook/magClose.png) no-repeat center;
+		}
+	</style>
+</head>
+<body>
+<div id="coverLayer"></div>
+<div id="wrapper">
+    <table id="pageTable" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="right">
+                <div class="pageWrapper pageindex" id="page1Wrapper" style="text-align: right">
+                    <img class="page" onerror="imageError(this)" id="page1">
+                </div>
+            </td>
+            <td align="left">
+                <div class="pageWrapper pageindex" id="page2Wrapper" style="text-align: left;">
+                    <img class="page" onerror="imageError(this)" id="page2">
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div id="rectClickImgWrapper" style="margin: 0 auto;">
+        <table cellpadding="0" cellspacing="0" style="width: 100%; table-layout: fixed">
+            <tr>
+                <td id="rectClickImgCell" valign="middle" align="center">
+                    <img id="rectClickImg" style="min-width:auto;">
+                    <audio id="rectClickAudio" src=""></audio>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table id="actionWrapper" cellpadding="0" cellspacing="0">
+        <tr>
+            <td id="actionCell" valign="middle" align="center">
+
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="footer">
+    <table cellspacing="0" cellpadding="0">
+        <tr>
+            <td id="footerTableCell" width="100" align="center">
+			    <if condition="$book['course_id'] eq 3">
+                <span id="speedCtrl" tapmode onclick="switchSpeed()">正常语速</span>
+				</if>
+                <img class="f-content" tapmode src="__PUBLIC_METRO__/img/ebook/icon_content.png"
+                     onclick="turnToContentPage()">
+                <img class="f-pre" tapmode src="__PUBLIC_METRO__/img/ebook/icon_pre.png" onclick="turnToPreviousPage()">
+                <img class="f-nex" tapmode src="__PUBLIC_METRO__/img/ebook/icon_next.png" onclick="turnToNextPage()">
+            </td>
+        
+        </tr>
+    </table>
+	     <div class="page_div">
+		    <span class="page_span">
+				跳转到:<input type="text" class="page_input"   onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"  
+    onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" / />
+			</span>
+			 <img src="" alt="" class="page_img">
+     </div>
+</div>
+<div class="magBox">
+	<div class="magClose"></div>
+	<img src="{$oss_path}public/web_img/Textbook/magnify.png" alt="" class="magnifyImg">
+</div>
+</body>
+<script type="text/javascript">
+
+    var HTTP_BASE_URL = window.location.protocol + '//' + window.location.host + '/';
+    var PIC_BOOK_PATH = 'ebook/';
+
+    var bookId = '{$book.id}';
+    var bookName = '{$book.name}';
+    var currentPageId = [1, 2];
+    var contentPage1Id = 0;
+    var contentPage2Id = 0;
+    var serverPath = '{$book.server_path}';
+    var speed = 'normal';//语速 normal 正常 slow 缓慢
+    var book = null;
+    var pageWidth = 512;//每一页的宽度
+
+    var bookInfo = {
+        width: 512,
+        height: 713,
+        pages: []
+    };
+
+    var currentPage1Info = null;
+    var currentPage2Info = null;
+
+    var pagePos = {
+        paddingTop: 0,
+        paddingBottom: 0
+    };
+
+    var audio = null;
+    var video = null;
+
+    $(function () {
+        adjustPage();
+        loadBookInfo();
+		var p 
+        $(window).resize(function () {
+            adjustPage();
+        });
+		$.ajax({
+			url:serverPath +'/index.xml',
+			dataType:'xml',
+			success:function(res){
+//			
+		    var content = $(res).find('content');
+				console.log(content);
+				p = $($(res).children().children()[0]).attr('GoPage');
+				console.log(p);
+
+		}
+		})
+	$.ajax({
+			url :serverPath +'/Pages.xml',
+			datatype:'xml',
+			success :function(res){
+			     var content1 = $(res).find('content');
+				 console.log(content1);
+				 l = $($(res).children().children()).length;
+							
+			}
+		})
+	    $('.page_img').click(function(){
+			
+		var pagevalue = parseInt($('.page_input').val());
+			if(pagevalue >parseInt(l-p)+3){
+				alert('请输入正确页码');
+				return false
+			}
+			if($('.page_input').val() != ''){
+				$('.pageWrapper').removeClass('pageindex')
+			}else if($('.page_input').val() == ''){
+				return false
+			}
+		
+			
+		if(pagevalue%2 == 0){
+			   onClickContent(parseInt(p)+pagevalue)
+		}else{
+			 onClickContent(parseInt(p)-1+pagevalue)
+		}
+		if(pagevalue == 1 ){
+		 onClickContent(parseInt(p))
+		}
+			
+	})
+    })
+
+    var flashSwf = ['<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="800" height="600"',
+        '                        codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">',
+        '                    <param name="movie" value="images/zf03320.swf">',
+        '                    <param name="quality" value="high">',
+        '                    <param name="bgcolor" value="#F0F0F0">',
+        '                    <param name="menu" value="false">',
+        '                    <param name="wmode" value="opaque">',
+        '                    <param name="FlashVars" value="">',
+        '                    <param name="allowScriptAccess" value="sameDomain">',
+        '                    <param name="loop" value="false">',
+        '                    <param name="play" value="true">',
+        '                    <embed name="swf" src="{0}"',
+        '                           width="800" height="600"',
+        '                           align="middle"',
+        '                           quality="high"',
+        '                           menu="false"',
+        '                           play="true"',
+        '                           loop="false"',
+        '                           FlashVars=""',
+        '                           allowScriptAccess="sameDomain"',
+        '                           type="application/x-shockwave-flash"',
+        '                           pluginspage="http://www.adobe.com/go/getflashplayer">',
+        '                    </embed>',
+        '                </object>'].join("");
+
+</script>
+<script>
+    //固定page高度
+    function adjustPage() {
+        var windowHeight = $(window).height();
+        var windowWidth = $(window).width();
+        var halfWindowWidth = parseInt(windowWidth / 2);
+        pageWidth = parseInt((windowHeight - 60) * (512 / 713));
+
+
+        $('#wrapper,.pageWrapper,.page').height(windowHeight -60);
+        $('.page,.pageWrapper').width(pageWidth);
+        $('#footer,#footerTableCell').height(50);
+        $('#rectClickImgCell,#actionCell').height(windowHeight);
+    }
+</script>
+<script>
+    //加载Book信息
+    function loadBookInfo() {
+        $.get('{0}ebook/{1}/Pages.xml'.format(HTTP_BASE_URL, serverPath), function (res) {
+            //debugger
+            var content = $(res).find('content');
+            bookInfo.width = parseInt($(content).attr('width'));
+            bookInfo.height = parseInt($(content).attr('height'));
+            $(content).find('page').each(function (i, n) {
+                bookInfo.pages.push({pageId: i + 1, src: $(n).attr('src')});
+            });
+            turnPage(bookInfo.pages[0].pageId, bookInfo.pages[1].pageId);//从第一页封面开始，数组索引为1，即2.png
+
+        });
+    }
+    //加载Page信息
+    function loadPageInfo(pageId, isLeftPage) {
+        if (isLeftPage) {
+            contentPage1Id = pageId - 3;
+            if (contentPage1Id < 0)return false;
+        } else {
+            contentPage2Id = pageId - 3;
+            if (contentPage2Id < 0)return false;
+        }
+        var loadPageId = isLeftPage ? contentPage1Id : contentPage2Id;
+
+        $.get('{0}ebook/{1}/Pages/page{2}/index.xml'.format(HTTP_BASE_URL, serverPath, loadPageId), function (pageInfo) {
+            if (pageInfo) {
+                if (isLeftPage) {
+                    currentPage1Info = pageInfo
+                } else {
+                    currentPage2Info = pageInfo
+                }
+                renderClickRects(pageInfo, isLeftPage);
+                renderActions('XueleListenMode', pageInfo, isLeftPage);
+                renderActions('XueleActionClass', pageInfo, isLeftPage);
+                renderActions('XueleShowRedWord', pageInfo, isLeftPage);
+                renderActions('XueleRolePlay', pageInfo, isLeftPage);
+                //render content
+                renderActions('GoPageButton', pageInfo, isLeftPage);
+            } else {
+                //alert(err);
+            }
+        });
+    }
+
+</script>
+<script>
+    //书本点击信息
+    function renderClickRects(pageInfo, isLeftPage) {
+        var clickRectImages = $(pageInfo).find('ClickRectImage');
+        $.each(clickRectImages, function (i, n) {
+            var item = $(n);
+            var clickRect = {
+                name: item.attr('xmlname'),
+                positionX: parseInt(item.attr('positionx')),
+                positionY: parseInt(item.attr('positiony')),
+                width: parseInt(item.attr('width')),
+                height: parseInt(item.attr('height')),
+                fileName: item.attr('filename')
+            };
+            renderClickRect(clickRect, isLeftPage);
+        });
+    }
+    //渲染点击区域
+    function renderClickRect(clickRect, isLeftPage) {
+        var pageWrapperEleId = isLeftPage ? '#page1Wrapper' : '#page2Wrapper';
+        var rate = pageWidth / bookInfo.width;
+
+        var positionX = parseInt(clickRect.positionX * rate);
+        var positionY = parseInt(clickRect.positionY * rate) + pagePos.paddingTop;
+        var width = parseInt(clickRect.width * rate);
+        var height = parseInt(clickRect.height * rate);
+
+        var rectArea = '<div class="rectClickArea" id="rc_{0}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;" onclick="onClickRect(\'{5}\',{6})"></div>'
+                .format(clickRect.name, positionX, positionY, width, height, clickRect.fileName, isLeftPage ? 'true' : 'false');
+
+        $(pageWrapperEleId).append(rectArea);
+    }
+    //点击行为播放音频
+    function onClickRect(fileName, isLeftPage) {
+
+        var loadPageId = isLeftPage ? contentPage1Id : contentPage2Id;
+        var imgSrc = '{0}/ebook/{1}/Pages/page{2}/{3}.png'.format(HTTP_BASE_URL, serverPath, loadPageId, fileName);
+        var audioSrc = '{0}/ebook/{1}/Pages/page{2}/{3}{4}.mp3'.format(HTTP_BASE_URL, serverPath, loadPageId, fileName, speed == 'normal' ? '' : '_slow');
+
+        $('#rectClickImg').attr('src', imgSrc);
+        //play
+        var rectAudio = document.getElementById('rectClickAudio');
+        rectAudio.src = audioSrc;
+
+        $('#rectClickImgWrapper,#coverLayer').show().click(function () {
+            $('#rectClickImgWrapper,#coverLayer').hide();
+            rectAudio.pause();
+        });
+        window.setTimeout(function () {
+            rectAudio.play();
+        }, 100)
+    }
+    //切换语速
+    function switchSpeed() {
+        switch (speed) {
+            case 'normal':
+                speed = 'slow';
+                $('#speedCtrl').html('缓慢语速');
+                break;
+            case 'slow':
+                speed = 'normal';
+                $('#speedCtrl').html('正常语速');
+                break;
+        }
+    }
+</script>
+<script>
+    //渲染听力部分
+    function renderActions(nodeName, pageInfo, isLeftPage) {
+        var listens = $(pageInfo).find(nodeName);
+        $.each(listens, function (i, n) {
+            var item = $(n);
+            var info = {
+                name: item.attr('xmlname'),
+                positionX: item.attr('positionx'),
+                positionY: item.attr('positiony'),
+                flashFilename: item.attr('FlashFilename'),
+                goPage: item.attr('GoPage')
+            };
+            renderActionArea(nodeName, info, isLeftPage);
+        });
+    }
+    function renderActionArea(nodeName, info, isLeftPage) {
+        var pageWrapperEleId = isLeftPage ? '#page1Wrapper' : '#page2Wrapper';
+        var rate = pageWidth / bookInfo.width;
+
+        var positionX = parseInt((info.positionX) * rate);
+        var positionY = parseInt(info.positionY * rate) + pagePos.paddingTop + 2;
+
+        if (nodeName == 'GoPageButton') {
+            var rectArea = '<div class="contentClickArea" id="bc_{0}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;" onclick="onClickContent(\'{5}\')"></div>'
+                    .format(info.name, positionX, positionY, parseInt(280 * rate), parseInt(20 * rate), info.goPage);
+            $(pageWrapperEleId).append(rectArea);
+        } else {
+            var src = '__PUBLIC_METRO__/img/ebook/icon_{0}.png'.format(nodeName);
+            var areaEle = '<img class="actionArea" id="listen_{0}" style="left:{1}px;top:{2}px;"onclick="onClickActionArea(\'{3}\',{5})" src="{4}">'
+                    .format(info.name, positionX, positionY, info.flashFilename, src, isLeftPage ? 'true' : 'false');
+
+            $(pageWrapperEleId).append(areaEle);
+        }
+    }
+    //播放
+    function onClickActionArea(flashFilename, isLeftPage) {
+        var loadPageId = isLeftPage ? contentPage1Id : contentPage2Id;
+        var videoSrc = '{0}ebook/{1}/Pages/page{2}/{3}'.format(HTTP_BASE_URL, serverPath, loadPageId, flashFilename);
+        //var videoH = document.getElementById('actionVideo');
+        //videoH.src = videoSrc;
+        //videoH.play();
+        //
+
+        $('#actionWrapper,#coverLayer').show();
+        $('#actionWrapper,#coverLayer').click(function () {
+            $('#actionWrapper,#coverLayer').hide();
+            $('#actionCell').html('');
+        });
+
+        var videoEle = flashSwf.format(videoSrc);
+        $('#actionCell').html(videoEle);
+    }
+
+    function onClickContent(pageId) {
+        pageId = parseInt(pageId);
+        turnPage(pageId, pageId + 1);
+    }
+</script>
+<script>
+    function turnPage(page1Id, page2Id) {
+        currentPageId[0] = page1Id;
+        currentPageId[1] = page2Id;
+
+        $('.actionArea,.rectClickArea,.contentClickArea').remove();
+        loadPageInfo(page1Id, true);
+        loadPageInfo(page2Id, false);
+        var page1Url = '{0}ebook/{1}/content/{2}.png'.format(HTTP_BASE_URL, serverPath, page1Id)
+        var page2Url = '{0}ebook/{1}/content/{2}.png'.format(HTTP_BASE_URL, serverPath, page2Id)
+        getEle('page1').src = page1Url;
+        getEle('page2').src = page2Url;
+        //翻书声音 todo
+    }
+    function turnToContentPage() {
+        turnPage(5, 6);
+    }
+    function turnToPreviousPage() {
+        if (currentPageId[0] == 1) return;
+
+        currentPageId[0] = currentPageId[0] - 2;
+        currentPageId[1] = currentPageId[1] - 2;
+
+        turnPage(currentPageId[0], currentPageId[1]);
+    }
+    function turnToNextPage() {
+        if (currentPageId[0] == bookInfo.pages.length && currentPageId[1] == bookInfo.pages.length) return;
+
+        currentPageId[0] = currentPageId[0] + 2;
+        currentPageId[1] = currentPageId[1] + 2;
+
+        turnPage(currentPageId[0], currentPageId[1]);
+    }
+    function imageError(img)
+    {
+        var src = img.src;
+        img.src=src.substr(0,src.length-3)+'jpg';
+        if(src.substr(src.length-3,3)=='jpg')
+        return;   //控制不要一直跳动
+    }
+</script>
+
+<script>
+	//右上角提示关闭
+	$('.magClose').click(function(){
+		$('.magBox').hide()
+	})
+	var course_id = {$book.course_id};
+	switch(course_id){
+	    case 1://语文
+			$('#wrapper,#footer').css('background','#f6b297');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/muluyuwen.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyuwen.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyuwen.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/goyuwen.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/muluyuwen2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/muluyuwen.png')
+			})	
+			$('.f-pre').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyuwen2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyuwen.png')
+			})	
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyuwen2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyuwen.png')
+			})	
+			$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/goyuwen2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/goyuwen.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/yuwen.png')
+			break;
+		case 2://数学
+			$('#wrapper,#footer').css('background','#06afbf');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/mulushuxue.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeshuxue.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeshuxue.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/goshuxue.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/mulushuxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/mulushuxue.png')
+			})	
+			$('.f-pre').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeshuxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeshuxue.png')
+			})	
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeshuxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeshuxue.png')
+			})
+			$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/goshuxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/goshuxue.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/shuxue.png')
+			break;
+		case 3://英语
+			$('#wrapper,#footer').css('background','#ffc85a');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/muluyingyu.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyingyu.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyingyu.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/go-yingyu.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/muluyingyu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/muluyingyu.png')
+			})	
+			$('.f-pre').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyingyu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyingyu.png')
+			})	
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyingyu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyingyu.png')
+			})
+			$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/go-yingyu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/go-yingyu.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/yingyu.png')
+			break;
+		case 5://化学
+			 $('#wrapper,#footer').css('background','#5081b9');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/muluhuaxue.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyehuaxue.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyehuaxue.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/gohuaxue.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/muluhuaxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/muluhuaxue.png')
+			})	
+			$('.f-pre').hover(function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyehuaxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyehuaxue.png')
+			 
+			})	
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyehuaxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyehuaxue.png')
+			})
+			$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/gohuaxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/gohuaxue.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/huaxue.png')
+		
+		
+			break;
+		case 7://历史
+			$('#wrapper,#footer').css('background','#91c5a7');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/mululishi.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyelishi.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyelishi.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/golishi.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/mululishi2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/mululishi.png')
+			})	
+			$('.f-pre').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyelishi2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyelishi.png')
+			})	
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyelishi2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyelishi.png')
+			})
+			$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/golishi2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/golishi.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/lishi.png')
+			
+			break;
+		case 9://生物
+		    $('#wrapper,#footer').css('background','#d2a6c7');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/mulushengwu.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeshengwu.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeshengwu.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/goshengwu.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/mulushengwu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/mulushengwu.png')
+			})	
+			$('.f-pre').hover(function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeshengwu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeshengwu.png')
+			 
+			})	
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeshengwu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeshengwu.png')
+			})
+				$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/goshengwu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/goshengwu.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/shengwu.png')
+			break;
+	}
+</script>
+</html>

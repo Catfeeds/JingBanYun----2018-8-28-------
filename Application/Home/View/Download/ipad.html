@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>平板下载页</title>
+    <style>
+        html,
+        body,
+        div,
+        .windImg {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden
+        }
+        
+        #wind {
+            position: relative
+        }
+        
+		#download2 {
+			width: 100%;
+			height: 100%;
+			background: rgba(0,0,0,0.8);
+			position: absolute;
+			top: 0;
+			left: 0;
+			display: none;
+			z-index: 3
+		}
+		
+		#download2 img {
+			width: 100%;
+		}
+		
+        #btnIphone,
+        #btnAd {
+            position: absolute;
+            width: 16%;
+            height: 6%;
+            top: 0;
+           
+        }
+        
+        #btnIphone {
+            top: 61.2%;
+            left: 26.5%;
+             
+        }
+        
+        #btnAd {
+           top: 61.2%;
+            right: 26.5%;
+     
+        }
+        
+        .downloadIphone {
+        
+        }
+        
+        #btnApp {
+            display: block;
+            width: 14%;
+            height: 3%;
+            bottom:9.5%;
+            left:43.5%;
+            position: absolute;
+         
+        }
+    </style>
+</head>
+
+<body scroll="no">
+    <div id="wind">
+        <img class="windImg" src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Download/ipad.png" alt="">
+        <div id="download2">
+        	<img src="__PUBLIC__/img/jiantou.png" alt="">
+        </div>
+        <div id="btnIphone"></div>
+        <div id="btnAd"></div>
+<!--        <a id="btnApp" href="{:U('Download/index')}"></div>df-->
+    </div>
+</body>
+
+</html>
+<script src="__PUBLIC__/js/jquery-1.11.0.min.js"></script>
+<script>
+	$('#download2').click(function () {
+		$(this).hide()
+	})
+			
+    var androidurl_teacher = "__PUBLIC__/padkt_v6_8.apk";
+    var androidurl_student= "__PUBLIC__/padks_v5_7.apk";
+    var iosurl_teach = 'https://itunes.apple.com/cn/app/shu-zi-ke-tang-jiao-shi-ban/id1152180184?mt=8';
+    var iosurl_student = 'https://itunes.apple.com/cn/app/shu-zi-ke-tang-xue-sheng-ban/id1152182292?mt=8';
+    var download_url_teach = androidurl_teacher;
+    var download_url_student = androidurl_student;
+    
+    function isWeixinBrowser() {
+        var ua = navigator.userAgent.toLowerCase();
+        return (/micromessenger/.test(ua)) ? true : false;
+    }
+    
+    function isAndroidBrowser() {
+        var ua = navigator.userAgent.toLowerCase();
+        var isAndroid = false;
+        if (/android/.test(ua)) {
+            isAndroid = true;
+        }
+        return isAndroid;
+    }
+    
+    function isAppleBrowser() {
+        var ua = navigator.userAgent.toLowerCase();
+        var isApple = false;
+        if (/iphone/.test(ua)) {
+            isApple = true;
+        }
+        if (/ipad/.test(ua)) {
+            isApple = true;
+        }
+        return isApple;
+    }
+    
+    var idname = "btn2";
+
+    if (isAppleBrowser()) {
+        download_url_teach = iosurl_teach;
+        download_url_student = iosurl_student; 
+		
+    } else if (isAndroidBrowser()) {
+        download_url_teach = androidurl_teacher;
+        download_url_student = androidurl_student; 
+		$('.windImg').attr('src','__PUBLIC__/img/ipadAndroid.jpg')
+		
+    }
+    
+    document.getElementById('btnIphone').onclick = function (e) { 
+        if (isWeixinBrowser()) {
+            //这少切换浏览器页面
+            $('#download2').show();
+            return;
+        }
+        window.location = download_url_teach; 
+    }
+    
+    document.getElementById('btnAd').onclick = function (e) { 
+        if (isWeixinBrowser()) {
+            //这少切换浏览器图片
+            $('#download2').show();
+            return;
+        }
+        window.location = download_url_student; 
+    }
+    
+</script>

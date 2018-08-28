@@ -1,0 +1,799 @@
+<layout name="teacher_layout_withouticon" />
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/material.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<style>
+    body {
+        display: block;
+    }
+
+    .qq-uploader{
+        min-height:100px;
+    }
+    .res_box a{
+        position: relative;
+    }
+    .circle {
+        width: 80px;
+        height: 80px;
+        position: absolute;
+        border-radius: 50%;
+        background: #8bc53f;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+	.classify_ul{
+		border: none !important;
+	}
+    .pie_left, .pie_right {
+        width:80px;
+        height:80px;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .p_left, .p_right {
+        width:80px;
+        height:80px;
+        background:#e6e7e7;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .pie_right, .p_right {
+        clip:rect(0,auto,auto,40px);
+    }
+    .pie_left, .p_left {
+        clip:rect(0,40px,auto,0);
+    }
+    .mask {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        left: 8px;
+        top: 8px;
+        background: #efefef;
+        position: absolute;
+        text-align: center;
+        line-height: 64px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+    }
+	.resource_li img{max-width: 255px;}
+</style>
+
+
+<div class="main_opr">
+    <a href="javascript:;" title="我的素材库" class="btn btn-main-opr btn-main-opr-active">我的素材库</a>
+</div>
+
+<!-- <div>
+    <a href="{:U('Teach/me')}" title="返回" class="btn btnReturn1">返回</a>
+</div> -->
+
+<div class="resource_box">
+    <div class="resource_top">
+        <div class="search">
+            <button class="search_btn">搜索</button>
+            <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入素材名称">
+        </div>
+    </div>
+
+    <div class="resource_middle" style="position: relative;">
+        <div class="resource_classify">
+            <p class="classify_p">类型：</p>
+            <ul class="classify_ul type_ul">
+                <li {$type==null ? 'class="current_selected"': ''} attr_id=''>全部</li>
+                <li attr_id='video' {$type=='video' ? 'class="current_selected"': ''}>视频</li>
+                <li attr_id='audio' {$type=='audio' ? 'class="current_selected"': ''}>音频</li>
+                <li attr_id='image' {$type=='image' ? 'class="current_selected"': ''}>图片</li>
+                <li attr_id='word' {$type=='word' ? 'class="current_selected"': ''}>WORD</li>
+                <li attr_id='ppt' {$type=='ppt' ? 'class="current_selected"': ''}>PPT</li>
+                <li attr_id='pdf' {$type=='pdf' ? 'class="current_selected"': ''}>PDF</li>
+                <li attr_id='swf' {$type=='swf' ? 'class="current_selected"': ''}>SWF</li>
+            </ul>
+        </div>
+        <div class="fileUpload">
+        	<img src="__PUBLIC__/img/material/upload.png" alt="">
+                <input class="fileButton" type="button" value="上传文件" >
+                <!--<input type="file" id="path" style="display:none">-->
+
+        </div>
+        <div id="fine-uploader" style='display:none;'>
+
+        </div>
+    </div>
+
+    <div class="resource_border"></div>
+
+    <empty name="data">
+        <div class="emptyDiv">
+            <if condition="($kw eq 1) OR ($type neq '') ">
+                <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+                <p>抱歉，没有搜索到相关的素材！</p>
+            <else />
+                <img src="{$oss_path}public/web_img/Empty/myMaterials.png" alt="">
+                <p>您还没有上传素材哦！</p>
+                <p>赶紧点击<a href="javascript:;" class="aFileButton">上传文件</a>上传吧！</p>
+            </if>
+
+        </div>
+    </empty>
+
+
+    <div class="resource_bottom">
+            <ul class="row resource_ul">
+                <volist name="data" id="data_item" empty="">
+                    <li class="col-md-4 resource_li"  >
+                        <switch name="data_item.type">
+                            <case value="video">
+                                <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_video.png)no-repeat center;">
+                                    <a href="{:U('Teach/myMaterialDetails?id=')}{$data_item.id}" title="{$data_item.material_name}">
+                                        <img class="resource_img" src="{$oss_path}{$data_item.vid_image_path}" alt=""><!--__PUBLIC__/img/resource/b_video.jpg-->
+                            </case>
+                            <case value="audio">
+                                <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_radio.png)no-repeat center;">
+                                    <a href="{:U('Teach/myMaterialDetails?id=')}{$data_item.id}" title="{$data_item.material_name}">
+                                        <img class="resource_img" src="__PUBLIC__/img/resource/b_radio.jpg" alt="">
+                            </case>
+                            <case value="image">
+                                <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_image.png)no-repeat center;">
+                                    <a href="{:U('Teach/myMaterialDetails?id=')}{$data_item.id}" title="{$data_item.material_name}">
+                                        <img class="resource_img" src="{$oss_path}{$data_item.file_path}" alt="">
+                            </case>
+                            <case value="word">
+                                <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_word.png)no-repeat center;">
+                                    <a href="{:U('Teach/myMaterialDetails?id=')}{$data_item.id}" title="{$data_item.material_name}">
+                                        <img class="resource_img" src="__PUBLIC__/img/resource/b_word.jpg" alt="">
+                            </case>
+                            <case value="ppt">
+                                <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_ppt.png)no-repeat center;">
+                                    <a href="{:U('Teach/myMaterialDetails?id=')}{$data_item.id}" title="{$data_item.material_name}">
+                                        <img class="resource_img" src="__PUBLIC__/img/resource/b_ppt.jpg" alt="">
+                            </case>
+                            <case value="pdf">
+                                <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_pdf.png)no-repeat center;">
+                                    <a href="{:U('Teach/myMaterialDetails?id=')}{$data_item.id}" title="{$data_item.material_name}">
+                                        <img class="resource_img" src="__PUBLIC__/img/resource/b_pdf.jpg" alt="">
+                            </case>
+                            <case value="swf">
+                                <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_swf.png)no-repeat center;">
+                                    <a href="{:U('Teach/myMaterialDetails?id=')}{$data_item.id}" title="{$data_item.material_name}">
+                                        <img class="resource_img" src="__PUBLIC__/img/resource/b_swf.jpg" alt="">
+                            </case>
+                        </switch>
+                                        <p class="resource_title"  attr="{$data_item.material_name}" id="{$data_item.id}" title="{$data_item.material_name}" >{$data_item.material_name}</p>
+                                    </a>
+                                    <p class="resource_p">
+                                        <span class="left">{$data_item.create_at|date="Y-m-d H:i",###}</span>
+                                        <span class="right" attr="{$data_item.material_name}">
+                                            <input type="hidden" class="hidden_id" value="{$data_item.id}" />
+                                            <span class="compile rightBtn" title="编辑"></span>
+                                            <span class="delete rightBtn" title="删除"></span>
+                                        </span>
+                                    </p>
+                                </div>
+                    </li>
+                </volist>
+            </ul>
+    <div class="Pagination">{$page}</div>
+    </div>
+
+</div>
+
+<!--编辑素材名称-->
+<div class="compileTitle popup">
+	<div class="compileTitleTop">
+		<p class="">编辑素材名称</p>
+		<img src="__PUBLIC__/img/icon/adTitleImg1.png" alt="" class="imgClose right">
+	</div>
+	<div class="compileTitleMiddle">
+		<p>素材名称</p>
+		<input type="text" placeholder="请输入素材名称" value="" class="form-control material_input">
+	</div>
+	<div class="compileTitleBottom">
+		<button type="submit" class="yesBtn" id="saveCompile">保存</button>
+	</div>
+</div>
+<!--保存成功-->
+<div class="saveSuccess popup">
+	<div class="btnBottom">
+		<button class="yesBtn" id="">确定</button>
+	</div>
+</div>
+<!--系统繁忙-->
+<div class="systemBusy popup">
+	<div class="btnBottom">
+		<button class="yesBtn" id="">确定</button>
+	</div>
+</div>
+<!--删除成功-->
+<div class="deleteSuccess popup">
+	<div class="btnBottom">
+		<button class="yesBtn" id="">确定</button>
+	</div>
+</div>
+<!--确定删除？-->
+<div class="deleteSure popup">
+	<div class="btnBottom">
+		<button class="yesBtn delete_btn" id="">是</button>
+		<button class="noBtn" id="">否</button>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+
+
+
+<script>
+    var material_value='';
+    var material_id=0;
+    var input_value='';
+    var current_obj='';
+        //编辑
+	$('.compile').live('click',function(){
+            material_value=$(this).parents(".resource_p").prev('a').children('p').text();
+            material_id=$(this).siblings('.hidden_id').val();
+            console.log(material_value);
+            console.log(material_id);
+
+            $('.compileTitleMiddle').find('input').val(material_value);
+            $('.compileTitle').show();
+	})
+
+        //删除操作
+
+        $(document).on('click','.delete',function(){
+          $.NotifyBox.NotifyPromptTwoCo("提示","确定删除？", "确定", "取消", function() {
+            var current_id=$(current_obj).siblings('.hidden_id').val();
+            var obj=current_obj;
+            $.ajax({
+                type:"post",
+                async: false,
+                url: "{:U('Teach/deleteMyMaterial')}",
+                data:{id:current_id},
+                success: function(msg){
+                    if(msg=='success'){
+                        $(obj).parents('.resource_li').remove();
+                        if(!$('.resource_li').length){
+                            // $('.resource_ul').text('暂无素材');
+                            $('.emptyDiv').show()
+                        }
+                    }else{
+                        alert('删除失败,请稍后重试');
+                    }
+                }
+            });
+          })
+
+        });
+
+        //删除显示
+    $(document).on('click','.delete',function(){
+            current_obj=this;
+
+        });
+
+        //保存
+	$('#saveCompile').click(function(){
+            input_value=$(".material_input").val();
+            if(input_value.trim() == '')
+            {
+                alert('请输入素材名称');
+                return;
+            }
+            $.ajax({
+                type:"post",
+                async: false,
+                url: "{:U('Teach/editMyMaterial')}",
+                data:{id:material_id,material_name:input_value},
+                success: function(msg){
+                    if(msg=='success'){
+                        $("#"+material_id).text(input_value);
+                        $("#"+material_id).attr('attr',input_value);
+                        $("#"+material_id).attr('title',input_value);
+                        $(".p_right").attr('attr',input_value)
+
+                        $('.compileTitle').hide();
+                    }else if(msg=='failed'){
+                        alert('修改失败');
+                    }else{
+                        alert(msg);
+                    }
+                }
+            });
+	})
+        $('.imgClose').click(function(){
+            $('.compileTitle').hide();
+        });
+
+	$('.yesBtn,.noBtn').click(function(){
+		$('.saveSuccess,.systemBusy,.deleteSuccess,.deleteSure').hide();
+	})
+</script>
+
+
+<script>
+	$(document).ready(function () {
+
+		//点击搜索框
+		$('.search_btn').click(function () {
+			var string = '';
+
+			string = join_string();
+			location.href = "index.php?m=Home&c=Teach&a=myMaterials" + string;
+		});
+		//回车搜索
+		$(".search_text").keydown(function (evt) {
+			if (event.keyCode == "13") { //keyCode=13是回车键
+				var evt = (evt) ? evt : ((window.event) ? window.event : "")
+				var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+				var string = '';
+				string =  join_string();
+				location.href = "index.php?m=Home&c=Teach&a=myMaterials" + string;
+
+			}
+		})
+
+                //删选
+                $(".type_ul").children('li').click(function(){
+                    $(this).siblings('li').removeClass('current_selected');
+                    $(this).addClass('current_selected');
+                    var string = join_string();
+                    string = string;
+                    location.href = "index.php?m=Home&c=Teach&a=myMaterials" + string;
+                });
+
+		//拼接语句
+		function join_string() {
+			var string = "";
+			var type_id = $(".type_ul").find('.current_selected').attr('attr_id');
+			var keyword = $(".search_text").val();
+			if (keyword != '') {
+				string = '&keyword=' + keyword;
+			}
+			if (type_id != '') {
+				string += '&type=' + type_id;
+			}
+
+			return string;
+		}
+	});
+</script>
+
+
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script type="text/template" id="qq-template">
+        <div class="qq-uploader-selector qq-uploader"  qq-drop-area-text="Drop files here">
+            <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+                <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+            </div>
+            <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+                <span class="qq-upload-drop-area-text-selector"></span>
+            </div>
+            <div class="qq-upload-button-selector qq-upload-button">
+                <div>上传文件</div>
+            </div>
+            <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+            <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+                <li>
+                    <div class="qq-progress-bar-container-selector">
+                        <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                    </div>
+                    <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                    <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+                    <span class="qq-upload-file-selector qq-upload-file"></span>
+                    <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                    <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                    <span class="qq-upload-size-selector qq-upload-size"></span>
+                    <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
+                    <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
+
+                    <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+                </li>
+            </ul>
+
+            <dialog class="qq-alert-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Close</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-confirm-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">No</button>
+                    <button type="button" class="qq-ok-button-selector">Yes</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-prompt-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <input type="text">
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                    <button type="button" class="qq-ok-button-selector">Ok</button>
+                </div>
+            </dialog>
+        </div>
+    </script>
+    <script>
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    var temp='<li class="col-md-4 resource_li" id="">'+ //这个id是上传插件id
+                '<div class="res_box" style="background:url(/Public/img/resource/r_empty.png)no-repeat center;">'+
+                    '<a href="##" title="33">'+     //1
+                        '<img class="resource_img" src="/Public/img/resource/b_empty.jpg" alt="">'+
+                            '<p class="resource_title" attr="33" id="1" title="33"></p>'+     //1(3) 2
+                        '<div class="circle">'+
+                            '<div class="pie_left"><div class="p_left"></div></div>'+
+                            '<div class="pie_right"><div class="p_right"></div></div>'+
+                            '<div class="mask"><span>30</span>%</div>'+
+                        '</div>'+
+                    '</a>'+
+                    '<p class="resource_p">'+
+                        '<span class="left"></span>'+   //1
+                        '<span class="right" attr="33">'+                    //1
+                            '<input type="hidden" class="hidden_id" value="1">'+        //2
+                            '<span class="compile " title="编辑"></span>'+  //rightBtn
+                            '<span class="delete " title="删除"></span>'+   //rightBtn
+                        '</span>'+
+                    '</p>'+
+                '</div>'+
+            '</li>';
+
+    var activity_id="{$activity_id}";
+    var uploadInfo={};
+    var idInfo=[];
+
+    //点击去触发真实的上传文件
+    $(".fileButton,.aFileButton").click(function(){
+        $("#fine-uploader").find(':file').trigger('click');
+    });
+
+
+    function changeInputFilter(){
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').attr('accept',acceptStr);
+    }
+    //changeInputFilter();
+
+    function onFileCheck(){
+        if($('li').hasClass('qq-upload-fail')){
+            alert('有文件上传错误');
+            return false;
+        }
+        return true;
+    }
+
+    //返回一个数组,第一个是背景大图,第二个小图,第三个类型
+    function getFileBackgroundImage(file_type){
+        var image_array=[];
+        switch (file_type) {
+            case 'mp4':
+                image_array.push('r_video.png');
+                image_array.push('b_video.jpg');
+                image_array.push('video');
+                break;
+            case 'mp3':
+                image_array.push('r_radio.png');
+                image_array.push('b_radio.jpg');
+                image_array.push('audio');
+                break;
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+                image_array.push('r_image.png');
+                image_array.push('b_image.jpg');
+                image_array.push('image');
+                break;
+            case 'swf':
+                image_array.push('r_swf.png');
+                image_array.push('b_swf.jpg');
+                image_array.push('swf');
+                break;
+            case 'pdf':
+                image_array.push('r_pdf.png');
+                image_array.push('b_pdf.jpg');
+                image_array.push('pdf');
+                break;
+            case 'doc':
+            case 'docx':
+                image_array.push('r_word.png');
+                image_array.push('b_word.jpg');
+                image_array.push('word');
+                break;
+            case 'ppt':
+            case 'pptx':
+                image_array.push('r_ppt.png');
+                image_array.push('b_ppt.jpg');
+                image_array.push('ppt');
+                break;
+        }
+        return image_array;
+    }
+    var percents={};
+
+    function updateCircle()
+    {
+        //var percents = $('.qq-progress-bar-selector').attr('aria-valuenow');
+        //$('.circle span').text(percents);
+
+        var percents=0,current_attr_id=0;
+        $('.circle').each(function(index, el) {
+            current_attr_id=$(this).attr('attr_id');
+            percents=$('.qq-file-id-'+current_attr_id).find('.qq-progress-bar-selector').attr('aria-valuenow');
+            $(this).find('span').text(percents);
+
+            var num = percents * 3.6;
+            if (num<=180) {
+                $(this).find('.p_right').css('transform', "rotate(" + num + "deg)");
+            }else {
+                $(this).find('.p_right').css('transform', "rotate(180deg)");
+                $(this).find('.p_left').css('transform', "rotate(" + (num - 180) + "deg)");
+            };
+        });
+    }
+
+    function in_array(search_value,array){
+        for(var i in array){
+            if(search_value==array[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    var oss_path="{$oss_path}";
+    var is_clear_ul_text=0;
+    allow_type=2;
+    var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById('fine-uploader'),
+        request1Enable : true,
+
+        callbacks:{
+            onProgress:function(id, name, loaded, total,pbNum)
+            {
+                if(in_array(id,idInfo)==false){     //上传的文件设置了一个唯一的id
+                    //这里删除暂无素材文字
+                    if(is_clear_ul_text==0){
+                        if(!$('.resource_li').length){
+                            // $('.resource_ul').text('');
+                            $('.emptyDiv').show()
+                            is_clear_ul_text=1;
+                        }
+                    }
+
+                    idInfo.push(id);
+
+                    var clone_temp=$(temp).clone(true);
+                    $(clone_temp).attr('id','unique_'+id);
+                    var material_array=name.split('.'); console.log(material_array);
+                    material_name=material_array[0];
+                    $(clone_temp).find('a').attr('title',material_name);
+                    $(clone_temp).find('.resource_title').attr('title',material_name);
+                    $(clone_temp).find('.resource_title').attr('attr',material_name);
+
+                    $(clone_temp).find('.right').attr('attr',material_name)
+                    var img_arr=getFileBackgroundImage(material_array[material_array.length-1]);
+
+                    $(clone_temp).find('.circle').attr('attr_id',id)
+                    $(clone_temp).find('.circle').attr('file_name',name)
+                    $(clone_temp).find('.circle').attr('attr_type',img_arr[2])
+                    console.log(clone_temp);
+                    $('.emptyDiv').hide();
+                    $(".resource_ul").prepend(clone_temp);
+                }
+                updateCircle();
+            }
+
+        },
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mp4","mp3"),
+            inputName:'Filedata',
+        },
+        request: {
+            endpointnum: 0,
+            endpoint: 'index.php?m=Home&c=Teach&a=upload_Material_file',
+            params:{},
+            inputName:'file[]',
+        },
+        validation:{
+            allowedExtensions: ['jpeg', 'jpg', 'png','mp4','mov','mp3','doc','docx','ppt','pptx','pdf','swf'],
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'
+        },
+        retry: {
+           enableAuto: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[id];
+        },
+        onComplete:function(){
+            alert('last');
+        },
+        responseCallBack: function(id,specNum,xhr){
+           //这里每次进行设置
+            $(".qq-upload-button").find(':file').attr('accept','.mp4,.mp3,.swf,.doc,.docx,.ppt,.pptx,.pdf,.jpg,.jpeg,.png');
+
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                alert('上传失败!错误原因'+e);
+                return false;
+            }
+            if(specNum == 0){
+              if(result.code == 0){
+                    if(typeof(uploadInfo[id])== 'undefined'){
+                        uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['file_path'] = result.res;
+                    uploadInfo[id]['video_image'] = result.message_video_image;     //这里是视频截图,如果不是视频这里就是空
+                    uploadInfo[id]['is_transition'] = result.is_transition;         //这里是视频转换状态。
+                    request();
+                    return true;
+               }else{
+                    alert(result.msg);
+					$('#unique_'+id).remove()
+               }
+            }else if(specNum == 1){
+                if(result.error == 0){
+                    if(typeof(uploadInfo[id])== 'undefined')
+                    {
+                    uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid'] = result.data[0].vid;
+                    uploadInfo[id]['playerwidth'] = result.data[0].playerwidth + '*' +result.data[0].playerheight;
+                    uploadInfo[id]['duration'] = result.data[0].duration;
+                    uploadInfo[id]['mp4'] = result.data[0].mp4;
+                    request();
+                    return true;
+                }else{
+                    alert("上传失败!错误码:"+result.error);
+                    $('#unique_'+id).remove();
+                }
+            }
+            function request(){
+                //这里发送请求的操作
+                if(typeof(uploadInfo[id]['file_path'])!='undefined'){
+                    var data={};
+                    var temp_filePath=uploadInfo[id]['file_path'].split('.');
+                    var fileSuffixes=temp_filePath[1];
+                    var file_name=$('#unique_'+id).find('.circle').attr('file_name');
+
+                    data.material_name=$('#unique_'+id).find('.resource_title').attr('attr');
+                    data.file_path=uploadInfo[id]['file_path'];
+                    data.type=$('#unique_'+id).find('.circle').attr('attr_type');
+
+                    if(fileSuffixes=='mp4' || fileSuffixes=='mp3'){
+                        if(typeof(uploadInfo[id]['vid'])!='undefined'){
+                            data.vid=uploadInfo[id]['vid'];
+                            if(fileSuffixes=='mp4'){
+                                data.vid_fullpath=uploadInfo[id]['mp4'];
+                                data.vid_image_path=uploadInfo[id]['video_image'];
+                                data.is_transition=uploadInfo[id]['is_transition'];
+                            }
+                            //开始发送请求
+                            $.ajax({
+                                type:"post",
+                                async:false,
+                                url: "{:U('Teach/addMyterials')}",
+                                data:data,
+                                dataType: 'json',
+                                success: function(msg){
+                                    if(msg.status==1){
+                                        //上传成功
+                                        $('#unique_'+id).find('.circle').remove();
+                                        //var time1 = new Date().Format("yyyy-MM-dd hh:mm");
+                                        var time1=msg.time;
+                                        var img_arr=getFileBackgroundImage(fileSuffixes);
+                                        $('#unique_'+id).find('.resource_title').text($('#unique_'+id).find('.resource_title').attr('attr'));
+                                        $('#unique_'+id).find('.left').text(time1);
+                                        $('#unique_'+id).find('.res_box').css("background","url(/Public/img/resource/"+img_arr[0]+")no-repeat center");
+                                        if(fileSuffixes=='mp3'){
+                                            $('#unique_' + id).find('.resource_img').attr("src",'/Public/img/resource/b_radio.jpg');
+                                        }else {
+                                            $('#unique_' + id).find('.resource_img').attr("src", oss_path + uploadInfo[id]['video_image']);
+                                        }
+                                        $('#unique_'+id).find('.compile').addClass('rightBtn');
+                                        $('#unique_'+id).find('.delete').addClass('rightBtn');
+
+                                        $('#unique_'+id).find('a').attr('href','index.php?m=Home&c=Teach&a=myMaterialDetails&id='+msg.id);
+                                        $('#unique_'+id).find('.hidden_id').val(msg.id);
+                                        $('#unique_'+id).find('.resource_title').attr('id',msg.id)
+
+                                        //setTimeout("location.reload()",300);
+                                    }else{
+                                        //上传失败
+                                        alert(file_name+'上传失败');
+                                        $('#unique_'+id).remove();
+                                        //setTimeout("location.reload()",300);
+                                    }
+
+                                }
+                            });
+                        }
+                    }else{
+                        //发送请求
+                        $.ajax({
+                                type:"post",
+                                async:false,
+                                url: "{:U('Teach/addMyterials')}",
+                                data:data,
+                                dataType: 'json',
+                                success: function(msg){
+                                    if(msg.status==1){
+
+                                        $('#unique_'+id).find('.circle').remove();
+                                        //var time1 = new Date().Format("yyyy-MM-dd hh:mm:ss");
+                                        var time1=msg.time;
+                                        var img_arr=getFileBackgroundImage(fileSuffixes);
+                                        $('#unique_'+id).find('.resource_title').text($('#unique_'+id).find('.resource_title').attr('attr'));
+                                        $('#unique_'+id).find('.left').text(time1);
+                                        $('#unique_'+id).find('.res_box').css("background","url(/Public/img/resource/"+img_arr[0]+")no-repeat center");
+                                        if(fileSuffixes=='jpg' || fileSuffixes=='jpeg' || fileSuffixes=='png'){
+                                            $('#unique_'+id).find('.resource_img').attr("src",oss_path+uploadInfo[id]['file_path']);
+                                        }else{
+                                            $('#unique_'+id).find('.resource_img').attr("src","/Public/img/resource/"+img_arr[1]);
+                                        }
+                                        //compile
+                                        $('#unique_'+id).find('.compile').addClass('rightBtn');
+                                        $('#unique_'+id).find('.delete').addClass('rightBtn');
+
+                                        $('#unique_'+id).find('a').attr('href','index.php?m=Home&c=Teach&a=myMaterialDetails&id='+msg.id);
+                                        $('#unique_'+id).find('.hidden_id').val(msg.id);
+                                        $('#unique_'+id).find('.resource_title').attr('id',msg.id)
+
+                                    }else{
+                                        alert(file_name+'上传失败');
+                                        $('#unique_'+id).remove();
+                                    }
+                                }
+                            });
+                    }
+
+                }
+            }
+            return false;
+        }
+    });
+    function setFileAccept(){
+        if($(".qq-upload-button").find(':file').length==false){
+            setTimeout("setFileAccept()",1000);
+        }else{
+            $(".qq-upload-button").find(':file').attr('accept','.mp4,.mp3,.swf,.doc,.docx,.ppt,.pptx,.pdf,.jpg,.jpeg,.png')
+        }
+    }
+    setFileAccept();
+</script>

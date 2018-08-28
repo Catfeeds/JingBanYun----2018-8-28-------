@@ -1,0 +1,116 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/blackboard.css?v=1" type="text/css" rel="stylesheet">
+
+<div class="main_opr">
+	<a href="javascript:;" title="" class="btn btn-main-opr btn-main-opr-active" title="我发布的消息">我发布的消息</a>
+	<a href="{:U('Teachblackboard/publishBlackboardMessage')}" title="发布消息" class="btn btn-main-opr">发布消息</a>
+
+</div>
+
+<div class="oh pl20 pr20">
+	<div class="left">
+		<img src="{$oss_path}public/web_img/Blackboard/horn.png" alt="">
+		<div class="messageOutter">
+			您发布的消息共{$countboard}条
+		</div>
+	</div>
+	<div class="right searchOutter">
+		<input type="text" name="keyword" value="{$keyword}" class="searchText left" placeholder="请输入标题关键字">
+		<button type="button" class="searchButton right">搜索</button>
+	</div>
+</div>
+
+<hr>
+
+<empty name="list">
+	<div class="emptyDiv">
+		<if condition="$kw eq 1 ">
+	        <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+			<p>抱歉，没有搜索到相关的消息！</p>
+		<else />
+			<img src="{$oss_path}public/web_img/Empty/blackboard.png" alt="">
+			<p>您还没有发布消息哦！</p>
+		</if>
+
+    </div>
+</empty>
+<notempty name="list">
+	<table class="messageTable">
+		<volist name="list" id="data" empty="">
+			<tr id="l_{$data.id}">
+				<td class="messageTd1 text-center">
+					<img src="{$oss_path}public/web_img/Blackboard/messageRead.png" alt="">
+				</td>
+				<td>
+					<div class="messageDiv">
+						 <a href="{:U('Teachblackboard/blackboardMessageDetails?id=')}{$data.id}&read_person_number={$data.read_person_number}" class="dataTitle">
+						 	{$data.message_title}
+						 </a>
+					</div>
+					<div class="messageDiv">
+						{$data.cgname}
+					</div>
+					<div class="messageDiv">
+						<span>发布人：{$data.publisher}</span>；
+						<span>发布时间：{$data.create_at|date="Y-m-d H:i",###}</span>
+					</div>
+				</td>
+				<td class="messageTd2 text-center">
+
+					<a href="javascript:;" class="btnYellow" onclick="showDeleteBlackBoardDialog('{$data.id}')" title="删除">删除</a>
+
+				</td>
+			</tr>
+		</volist>
+	</table>
+
+	<div class="Pagination">{$page}</div>
+</notempty>
+
+
+<script>
+
+	var currentResourceId = 0;
+
+	function showDeleteBlackBoardDialog(resourceId) {
+		// $('#deleteDialog').modal('show')
+		currentResourceId = resourceId;
+		$.NotifyBox.NotifyPromptTwoCo("提示","确定删除？", "确定", "取消", function() {
+			$.get('index.php?m=Home&c=Teachblackboard&a=deleteBlackboardMessage', {
+				id: currentResourceId
+			}, function (res) {
+				if (res == 'success') {
+					hideDeleteDialog();
+					window.location.reload();
+				} else {
+					alert('删除失败，请刷新页面后重新尝试');
+				}
+			})
+		})
+}
+
+
+	function hideDeleteDialog() {
+		$('#deleteDialog').modal('hide')
+		currentResourceId = 0;
+	}
+</script>
+
+<script>
+    $('.searchButton').click(function(){
+        var keyword = $(".searchText").val();
+        var condition_str = "";
+
+        if (keyword != '') {
+                condition_str += "&keyword=" + keyword;
+            }
+            condition_str = "index.php?m=Home&c=Teachblackboard&a=blackboard" + condition_str;
+            location.href = condition_str;
+    });
+	$(document).on('keydown','.searchText',function(e){
+	if(e.keyCode==13){
+	$('.searchButton').click(); //处理事件
+	}
+	});
+</script>

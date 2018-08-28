@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>{$name}</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/app/Version1_3/studentHomeworkElse.css">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<style>
+			[v-cloak]{
+				display: none;
+			}
+			.homeworkListOutter{
+				margin-top: 44px
+			}
+			.appTop {
+			    height: 44px;
+			    width: 100%;
+			    border-bottom: 1px solid #eee;
+			    position: fixed;
+			    top: 0;
+			    background: #fff;
+			    z-index: 100;
+			    box-sizing: content-box;
+			}
+			.appTop .appTopTitle {
+			    height: 44px;
+			    line-height: 44px;
+			    font-size: 20px;
+			    margin: 0 60px;
+			    text-align: center;
+				text-overflow: ellipsis;
+			    overflow: hidden;
+			    white-space: nowrap;
+			}
+			.appTop .returnBox {
+			    width: 44px;
+			    height: 100%;
+			    background: url(__PUBLIC__/img/Apphomework/fanhui.png) no-repeat center;
+			    background-size: 10px 16px;
+			    position: absolute;
+			    top: 0;
+			    left: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="appTop">
+				<div class="returnBox"  onclick="window.history.go(-1)"></div>
+				<div class="appTopTitle">
+					{{workName}}
+				</div>
+			</div>
+			<div class="homeworkListOutter">
+				<div class="listhomeListItem homeListTime">
+					<div class="listName">截止时间：</div>
+					<div class="listText">{{ jiezhi }}</div>
+				</div>
+				<div class="listhomeListItem homeListRequest">
+					<div class="listName">作业要求：</div>
+					<div class="listText">{{ yaoqiu }}</div>
+				</div>
+			</div>
+
+			<div class="homeworkListTabBox">
+				<div class="homeListTab active homeListTab1">
+					<img src="{$oss_path}public/web_img/APPHomework/img0_1.png" alt="" class="tabImg1">
+					共<span>{{ total_e }}</span>道题
+				</div>
+				<div class="homeListTab homeListTab2">
+					<img src="{$oss_path}public/web_img/APPHomework/img1_2.png" alt="" class="tabImg2">
+					{{ studentCount }}名同学已完成
+				</div>
+			</div>
+
+			<div class="homeworkListTabContent">
+				<div class="homeListCon homeListCon1">
+
+					<div class="homeListConTitle" style="margin-bottom:10px">
+						<img src="{$oss_path}public/web_img/APPHomework/huangseditu.png" alt="">
+						<span>答题卡</span>
+					</div>
+					<div class="">
+
+					<div class="parent_index homeCircleList" v-for="(ex,index) in exlist">
+						<p class="homeCircleName">
+							{{ ex.name }}({{ex.count}}道题)
+						</p>
+						<ul class="homeCircleUl">
+							<li class="homeCircleLi" v-for="(exchild,cindex) in ex.count">
+								<a href="javascript:"  class="qbtn">{{ cindex+1 }}</a>
+							</li>
+						</ul>
+					</div>
+
+				</div>
+					<div class="homeworkStart" v-if="isEnd == 1"><p class="btn">查看作业</p></div>
+					<div class="homeworkStart" v-else><p class="btn">开始作业</p></div>
+				</div>
+
+				<div class="homeListCon homeListCon2">
+					<img src="{$oss_path}public/web_img/APPHomework/emptyList.png" alt="" class="emptyImg">
+					<div class="homeConItem" v-for="(stu,index) in stulist">
+						<div class="itemImgBox">
+							<img :src="stu.avatar" alt="" onerror="imageError(this)">
+						</div>
+						<div class="itemTextBox">
+							<div class="itemTextName textHidden">{{ stu.name }}</div>
+							<div class="itemTextTime textHidden">{{ stu.content2 }}</div>
+						</div>
+						<div class="itemScoreBox">
+							<div class="itemScoreName">得分</div>
+							<div class="itemScoreNum"><span class="num">{{ stu.content1 }}</span>分</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+
+		<!-- 方法1:ajax请求 -->
+		<script>
+			var userId = getQueryString('userId');
+			var role = getQueryString('role');
+			var homeworkId = getQueryString('id');
+			var classId = getQueryString('classId');
+			var isEnd = getQueryString('isEnd');
+
+			var app = new Vue({
+				el: '#app',
+				data: {
+					userId: userId,
+					role: role,
+					homeworkId: homeworkId,
+					classId: classId,
+					isEnd: isEnd,
+					jiezhi: '',
+					yaoqiu: '',
+					name: '',
+					studentCount: 0,
+					stulist: '',//学生列表
+					exlist: '',//习题列表
+					total_e: 0,
+					workName:''
+
+				},
+				created: function () { //应用初始化完毕加载
+					this.$http.post('/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkAbstract',{userId:this.userId,role:this.role,homeworkId:this.homeworkId},{emulateJSON:'application/x-www-form-urlencoded'}).then(function(response){ //发送http请求
+						this.jiezhi = response.data.data.endTime;
+						console.log(response.data.data);
+						this.workName = response.data.data.name;
+						document.title = response.data.data.name;
+						this.yaoqiu = response.data.data.requirement;
+					}, function(response){
+						// 响应错误回调
+						console.log('初始化作业信息错误');
+					});
+
+					this.$http.post('/index.php/ApiInterface/Version1_3/HomeworkStudent/getSubmitHomeworkList',{userId:this.userId,role:this.role,homeworkId:this.homeworkId,classId:this.classId},{emulateJSON:'application/x-www-form-urlencoded'}).then(function(response){ //发送http请求
+						this.studentCount = response.data.data.studentCount;
+						this.stulist = response.data.data.data;
+						this.$nextTick(function(){
+							//如果没有作业，显示占位图
+							if($('.homeConItem').length == 0) {
+								$('.emptyImg').css('display','block')
+							}
+			            })
+					}, function(response){
+						// 响应错误回调
+						console.log('初始化学生列表错误');
+					});
+
+					this.$http.post('/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkDetail',{userId:this.userId,role:this.role,homeworkId:this.homeworkId,classId:this.classId,isFlatten:1},{emulateJSON:'application/x-www-form-urlencoded'}).then(function(response){ //发送http请求
+						this.exlist = response.data.data['2dData'];
+						this.total_e = response.data.message;
+					}, function(response){
+						// 响应错误回调
+						console.log('初始化作业详情错误');
+					});
+
+				},
+			})
+
+			// $(document).on('click','.homeworkStart',function(){
+			$('.homeworkStart').click(function(){
+				var i =0;
+				var a = 0;
+				var c = 0;
+
+				if($(this).parents('.parent_index').index() == 0){
+					var i = $(this).parent().index();
+				}else{
+					var a = $(this).parents('.parent_index').index();
+					for(var b = 0;b<a;b++){
+						c += $('.parent_index').eq(b).find('.homeCircleLi').length;
+						i = c
+					}
+					i = i + $(this).parent().index()
+
+				}
+
+				window.location.replace('/index.php/ApiInterface/Version1_3/HomeworkStudent/exerciseDetails?userId='+userId+'&role='+role+'&classId='+classId+'&id='+homeworkId+'&submitId=0&type=1&isEnd='+isEnd+'&statue=1');
+				// return false;
+			})
+		</script>
+
+		<script>
+			$(function(){
+				var winHeight = $(window).height();//屏幕的高度
+			    var topHeight = $('.homeworkListOutter').outerHeight();//“作业介绍”的高度
+			    var centerHeight = $('.homeworkListTabBox').outerHeight();//“作业标签”的高度
+			    var minusHeight = winHeight*1 - topHeight*1 - centerHeight*1 - 10;//相减的高度
+			    $('.homeListCon').css('minHeight',minusHeight);//标签页的最小高度
+			})
+
+			$(window).load(function(){
+				// $('body').on('click','.homeListTab',function(){
+			    $('.homeListTab').click(function(){
+			    	var index = $(this).index();
+			    	if(!$(this).hasClass('active')) {
+			    		if(index == 0) {
+		    				$('.tabImg1').attr('src','{$oss_path}public/web_img/APPHomework/img0_1.png');
+		    				$('.tabImg2').attr('src','{$oss_path}public/web_img/APPHomework/img1_2.png');
+			    		} else {
+			    			$('.tabImg1').attr('src','{$oss_path}public/web_img/APPHomework/img0_2.png');
+		    				$('.tabImg2').attr('src','{$oss_path}public/web_img/APPHomework/img1_1.png');
+			    		}
+			    		$(this).addClass('active').siblings('.homeListTab').removeClass('active');
+			    		$('.homeListCon').eq(index).show().siblings('.homeListCon').hide();
+			    	}
+			    })
+			});
+
+			function imageError(img,sex) {
+				if(sex == '男') {
+		        	img.src = '__PUBLIC__/img/classManage/student_m.png';
+				} else {
+					img.src = '__PUBLIC__/img/classManage/student_w.png';
+				}
+		    }
+
+			function showWebNav(){}//显示web导航
+		</script>
+	</body>
+</html>

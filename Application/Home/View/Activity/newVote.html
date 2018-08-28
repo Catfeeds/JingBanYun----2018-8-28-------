@@ -1,0 +1,339 @@
+<script src="../../../../Public/js/notify/notifyBox.js"></script>
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=3.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/newActivity.css" type="text/css" rel="stylesheet">
+
+<style>
+	body {
+		overflow-y: scroll;
+	}
+
+	#contentWrapper {
+		padding-top: 0;
+	}
+
+	.bdsharebuttonbox {
+		position: absolute;
+		right: 0;
+		top: 0;
+	}
+	.mainCon a{
+		cursor: pointer;
+	}
+</style>
+
+<div class="">
+	<a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn2">返回</a>
+</div>
+
+<div class="newVote">
+	<div class="newVoteTop">
+		<div class="voteTitle"><?php echo $details['0']['title']?></div>
+		<!--分享-->
+		<div class="bdsharebuttonbox">
+			<span class="left">分享至</span>
+			<a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+			<a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+			<a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+			<a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+		</div>
+	</div>
+	<div class="newVoteMain">
+		<div class="voteText"><img src="__PUBLIC__/img/activity/toupiaoshijian.png" alt=""  class="mr5">投票时间</div>
+		<div class="text-center bold voteRuleMain">
+		 		<b><?php echo $details[0]['votedisplay']?></b>
+		</div>
+	</div>
+	<div class="newVoteMain">
+		<div class="voteText"><img src="__PUBLIC__/img/activity/toupiaoguize.png" alt=""  class="mr5">投票规则</div>
+		<div class="voteRuleMain">
+			<?php echo $voteInfo['description']?>
+		</div>
+	</div>
+
+
+	<div class="newVoteBottom">
+		<div class="voteText pb10"><img src="__PUBLIC__/img/activity/toupiaoxiangqing.png" alt="" class="mr5">投票详情</div>
+		<div class="of">
+			<div class="search mb20 right w380">
+					<button class="search_btn" >搜索</button>
+					<input type="text" class="search_text" placeholder="请输入姓名/编号" maxlength="10">
+			</div>
+		</div>
+		<ul class="newVoteUl">
+			<?php for($i=0;$i<count($details);$i++){ ?>
+			<li class="newVoteLi">
+				<div class="pollBox">
+					<span class="poll1">票数</span>
+					<span class="poll2"><?php echo $details[$i]['votenum']?></span>
+				</div>
+				<?php if($details[$i]['voteend'] < time() && $i == 0){ ?>
+				<div class="raking_top">
+						<img src="__PUBLIC__/img/activity/diyiming.png" alt="" />
+				</div>
+				<?php }elseif($details[$i]['voteend'] < time() && $i == 1){ ?>
+				<div class="raking_top">
+					<img src="__PUBLIC__/img/activity/dierming.png" alt="" />
+				</div>
+				<?php }elseif($details[$i]['voteend'] < time() && $i == 2){ ?>
+				<div class="raking_top">
+					<img src="__PUBLIC__/img/activity/disanming.png" alt="" />
+				</div>
+				<?php }elseif($details[$i]['voteend'] < time() && $i >2){ ?>
+				<div class="ranking text-center">
+					第<?php echo $i+1 ?>名
+				</div>
+				<?php } ?>
+				<div class="voteImg" style="background: url(<?php echo $oss.$details[$i]['img_path']?>) no-repeat center; background-size: 100%" data-src="<?php echo $oss.$details[$i]['img_path']?>">
+					<div class="voteBox">
+
+						<div class="nameBox">
+							<span class="name1"><?php echo $i+1?>号</span>
+							<span class="name2"><?php echo $details[$i]['candidate_name']?></span>
+						</div>
+					</div>
+				</div>
+				<div class="voteMain">
+					<div class="">
+
+					<?php if($details[$i]['voteend'] > time() && $details[$i]['votestart'] < time()){ ?>
+					<button class="voteBtn vote" attr-vote="<?php echo $details[$i]['id']?>">投票</button>
+						<?php foreach(array_keys($num) as $tmp_num){
+							if($details[$i]['id'] == $tmp_num){ ?>
+					<span class="vote_span"><?php echo '+'.$num[$tmp_num] ?></span>
+							<?php }
+						} ?>
+					<?php } ?>
+					</div>
+					<div class="voteDepict">
+						<div class="voteDepTitle">
+							描述：
+						</div>
+						<div class="voteDepMain">
+							<div class="mainCon">
+								<?php echo $details[$i]['ad']?>
+							</div>
+						</div>
+						<img src="__PUBLIC__/img/activity/unfold.png" alt="" class="foldImg" title="展开">
+					</div>
+				</div>
+			</li>
+			<?php }?>
+		</ul>
+	</div>
+</div>
+<div class="fullscrDiv">
+	<img src="" alt="" />
+</div>
+<script src="__PUBLIC__/js/share/activityShare.js"></script>
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+<!--分享-->
+<script>
+	window._bd_share_config = {
+		"common": {
+			"bdSnsKey": {},
+			"bdText": "<?php echo $details['0']['title']?>",
+			"bdComment":"<?php echo $voteInfo['description']?>",
+			"bdMini": "2",
+			"bdMiniList": false,
+			"bdPic": "<?php echo $oss.'/public/web_img/Icons/sharelogo.png'?>",
+			"bdStyle": "0",
+			"bdSize": "32"
+		},
+		"share": {},
+		"image": {
+			"viewList": ["tsina", "weixin", "sqq", "qzone"],
+			"viewText": "分享到：",
+			"viewSize": "32"
+		}
+//		,"selectShare": {
+//			"bdContainerClass": null,
+//			"bdSelectMiniList": ["tsina", "weixin", "sqq", "qzone"]
+//		}
+	};
+	//		with(document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+</script>
+
+<!--展开收起-->
+<script>
+	$(function(){
+	  	$.each($('.mainCon'),function(index,item){
+			if(item.offsetHeight <= 60){
+				$('.foldImg').eq(index).hide();
+			}
+		})
+//		var arr1 = [ "aaa", "bbb", "ccc" ];
+//		  $.each(arr1, function(i,val){
+//			  alert(i);
+//			  alert(val);
+//		  });
+	})
+
+	var clickNum;
+	$('.foldImg').click(function(){
+		var voteDepMain = $(this).siblings('.voteDepMain');
+		var voteHeight1 = $(this).siblings('.voteDepMain').height();
+		var voteHeight2 = $(this).siblings('.voteDepMain').css('height','auto').height();
+		var mainHeight = voteDepMain.children('.mainCon').height();
+
+
+		if(clickNum == undefined || clickNum == 1) {
+			if(mainHeight > 60) {
+				voteDepMain.height(voteHeight1).animate({height:voteHeight2});
+				$(this).attr({
+					'src':'__PUBLIC__/img/activity/fold.png',
+					'title':"收起"
+				});
+				clickNum = 2;
+			}
+		} else {
+			voteDepMain.animate({height:"60px"});
+			$(this).attr({
+					'src':'__PUBLIC__/img/activity/unfold.png',
+					'title':"展开"
+				});
+			clickNum = 1;
+		}
+
+	})
+
+	$('.vote').click(function () {
+	    /*alert("<?php echo $_SESSION['parent']['id']?>");return false;*/
+	    //var session = "<?php if($_SESSION['teacher'] !== 'youke'){echo $_SESSION['teacher']['id'];}elseif($_SESSION['student']){echo $_SESSION['student']['id'];}elseif($_SESSION['parent']){echo $_SESSION['parent']['id'];}else{echo '';}?>";
+        var session = "<?php if($_SESSION['teacher']['id'] && $_SESSION['teacher']['id'] !== 'y'){echo $_SESSION['teacher']['id'];}elseif($_SESSION['student']['id']){echo $_SESSION['student']['id'];}elseif($_SESSION['parent']['id']){echo $_SESSION['parent']['id'];}elseif($_SESSION['teacher'] == 'youke'){echo '';}else{echo '';}?>";
+
+        if(!session){
+            $.NotifyBox.NotifyPromptTwoCt("提示",'请先登录或者注册','登录','注册',function () {
+				window.location.href = "<?php echo '/index.php?jtypt=1'.'&url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].U().'&id='.$details['0']['v_id'].'&activity_id='.$activity_id)?>" ;return false;
+            },function () {
+                window.location.href ="<?php echo U('Index/register').'&url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].U().'&id='.$details['0']['v_id'].'&activity_id='.$activity_id)?>" ;return false;
+            })
+		}else{
+            //alert($('#vote').attr('attr-vote'));
+            var id = $(this).attr('attr-vote');
+            //alert(id);return false;
+
+            $.ajax({
+                data:{'id':id},
+                url:"index.php?m=Home&c=Activity&a=ajax_action_vote",
+                type:'post',
+                success:function (data) {
+                    if(data == 'success'){
+                       /* $.NotifyBox.NotifyPromptOneClose("提示","投票成功", "确定",function(){
+                            window.location.reload();
+                        },function () {
+                            window.location.reload();
+                        });*/
+                        window.location.reload();
+                    }else if(data == 'full'){
+                        $.NotifyBox.NotifyPromptOne("提示","今天得票数已用完！", "确定");
+                    }else{
+                        $.NotifyBox.NotifyPromptOne("提示","操作异常，请稍后重试！", "确定");
+					}
+                }
+            })
+		}
+    })
+	$('.voteImg').click(function(){
+		var  background = $(this).attr('data-src');
+		$('.fullscrDiv').append('<img src="'+background+'">').show();
+		$('body').css('overflow-y','hidden')
+	})
+	$('.fullscrDiv').click(function(){
+		$(this).html('').hide();
+		$('body').css('overflow-y','inherit')
+	})
+	var vote_name = new Array();
+	var vote_number = new Array();
+	for(var i = 0;i<$('.newVoteLi').length;i++){
+			vote_name.push($('.newVoteLi').find('.name2').eq(i).html())
+
+	}
+	for(var l = 0;l<$('.newVoteLi').length;l++){
+			vote_number.push($('.newVoteLi').find('.name1').eq(l).html());
+	}
+	$('.search_btn').click(function(){
+		var scrolltop = $(document).scrollTop();
+		$('.newVoteLi').hide();
+		$(document).scrollTop(scrolltop)
+		if($('.search_text').val() != ''){
+			var searchtext = $('.search_text').val();
+			var nPos;
+			var name_Result = [];//姓名
+			var num_Result = [];//编号
+			for(var i in vote_name){
+								var sTxt=vote_name[i]||'';
+								nPos = find(searchtext, sTxt);
+								if(nPos>=0){
+								name_Result[name_Result.length] = sTxt;
+						}
+			}
+			for(var i in vote_number){
+								var sTxt=vote_number[i]||'';
+								nPos = find(searchtext, sTxt);
+								if(nPos>=0){
+								num_Result[num_Result.length] = sTxt;
+						}
+			}
+			//姓名
+		for(var j = 0;j<name_Result.length;j++){
+				for(var l = 0;l<$('.newVoteLi').length;l++){
+				if(name_Result[j] == $('.newVoteLi').find('.name2').eq(l).html()){
+					$('.newVoteLi').eq(l).show();
+				}
+			}
+		}
+		//编号
+		for(var j = 0;j<num_Result.length;j++){
+				for(var l = 0;l<$('.newVoteLi').length;l++){
+				if(num_Result[j] == $('.newVoteLi').find('.name1').eq(l).html()){
+					$('.newVoteLi').eq(l).show();
+				}
+			}
+		}
+		if($('.newVoteUl').height() == '0'){
+				$.NotifyBox.NotifyPromptOne("提示","搜索结果为空", "确定")
+		}
+		}else{
+			$('.newVoteLi').show();
+		}
+	})
+function find(sFind, sObj){
+	var nSize = sFind.length;
+	var nLen = sObj.length;
+	var sCompare;
+	if(nSize <= nLen ){
+		for(var i = 0; i <= nLen - nSize + 1; i++){
+			sCompare = sObj.substring(i, i + nSize);
+			if(sCompare == sFind){
+				return i;
+			}
+		}
+	}
+	return -1;
+}
+$(".search_text").keydown(function (evt) {
+			if (event.keyCode == "13") { //keyCode=13是回车键
+		var evt = (evt) ? evt : ((window.event) ? window.event : "")
+		var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+		$('.search_btn').click()
+			}
+})
+var webUrl = window.location.href;
+var toupiaoID = <?=TOUPIAO_ID?>;
+var zixunID =<?=ZIXUN_ID?>;
+var tp = '&id='+toupiaoID
+if(webUrl.indexOf(tp)!= -1){
+	$('.mainCon>a').click(function(){
+		var vId = $(this).parents('.newVoteLi').index();
+		sessionStorage.setItem('weizhiId',vId)
+		window.location.href = '/index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id='+zixunID 
+	})
+	var schoolHid = sessionStorage.getItem('weizhiId')
+	window.onload = function(){
+		if(schoolHid != null){
+			var windowScrollTop = $('.newVoteUl').children('li').eq(schoolHid).offset().top
+			$("html,body").animate({"scrollTop":  windowScrollTop }, 1);
+		}
+	}
+}
+</script>

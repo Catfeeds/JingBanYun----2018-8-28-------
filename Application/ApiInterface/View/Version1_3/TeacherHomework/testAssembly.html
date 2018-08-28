@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的组卷</title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				color: #333;
+				font-size: 16px
+			}
+			ul li{
+				list-style: none
+			}
+			.left{
+				float: left;
+			}
+			.right{
+				float: right;
+			}
+			.of{
+				overflow: hidden;
+			}
+			body{
+				background: #eee
+			}
+			#app .appTop {
+			    border-bottom: 4px solid #eee;
+			}
+			.appTop .appTopTitle {
+			    line-height: 44px;
+			    font-size: 20px;
+			    margin: 0 60px;
+			    text-align: center;
+			}
+			.appTop {
+			    height: 44px;
+			    width: 100%;
+
+			    position: fixed;
+			    top: 0;
+			    background: #fff;
+			    z-index: 100;
+			    box-sizing: content-box;
+			}
+			.appTop .appTopTitle .title {
+			    overflow: hidden;
+			    text-overflow: ellipsis;
+			    white-space: nowrap;
+			    max-width: 100%;
+			}
+			.appTop .appTopRight {
+			    position: absolute;
+			    top: 0;
+			    right: 15px;
+			    line-height: 44px;
+			    font-size: 18px;
+				color: #F2B81A
+			}
+			.paperList li{
+				margin: 10px 20px;
+				padding: 10px 15px;
+				background: #fff;
+				border-radius: 10px;
+				position: relative;
+				height: 42px
+			}
+			.Arrangement{
+				line-height: 40px;
+				color:#f2b81a
+			}
+			.mt60{
+				margin-top:60px
+			}
+			.mt45{
+				margin-top:45px
+			}
+			.paperName {
+				color: #653100
+			}
+			.delete{
+				background: #fff;
+				line-height: 30px;
+				padding: 0 13px;
+
+			}
+			.delete span{
+					color: #f2b81a
+			}
+			.delete img{
+				width: 15px;
+				margin-top: 7px;
+			}
+			.quan{
+				width: 15px;
+				position: absolute;
+				top: -7px;
+				left:-7px
+			}
+		</style>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div class="app">
+			<div class="appTop"><div class="returnBox"></div> <div class="appTopTitle"><p class="title">我的组卷</p></div> <div class="appTopRight" @click="show()">编辑</div></div>
+
+			<div class="paperList mt60">
+				<div class="delete" v-show="isshow">
+					<img src="__PUBLIC__/img/Apphomework/quan1.png" alt="" / @click="all" class="all"> <span class="right" @click="deleteAll" >删除</span>
+				</div>
+				<ul >
+					<li v-for="(list,$index) in listData" >
+						<div class="left">
+							<p class="paperName ">
+								{{list.paper_name}}
+							</p>
+							<p class="paperNum">
+								<span>共{{list.exercise_count}}道试题 </span>
+								<span>总分：100分</span>
+							</p>
+						</div>
+
+						<div class="Arrangement right " @click="deleteList($event,$index)" :id="list.id" >
+							布置
+						</div>
+						<img src="__PUBLIC__/img/Apphomework/quan1.png" alt="" / class="quan" @click="onecheck($event)" v-show="isshow">
+					</li>
+				</ul>
+			</div>
+	</div>
+		<script type="text/javascript">
+		var app = new Vue({
+			el:'.app',
+			data:{
+				listUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/getMyTestAssemblyList',
+				listData:[],
+				isshow:false,
+				deleteUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/deleteMyTestAssembly',
+				deletePaperId:''
+			},
+			created:function(){
+				this.getList();
+			},
+			methods:{
+				getList:function(){
+					this.$http.post(this.listUrl, {
+						userId: 1,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.listData = response.data.data;
+							// console.log(response.data.data);
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				},
+				show:function(){
+					this.isshow = !this.isshow;
+					if(this.isshow === false){
+						$('.appTopRight').html('编辑');
+						$('.paperList').addClass('mt60').removeClass('mt45');
+						$('.Arrangement').text('布置')
+					}else{
+						$('.appTopRight').html('关闭');
+							$('.paperList').addClass('mt45').removeClass('mt60');
+							$('.Arrangement').text('删除')
+					}
+				},
+				all:function(e){
+					if($('.all').attr('src') == '/Public/img/Apphomework/quan1.png'){
+						$('.all').attr('src','/Public/img/Apphomework/quan2.png');
+						for(var i=0;i<$('.quan').length;i++){
+							$('.quan').eq(i).attr('src','/Public/img/Apphomework/quan2.png');
+						}
+					}else{
+						$('.all').attr('src','/Public/img/Apphomework/quan1.png');
+						for(var i=0;i<$('.quan').length;i++){
+							$('.quan').eq(i).attr('src','/Public/img/Apphomework/quan1.png');
+						}
+					}
+				},
+				onecheck:function($event){
+					if($event.target.currentSrc.indexOf('quan1') != '-1'){
+						$($event.target).attr('src','/Public/img/Apphomework/quan2.png');
+						var checkNum = 0;
+						for(var i=0;i<$('.quan').length;i++){
+							if($('.quan').eq(i).attr('src') == '/Public/img/Apphomework/quan2.png'){
+								 checkNum++
+							}
+						}
+						if(checkNum == $('.quan').length){
+							$('.all').attr('src','/Public/img/Apphomework/quan2.png');
+						}
+					}else {
+						$($event.target).attr('src','/Public/img/Apphomework/quan1.png');
+						$('.all').attr('src','/Public/img/Apphomework/quan1.png');
+					}
+				},
+				deleteAll:function(){
+					this.deletePaperId = '';
+					for(var i=0;i<$('.quan').length;i++){
+						if($('.quan').eq(i).attr('src') == '/Public/img/Apphomework/quan2.png'){
+							if( this.deletePaperId ==''){
+								this.deletePaperId = $('.quan').parent().eq(i).find('.Arrangement').attr('id')
+							}else{
+								this.deletePaperId = this.deletePaperId +','+$('.quan').parent().eq(i).find('.Arrangement').attr('id')
+							}
+						}
+					}
+					this.$http.post(this.deleteUrl, {
+						paperId: this.deletePaperId,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.listData = response.data.data;
+							// console.log(response.data.data);
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				},
+				deleteList:function($event,$index){
+					this.$http.post(this.deleteUrl, {
+						paperId: $event.target.id,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.listData.splice($index,1)
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				}
+			},
+
+		})
+			var windowWidth = $(window).width();
+			var windowHeight = $(window).height();
+			$('.paperHeaderSeach').width(windowWidth);
+			$('.mask').height(windowHeight)
+			// $('.paperHeaderName').click(function(){
+			// 	if(	$(this).siblings('.paperHeaderSeach').css('display') == 'none'){
+			// 		var index = '-'+$(this).parent().index()*100 +'%';
+			// 		$(this).siblings('.paperHeaderSeach').show().parent().siblings('li').find('.paperHeaderSeach').hide();
+			// 		$(this).siblings('.paperHeaderSeach').css('left',index)
+			// 		$('.mask').show()
+			// 	}else {
+			// 		$(this).siblings('.paperHeaderSeach').hide().parent().siblings('li').find('.paperHeaderSeach').hide();
+			// 		$('.mask').hide()
+			// 	}
+			// })
+
+		</script>
+	</body>
+</html>

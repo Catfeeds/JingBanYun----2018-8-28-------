@@ -1,0 +1,290 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		学生管理
+		<span class="blueSpan">
+			<a href="javascript:;}">用户管理</a>>>
+			<a href="{:U('Student/studentList')}">学生管理</a>>>
+			<a href="javascript:;">导入学生</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<div class="blueBox">
+	<span class="blueText left fs16">批量导入学生</span>
+	<a href="{:U('Student/downloadStudentDemo')}" class="blackText right" id="">
+		<img src="{$oss_path}public/web_img/Admin/icon-download.png" alt="" class="mr10">
+		下载学生导入模板
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+
+<form action="" method="post">
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>省份：</label>
+				<select id="province_list" class="input-control" name="">
+					<option value="0">-请选择-</option> 
+                                    <volist name="province_list" id="province_item">
+                                        <option value="{$province_item.id}" <if condition="$province_item['id']==$province"> selected="true"</if> >{$province_item.name}</option>    
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>市区：</label>
+				<select id="city_list" class="input-control" name="">
+					<option value="0">-请选择-</option> 
+				</select>
+			</div>
+			<div class="cell">
+				<label>区县：</label>
+				<select id="district_list" class="input-control" name="">
+					<option value="0">-请选择-</option> 
+				</select>
+			</div> 
+			<div class="cell">
+				<label>学校名称：</label>
+                                <select id="school_list" class="input-control" name="">
+                                    <option value="0">-请选择-</option> 
+                                </select>			
+                        </div>
+		</div>
+	</div>
+</form>
+
+<div class="pb10" style="margin-left: 70px;">
+	<label for="">文件地址：</label>
+	<input type="text" class="input-control fileAddress" placeholder="文件地址" id='address' readonly>
+	<a href="javascript:;" title="浏览" class="blueBtn2 browse_button">浏览</a>
+	<input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+	<a href="javascript:;" title="上传" class="blueBtn2 upload_file">上传</a>
+</div>
+
+<div class="tabBox">
+	<ul class="left tabUl" id="tabUl">
+		<li class="tabLi tabActive">导入成功</li>
+		<li class="tabLi">导入失败</li>
+	</ul>
+	<div class="tabCon" id="tabCon">
+		<div class="divTable tabConActive" id="successTable">
+			<!--导入成功-->
+			<table id="listWrapperSuccess" class="table striped hovered border" style='display:none;'>
+				<thead>
+					<tr>
+						<th class="text-center" style="width: 15;">序号</th>
+						<th class="text-center" style="width: 17%;">学生姓名</th>
+						<th class="text-center" style="width: 17%;">家长手机号</th>
+						<th class="text-center" style="width: 17%;">家长姓名</th>
+						<th class="text-center" style="width: 17%;">学生性别</th>
+						<th class="text-center" style="width: 17%;">出生日期</th>
+					</tr>
+				</thead>
+				<tbody id="body"> 
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+
+		</div>
+		<div class="divTable" id="failTable">
+			<button class="blueBtn right" id="download_failed_data">下载失败数据</button>
+			<!--导入失败-->
+			<table id="listWrapperFail" class="table striped hovered border" style='display:none;'>
+				<thead>
+					<tr>
+						<th class="text-center" style="width: 10;">序号</th>
+						<th class="text-center" style="width: 15%;">学生姓名</th>
+						<th class="text-center" style="width: 15%;">家长手机号</th>
+						<th class="text-center" style="width: 15%;">家长姓名</th>
+						<th class="text-center" style="width: 15%;">学生性别</th>
+						<th class="text-center" style="width: 15%;">出生日期</th>
+						<th class="text-center" style="width: 15%;">失败原因</th>
+					</tr>
+				</thead>
+				<tbody id="body"> 
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/importCommon.js"></script>
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByClassName("divTable");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="divTable tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="divTable";
+				}
+			}
+		} 
+	}
+	
+</script>
+
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script> 
+<script> 
+    var file_upload_url='';
+    var path="{:U('Student/importStudent')}";
+    
+    var failed_tr='<tr>'+
+                    '<td class="text-center">1</td>'+ 
+                    '<td class="text-center">学生姓名</td>'+
+                    '<td class="text-center">家长手机号</td>'+ 
+                    '<td class="text-center">家长姓名</td>'+ 
+                    '<td class="text-center">学生性别</td>'+ 
+                    '<td class="text-center">出生日期</td>'+
+                    '<td class="text-center">失败原因</td>'+ 
+                    '</tr>';
+    var success_tr='<tr>'+
+                    '<td class="text-center">1</td>'+ 
+                    '<td class="text-center">学生姓名</td>'+
+                    '<td class="text-center">家长手机号</td>'+ 
+                    '<td class="text-center">家长姓名</td>'+ 
+                    '<td class="text-center">学生性别</td>'+ 
+                    '<td class="text-center">出生日期</td>'+  
+                    '</tr>';
+    
+    $('.upload_file').click(function(){
+        var province,city,district,school;
+        province=$("#province_list").val();
+        city=$("#city_list").val();
+        district=$("#district_list").val();
+        school=$("#school_list").val();
+        if(province==0){
+            $.Notify({
+                caption: '提示',
+                content: '请选择省份!',
+                type: 'warning'
+            });
+            return false;
+        }
+        if(city==0){
+            $.Notify({
+                caption: '提示',
+                content: '请选择城市!',
+                type: 'warning'
+            });
+            return false;
+        }
+        if(district==0){
+            $.Notify({
+                caption: '提示',
+                content: '请选择区县!',
+                type: 'warning'
+            });
+            return false;
+        }
+        if(school==0){
+            $.Notify({
+                caption: '提示',
+                content: '请选择学校!',
+                type: 'warning'
+            });
+            return false;
+        }
+        file_upload_url=path+'&school_id='+school;  
+        upload_file();
+    });
+    
+    
+    var import_complete_data;
+    function upload_management(msg){
+        if(msg.status==200){
+            import_complete_data=msg.data;
+            failed_data=import_complete_data.failed;
+            var data=msg.data;
+            if(data.failed.length){     //notice_message
+                for(var i=0;i<data.failed.length;i++){
+                    var failed_tr_obj=$(failed_tr).clone(true);
+                    $(failed_tr_obj).find('td').eq('0').text(i+1);
+                    $(failed_tr_obj).find('td').eq('1').text(data.failed[i].student_name);
+                    $(failed_tr_obj).find('td').eq('2').text(data.failed[i].parent_tel);
+                    $(failed_tr_obj).find('td').eq('3').text(data.failed[i].parent_name);
+                    $(failed_tr_obj).find('td').eq('4').text(data.failed[i].sex);
+                    $(failed_tr_obj).find('td').eq('5').text(data.failed[i].birth_date); 
+                    $(failed_tr_obj).find('td').eq('5').text(data.failed[i].notice_message); 
+                    $("#listWrapperFail").find('#body').append(failed_tr_obj);
+                }
+                $("#listWrapperFail").show();
+            }
+            if(data.success.length){
+                for(var i=0;i<data.success.length;i++){
+                    var success_tr_obj=$(success_tr).clone(true);
+                    $(success_tr_obj).find('td').eq('0').text(i+1);
+                    $(success_tr_obj).find('td').eq('1').text(data.success[i].student_name);
+                    $(success_tr_obj).find('td').eq('2').text(data.success[i].parent_tel);
+                    $(success_tr_obj).find('td').eq('3').text(data.success[i].parent_name);
+                    $(success_tr_obj).find('td').eq('4').text(data.success[i].sex);
+                    $(success_tr_obj).find('td').eq('5').text(data.success[i].birth_date); 
+                    $("#listWrapperSuccess").find('#body').append(success_tr_obj);
+                }
+                $("#listWrapperSuccess").show();
+            }
+        }else{
+            $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+            return false;
+        }
+    }
+    
+    var failed_data=new Array();
+    //下载失败的数据
+    $("#download_failed_data").click(function(){
+        
+        if(failed_data.length==0){
+            $.Notify({
+                caption: '提示',
+                content: '没有失败数据的数据可以导出!',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('Student/downloadImportErrorData')}");
+        form.attr('method','post');
+        
+        for(var i=0;i<failed_data.length;i++){  
+            var div=$("<div></div>");
+            var teacher_name= $("<input type='hidden' name='student_name[]'/>");
+            var telephone= $("<input type='hidden' name='parent_tel[]'/>");  
+            var parent_name= $("<input type='hidden' name='parent_name[]'/>");
+            var sex= $("<input type='hidden' name='sex[]'/>");
+            var birth_date= $("<input type='hidden' name='birth_date[]'/>"); 
+
+            $(teacher_name).attr('value',failed_data[i].student_name); 
+            $(telephone).attr('value',failed_data[i].parent_tel);
+            $(parent_name).attr('value',failed_data[i].parent_name);
+            $(sex).attr('value',failed_data[i].sex);
+            $(birth_date).attr('value',failed_data[i].birth_date);
+ 
+            div.append(teacher_name);
+            div.append(telephone);
+            div.append(parent_name);
+            div.append(sex);
+            div.append(birth_date); 
+            form.append(div);
+        } 
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+</script>

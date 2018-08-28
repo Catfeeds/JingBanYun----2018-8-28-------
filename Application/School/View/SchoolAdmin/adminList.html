@@ -1,0 +1,244 @@
+<layout name="admin_layout_school"/>
+
+<style>
+	.classContent .classTab.active {
+		background: #fff url({$oss_path}public/web_img/Admin/tiao.png) no-repeat center top;
+	}
+</style>
+
+<div class="indexOutter overHidden">
+	<div class="standardMain classContent tableContent">
+		<div class="classContentTop">
+			<div class="classTabBox">
+				<a href="javascript:;" class="classTab swiper-slide active">现有人员</a>
+				<a href="{:U('ToAudit/teacherList')}" class="classTab swiper-slide">待审核人员</a>
+				<div class="classTabLine"></div>
+				<div class="classTabLine top"></div>
+			</div>
+		</div>
+		<div class="standardMain roleBtnContent">
+			<a href="{:U('Teacher/teacherList')}" class="commonBtnBlue operateBtnTwo">教师</a>
+			<a href="{:U('Student/studentList')}" class="commonBtnBlue operateBtnTwo">学生</a>
+			<a href="{:U('Parent/parentList')}" class="commonBtnBlue operateBtnTwo">家长</a>
+			<a href="javascript:;" class="commonBtnBlue operateBtnTwo active">管理员</a>
+		</div>
+
+		<form id='form_submit' action="/index.php/School/SchoolAdmin/adminList" method="get">
+			<div class="cellBox">
+				<div class="cell">
+					<label class="letSpace5">管理员账号</label>
+					<input type="text" class="input-control account_name" name="name" value="{$account_name}" placeholder="请输入管理员账号">
+				</div>
+				<div class="cell">
+					<label class="letSpace5">管理员姓名</label>
+					<input type="text" class="input-control real_name" name="real_name" value="{$real_name}" placeholder="请输入管理员姓名">
+				</div>
+				<div class="cell">
+					<label>管理员手机号</label>
+					<input type="text" class="input-control telephone" name="telephone" value="{$telephone}" placeholder="请输入管理员手机号">
+				</div>
+				<div class="cell">
+					<label class="letSpace4">账号状态</label>
+					<select id="" class="input-control account_status" name="status">
+						<option value="">-请选择-</option>
+                        <option value="1" <if condition="$account_status==='1'"> selected="true" </if> >启用</option>
+						<option value="0" <if condition="$account_status==='0'"> selected="true" </if> >停用</option>
+					</select>
+				</div>
+                <input type='hidden' name='order' class="order_class" value='0'/>
+
+                <hr class="thin bg-grayLighter">
+                <input type='submit' value='搜索' class='commonBtnBlue operateBtn search'/>
+			</div>
+		</form>
+
+		<div class="tableOutter">
+			<div class="standardMain operateBtnContent">
+				<a href="{:U('SchoolAdmin/createAdmin')}" class="commonBtnBlue operateBtn add">添加</a>
+	            <a href="javascript:;" class="commonBtnBlue operateBtn export export_btn">导出</a>
+	            <a href="{:U('SchoolAdmin/exportedSchoolAdminAll')}&{$condition_str}" class="commonBtnBlue operateBtn export">导出全部</a>
+			</div>
+
+			<table id="listWrapper" class="table striped hovered border newTable">
+				<thead>
+			        <tr>
+			            <th style="width: 100px"><input type="checkbox" class="check_all mr5">全选</th>
+			            <th style="width: 70px">序号</th>
+			            <th style="width: 175px">管理员姓名</th>
+			            <th style="width: 175px">管理员账号</th>
+			            <th style="width: 175px">管理员手机号</th>
+			            <th style="width: 175px">状态</th>
+			            <th>操作</th>
+			        </tr>
+				</thead>
+		            <tbody id="body">
+		            	<empty name="list">
+	                        <tr>
+	                            <td colspan="7" style="color: #999">
+	                                暂无信息
+	                            </td>
+	                        </tr>
+	                    </empty>
+	                    <notempty name="list">
+			                <volist name='list' id='item' key='key'>
+		                        <tr>
+	                                <td>
+                                        <input type="checkbox" class="check_child" name="checkbox" attr="{$item.id}">
+	                                </td>
+	                                <td>
+	                                        {$key}
+	                                </td>
+	                                <td>
+	                                        {$item.real_name}
+	                                </td>
+	                                <td>
+	                                        {$item.account}
+	                                </td>
+	                                <td>
+	                                        {$item.telephone}
+	                                </td>
+	                                <td class="disable-enabled">
+	                                    <if condition="$item['school_flag'] eq 1">
+	                                        启用
+	                                    <else />
+	                                        停用
+	                                    </if>
+	                                </td>
+	                                <td class="aMr3">
+	                                        <a href="{:U('SchoolAdmin/adminDetail')}&id={$item.id}" class="operBtn" id="">查看</a>
+	                                        <a href="{:U('SchoolAdmin/updateAdmin')}&id={$item.id}" class="operBtn" id="">修改</a>
+	                                    <if condition="$item['school_flag'] eq 1">
+	                                        <a href="javascript:;" class="operBtn disableStatus" id="">停用</a>
+	                                    <else />
+	                                        <a href="javascript:;" class="operBtn enableStatus" id="">启用</a>
+	                                    </if>
+	                                        <!--<a href="javascript:;" class="operBtn" id="">删除</a>-->
+	                                    <input type='hidden' value='{$item.id}' class='admin_id' />
+	                                </td>
+		                        </tr>
+			                </volist>
+			            </notempty>
+			        </tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+     //点击批量导出
+    $(".export_btn").click(function(){
+        var check_input=$('#body').find("[name='checkbox']:checked");
+        if(check_input.length<1){
+            $.Notify({
+                caption: '提示',
+                content: '请勾选您要导出的账号',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('SchoolAdmin/exportedSchoolAdmin')}");
+        form.attr('method','post');
+
+        for(var i=0;i<check_input.length;i++){
+            var temp_val=$(check_input[i]).attr('attr');
+            var temp= $("<input type='hidden' name='hid[]'/>")
+            $(temp).attr('value',temp_val);
+            form.append(temp);
+        }
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+
+    //点击重置
+    $('.resetButton').click(function(){
+        $('.account_name').val('');
+        $('.real_name').val('');
+        $('.telephone').val('');
+        $('.account_status').find('option:eq(0)').attr('selected',true);
+    });
+
+    //点击排序
+    $('.upBtn').click(function(){
+        if(!$(this).hasClass('upBtnBlue')){
+            $(this).addClass('upBtnBlue');
+        }
+        $('.downBtn').removeClass('downBtnBlue');
+        $('.order_class').val(1);
+        $('#form_submit').submit();
+    });
+
+    $('.downBtn').click(function(){
+        if(!$(this).hasClass('downBtnBlue')){
+            $(this).addClass('downBtnBlue');
+        }
+        $('.upBtn').removeClass('upBtnBlue');
+        $('.order_class').val(0);
+        $('#form_submit').submit();
+    });
+
+    //禁用或启用
+    $('.enableStatus,.disableStatus').click(function(){
+        var id=$(this).siblings('.admin_id').val();
+        var obj=this;
+        $.ajax({
+            type:"post",
+            dataType:"json",
+            data:{'id':id},
+            url:"{:U('SchoolAdmin/updateSchoolAdminStatus')}",
+            success: function(msg){
+                if(msg.status==200){
+                    //location.reload();
+                    if($(obj).hasClass('enableStatus')){
+                        $(obj).text('停用');
+                        $(obj).removeClass('enableStatus').addClass('disableStatus');
+                        $('.disable-enabled').text('启用')
+                    }else{
+                        $(obj).text('启用');
+                        $(obj).removeClass('disableStatus').addClass('enableStatus');
+                        $('.disable-enabled').text('停用')
+                    }
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                }
+            }
+        })
+    });
+
+    //全选
+    $('.check_all').click(function(){
+        var childCheck=$('.check_child');
+        var temp_status=true;
+        if($(this)[0].checked==true){
+            //本次选中
+            temp_status=true;
+        }else{
+            //本次取消
+            temp_status=false;
+        }
+        for(var i=0;i<childCheck.length;i++){
+            childCheck[i].checked=temp_status
+        }
+    });
+
+    //取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				 $('.check_all').removeAttr('checked','checked');
+				 $('.check_all').removeProp('checked','checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $("[name='checkbox']:checked").length) {
+					$('.check_all').attr('checked','checked');
+					$('.check_all').prop('checked','checked');
+				};
+			}
+		}
+	};
+</script>

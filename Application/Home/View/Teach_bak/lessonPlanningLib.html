@@ -1,0 +1,88 @@
+<layout name="teacher_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/myLessonPlannings')}" title="返回">&lt; 返回 我的备课</a>
+</div>
+<form action="{:U('Teach/lessonPlanningLib')}" method="post">
+    <div class="row">
+        <div class="col-md-3">
+            <label>学科：</label>
+            <select id="course_id" name="course_id" onchange="getTextbooks()"  class="form-control">
+                <option value="">-请选择-</option>
+                <volist name="courses" id="dataCourse">
+                    <option value="{$dataCourse.id}" {$dataCourse['id']==$course_id?'selected':''}>
+                        {$dataCourse.code} : {$dataCourse.course_name}
+                    </option>
+                </volist>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>年级：</label>
+            <select id="grade_id" name="grade_id" onchange="getTextbooks()"  class="form-control">
+                <option value="">-请选择-</option>
+                <volist name="grades" id="dataGrade">
+                    <option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+                        {$dataGrade.grade}
+                    </option>
+                </volist>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>教材：</label>
+            <select id="textbook_id" name="textbook_id"  class="form-control">
+                <option value="">-请选择-</option>
+                <volist name="textbooks" id="dataTextbook">
+                    <option value="{$dataTextbook.id}" {$dataTextbook['id']==$textbook_id?'selected':''}>{$dataTextbook.name}</option>
+                </volist>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-default" style="display: block;">搜索</button>
+        </div>
+    </div>
+</form>
+<table class="table striped hovered border" style="margin-top: 20px;">
+    <thead>
+    <tr>
+        <th>课件名称</th>
+        <th class="text-center">学科</th>
+        <th class="text-center">年级</th>
+        <th class="text-center">教材</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="暂时没有备课课件模板">
+        <tr id="l_{$data.id}">
+            <td>
+                <h3 class="list_title">
+                    <a href="{:U('Teach/editLessonPlanningTemplate?id=')}{$data.id}">{$data.name}</a>
+                </h3>
+
+                <div class="list_sub_title">{$data.description}</div>
+            </td>
+            <td class="text-center">{$data.course_name}</td>
+            <td class="text-center">
+                {$data.grade}
+            </td>
+            <td class="text-center">
+                {$data.textbook}
+            </td>
+            <td>
+                <a href="{:U('Teach/createLessonPlanningFromLib?tmpId=')}{$data.id}">复制</a>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<script>
+    function search() {
+        var keyword = $('#keyword').val();
+        if (keyword == '') {
+            return false;
+        }
+        var url = 'index.php?m=Home&c=Admin&a=lessonPlanningMgmt&keyword=' + keyword;
+        window.location.href = url;
+    }
+</script>

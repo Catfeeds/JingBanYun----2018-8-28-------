@@ -1,0 +1,329 @@
+<layout name="parent_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+
+	.unPreviewOutter {
+		display: block !important;
+	}
+
+	.previewOutter {
+		display: none !important;
+	}
+</style>
+
+<a href="javascript:history.go(-1)" title="返回" class="btn btnReturn1" style="position: absolute;">返回</a>
+
+<div id="homework" v-cloak>
+	<div class="studentIndexOutter">
+		<div class="tileFilterOutter">
+			<div class="tileFilterBox">
+				<div class="tileFilterTitle">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：</div>
+				<div class="tileFilterMain" valueName="courseId">
+					<span class="tileFilterOne active" value="0" @click=tileFilter($event)>全部</span>
+					<span class="tileFilterOne" :value="courseList.course_id" v-for="(courseList,index ) in courseList" @click=tileFilter($event)>{{courseList.course_name}}</span>
+				</div>
+			</div>
+			<div class="tileFilterBox">
+				<div class="tileFilterTitle">状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：</div>
+				<div class="tileFilterMain" valueName="status">
+					<span class="tileFilterOne active" value="0" @click=tileFilter($event)>全部</span>
+					<span class="tileFilterOne" value="1" @click=tileFilter($event)>待完成</span>
+					<span class="tileFilterOne" value="2" @click=tileFilter($event)>已提交</span>
+					<span class="tileFilterOne" value="4" @click=tileFilter($event)>已完成</span>
+					<span class="tileFilterOne" value="3" @click=tileFilter($event)>逾期未交</span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="stuHomeworkContent">
+			<!-- 循环 -->
+			<div class="stuHomeworkMain pt10">
+				<div class="stuHomeworkInner" v-for="(homework,index) in homeworkList" :class="{clearLeft: homework.date != dateArr[index-1] && index>0}">
+					<!-- <div class="date">{{homework.date}}</div> -->
+					<div class="date" v-if="index === 0">{{ homework.date }}</div>
+					<div class="date" v-else-if="homework.date != dateArr[index-1] && index>0">{{ homework.date }}</div>
+					<div class="date visiHidden" v-else>{{ homework.date }}</div>
+
+					<a :href="'/index.php?m=Home&c=ParentHomework&a=homeworkNotSubmit&userId=' + userId + '&homeworkId=' + homework.homeworkId + '&classId=' + homework.classId + '&submitId=' + homework.submitId" class="stuHomeworkBox" v-if="homework.status == 1">
+						<div class="subject">
+							{{homework.content9}}
+							<img src="__PUBLIC__/img/homeworkV1/statusNotComplete.png" alt="" class="statusImg">
+						</div>
+						<div class="teacher">{{homework.content6}}</div>
+						<div class="title">{{homework.content1}}</div>
+						<div class="numScore">
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseNum.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homework.content5}}</span>道<br>试题
+							</div>
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseScore.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homework.content7}}</span>分<br>总分
+							</div>
+						</div>
+						<div class="endTime">{{homework.content3}}</div>
+						<div class="doImg">查看作业</div>
+					</a>
+
+					<a :href="'/index.php?m=Home&c=ParentHomework&a=homeworkNotSubmit&userId=' + userId + '&homeworkId=' + homework.homeworkId + '&classId=' + homework.classId + '&submitId=' + homework.submitId" class="stuHomeworkBox" v-else-if="homework.status == 3">
+						<div class="subject">
+							{{homework.content9}}
+							<img src="__PUBLIC__/img/homeworkV1/statusNotSubmit.png" alt="" class="statusImg">
+						</div>
+						<div class="teacher">{{homework.content6}}</div>
+						<div class="title">{{homework.content1}}</div>
+						<div class="numScore">
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseNum.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homework.content5}}</span>道<br>试题
+							</div>
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseScore.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homework.content7}}</span>分<br>总分
+							</div>
+						</div>
+						<div class="endTime">{{homework.content3}}</div>
+						<div class="doImg">查看作业</div>
+					</a>
+					<a :href="'/index.php?m=Home&c=ParentHomework&a=homeworkSubmit&userId=' + userId + '&homeworkId=' + homework.homeworkId + '&classId=' + homework.classId + '&submitId=' + homework.submitId" class="stuHomeworkBox" v-else-if="homework.status == 2">
+						<div class="subject">
+							{{homework.content9}}
+							<img src="__PUBLIC__/img/homeworkV1/statusSubmit.png" alt="" class="statusImg">
+						</div>
+						<div class="teacher">{{homework.content6}}</div>
+						<div class="title">{{homework.content1}}</div>
+						<div class="numScore">
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseCorrect.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homework.content5}}</span>道<br>试题
+							</div>
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseTime.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homework.duration}}</span>分
+							</div>
+						</div>
+						<div class="endTime">{{homework.content3}}</div>
+						<div class="doImg">查看作业</div>
+					</a>
+					<a :href="'/index.php?m=Home&c=ParentHomework&a=homeworkSubmit&userId=' + userId + '&homeworkId=' + homework.homeworkId + '&classId=' + homework.classId + '&submitId=' + homework.submitId" class="stuHomeworkBox" v-else-if="homework.status == 4">
+						<div class="subject">
+							{{homework.content9}}
+							<img src="__PUBLIC__/img/homeworkV1/statusComplete.png" alt="" class="statusImg">
+						</div>
+						<div class="teacher">{{homework.content6}}</div>
+						<div class="title">{{homework.content1}}</div>
+						<div class="numScore">
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseScore2.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homework.content2}}</span><br>分
+							</div>
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseWrong.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homework.wrongNum}}</span>道<br>试题
+							</div>
+						</div>
+						<div class="endTime">{{homework.content3}}</div>
+						<div class="doImg">查看作业</div>
+					</a>
+				</div>
+
+				<div class="downLoading">
+					<img src="__PUBLIC__/img/homeworkV1/loading.png" alt="" class="loadingRotate">
+					加载中...
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<script>
+	var userId = getQueryString('studentId');
+	var splitDiv = '<div class="splitDiv"></div>';
+
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+			url: '',
+			getCourseUrl:'/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkAvailableCourse',
+			getListUrl:'/index.php?m=Home&c=StudentHomework&a=getHomeworkList',
+			courseList:[],
+			homeworkList:[],
+			dateArr:[],
+			pageIndex: 1, 
+			pageSize: 20,
+			scrollAllow: false
+		},
+		created: function () {
+            this.getAvailableCourse(window.userId);
+		    this.tileFilter(window);
+		},
+		methods: {
+		    getCourseList:function(){
+
+			},
+
+			getAvailableCourse:function(userId){
+				this.$http.post(this.getCourseUrl, {
+					userId:userId,
+					role:3,
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						this.courseList = response.data.data;
+					} else {
+						console.log('错误1')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 筛选
+			tileFilter: function(event){
+				if(!$(event.target).hasClass('active')) {
+					$(event.target).addClass('active').siblings().removeClass('active')
+				}
+				var activeObject =  $('.tileFilterOne.active');
+				var parameters = {};
+				activeObject.each(function(i,n){
+					parameters[$(n).parent().attr('valueName')] = $(n).attr('value');
+				})
+				parameters['userId'] = window.userId;
+                parameters['role'] = 3;
+
+                this.pageIndex = 1;
+				this.pageSize = 20;
+				this.scrollAllow = true;
+				
+                parameters['pageIndex'] = this.pageIndex;
+                parameters['pageSize'] =  this.pageSize;
+				this.$http.post(this.getListUrl, parameters, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						this.homeworkList = response.data.data;
+
+						this.dateArr = [];
+						for(var i=0; i<this.homeworkList.length; i++){
+							this.dateArr.push(this.homeworkList[i].date)
+						}
+
+		    			this.scrollAllow = true;
+            			this.scroll();
+
+                        if(response.data.data.length < this.pageSize) {
+                        	this.scrollAllow = false
+                        }
+
+						this.$nextTick(function(){
+							title();
+							$('.splitDiv').remove();
+							$('.stuHomeworkInner.clearLeft').before(splitDiv);
+						})
+					} else {
+						console.log('错误1')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			scroll:function(){
+				var that = this
+				$(window).scroll(function () {
+					//已经滚动到上面的页面高度
+					var scrollTop = $(this).scrollTop();
+					//页面高度
+					var scrollHeight = $(document).height();
+					//浏览器窗口高度
+					var windowHeight = $(this).height();
+
+
+					//此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+					if (scrollTop + windowHeight == scrollHeight) {
+						if(that.scrollAllow == true) {
+							$('.downLoading').show();
+							that.pageIndex++;
+							var activeObject =  $('.tileFilterOne.active');
+							var parameters = {};
+							activeObject.each(function(i,n){
+								parameters[$(n).parent().attr('valueName')] = $(n).attr('value');
+							})
+							parameters['userId'] = window.userId;
+			                parameters['role'] = 3;
+			                parameters['pageIndex'] = that.pageIndex;
+			                parameters['pageSize'] =  that.pageSize;
+
+							that.$http.post(that.getListUrl, parameters, {
+								emulateJSON:'application/x-www-form-urlencoded'
+							}).then(function(response){ //发送http请求
+								if(response.status == '200'){
+									for(var a=0;a<response.data.data.length;a++){
+										that.homeworkList.push(response.data.data[a]);
+									}
+									for(var i=0;i<response.data.data.length;i++){
+										that.dateArr.push(response.data.data[i].date)
+									}
+
+
+									$('.downLoading').hide();
+
+									that.$nextTick(function(){
+										title();
+										$('.splitDiv').remove();
+										$('.stuHomeworkInner.clearLeft').before(splitDiv);
+									})
+
+									if(response.data.data == '') {
+										that.scrollAllow = false
+									}
+								}
+							}, function(response){
+								// 响应错误回调
+								console.log('初始化学科错误');
+							});
+						}
+					}
+				});
+			}
+		}
+	})
+</script>
+
+<script>
+	// 标题格式
+	function title() {
+		$('.stuHomeworkBox .title').each(function(i, n){
+			if($(this).text().length <= 11) {
+				$(this).css({
+					'text-align': 'center',
+					'line-height': '85px',
+					'padding': 0
+				})
+			} else if($(this).text().length > 11 && $(this).text().length <= 16) {
+				$(this).css({
+					'text-align': 'left',
+					'line-height': '28px',
+					'padding': '14.5px 0'
+				})
+			} else if($(this).text().length > 16) {
+				$(this).css({
+					'text-align': 'left',
+					'line-height': '28px',
+					'padding': 0
+				})
+			}
+		})
+	}
+
+	title()
+</script>

@@ -1,0 +1,153 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.js"></script>
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+   
+<style>
+    .check_child,.check_all {
+        width: 20px;
+        height: 20px;
+    }
+	
+	.ui-datepicker-trigger {
+		width: 30px;
+		display: inline;
+		cursor: pointer;
+		margin-left: 6px;
+	}
+    
+    .modifyTime {
+        width: 250px;
+        min-height: 2.125rem;
+        height: 2.125rem;
+        text-indent: 10px;
+    }
+    
+    .button {
+        margin-left: 50px;
+    }
+    
+    td {
+        height: 56px;
+        min-height: 56px;
+    }
+</style>
+
+<form action="{:U('Admin/checkSchoolTime')}" method="post">
+    <div style="margin: 20px 0;text-align:right;">
+        <input type="text" name="modifyTime" id="datepicker" class="modifyTime" placeholder="修改时间" autocomplete="off" onkeydown="return false" required>
+        <button type="submit" class="button" onclick="return clearPager();"><span class="mif-search"></span> 搜索</button>
+    </div>
+</form>
+
+<empty name="list">
+    <div class="emptyResult">暂时没有资源</div>
+</empty>
+<notempty name="list">
+<table id="listWrapper" class="table striped hovered border" >
+    <thead>
+    <tr> 
+        <th class="text-center">时间类型</th>
+        <th class="text-center">时长</th>
+        <th class="text-center">修改后到期时间</th>
+        <th class="text-center">操作时间</th>
+        <th class="text-center">操作人/账号/ID号</th>
+        <th class="text-center">备注</th>
+        
+    </tr>
+    </thead>
+    <tbody id="body">
+        <volist name="list" id="data" empty="暂时没有权限类型">
+            <tr>
+                <td class="text-center">
+                    <if condition="$data.timetype eq 1 "> 试用时间
+                        <else /> 使用时间
+                    </if>
+                </td>
+                <td class="text-center">{$data.viptimelong}</td>
+                <td class="text-center">{$data.editexpiretime|date="Y-m-d H:i",###}</td>
+                <td class="text-center">{$data.addtime|date="Y-m-d H:i",###}</td>
+                <td class="text-center">{$data.admin_name}</td>
+                <td class="text-center">{$data.remark}</td>
+            </tr>
+        </volist>
+    </tbody>
+</table>
+
+</notempty>
+<div class="Pagination">{$page}</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"20%"},
+            ]
+        });
+    });
+</script>
+<!--------------日历----------------->
+<script>
+	$(function () {
+		$("#datepicker").datepicker({
+			dateFormat: "yy-mm-dd",
+			showOn: "both",
+			buttonImage: "/Public/img/birthday.png",
+			buttonImageOnly: true,
+			showButtonPanel: true,
+			changeMonth: true,
+			maxDate: '0',
+			changeYear: true,
+			yearRange: "1950:2050"
+		});
+	});
+</script>
+<script>
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+</script>

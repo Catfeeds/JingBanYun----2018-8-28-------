@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+		<title>作业报告</title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+					-webkit-tap-highlight-color: rgba(0,0,0,0);
+				-webkit-tap-highlight-color: transparent;
+			}
+			body{
+				background: #f4f4f4;
+				padding:20px
+			}
+			.date{
+				color:#333;
+				font-size: 18px;
+				line-height: 24px
+			}
+			.homeworkList{
+				background: #fff;
+				border-radius: 10px;
+				overflow: hidden;
+				height: 100px;
+				margin: 7px 0
+			}
+			.left{
+				float: left
+			}
+			.subIcon{
+				height: 100px;
+				vertical-align: middle;
+			}
+			.subIcon img{
+				width: 40px;
+				margin: 30px 5px;
+
+			}
+			.sub {
+				padding-top: 10px;
+				width: 200px;
+				font-size: 16px
+			}
+			.sub p{
+				line-height: 26px;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				overflow: hidden;
+			}
+			.state{
+				/*width: 90px;*/
+				max-width: 100px;
+				height: 100%;
+				padding-right: 5px;
+			}
+			.teacher{
+				font-size: 12px
+			}
+			.state1{
+				line-height: 26px;
+				margin-top: 10px;
+				padding-right: 5px;
+				max-width: 100px;
+			}
+
+			.state1 p, .state p {
+				width: 100%;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+			}
+			@media screen and (min-width: 320px){
+				.sub{
+					font-size: 12px;
+					width: 110px;
+				}
+			}
+			@media screen and (min-width: 370px){
+				.sub{
+					font-size: 16px;
+					width: 160px;
+				}
+			}
+			@media screen and (min-width: 410px){
+				.sub{
+					font-size: 16px;
+					width: 200px;
+				}
+/*				.state{
+					width: 114px
+				}*/
+				.teacher{
+					font-size: 16px
+				}
+			}
+			@media screen and (min-width: 650px){
+				.sub{
+					font-size: 16px;
+					width:450px;
+				}
+				.state{
+					max-width: 200px
+				}
+				.teacher{
+					font-size: 16px
+				}
+
+				.state1 {
+					max-width: 200px;
+				}
+			}
+			.color999{
+				color: #999
+			}
+			.right{
+				float: right
+			}
+			.h62{
+				height: 52px
+			}
+			.new{
+				height: 65px;
+				font-size: 16px;
+				color: #eb2222;
+				line-height:45px;
+				text-indent: 60px
+			}
+
+			.red{
+				color: #eb2222
+			}
+			.yellow{
+				color: #f2b718
+			}
+			.jeizhi{
+				width: 70px;
+				float: right;
+				margin-right: 10px;
+				margin-top:5px
+			}
+			.of{
+				overflow: hidden;
+			}
+			a{
+				text-decoration: none;
+				color:#333
+			}
+			.foldBtn{
+				width: 23px;
+				height: 23px;
+				background:url(__PUBLIC__/img/Apphomework/unfold.png)no-repeat;
+				background-size: 23px 23px
+			}
+			.foldBtn.active{
+
+				background:url(__PUBLIC__/img/Apphomework/fold.png)no-repeat;
+				background-size: 23px 23px
+			}
+		</style>
+		<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<?php foreach ($result as $key => $value): ?>
+			<div class="" style="padding-bottom: 5px;">
+
+			<div class="date">
+				<?=$value['date']?>
+				<div class="foldBtn right" onclick="fold(this)"  > </div>
+			</div>
+			<?php foreach ($value['data'] as $k => $v): ?>
+
+				<switch name="v.content2">
+					<case value="查看报告">
+						<a href="{$v.is_commit_url}">
+							<div class="homeworkList">
+								<div class="subIcon left">
+									<img src="__PUBLIC__/img/Apphomework/yinyu.png" alt="" />
+								</div>
+								<div class="sub  left">
+									<p>
+										<?=$v['content1']?>
+									</p>
+									<p>
+										<?=$v['content3']?>
+									</p>
+									<p class="color999">
+										<?=$v['content5']?>
+									</p>
+								</div>
+								<div class="state1 right">
+									<p class="yellow">
+										查看报告
+									</p>
+									<p>
+										得分：<span class="red"><?=$v['content4']?></span>分
+									</p>
+									<p class="color999 teacher">
+										<?=$v['content6']?>
+									</p>
+								</div>
+							</div>
+						</a>
+					</case>
+					<case value="新">
+						<a href="{$v.is_commit_url}">
+						<div class="homeworkList">
+							<div class="subIcon left">
+								<img src="__PUBLIC__/img/Apphomework/yinyu.png" alt="" />
+							</div>
+							<div class="sub  left">
+								<p>
+									<?=$v['content1']?>
+								</p>
+								<p>
+									<?=$v['content3']?>
+								</p>
+								<p class="color999">
+									<?=$v['content5']?>
+								</p>
+							</div>
+							<div class="state right">
+								<p class="new">
+									新
+								</p>
+								<p class="color999 teacher">
+									<?=$v['content6']?>
+								</p>
+							</div>
+						</div>
+						</a>
+					</case>
+					<default />
+					<a href="{$v.is_commit_url}">
+						<div class="homeworkList">
+							<div class="subIcon left ">
+								<img src="__PUBLIC__/img/Apphomework/yinyu.png" alt="" />
+							</div>
+							<div class="sub  left">
+								<p>
+									<?=$v['content1']?>
+								</p>
+								<p>
+									<?=$v['content3']?>
+								</p>
+								<p class="color999">
+									<?=$v['content5']?>
+								</p>
+							</div>
+							<div class="state1 right">
+								<p class="of h62">
+									<img src="__PUBLIC__/img/Apphomework/yijiezhi.png" alt="" / class="jeizhi">
+								</p>
+								<p class="color999 teacher">
+									<?=$v['content6']?>
+								</p>
+							</div>
+						</div>
+					</a>
+				</switch>
+			<?php endforeach; ?>
+		 </div>
+		<?php endforeach; ?>
+
+	</body>
+	<script type="text/javascript">
+	function fold(obj){
+		if($(obj).hasClass('active')==false) {
+			$(obj).addClass('active')
+			$(obj).parent().siblings().hide();
+		} else {
+			$(obj).removeClass('active')
+			$(obj).parent().siblings().show();
+		}
+	}
+	</script>
+</html>

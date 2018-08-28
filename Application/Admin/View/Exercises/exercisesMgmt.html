@@ -1,0 +1,162 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+	.searchbar select {
+		border: 1px #d9d9d9 solid;
+		width: 140px;
+		height: 2.125rem;
+		padding: .3125rem;
+	}
+	
+	.grid.condensed {
+		display: block;
+		position: relative;
+		margin: .375rem 0;
+	}
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Exercises/createExerciseLibrary')}" title="创建习题" class="button primary {:session('btntheme')}">创建习题</a>
+</div>
+
+<form action="{:U('Exercises/exercisesMgmt')}" method="post">
+	<div class="grid condensed searchbar" style="margin: 20px 0">
+		<div class="row cells3 cellBox">
+			<div class="cell">
+				<label>学科：</label>
+				<select id="course_id" name="course_id" class="input-control input-control-before">
+					<option value="">-请选择-</option>
+					<volist name="courses" id="dataCourse">
+						<option value="{$dataCourse.id}" {$dataCourse['id']==$course_id?'selected':''}>
+							{$dataCourse.code} : {$dataCourse.course_name}
+						</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>年级：</label>
+				<select id="grade_id" name="grade_id" class="input-control input-control-before">
+					<option value="">-请选择-</option>
+					<volist name="grades" id="dataGrade">
+						<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+							{$dataGrade.grade}
+						</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>教材分册：</label>
+				<select id="textbook_id" name="textbook_id" class="input-control input-control-before">
+					<option value="">-请先选择年级和学科-</option>
+					<volist name="textbook" id="textbook_item">
+						<option value="{$textbook_item.id}" {$textbook_item['id']==$textbook_id?'selected':''}>
+							{$textbook_item.name}
+						</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+   				<label>关键词：</label>
+   				<input type="text" value="{$keyword}" id="keyword" class="input-control input-control-before" name="keyword" placeholder="章/节/习题标题">
+   			</div>
+    
+    		<div class="cell" data-role="input">
+    			<label for="">&nbsp;</label>
+				<button type="submit" class="button queding" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+			</div>
+		</div>
+	</div>
+</form>
+
+  
+    <table id="listWrapper" class="table striped hovered border">
+        <thead>
+        <tr>
+            <th class="text-center">章</th>
+            <th class="text-center">节</th>
+            <th class="text-center">学科</th>
+            <th class="text-center">年级</th>
+            <th class="text-center">教材分册</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="">
+            <tr id="l_{$data.id}">
+                <td class="text-center">
+                    {$data.chapter}
+                </td>
+                <td class="text-center">
+                    {$data.festival}
+                </td>
+                <td class="text-center">
+                    {$data.course_name}
+                </td>
+                <td class="text-center">
+                    {$data.grade}
+                </td>
+                <td class="text-center">
+                    {$data.textbook}
+                </td>
+                <td class="text-center">
+                    <a href="javascript:deleteExerciseChapter('{$data.id}')" class="button danger">删除</a>
+                    <a href="{:U('Exercises/exerciseLibraryChapterDetails?id=')}{$data.id}" class="button info">编辑</a>
+                    <a href="{:U('Exercises/previewExerciseLibraryChapter?id=')}{$data.id}" class="button">习题预览</a>
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination" >{$page}</div> 
+    <div style="clear: both; line-height: 25px">
+        <h4>全部习题信息</h4>
+        <volist name="all_exercise_count_arr" id="all_exercise_item" key="key">
+            <span style="margin-right:10px;">{$all_exercise_item.key}:{$all_exercise_item.value}道</span>
+        </volist>
+    </div>
+    <div style="clear: both; line-height: 25px">
+        <div><h4>筛选出的习题信息</h4></div>
+        <volist name="search_exercise_arr" id="search_exercise_arr_item" key="key">
+            <span style="margin-right:10px;">{$search_exercise_arr_item.key}:{$search_exercise_arr_item.value}道</span>
+        </volist>
+    </div>
+<script>
+
+    function deleteExerciseChapter(id) {
+        if (confirm('确定要删除吗？删除后，该章节下的习题也将一并删除')) {
+            $.get('index.php?m=Admin&c=Exercises&a=deleteExerciseLibraryChapter', {id: id}, function (res) {
+                if (res == 'success') {
+                    alert('删除成功')
+                    window.location.reload();
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 385) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"10%"},
+                {"width":"10%"}, 
+                {"width":"15%"},
+                {"width":"25%"}
+             
+            ]
+        });
+    });
+    
+    $("#course_id,#grade_id").change(function(){
+            getTextbooks();
+    });
+     
+</script>

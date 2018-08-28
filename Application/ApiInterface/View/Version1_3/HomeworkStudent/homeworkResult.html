@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>{$name}</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/app/Version1_3/studentHomeworkElse.css?v=2">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<style>
+			.homeworkListTabContent .homeListCon.homeListCon1 {
+				padding-bottom: 0;
+			}
+
+			[v-cloak]{
+				display: none;
+			}
+			.appTop {
+				height: 44px;
+				width: 100%;
+				border-bottom: 1px solid #eee;
+				position: fixed;
+				top: 0;
+				background: #fff;
+				z-index: 100;
+				box-sizing: content-box;
+			}
+			.appTop .appTopTitle {
+				height: 44px;
+				line-height: 44px;
+				font-size: 20px;
+				margin: 0 60px;
+				text-align: center;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+			}
+			.appTop .returnBox {
+				width: 44px;
+				height: 100%;
+				background: url(__PUBLIC__/img/Apphomework/fanhui.png) no-repeat center;
+				background-size: 10px 16px;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			.homeworkListTabContent.homeworkListTabContentNo{
+				padding-bottom: 80px
+			}
+			.weipigai{
+				background: #cecece !important;
+				border: 1px solid #cecece !important
+			}
+			.homeListConComment video{
+				width: 100%
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="appTop">
+				<div class="returnBox"  @click="golist"></div>
+				<div class="appTopTitle">
+					{{workName}}
+				</div>
+			</div>
+			<div class="cardTop" style="margin-top:45px">
+				<div class="circle">
+					<div class="pie_left"><div class="p_left"></div></div>
+					<div class="pie_right"><div class="p_right"></div></div>
+					<div class="maskBottom"></div>
+					<div class="mask">
+						<div class="" v-if="correctStatus != 0" style="height:10px">
+
+						</div>
+						<div class="percentBox"><span class="percentNum" >{{ point }}</span>分</div>
+						<div class="accuracy" v-if="correctStatus == 0">客观题得分</div>
+						<div class="scoreBox">(总分{{ totalpoint }}分)</div>
+					</div>
+				</div>
+
+				<div class="resultBottom">
+					<span class="resultSpan">
+						<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/shijian.png" alt="" class="">
+						用时 {{ duration }}
+					</span>
+					<span class="resultSpan">
+						<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/zhengquelv.png" alt="" class="">
+						正确率 {{ percentNum }}
+					</span>
+					<span class="resultSpan">
+						<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/cuotishu.png" alt="" class="">
+						错题数 {{ wrongNum }}题
+					</span>
+				</div>
+
+				<!-- <img src="__PUBLIC__/img/Apphomework/questionMark.png" alt="" class="questionMark"> -->
+			</div>
+
+			<div class="homeworkListTabBox">
+				<div class="homeListTab active homeListTab1">
+					<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/datika2.png" alt="" class="tabImg1">
+					答题卡
+				</div>
+				<div class="homeListTab homeListTab2">
+					<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/laoshipingyu.png" alt="" class="tabImg2">
+					老师评语（{{ commentLength }}）
+				</div>
+			</div>
+
+			<div class="homeworkListTabContent homeworkListTabContentNo">
+				<div class="homeListCon homeListCon1 homeListConMargin">
+					<div class="dimBox">
+						<span class="dimCircle circleYes circleRight"></span>
+						<span class="dimAnswer answerYes">正确</span>
+						<span class="dimCircle circleNo circleFalse"></span>
+						<span class="dimAnswer answerNo">错误</span>
+						<span class="dimCircle  weipigai"></span>
+						<span class="dimAnswer ">未批改</span>
+					</div>
+
+					<div class="parent_index homeCircleList" v-for="(ex,index) in exlist">
+						<p class="homeCircleName">
+							{{ ex.name }}({{ex.count}}道题)
+						</p>
+						<ul class="homeCircleUl">
+							<li class="homeCircleLi" v-for="(exchild,cindex) in ex.hasAnswer">
+								<a href="javascript:" class="qbtn rightAnswer" v-if="(exchild == '1')">{{ cindex+1 }}</a>
+								<a href="javascript:" class="qbtn wrongAnswer" v-else-if="(exchild == '0')">{{ cindex+1 }}</a>
+								<a href="javascript:" class="qbtn weipigai" v-else-if="(exchild == '2')" style="color:#fff">{{ cindex+1 }}</a>
+							</li>
+						</ul>
+					</div>
+
+					<div class="homeworkStart">
+						<a href="javascript:;" class="btnTwo answerBtn" id="answerContinue" @click="xiti(1)">错题解析</a>
+						<button type="button" class="btnTwo submitBtn" id="homeworkSubmit" @click="xiti(0)">全部作业</button>
+					</div>
+				</div>
+				<div class="homeListCon homeListCon2 homeListConComment" style="padding:10px">
+					<div v-for="(value,index) in commentData" v-html="value.comment"></div>
+				</div>
+			</div>
+
+			<!-- <div class="fullBack"></div>
+			<div class="successBox">
+				<div class="sucTitle">提交作业成功！</div>
+				<div class="sucMain">您是本班第2个完成作业的同学</div>
+				<div class="sucBtn">确定</div>
+			</div> -->
+
+			<div class="fullBackMark"></div>
+			<div class="explainMark">
+				<div class="closeMark"></div>
+			</div>
+
+		</div>
+	</body>
+
+	<script>
+		function formatTime(seconds) {
+		    var min = Math.floor(seconds / 60),
+		        second = seconds % 60,
+		        hour, newMin, time;
+
+		    if (min >= 60) {
+		        hour = Math.floor(min / 60);
+		        newMin = min % 60;
+		    }
+
+		    if (hour < 10) { hour = '0' + hour;}
+		    if (newMin < 10) { newMin = '0' + newMin;}
+
+		    if (second < 10) { second = '0' + second;}
+		    if (min < 10) { min = '0' + min;}
+
+		    return time = hour? (hour + ':' + newMin + ':' + second) : (min + ':' + second);
+		}
+	</script>
+
+	<script>
+		var userId = getQueryString('userId');
+		var role = getQueryString('role');
+		var homeworkId = getQueryString('id');
+		var classId = getQueryString('classId');
+		var submitId = getQueryString('submitId');
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId: userId,
+				role: role,
+				homeworkId: homeworkId,
+				classId: classId,
+				submitId: submitId,
+				url: '/index.php/ApiInterface/Version1_3/HomeworkStudent/getSubmitHomeworkDetail',
+				resultData: '',
+				point: '',
+				totalpoint: '',
+				duration: '',
+				percentNum: '',
+				wrongNum: '',
+				correctStatus:0,
+				stulist: '',
+				exlist: '',
+				workName:'',
+				urlTeacherComment: '/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkComment',
+				commentData: '',
+				commentLength: ''
+			},
+			created: function () { //应用初始化完毕加载
+				// 获取详情数据
+				this.getSubmitHomeworkDetail();
+				// 获取教师评语
+				this.getTeacherComment();
+			},
+			methods: {
+				xiti:function(t){
+					 window.location.href = '/index.php/ApiInterface/Version1_3/HomeworkStudent/exerciseDetails?role='+this.role+'&userId='+this.userId+'&submitId='+submitId+'&type='+t+'&statue=2'
+				},
+				// 获取详情数据
+				getSubmitHomeworkDetail: function(){
+					this.$http.post(this.url, {
+						userId : this.userId,
+						role: this.role,
+						id: this.submitId,
+						isFlatten: 1
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.resultData = response.data.data;
+							this.point = response.data.additionalData.point;
+							this.totalpoint = response.data.additionalData.totalpoint;
+							this.duration = formatTime(response.data.additionalData.duration);
+							this.wrongNum = response.data.additionalData.wrongNum;
+							this.workName = response.data.additionalData.workName;
+							this.correctStatus = response.data.additionalData.correctStatus;
+							if(this.totalpoint == 0){
+								this.percentNum = 0;
+							} else {
+								var numpoint = (this.point/this.totalpoint)*100;
+								numpoint = numpoint.toFixed(0);
+								this.percentNum = numpoint + '%';
+							}
+
+							this.exlist = response.data.data['2dData'];
+							this.$nextTick(function () {
+								/*判断角度*/
+								if(this.resultData.totalpoint == 0){
+									var num = 0;
+								} else {
+									var num = this.resultData.point / this.resultData.totalpoint * 360;
+								}
+
+								if (num<=180) {
+									$('.p_right').css('transform', "rotate(" + num + "deg)");
+								} else {
+									$('.p_right').css('transform', "rotate(180deg)");
+									$('.p_left').css('transform', "rotate(" + (num - 180) + "deg)");
+								};
+							})
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				golist:function(){
+				window.location.replace('/index.php/ApiInterface/Version1_3/HomeworkStudent/homeworkBook?userId='+this.userId+'&role=3');
+				},
+				// 获取教师评语
+				getTeacherComment: function(){
+					this.$http.post(this.urlTeacherComment, {
+						userId : this.userId,
+						role: this.role,
+						submitId:this.submitId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.commentData = response.data.data;
+							this.commentLength = response.data.data.length;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				}
+			}
+		})
+
+	</script>
+
+	<script>
+		$(function(){
+			var winHeight = $(window).height();//屏幕的高度
+			var topHeight = $('.cardTop').outerHeight();//“答题卡顶部”的高度
+			var tabHeight = $('.homeworkListTabBox').outerHeight();//tab的高度
+			var minusHeight = winHeight*1 - topHeight*1 -tabHeight*1 - 10;//相减的高度
+			$('.homeListCon').css('minHeight',minusHeight);//标签页的最小高度
+		})
+
+		$('.submitBtn').click(function(){
+			$('.fullBack,.successBox').show();
+		})
+		$('.sucBtn').click(function(){
+			$('.fullBack,.successBox').hide();
+		})
+
+
+		$(document).on('click','.qbtn',function(){
+
+			var i =0;
+			var a = 0;
+			var c = 0;
+			if($(this).parents('.parent_index').index() == 0){
+				var i = $(this).parent().index();
+			}else{
+				var a = $(this).parents('.parent_index').index();
+				for(var b = 0;b<a;b++){
+					c += $('.parent_index').eq(b).find('.homeCircleLi').length;
+					i = c
+				}
+				i = i + $(this).parent().index()
+
+			}
+			// window.location.href = "__URL__/exerciseDetails?submitId={$submitId}&userId={$userId}&role={$role}&id={$homeworkId}&type=2&flag="+i; //type=2已做
+			// a =0
+		})
+
+
+		$('.questionMark').click(function(){
+			$('.fullBackMark,.explainMark').show();
+			$('body').css('overflow-y','hidden')
+		})
+
+		$('.fullBackMark,.closeMark').click(function(){
+			$('.fullBackMark,.explainMark').hide();
+			$('body').css('overflow-y','auto')
+		})
+
+		$('.homeListTab').click(function(){
+	    	var index = $(this).index();
+	    	if(!$(this).hasClass('active')) {
+	    		if(index == 0) {
+    				$('.tabImg1').attr('src','{$oss_path}public/web_img/APPHomework/img0_1.png');
+    				$('.tabImg2').attr('src','{$oss_path}public/web_img/APPHomework/img1_2.png');
+	    		} else {
+	    			$('.tabImg1').attr('src','{$oss_path}public/web_img/APPHomework/img0_2.png');
+    				$('.tabImg2').attr('src','{$oss_path}public/web_img/APPHomework/img1_1.png');
+	    		}
+	    		$(this).addClass('active').siblings('.homeListTab').removeClass('active');
+	    		$('.homeListCon').eq(index).show().siblings('.homeListCon').hide();
+	    	}
+	    })
+		function showWebNav(){}//显示web导航
+	</script>
+</html>

@@ -1,0 +1,441 @@
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/activity.css" type="text/css" rel="stylesheet">
+
+<style>
+    .actBottom {
+        background: none;
+		padding-bottom: 50px;
+    }
+
+    .filterUl .filterLi {
+        width: 25%;
+    }
+	.title_a5,.title_a1,title_a2,title_a3,title_a6,.title_img1,.title_img2,.title_img3,.title_img5,.title_img6{
+		cursor: pointer
+	}
+</style>
+<?php if($_GET['pc'] == 'my') : ?>
+<include file="./Application/Home/View/Common/myCollectionHeader.html"/>
+<?php endif; ?>
+<script>
+    if(window.history.length != 1)
+    document.write('<div><a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a></div>');
+</script>
+
+
+<div class="activties_nav">
+    <div class="activties_title left">
+        <span class="title_a5" href="javascript:;"></span>
+        <span class="title_a6" href="javascript:;"></span>
+        <span class="title_a1" href="javascript:;"></span>
+        <span class="title_a2" href="javascript:;"></span>
+        <span class="title_a3" href="javascript:;"></span>
+    </div>
+
+    <div class="right">
+        <div class="search">
+            <button class="search_btn">搜索</button>
+            <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入活动名称">
+        </div>
+    </div>
+</div>
+
+<!--<div class="fullscr"></div>-->
+<!--游客弹窗-->
+<!--
+<div class="toolTipBox toolTip1" id="toolTip1">
+    <span class="toolTipClose"></span>
+    <p class="toolTipButton">
+        <a href="{:U('Index/index')}" class="toolTipBtn toolTipBtnGreen2" id="">登录</a>
+        <a href="{:U('Index/index')}" class="toolTipBtn toolTipBtnGreen2" id="">去注册</a>
+    </p>
+</div>
+-->
+<!--筛选项 只有作品评比有-->
+<div class="filterBox">
+    <ul class="filterUl">
+        <li class="filterLi">
+            <a href="javascript:;" class="filterTitleBox">
+				<span class="filterTitleOutter">
+					<span class="filterTitle">学段</span>
+				</span>
+                <span class="filterChoice">小学</span>
+            </a>
+            <div class="filterContent">
+                <ul class="filConUl" name="period">
+                    <li class="filConLi">
+                        <span class="filConA {$filterSelect['period'] == 0 ? 'filConAActive':''}" selectId="0" >全部</span>
+                    </li>
+                    <li class="filConLi">
+                        <span class="filConA {$filterSelect['period'] == 1? 'filConAActive':''}" selectId="1">小学</span>
+                    </li>
+                    <li class="filConLi">
+                        <span class="filConA {$filterSelect['period'] == 2? 'filConAActive':''}" selectId="2">初中</span>
+                    </li>
+                    <li class="filConLi">
+                        <span class="filConA {$filterSelect['period'] == 3? 'filConAActive':''}" selectId="3">高中</span>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="filterLi">
+            <a href="javascript:;" class="filterTitleBox">
+				<span class="filterTitleOutter">
+					<span class="filterTitle">学科</span>
+				</span>
+                <span class="filterChoice"></span>
+            </a>
+            <div class="filterContent">
+                <ul class="filConUl" name="course">
+                    <li class="filConLi">
+                        <span class="filConA {$filterSelect['course'] == 0? 'filConAActive':''}" selectId="0" >全部</span>
+                    </li>
+                    <volist name="courses" id="courses">
+                        <li class="filConLi" >
+                            <span class="filConA {$filterSelect['course'] == $courses['id']? 'filConAActive':''}" selectId="{$courses.id}">{$courses.name}</span>
+                        </li>
+                    </volist>
+
+                </ul>
+            </div>
+        </li>
+        <li class="filterLi">
+            <a href="javascript:;" class="filterTitleBox">
+				<span class="filterTitleOutter">
+					<span class="filterTitle">年级</span>
+				</span>
+                <span class="filterChoice"></span>
+            </a>
+            <div class="filterContent">
+                <ul class="filConUl" name="grade">
+                    <li class="filConLi">
+                        <span class="filConA {$filterSelect['grade'] == 0 ? 'filConAActive':''}" selectId="0">全部</span>
+                    </li>
+                    <volist name="grades" id="grades">
+                        <li class="filConLi">
+                            <span class="filConA {$filterSelect['grade'] == $grades['id']? 'filConAActive':''}" selectId="{$grades.id}">{$grades.name}</span>
+                        </li>
+                    </volist>
+                </ul>
+            </div>
+        </li>
+        <li class="filterLi">
+            <a href="javascript:;" class="filterTitleBox">
+				<span class="filterTitleOutter">
+					<span class="filterTitle">类型</span>
+				</span>
+                <span class="filterChoice"></span>
+            </a>
+            <div class="filterContent">
+                <ul class="filConUl" name="category">
+                    <li class="filConLi">
+                        <span class="filConA {$filterSelect['category'] == 0 ? 'filConAActive':''}" selectId="0">全部</span>
+                    </li>
+                    <volist name="categorys" id="categorys">
+                        <li class="filConLi">
+                            <span class="filConA {$filterSelect['category'] == $categorys['id'] ? 'filConAActive':''}" selectId="{$categorys.id}">{$categorys.class}</span>
+                        </li>
+                    </volist>
+
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<div class="actBottom">
+    <ul class="row activities_ul" id="activities_ul1">
+        <volist name="list" id="data" empty="暂时没有活动信息">
+            <li class="col-sm-6 col-md-4 col-lg-3 activities_li" activityid="{$data.id}">
+                <div class="activities_box">
+                    <div class="aBox">
+                    <if condition="($data.class_id eq 6) OR ($data.class_id eq 7) OR ($data.class_id eq 8) OR ($data.class_id eq 9) OR ($data.class_id eq 10)">
+                    	<a href="{:U('Activity/activityApplyDetails?id=')}{$data.id}" {$_GET['pc'] == 'my' ? '':''}>
+                    		<img class="activities_img" src="/Resources/socialactivity/{$data.short_content}" alt="">
+                    	</a>
+						<a href="{:U('Activity/activityApplyDetails?id=')}{$data.id}" {$_GET['pc'] == 'my' ? '':''} title="{$data.title}" class="activities_title">{$data.title}</a>
+						<else/>
+						<a href="{:U('Activity/activityDetails?id=')}{$data.id}" {$_GET['pc'] == 'my' ? '':''}>
+                    		<img class="activities_img" src="/Resources/socialactivity/{$data.short_content}" alt="">
+                    	</a>
+						<a href="{:U('Activity/activityDetails?id=')}{$data.id}" {$_GET['pc'] == 'my' ? '':''} title="{$data.title}" class="activities_title">{$data.title}</a>
+                    </if>
+                    <if condition="$data.is_new eq yes">
+                        <img class="newImg" src="{$oss_path}public/web_img/Activity/new.png" alt="">
+                    </if>
+                   	<a class="workTypeBox" href="{:U('Activity/activityMore')}&type=work&category={$data.class_id}<?php if($_GET['pc']) echo '&pc='.$_GET['pc']; if($_GET['mycat']) echo '&mycat='.$_GET['mycat'];  ?>" {$_GET['pc'] == 'my' ? 'target="_blank"':''}>
+                    <if condition="$data.class_id eq 6">
+                        <img class="workType" src="{$oss_path}public/web_img/Activity/teachingDesign.png" alt="">
+                        <elseif condition="$data.class_id eq 7"/>
+                        <img class="workType" src="{$oss_path}public/web_img/Activity/teachingCase.png" alt="">
+                        <elseif condition="$data.class_id eq 8"/>
+                        <img class="workType" src="{$oss_path}public/web_img/Activity/teachingCourseware.png" alt="">
+                        <elseif condition="$data.class_id eq 9"/>
+                        <img class="workType" src="{$oss_path}public/web_img/Activity/teachingPaper.png" alt="">
+                        <elseif condition="$data.class_id eq 10"/>
+                        <img class="workType" src="{$oss_path}public/web_img/Activity/teachingWeClass.png" alt="">
+                    </if>
+                    </a>
+                    </div>
+<!--
+                    <p class="activities_p">
+						<span class="left">
+							<img src="__PUBLIC__/img/resource/watch.png" alt="">
+							<span>{$data.browse_count}</span>
+						</span>
+                        <span>
+							<img src="__PUBLIC__/img/resource/like.png" alt="">
+							<span>{$data.zan_count}</span>
+						</span>
+                        <span class="right">
+							<img src="__PUBLIC__/img/resource/collect.png" alt="">
+							<span>{$data.favor_count}</span>
+						</span>
+                    </p>
+-->
+                    <p class="activities_p">
+                        <!--{$data.publisher}-->
+                        <span class="left">北京出版集团</span>
+                        <span class="right">{$data.approve_at|date="Y-m-d H:i",###}</span>
+                    </p>
+                </div>
+                <!--只有作品评比有-->
+                <div class="shareBox">
+                    <?php if(($data['class_id'] == 6) || ($data['class_id'] == 7) || ($data['class_id'] == 8) || ($data['class_id'] == 9) || ($data['class_id'] == 10)) : ?>
+                    <if condition="$data.works_show_status eq 1">
+                        <a href="javascript:;" class="checkWords" id="{$data.id}" {$_GET['pc'] == 'my' ? 'target="_blank"':''}>查看作品</a>
+                    </if>
+                    <?php endif; ?>
+                    <?php if (($_GET['mycat'] == 2) && ($_GET['pc']=='my')) : ?>
+						<span class="shareImg" title="分享">
+							<div class="bdsharebuttonbox">
+								<a href="javasript:;" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">&nbsp;新浪微博</a>
+								<a href="javasript:;" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友">&nbsp;QQ好友</a>
+								<a href="javasript:;" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">&nbsp;QQ空间</a>
+								<a href="javasript:;" class="bds_weixin" data-cmd="weixin" title="分享到微信">&nbsp;微信</a>
+							</div>
+						</span>
+                    <?php endif; ?>
+                </div>
+            </li>
+        </volist>
+    </ul>
+</div>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+<script>
+    var kind;
+    var controller = '{$OldController}';
+    var pageCondition = getQueryString('pc');
+    if(pageCondition == null) pageCondition = '';
+    var myCategory = getQueryString('mycat');
+    if(myCategory == null) myCategory = '';
+    function change(){
+        var obj = {};
+        var sp_arr = window.location.search.substr(1).split("&");
+        for (var i = 0; i < sp_arr.length; i++) {
+            var arr2 = sp_arr[i].split("=");
+            obj[arr2[0]] = arr2[1];
+        }
+        console.log(obj.type);
+
+        kind = obj.type;
+        switch (kind){
+            case 'train':
+$('.title_a1').append('<img class="title_img1" src="__PUBLIC__/img/activity/teacherTrainingPink.png">')
+$('.title_a2').append('<img class="title_img2"  src="__PUBLIC__/img/activity/teachResearchWhite.png">')
+$('.title_a3').append('<img class="title_img3" src="__PUBLIC__/img/activity/experienceSharingWhite.png">')
+$('.title_a5').append('<img class="title_img5"  src="__PUBLIC__/img/activity/workOutWhite.png">')
+$('.title_a6').append('<img class="title_img6"  src="__PUBLIC__/img/activity/seminarWhite.png">') 
+                $('.filterBox').hide();
+                break;
+            case 'research':
+$('.title_a1').append('<img class="title_img1"  src="__PUBLIC__/img/activity/teacherTrainingWhite.png">')
+$('.title_a2').append('<img class="title_img2"  src="__PUBLIC__/img/activity/teachResearchPink.png">')
+$('.title_a3').append('<img class="title_img3" src="__PUBLIC__/img/activity/experienceSharingWhite.png">')
+$('.title_a5').append('<img class="title_img5"  src="__PUBLIC__/img/activity/workOutWhite.png">')
+$('.title_a6').append('<img class="title_img6"  src="__PUBLIC__/img/activity/seminarWhite.png">') 
+                $('.filterBox').hide();
+                break;
+            case 'experience':
+$('.title_a1').append('<img class="title_img1" src="__PUBLIC__/img/activity/teacherTrainingWhite.png">')
+$('.title_a2').append('<img class="title_img2" src="__PUBLIC__/img/activity/teachResearchWhite.png">')
+$('.title_a3').append('<img class="title_img3" src="__PUBLIC__/img/activity/experienceSharingPink.png">')
+$('.title_a5').append('<img class="title_img5"  src="__PUBLIC__/img/activity/workOutWhite.png">')
+$('.title_a6').append('<img class="title_img6"  src="__PUBLIC__/img/activity/seminarWhite.png">')
+                $('.filterBox').hide();
+                break;
+            case 'work':
+               
+$('.title_a1').append('<img class="title_img1" src="__PUBLIC__/img/activity/teacherTrainingWhite.png">')
+$('.title_a2').append('<img class="title_img2" src="__PUBLIC__/img/activity/teachResearchWhite.png">')
+$('.title_a3').append('<img class="title_img3" src="__PUBLIC__/img/activity/experienceSharingWhite.png">')
+$('.title_a5').append('<img class="title_img5"  src="__PUBLIC__/img/activity/workOutPink.png">')
+$('.title_a6').append('<img class="title_img6"  src="__PUBLIC__/img/activity/seminarWhite.png">')
+                $('.filterBox').show();
+                break;
+            case 'seminar':
+      
+$('.title_a1').append('<img class="title_img1" src="__PUBLIC__/img/activity/teacherTrainingWhite.png">')
+$('.title_a2').append('<img class="title_img2" src="__PUBLIC__/img/activity/teachResearchWhite.png">')
+$('.title_a3').append('<img class="title_img3" src="__PUBLIC__/img/activity/experienceSharingWhite.png">')
+$('.title_a5').append('<img class="title_img5"  src="__PUBLIC__/img/activity/workOutWhite.png">')
+$('.title_a6').append('<img class="title_img6"  src="__PUBLIC__/img/activity/seminarPink.png">')
+                $('.filterBox').hide();
+                break;
+        }
+    }
+    change();
+    var type='&type=' + getQueryString('type');
+    $('.title_a1').click(function(){
+        var string = '&type=train';
+        if(pageCondition != '')
+            string += '&pc='+pageCondition;
+        if(myCategory != '')
+            string += '&mycat='+myCategory;
+        location.href = "index.php?m=Home&c=Activity&a=activityMore" + string;
+    })
+    $('.title_a2').click(function(){
+        var string = '&type=research';
+        if(pageCondition != '')
+            string += '&pc='+pageCondition;
+        if(myCategory != '')
+            string += '&mycat='+myCategory;
+        location.href = "index.php?m=Home&c=Activity&a=activityMore" + string;
+    })
+    $('.title_a3').click(function(){
+        var string = '&type=experience';
+        if(pageCondition != '')
+            string += '&pc='+pageCondition;
+        if(myCategory != '')
+            string += '&mycat='+myCategory;
+        location.href = "index.php?m=Home&c=Activity&a=activityMore" + string;
+    })
+    $('.title_a5').click(function(){
+        var string = '&type=work';
+        if(pageCondition != '')
+            string += '&pc='+pageCondition;
+        if(myCategory != '')
+            string += '&mycat='+myCategory;
+        location.href = "index.php?m=Home&c=Activity&a=activityMore" + string;
+    })
+    $('.title_a6').click(function(){
+        var string = '&type=seminar';
+        if(pageCondition != '')
+            string += '&pc='+pageCondition;
+        if(myCategory != '')
+            string += '&mycat='+myCategory;
+        location.href = "index.php?m=Home&c=Activity&a=activityMore" + string;
+    })
+</script>
+
+<script>
+    function search()
+    {
+        var string = "";
+
+        var keyword = $(".search_text").val();
+
+        if(pageCondition != '')
+            string += '&pc='+pageCondition;
+        if(myCategory != '')
+            string += '&mycat='+myCategory;
+        $('.filConAActive').each(function(i,n){
+            var value = $(n).attr('selectId');
+            if(value != 0)
+            {
+                string += '&' + $(n).parent().parent().attr('name') + '=' + value;
+            }
+
+        });
+        if (keyword != '') {
+            keyword = '&keyword=' + keyword;
+        }
+        location.href = "index.php?m=Home&c=Activity&a=activityMore"  + string + type + keyword;
+    }
+    //点击搜索框
+    $('.search_btn').click(function () {
+        search();
+    });
+    //回车搜索
+    $(".search_text").keydown(function (evt) {
+        if (event.keyCode == "13") { //keyCode=13是回车键
+            search();
+        }
+    })
+</script>
+
+<script>
+    //筛选项
+    $('.filterLi').hover(function(){
+        $(this).children('.filterContent').filter(':not(:animated)').slideDown()
+    },function(){
+        $(this).children('.filterContent').slideUp()
+    })
+    //点击筛选项选项
+    $('.filConA').click(function(){
+        var cho = $.trim($(this).html());
+        console.log(cho);
+        $(this).parent().parent().parent().siblings('.filterTitleBox').children('.filterChoice').html(cho);
+        $(this).addClass('filConAActive').parent().siblings().children('.filConA').removeClass('filConAActive');
+        search();
+    })
+    //refresh select text
+    $('.filConAActive').each(function(i,n){
+        var cho = $.trim($(this).html());
+        console.log(cho);
+        $(this).parent().parent().parent().siblings('.filterTitleBox').children('.filterChoice').html(cho);
+        $(this).addClass('filConAActive').parent().siblings().children('.filConA').removeClass('filConAActive')
+    })
+    $('.checkWords').click(function(){
+        <if condition="$_SESSION['teacher'] == 'youke'">
+//                $('.fullscr,#toolTip1').show();
+			$.NotifyBox.NotifyPromptTwoCt('提示','请先完成注册<br>登录后可查看更多信息哦！','登录','去注册',function(){
+				 location.href = "index.php?m=Home&c=Index&a=index";
+			},function(){
+				location.href = "index.php?m=Home&c=Index&a=index";
+			})
+        return;
+        <else/>
+        var id = $(this).attr('id');
+        window.open("index.php?m=Home&c=Activity&a=activityWorks&id="+id);
+        //location.href = "index.php?m=Home&c=Activity&a=activityWorks&id=" +id ;
+        </if>
+
+    })
+</script>
+<script src="__PUBLIC__/js/share/share.js"></script>
+<!--分享-->
+<script type="text/javascript" charset="utf-8">
+    window._bd_share_config = {
+        "common": {
+            "bdSnsKey": {},
+            "bdText": "自定义分享内容",
+            "bdDesc" : "自定义分享摘要",
+            "bdUrl" : "http://www.jingbanyun.com",
+            "bdPic" : "http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Index/ipad.png",
+            "bdMini": "2",
+            "bdMiniList": false,
+            "bdStyle": "0",
+            "bdSize": "16"
+        },
+        "share": {}
+    };
+    //		with(document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+
+    $('.shareImg').hover(function(){
+        var activityId = $(this).parent().parent().attr('activityid');
+        var activityImg = $(this).parent().parent().find('.activities_img').attr('src');
+        window.bdUrl = "http://{$_SERVER['HTTP_HOST']}/Home/Activity/activityDetailShare?id="+activityId;
+        window.bdPic = "http://{$_SERVER['HTTP_HOST']}" + activityImg;
+
+        window._bd_share_main.init(window._bd_share_config);
+        $(this).children('.bdsharebuttonbox').stop().slideDown()
+    },function(){
+        $(this).children('.bdsharebuttonbox').slideUp()
+    })
+//    $('.toolTipClose').click(function(){
+//        $('.fullscr,#toolTip1').hide();
+//    })
+</script>

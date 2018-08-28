@@ -1,0 +1,165 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=3.0" type="text/css" rel="stylesheet"> 
+
+<style>
+    #listWrapper img{
+        width: 50px !important;
+        height: 50px !important;
+		margin-right: 10px;
+		margin-top: 5px;
+    }
+    
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+	
+	.list_title {
+		width: 120px;
+		line-height: 50px; 
+	}
+	
+	.list_title a {
+		color: #2086bf !important;
+	}
+	
+	.keyBox {
+		display: none;
+		border: 1px solid #d9d9d9;
+		width: 500px;
+		text-align: center;
+		padding: 50px 0;
+	}
+	
+	.keyButton {
+		display: block;
+		margin: 20px auto 0;
+	}
+</style>
+
+<div style="margin-bottom: 12px;width: 50%;float: left">
+    <a href="javascript:;" title="发布活动" class="button primary {:session('btntheme')}" id="keyCreate">创建敏感词</a>
+    <div class="keyBox">
+     	<label>敏感词：</label>
+    	<input type="text"  class="create_sensitive_words" name="sensitive_words" placeholder="请输入敏感词,不能为空!">
+    	<button type="button" class="button info keyButton" >创建</button>
+        <!--<input type="button" class="button info keyButton" value="创建">-->
+    </div>
+</div>
+
+<div style="text-align: right;">
+    <div class="input-control text" data-role="input" style="width: 320px;">
+        <input class="key_name" type="text" value="{$keyword}" placeholder="请输入敏感词">
+        <button  class="button search_button button-before" ><span class="mif-search"></span></button><!--onclick="search()"-->
+    </div>
+</div>
+    
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">序号</th>
+        <th class="text-center">敏感词</th>
+        <th class="text-center">创建时间</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+		<volist name="list" id="data"  >
+			<tr id="l_{$data.id}">
+				<td class="text-center">
+					<?php echo $data_page--;?>
+				</td>
+				<td class="text-center" title="{$data.sensitive_words}">
+					{$data.sensitive_words}
+				</td>
+                                <td class="text-center">
+					{$data.create_at|date="Y-m-d H:i",###}
+				</td>
+				<td class="text-center">
+					<button onclick="delete_data({$data.id})" class="button downR">删除</button>
+				</td>
+			</tr>
+		</volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+ 
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"25%"},
+                {"width":"25%"},
+                {"width":"25%"},
+                {"width":"25%"}, 
+            ]
+        });
+    });
+    
+	//删除
+    function delete_data(id){
+        if(confirm('您确定删除吗?')){
+            $.get('index.php?m=Admin&c=SensitiveWords&a=delete_sensitive_words', {id: id}, function (res) {
+                if (res == 'success') { 
+                    location.reload();
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+</script>
+
+<script>
+	$(document).ready(function(){
+            $(".search_button").click(function(){
+                var keyword=$('.key_name').val();
+                var url="{:U('SensitiveWords/sensitive_words')}"+'&keyword='+keyword;
+                location.href=url;
+            });
+            
+            $("#keyCreate").click(function(){
+                $(".create_sensitive_words").val('');
+                $(".keyBox").toggle("slow");
+            });
+            
+            $(".keyButton").click(function(){       
+                var sensitive_keyword=$(".create_sensitive_words").val();
+                if(sensitive_keyword==''){
+                    return  false;
+                }
+                var clone_sensitive_keyword=sensitive_keyword;
+                clone_sensitive_keyword=clone_sensitive_keyword.replace(/\s+/g,"");
+                if(clone_sensitive_keyword==''){
+                    return false;
+                }
+                
+                $.ajax({
+                    type: 'post', 
+                    url: "{:U('SensitiveWords/add_sensitive_words')}",  
+                    data: {'sensitive_words':sensitive_keyword},
+                    cache: false,
+                    dataType:'json',
+                    success: function(msg){  
+                        if(msg=='success'){
+                            location.reload();
+                        }else if(msg=='exists'){
+                            alert('该关键词已存在');
+                        }else{
+                            alert('添加失败');
+                        }
+                    }
+                });
+            }); 
+	});
+ 
+
+
+</script>
+

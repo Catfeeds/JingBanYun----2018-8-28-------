@@ -1,0 +1,121 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		班级管理
+		<span class="blueSpan">
+			<a href="javascript:;">班级行管理</a>>>
+			<a href="{:U('Class/classList')}">班级管理</a>>>
+			<a href="javascript:;">创建班级</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form action="{:U('School/schoolCreateClass')}" method="post" onsubmit="return checkInfo()">
+<div class="blueBox">
+	<span class="blueText left fs16">创建班级</span>
+	<a href="javascript:;" class="blackText right submitA mr20" id="">
+		<label for="submitSave"><img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="mr5"></label>
+		<input type='submit' class="submitInput" id="" value='保存信息'/>
+	</a>
+</div>
+<hr class="thin bg-grayLighter"> 
+        <input type='hidden' name="schoo_id" value="{$school_id}"/>
+	<!--<p class="blueText fs16">教师查询</p>-->
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+                        <div class="cell">
+				<label>班级类型：</label>
+				<select id="class_type" class="input-control" name="class_type" required>
+                                    <option value="0">-请选择-</option>
+                                    <option value="1">校建班</option>
+                                    <option value="2">个人班</option>
+				</select> 
+			</div> 
+			<div class="cell">
+				<label>年级：</label>
+				<select id="grade_list" class="input-control" name="grade" required>
+                                    <option value="0">-请选择-</option>
+                                    <volist name="grade_list" id="grade_item">
+                                            <option value="{$grade_item.id}" <if condition="$grade_item['id']==$grade">selected="true"</if> >{$grade_item.name}</option>
+                                    </volist>
+				</select> 
+			</div>
+			<div class="cell">
+				<label>班级：</label> 
+                                <input type="text" class="class_name input-control" name="class_name"  placeholder="请输入班级名称"  autocomplete="off">
+			</div> 
+			<div class="cell teacher_name_div">
+				<label>管理教师：</label>
+				<input type="text" class="teacher_name input-control" name="teacher_name"  placeholder="请输入管理教师姓名"  autocomplete="off">
+			</div>
+			<div class="cell teacher_telephone_div">
+				<label>管理教师手机号：</label>
+				<input type="text" class="telephone input-control" name="telephone"  placeholder="请输入管理教师手机号"  autocomplete="off">
+			</div>
+		</div>
+	</div>
+</form>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+    var temp_option="<option value='0'>-请选择-</option>"; 
+        $("#class_type").change(function(){
+            var class_type=$("#class_type").val();
+            if(class_type==1){ 
+                $(".teacher_name_div").hide();
+                $(".teacher_telephone_div").hide();
+            }else if(class_type==2){ 
+                $(".teacher_name_div").show();
+                $(".teacher_telephone_div").show();
+            }else{ 
+                $(".teacher_name_div").show();
+                $(".teacher_telephone_div").show();
+            }
+        });
+         
+      
+        function checkInfo() {        
+            var calss_type=$("#class_type").val();
+            if(calss_type==0 || calss_type==false){
+                $.NotifyBox.NotifyOne('注意', '请选择班级类型！', '确定');
+                return false;
+            }
+            if(calss_type!=1){  
+                var teacher_name=$('.teacher_name').val();
+                var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		if (teacher_name == '') {
+			$.NotifyBox.NotifyOne('注意', '教师姓名不能为空！', '确定');
+			return false;
+		}else if(!regName.test(teacher_name)){
+                        $.NotifyBox.NotifyOne('注意','教师姓名格式不正确！','确定');
+                        return false;
+                }  
+                //联系人电话
+		var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		var linkmanPhone = $('.telephone').val();
+		if (!regMobilePhone.test(linkmanPhone)) { 
+                        $.NotifyBox.NotifyOne('注意','教师手机号格式错误！','确定');
+			return false;
+		} else if (linkmanPhone == '') { 
+                        $.NotifyBox.NotifyOne('注意','请输入教师手机号！','确定');
+			return false;
+		}
+                
+            } 
+                
+                 var grade=$("#grade_list").val();
+                 var class_val=$(".class_name").val();
+                 if(grade==0 || grade==false){
+                     $.NotifyBox.NotifyOne('注意', '请选择年级！', '确定');
+                    return false;
+                 } 
+                 if(class_val=='' || class_val==false){
+                     $.NotifyBox.NotifyOne('注意', '请填写班级信息！', '确定');
+                    return false;
+                 }
+		return true;
+	}
+</script>

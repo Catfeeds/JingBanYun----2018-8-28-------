@@ -1,0 +1,1170 @@
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=3.1" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/bjResourceList.css?ver=3.1" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<style>
+	.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+		box-sizing: content-box;
+	}
+
+	.qq-uploader {
+		max-height: 540px
+	}
+
+	#laydate_hms {
+		display: none !important
+	}
+	.resource_classify{
+		display: none
+	}
+	.resource_middle{
+		border: none
+	}
+	.filter_right{
+		margin-top: 0
+	}
+	.resourceBox{
+		overflow: hidden;
+		margin-top: 50px;
+		background: url(__PUBLIC__/img/resource/border.jpg) repeat-y 213px 0
+	}
+	.newSearchBox{
+		width: 266px;
+		height: 174px;
+		text-align: center;
+		margin-bottom: 10px;
+		margin-right: 18px;
+		margin-left: 15px;
+	}
+	.newSearchBox1{
+		background: url({$oss_path}public/web_img/Resource/weikeshipin.png) no-repeat center;
+	}
+	.newSearchBox2{
+		background: url({$oss_path}public/web_img/Resource/shiyan.png) no-repeat center;
+	}
+	.newSearchBox3{
+		background: url({$oss_path}public/web_img/Resource/tupiansucai.png) no-repeat center;
+	}
+	.newSearchBox4{
+		background: url({$oss_path}public/web_img/Resource/jiaoxuesheji.png) no-repeat center;
+	}
+	.newSearchBox5{
+		background: url({$oss_path}public/web_img/Resource/ketangshilu.png) no-repeat center;
+	}
+	.newSearchBox6{
+		background: url({$oss_path}public/web_img/Resource/lianxijiaohudonghua.png) no-repeat center;
+	}
+	.newSearchBox7{
+		background: url({$oss_path}public/web_img/Resource/jiaocaijiaofafenxi.png) no-repeat center;
+	}
+	.newSearchBox8{
+		background: url({$oss_path}public/web_img/Resource/jiaoxuefansi.png) no-repeat center;
+	}
+	.newSearchBox9{
+		background: url({$oss_path}public/web_img/Resource/jiaocaiqingjingdonghua.png) no-repeat center;
+	}
+	.newSearchBox10{
+		background: url({$oss_path}public/web_img/Resource/jiaocaiyinpin.png) no-repeat center;
+	}
+	.newSearchBox11{
+		background: url({$oss_path}public/web_img/Resource/gongju.png) no-repeat center;
+	}
+	.newSearchBox12{
+		background: url({$oss_path}public/web_img/Resource/jiaoxuekejian.png) no-repeat center;
+	}
+	.newSearchBox13{
+		background: url({$oss_path}public/web_img/Resource/huiben.png) no-repeat center;
+	}
+	.resourceLength{
+		color: #333;
+		font-size: 16px;
+		background: #fff;
+		padding: 3px 10px;
+		line-height: 28px;
+		position: relative;
+		top: 109px;
+
+	}
+	a:hover{
+		text-decoration: none;
+	}
+</style>
+<div class="left " style="position: absolute;left: 5%;top: 0;">
+	<a href="javascript:window.history.go(-1)" class="btn btnReturn2">返回</a>
+</div>
+<div class="resource_box bothBorder" style="min-height: 650px">
+
+	<div class="resource_top" style="position: relative; overflow: initial">
+		<!-- <div class="left more_left">
+			<img src="__PUBLIC__/img/resource/anzhangjiezhishidianliulan.png" alt="">
+			<a href="javascript:;">按章节知识点浏览</a>
+		</div> -->
+
+		<div class="search">
+			<div class="search_left">
+				<select name="resource_type" id="resource_type">
+					<option value="">-选择类型-</option>
+                                    <volist name="resource_type" id="item_type">
+					<option value="{$item_type.id}" {$item_type['id']==$attr_type?'selected':''} >{$item_type.type_name}</option>
+                                    </volist>
+				</select>
+				<button class="search_btn">搜索</button>
+				<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资源包含的关键字" maxlength="28" autocomplete="off">
+			</div>
+			<div class="search_right">
+				<a href="javascript:;" class="filter_a">高级检索</a>
+			</div>
+		</div>
+	</div>
+	<div class="border_eee"></div>
+	<div class="resourceBox" style="overflow:hidden;background:none">
+
+	<div class=" ">
+        <div class="block mt10">
+			<ul class="of">
+				<?php if($tags === false){?>
+				<div class="text-center">
+
+				<img src="<?php echo $oss_path;?>public/web_img/Empty/bjResourceSearch.png" alt="">
+				<p style="font-size:20px;color:#999;font-family: PingFangBold">正在整理制作中，敬请期待！</p>
+
+				</div>
+				<?php }else{?>
+				<?php foreach($list as $item){
+					if($item['id'] == WEI_KE_SHI_PIN && $item['count'] > 0){ ?>
+				<li class="left">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox1 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == SHI_YAN && $item['count'] > 0){?>
+				<li class="left ">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox2 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == TU_PIAN_SU_CAI && $item['count'] > 0){?>
+				<li class="left">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox3 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == JIAO_XUE_SHE_JI && $item['count'] > 0){?>
+				<li class="left">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox4 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == KE_TANG_SHI_LU && $item['count'] > 0){?>
+				<li class="left ">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox5 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == JIAO_XUE_KE_JIAN && $item['count'] > 0){?>
+				<li class="left ">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox12 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == LIAN_XI_JIAO_HU_DONG_HUA && $item['count'] > 0){?>
+				<li class="left">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox6 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == JIAO_CAI_JIAO_FA_FEN_XI && $item['count'] > 0){?>
+				<li class="left">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox7 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == JIAO_XUE_FAN_SI && $item['count'] > 0){?>
+				<li class="left ">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox8 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == JIAO_CAI_QING_JING_DONG_HUA && $item['count'] > 0){?>
+				<li class="left">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox9 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == JIAO_CAI_IN_PIN && $item['count'] > 0){?>
+				<li class="left">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox10 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] ==  HUI_BEN_JIAO_XUE_ZI_YUAN && $item['count'] > 0){?>
+				<li class="left">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox13 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }?>
+				<?php if($item['id'] == GONG_JU  && $item['count'] > 0){?>
+				<li class="left">
+					<a href="<?php echo U('BjResource/bjResourceSearch').'&attr_type='.$item['id'].$url ;?>">
+						<div class="newSearchBox11 newSearchBox">
+							<span class="resourceLength">
+								<?php echo $item['count']?>条资源
+							</span>
+						</div>
+					</a>
+				</li>
+				<?php }}}?>
+
+			</ul>
+        </div>
+	</div>
+</div>
+
+</div>
+<div class="filtepopups">
+	<img src="__PUBLIC__/img/classManage/icon_delete.png" alt="" class="delete">
+	<p class="fp1">选择检索控制条件</p>
+	<p class="fp2">高级检索是利用多条件组合的方式，指定检索范围以达到检索的精准度要求，以下检索条件均为选填，您可以任意自由组合条件进行检索。</p>
+	<form action="{:U('BjResource/bjResourceSearch')}" method='get'>
+                <input type='hidden' name='m' value='Home'/>
+                <input type='hidden' name='c' value='BjResource'/>
+                <input type='hidden' name='a' value='bjResourceSearch'/>
+
+		<div class="formdiv">
+			<label for="">关&nbsp; 键&nbsp; 字：</label>
+			<div class="rightdiv">
+				<input type="text" name='keyword' placeholder="请输入资源包含的关键字" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">资源格式：</label>
+			<div class="rightdiv">
+                            <select name="file_type">
+                                <option value="">--选择--</option>
+                                <volist name="bj_resource_file_type" id="item_file">
+                                    <option value="{$item_file.value}">{$key}</option>
+                                </volist>
+                            </select>
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：</label>
+			<div class="rightdiv">
+				<select name="course" id="t_course">
+                                    <option value="">--选择--</option>
+                                    <volist name="course_list2" id="course_item">
+                                        <option value="{$course_item.id}">{$course_item.name}</option>
+                                    </volist>
+                                </select>
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</label>
+			<div class="rightdiv">
+				<select name="grade" id="t_grade">
+                                    <option value="">--选择--</option>
+                                    <volist name="grade_list" id="grade_item">
+                                        <option value="{$grade_item.id}">{$grade_item.name}</option>
+                                    </volist>
+                                </select>
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">教材分册：</label>
+			<div class="rightdiv">
+				<select name="school_term" id="t_textbook">
+                                    <option value="">--选择--</option>
+                                    <option value="1">上册</option>
+                                    <option value="2">下册</option>
+                                    <option value="3">全一册</option>
+				</select>
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">所属章节：</label>
+			<div class="rightdiv">
+				<select name="chapter" id="chapter" class="select220">
+					<option value="">--选择--</option>
+				</select>
+				&nbsp;&nbsp;&nbsp;
+				<select name="festival" id="festival" class="select220" style="margin-left: 8px;">
+					<option value="">--选择--</option>
+				</select>
+			</div>
+			<div class="red">
+					请先选择学科年级教材分册
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">上架时间：</label>
+			<div class="rightdiv">
+				<input type="text" class="select220" name='s_time' id="startTime" readonly>
+				&nbsp;至
+				<input type="text" class="select220 right" name='e_time'  id="endTime" readonly>
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">作&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;者：</label>
+			<div class="rightdiv">
+				<input type="text" name='author' placeholder="请输入作者姓名" onkeyup="this.value=this.value.replace(/\s+/g,'')">
+			</div>
+		</div>
+		<div class="formdiv text-center">
+			<button class="filterbtn">开始检索</button>
+		</div>
+	</form>
+</div>
+<div id="bg">
+    <?php if(!empty($course)){?>
+    <input type="hidden" attr-data="course_<?php echo $course?>" class="hidden">
+    <?php }elseif(!empty($textbook)){?>
+    <input type="hidden" attr-data="textbook_<?php echo $textbook?>" class="hidden">
+    <?php }elseif(!empty($chapter)){?>
+    <input type="hidden"  attr-data="chapter_<?php echo $chapter?>" class="hidden">
+    <?php }elseif(!empty($festival)){?>
+    <input type="hidden"  attr-data="festival_<?php echo $festival?>" class="hidden">
+    <?php }elseif(!empty($knowledge)){?>
+    <input type="hidden" attr-data="knowledge_<?php echo $knowledge?>" class="hidden">
+    <?php }elseif(!empty($child_knowledge)){?>
+    <input type="hidden"  attr-data="child_knowledge_<?php echo $child_knowledge?>" class="hidden">
+    <?php }?>
+</div>
+<div class="filtepopups_left">
+	<img src="__PUBLIC__/img/classManage/icon_delete.png" alt="" class="delete">
+     <form id="main_form" action="/index.php?m=Home&c=BjResource&a=bjResourceList" method="get">
+
+        <div class="resource_classify">
+            <p class="classify_p">学科</p><span class="class_img"></span>
+            <ul class="classify_ul course_ul">
+                  <volist name="course_list" id="course_item">
+                      <li attr_id="{$course_item.id}">{$course_item.name}</li>
+                  </volist>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">年级</p><span class="class_img"></span>
+            <ul class="classify_ul grade_ul">
+                  <volist name="grade_list" id="grade_item">
+                       <li attr_id="{$grade_item.id}">{$grade_item.name}</li>
+                  </volist>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">年级分册</p><span class="class_img"></span>
+            <ul class="classify_ul textbook_ul">
+                <li attr_id="1">上册</li>
+                <li attr_id="2">下册</li>
+                <li attr_id="3">全一册</li>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">章</p><span class="class_img"></span>
+            <ul class="classify_ul chapter_ul">
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">节</p><span class="class_img"></span>
+            <ul class="classify_ul festival_ul">
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">知识点1</p><span class="class_img"></span>
+            <ul class="classify_ul knowledge_ul">
+            </ul>
+        </div>
+       <div class="resource_classify">
+            <p class="classify_p">知识点2</p><span class="class_img"></span>
+            <ul class="classify_ul child_knowledge_ul">
+            </ul>
+        </div>
+        <input type='hidden' name='m' value='Home'/>
+        <input type='hidden' name='c' value='BjResource'/>
+        <input type='hidden' name='a' value='bjResourceList'/>
+
+        <div class="choice text-center">
+        	<span class='course_span' attr_id=''></span>
+        	<span class='grade_span' attr_id=''></span>
+        	<span class='textbook_span' attr_id=''></span>
+        	<span class='chapter_span' attr_id=''></span>
+        	<span class='festival_span' attr_id=''></span>
+        	<span class='knowledge_span' attr_id=''></span>
+        	<span class='child_knowledge_span' attr_id=''></span>
+        </div>
+     	<div class="formdiv text-center">
+			<!--<button class="filterbtn">开始检索</button>-->
+                        <input type="button" class="filterbtn knowledge_point_btn" value="开始检索" />
+		</div>
+         <div class="condition_div">
+            <input type='hidden' class='hidden0' name='course' />
+            <input type='hidden' class='hidden1' name='grade' />
+            <input type='hidden' class='hidden2' name='school_term' />
+            <input type='hidden' class='hidden3' name='chapter' />
+            <input type='hidden' class='hidden4' name='festival' />
+            <input type='hidden' class='hidden5' name='knowledge' />
+            <input type='hidden' class='hidden6' name='child_knowledge' />
+         </div>
+    </form>
+</div>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+
+ <script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/bjBesourceIf.js"></script>
+<script>
+
+</script>
+<script type="text/javascript">
+    storage=window.localStorage;
+    /*********************************************************************************************************************/
+
+    var culture_resource_id="{$culture_resource_id}";
+    var image_showqi_element='/Public/img/resource/shouqi1.png';
+    function toggleDiv(a, b,level,c) {
+        $(a).live('click', function () {
+            switch(level){
+                case 0:
+                    if ($(this).parent().find(b).css('display') == 'none') {
+                        if($(this).children('a').attr('attr_course')==culture_resource_id){
+                            //传统资源
+                            return false;
+                        }
+
+                        $(this).attr('src', '__PUBLIC__/img/resource/zhankai1.png');
+                        $(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                      	$(this).parent().find('.resource_grade,.resource_unt,.resource_les,.resource_points').removeClass('active')
+                        $(this).parent().find(b).show().children('a,img').show()
+												if($('#contentWrapper').attr('class').indexOf('fullscreen') == -1 && $(document).scrollTop()>265){
+													$('body').animate({
+														scrollTop:$(this).parent().index()*40+265
+													},1000)
+												}
+                    } else {
+                        $(this).attr('src', '/Public/img/resource/shouqi1.png');
+                        $(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                        $(this).parent().find(b).hide().find('div,p,a,img').hide();
+                        $(this).parentsUntil('.resource_subject').find('*').removeClass('active')
+
+                        	$(this).parent().find('.resource_grade,.resource_unt,.resource_les,.resource_points').removeClass('active')
+                    }
+                    //
+                    break;
+                default:
+                    if($(this).attr('src')==image_showqi_element){
+                        $(this).attr('src', '__PUBLIC__/img/resource/zhankai1.png');
+
+                        $(this).parent(c).addClass('active');
+												$(this).parent(c).parent().siblings().find('.active').removeClass('active')
+                        $(this).parent(c).parent().siblings().find(c).removeClass('active')
+
+
+                        // $(this).parent().parent().next().children().addClass('active')
+                    }else{
+                        $(this).attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+
+                        $(this).parent(c).removeClass('active');
+                        $(this).siblings().find('.resource_unt').removeClass('active')
+                        // $(this).parent().parent().next().children().removeClass('active')
+                    }
+
+                    if($(this).parent().find(b).length){
+                        if ($(this).parent().find(b).css('display') == 'none') { //显示操作
+                            $(this).attr('src', '__PUBLIC__/img/resource/zhankai1.png');
+                            if ($(this).siblings('div').find('img').css('display') !== 'none') {
+                                $(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                                $(this).siblings('div').show().find(b).show().children().show();
+
+                                // $(this).parent().after('div').addClass('active')
+                                $(this).parent(c).parent().siblings().find(c).removeClass('active');
+                                $(this).siblings().find('.resource_les').removeClass('active')
+
+
+                            } else {
+
+																	  $(this).siblings('div').show().find(b).show().children().show();
+                                // $(this).siblings('div').show().find(b).show().find('div,p,a,img').show();
+                            }
+                            //$(this).siblings('div').show().find(b).show().children().show();
+                        } else { //隐藏操作
+                            $(this).attr('src', '/Public/img/resource/shouqi1.png');
+
+                            if ($(this).siblings('div').find('img').css('display') !== 'none') {
+                                $(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                                $(this).siblings('div').hide().find(b).hide().find('div,p,a').hide();
+                            } else {
+                                $(this).siblings('div').hide().find(b).hide().find('div,p,a,img').hide();
+                            }
+
+                        }
+                    }else{
+                        var id=$(this).attr('attr_id');
+                        var obj=this;
+                        request_url="{:U('BjResource/getNextLevelKnowledge')}&id="+id+'&level='+level;
+                        $.ajax({
+                            type: 'get',
+                            url: request_url,
+                            cache: false,
+                            async: false,
+                            dataType:'json',
+                            success: function(msg){
+                                if(msg.data.length){
+                                    switch(level){
+                                        case 1:
+                                            var element='<div class="resource_untdiv" style="display: block;">'+
+                                                '<div  class="resource_unt" style="display: block;">'+
+                                                '<img src="__PUBLIC__/img/resource/shouqi1.png" alt="" class="resource_untimg">\n\
+                                                <a href="/index.php?m=Home&c=BjResource&a=bjResourceList&chapter=">unit1</a>'+
+                                                '</div >'+
+                                                '</div>';
+                                            break;
+                                        case 2:
+                                            var element='<div class="resource_lesdiv" style="display: block;">'+
+                                                '<div  class="resource_les" style="display: block;">'+
+                                                '<img src="__PUBLIC__/img/resource/shouqi1.png" alt="" class="resource_lesimg">\n\
+                                                <a href="/index.php?m=Home&c=BjResource&a=bjResourceList&festival=">lesson1</a>'+
+                                                '</div >'+
+                                                '</div>';
+                                            break;
+                                        case 3:
+                                            var element='<div class="resource_pointdiv" style="display: block;">'+
+                                                '<div class="resource_points" style="display: block;">'+
+                                                '<img src="__PUBLIC__/img/resource/shouqi1.png" alt="" class="resource_pointsimg">\n\
+                                                <a href="/index.php?m=Home&c=BjResource&a=bjResourceList&knowledge=">知识点不超过20个字</a>'+
+                                                '</div >'+
+                                                '</div>';
+                                            break;
+                                        case 4:
+																				var element='<div class="resource_pointlist" style="display: block;"><div class="resource_pointlistdiv" style="display: block;">'+'<a href="/index.php?m=Home&c=BjResource&a=bjResourceList&child_knowledge=" style="display: block;" class="resource_pointlistA">知识点不超过20个字111</a>'+'</div></div>';
+                                            break;
+                                    }
+                                    for(var i=0;i<msg.data.length;i++){
+                                        var clone_data=$(element).clone(true);
+                                        $(clone_data).find('img').attr('attr_id',msg.data[i].id);
+                                        $(clone_data).find('a').text(msg.data[i].knowledge_name);
+                                        $(clone_data).find('a').attr('title',msg.data[i].knowledge_name);
+                                        var url=$(clone_data).find('a').attr('href');
+                                        url=url+msg.data[i].id;
+                                        $(clone_data).find('a').attr('href',url);
+                                        if(msg.data[i].knowledge_count == 0){
+                                            $(clone_data).find('img').css('visibility', 'hidden');
+                                        }else{
+                                            $(clone_data).find('img').show();
+                                        }
+                                        $(obj).parent().append(clone_data);
+                                        // bigHover();
+                                        asd()
+
+                                    }
+
+                                }
+                            }
+                        });
+                    }
+                    break;
+            }
+
+        })
+    }
+
+    toggleDiv('.resource_subjectimg', '.resource_grade',0);
+    toggleDiv('.resource_gradeimg', '.resource_unt',1,'.resource_grade');
+    toggleDiv('.resource_untimg', '.resource_les',2,'.resource_unt');
+    toggleDiv('.resource_lesimg', '.resource_points',3,'.resource_les');
+    toggleDiv('.resource_pointsimg', '.resource_pointlistdiv',4,'.resource_points');
+    $('.filter_a').on('click', function () {
+        $('#bg,.filtepopups').show();
+        $('body').css('overflow-y','hidden')
+    })
+    $('.delete').click(function () {
+        $('#bg,.filtepopups').hide();
+        $('body').css('overflow-y','auto')
+    })
+</script>
+<script>
+    function asd(){
+        $('.resource_classify').find('img').click(function(){
+            var listName = $(this).parent().attr('class');
+            switch(listName){
+                case 'resource_subject':
+                    for(var a = 0;a<$(this).parent().siblings().length;a++){
+                        if($(this).parent().siblings().eq(a).children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+                            $(this).parent().siblings().eq(a).children('img').siblings('div').find('div,img,a').hide();
+                            $(this).parent().siblings().eq(a).children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().siblings().eq(a).children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+                case 'resource_grade':
+                    for(var b = 0;b<$(this).parent().parent().siblings().length;b++){
+                        if($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+                            $(this).parent().parent().siblings().eq(b).children().children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+                case 'resource_unt':
+                    for(var b = 0;b<$(this).parent().parent().siblings().length;b++){
+                        if($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+                            $(this).parent().parent().siblings().eq(b).children().children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+                case 'resource_les':
+                    for(var b = 0;b<$(this).parent().parent().siblings().length;b++){
+                        if($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+                            $(this).parent().parent().siblings().eq(b).children().children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+                case 'resource_points':
+                    for(var b = 0;b<$(this).parent().parent().siblings().length;b++){
+                        if($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+                            $(this).parent().parent().siblings().eq(b).children().children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                            $(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+                        }
+                    }
+                    break;
+            }
+        })
+    }
+		$(document).ready(function(){
+			  asd()
+		})
+
+    /*********************************************************************************************************************/
+        //点击知识树检索
+        $('.knowledge_point_btn').click(function(){
+            var all_con=$('.choice').find('span');
+            for(var i=0;i<all_con.length;i++){
+                var value=$(all_con[i]).attr('attr_id');
+                $('.condition_div').find('input').eq(i).val(value);
+            }
+            $("#main_form").submit();
+        });
+
+        //点击知识点浏览
+        var temp_li='<li>一年级</li>';
+        function grade_course_change_function(obj){
+            //清空所有子li
+            $('.chapter_ul').children('li').remove();
+            $('.festival_ul').children('li').remove();
+            $('.knowledge_ul').children('li').remove();
+            $('.child_knowledge_ul').children('li').remove();
+
+            $('.chapter_span').text('');
+            $('.festival_span').text('');
+            $('.knowledge_span').text('');
+            $('.child_knowledge_span').text('');
+        };
+        $('.course_ul').find('li').click(function(){
+            grade_course_change_function(this);
+        });
+        $('.grade_ul').find('li').click(function(){
+            grade_course_change_function(this);
+        });
+
+         function getNextKnowledgePoint(obj,level){
+             var needAddParentElement='';
+             switch(level){
+                case 2:
+                    needAddParentElement='festival_ul';
+                    $('.festival_ul').children('li').remove();
+                    $('.knowledge_ul').children('li').remove();
+                    $('.child_knowledge_ul').children('li').remove();
+
+                    $('.festival_span').text('');
+                    $('.knowledge_span').text('');
+                    $('.child_knowledge_span').text('');
+                    break;
+                case 3:
+                    needAddParentElement='knowledge_ul';
+                    $('.knowledge_ul').children('li').remove();
+                    $('.child_knowledge_ul').children('li').remove();
+
+                    $('.knowledge_span').text('');
+                    $('.child_knowledge_span').text('');
+                    break;
+                case 4:
+                    needAddParentElement='child_knowledge_ul';
+                    $('.child_knowledge_ul').children('li').remove();
+
+                    $('.child_knowledge_span').text('');
+                    break;
+             }
+             var val = $(obj).attr('attr_id');
+                $.getJSON("/index.php?m=Home&c=BjResource&a=getNextLevelKnowledge", {
+                        'id': val,
+                        'level': level
+                }, function (msg) {
+                        var length = msg.data.length;
+                        for (var i = 0; i < length; i++) {
+                                var temp = $(temp_li).clone(true);
+                                $(temp).text(msg.data[i].knowledge_name);
+                                $(temp).attr('attr_id',msg.data[i].id);
+                                $("."+needAddParentElement).append(temp);
+                        }
+                });
+         }
+
+        //分册点击
+        $(".course_ul").find('li').live('click',function(){
+            getChapter(this);
+        });
+        $(".grade_ul").find('li').live('click',function(){
+            getChapter(this);
+        });
+        $(".textbook_ul").find('li').live('click',function(){
+            getChapter(this);
+        });
+        function getChapter(obj){
+            needAddParentElement='chapter_ul';
+            $('.chapter_ul').children('li').remove();
+            $('.festival_ul').children('li').remove();
+            $('.knowledge_ul').children('li').remove();
+            $('.child_knowledge_ul').children('li').remove();
+
+            $('.chapter_span').text('');
+            $('.festival_span').text('');
+            $('.knowledge_span').text('');
+            $('.child_knowledge_span').text('');
+            if($(obj).parent().hasClass('course_ul')){
+                var val = $('.textbook_span').attr('attr_id');
+                var course_id=$(obj).attr('attr_id');
+                var grade_id=$('.grade_span').attr('attr_id');
+
+            }else if($(obj).parent().hasClass('grade_ul')){
+                var val = $('.textbook_span').attr('attr_id');
+                var course_id=$('.course_span').attr('attr_id');
+                var grade_id=$(obj).attr('attr_id');
+
+            }else{
+                var val = $(obj).attr('attr_id');
+                var course_id=$('.course_span').attr('attr_id');
+                var grade_id=$('.grade_span').attr('attr_id');
+            }
+            if(val==false || course_id==false || grade_id==false){
+                return false;
+            }
+            if(course_id==40){
+
+                return false;
+            }
+
+            $.getJSON("/index.php?m=Home&c=BjResource&a=getNextLevelKnowledge", {
+                    'course_id':course_id,
+                    'grade_id':grade_id,
+                    'school_term':val,
+                    'level':1
+            }, function (msg) {
+                    var length = msg.data.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(temp_li).clone(true);
+                            $(temp).text(msg.data[i].knowledge_name);
+                            $(temp).attr('attr_id',msg.data[i].id);
+                            $("."+needAddParentElement).append(temp);
+                    }
+            });
+        }
+
+
+        //章发生变化
+        $(".chapter_ul").find('li').live('click',function(){
+            getNextKnowledgePoint(this,2);
+        });
+        //节发生变化
+        $(".festival_ul").find('li').live('click',function(){
+            getNextKnowledgePoint(this,3);
+        });
+        //知识点发生变化
+        $(".knowledge_ul").find('li').live('click',function(){
+            getNextKnowledgePoint(this,4);
+        });
+
+/****************高级检索**********************/
+        //点击搜索
+        $('.search_btn').click(function(){
+            var resource_type=$('#resource_type').val();
+            var keyword=$('.search_text').val();
+            var string='';
+            if(resource_type!=''){
+                string='&attr_type='+resource_type;
+            }
+            if(keyword!=''){
+                string+='&keyword='+keyword;
+            }
+            var url="/index.php?m=Home&c=BjResource&a=bjResourceSearch"+string;
+            location.href=url;
+        });
+        $(".search_text").keydown(function (evt) {
+            if (event.keyCode == "13") { //keyCode=13是回车键
+                var evt = (evt) ? evt : ((window.event) ? window.event : "")
+                var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+                $('.search_btn').click();
+            }
+        })
+        var query_con="{$condition_str}";
+        //点击排序
+        $('#sort_order').change(function(){
+            var order_val=$('#sort_order').val();
+            var url="{:U('BjResource/bjResourceList')}&"+query_con+'&order='+order_val;
+            location.href=url;
+        });
+
+        var option='<option value=""></option>';
+        //学科发生变化
+        /*$("#t_grade,#t_course").change(function () {
+            var course_val = $("#t_course").val();
+            var grade_val = $("#t_grade").val();
+            $("#t_textbook option:not(:eq(0))").remove();
+            $("#chapter option:not(:eq(0))").remove();
+            $("#festival option:not(:eq(0))").remove();
+            if (course_val == 0) {
+                return false;
+            }
+            $.getJSON("/index.php?m=Home&c=Teach&a=getCourseTextbook", {
+                    'course_id': course_val,
+                    'grade_id': grade_val
+            }, function (msg) {
+                    var length = msg.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg[i].name);
+                            $(temp).val(msg[i].id);
+                            $("#t_textbook").append(temp);
+                    }
+            });
+        });*/
+
+        //分册变化
+        $("#t_grade,#t_course,#t_textbook").change(function () {
+            var course_val = $("#t_course").val();
+            var grade_val = $("#t_grade").val();
+            var textbook_val = $("#t_textbook").val();
+
+            $("#chapter option:not(:eq(0))").remove();
+            $("#festival option:not(:eq(0))").remove();
+            if (textbook_val ==false) {
+                return false;
+            }
+            if(course_val==false){
+                return false;
+            }
+            if(textbook_val==false){
+                return false;
+            }
+            if(course_val=='40'){
+
+                return false;
+            }
+            $.getJSON("/index.php?m=Home&c=BjResource&a=getNextLevelKnowledge", {
+                    'course_id': course_val,
+                    'grade_id':grade_val,
+                    'school_term':textbook_val,
+                    'level': 1
+            }, function (msg) {
+                    var length = msg.data.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg.data[i].knowledge_name);
+                            $(temp).val(msg.data[i].id);
+                            $("#chapter").append(temp);
+                    }
+            });
+        });
+        //章发生变化
+        $("#chapter").change(function () {
+            var chapter_val = $("#chapter").val();
+            if (chapter_val == 0) {
+                return false;
+            }
+            $("#festival option:not(:eq(0))").remove();
+
+            $.getJSON("/index.php?m=Home&c=BjResource&a=getNextLevelKnowledge", {
+                    'id': chapter_val
+            }, function (msg) {
+                    var length = msg.data.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg.data[i].knowledge_name);
+                            $(temp).val(msg.data[i].id);
+                            $("#festival").append(temp);
+                    }
+            });
+        });
+
+
+	!function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+</script>
+
+<script>
+    var filHeight;
+	$('.filter_a').on('click', function () {
+		$('#bg,.filtepopups').show();
+		$('body').css('overflow-y','hidden')
+	})
+	$('.more_left').on('click', function () {
+		$('#bg,.filtepopups_left').show();
+        filHeight = $('.filtepopups_left').height()*0.8;
+        $('body').css('overflow-y','hidden')
+	})
+	$('.delete').click(function () {
+		$('#bg,.filtepopups,.filtepopups_left').hide();
+			$('body').css('overflow-y','auto')
+	})
+    $('.more').click(function(){
+		$(this).hide().parent().parent().find('.none').show()
+	})
+	$('.resource_classify').hover(function(){
+            if($(this).children('.classify_ul').height()>filHeight) {
+                $(this).children('.classify_ul').filter(':not(:animated)').slideDown('10000').css({
+                        'max-height': filHeight,
+                        'overflow-y': 'auto'
+                })
+            } else if($(this).children('.classify_ul').height() == 0) {
+                $(this).children('.classify_ul').filter(':not(:animated)').slideDown('10000').css({
+                        'max-height': filHeight,
+                        'overflow-y': 'scroll'
+                })
+            } else {
+                $(this).children('.classify_ul').filter(':not(:animated)').slideDown()
+            }
+
+		},function(){
+			$(this).children('.classify_ul').slideUp().css({
+                'max-height': 'inherit',
+                'overflow-y': 'hidden'
+            })
+		})
+	$('.classify_ul>li').live('click',function(){
+                var id=$(this).attr('attr_id');
+		var h = $(this).html();
+		var i = $(this).parent().parent().index();
+                $('.choice').find('span').eq(i).attr('attr_id',id);
+		$('.choice').find('span').eq(i).html(h)
+	})
+	$('#chapter,#festival').click(function(){
+
+		if($('#t_course').val() == ''&& $('#t_grade').val() == ''&& $('#t_textbook').val() == ''){
+			$('.red').show()
+		}
+	})
+	$('#t_course,#t_grade,#t_textbook').change(function(){
+		$('.red').hide()
+	})
+for(var i = 0;i<$('.ieSwfImg').length;i++){
+    $('.ieSwfImg').eq(i).parentsUntil('li').parent().addClass('ieSwfLi')
+}
+
+$('.ieSwfLi').click(function(){
+    var userAgent = navigator.userAgent;
+    var isOpera = userAgent.indexOf("Opera") > -1;
+    if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+        if(userAgent.indexOf("MSIE 9.0")>0||userAgent.indexOf("MSIE 10.0")){
+            $.NotifyBox.NotifyPromptOne('提示','暂不支持IE浏览器查看哦，<br>请选择其他浏览器！','确定');
+            return false;
+        }
+    }
+})
+
+
+</script>
+<script>
+    function return_ajax($page) {
+        if($page){
+            var page = $page;
+        }
+        var temp_arr = new Array();
+        $('.choose').each(function (i,val) {
+            temp_arr.push($('.choose').eq(i).attr('attr-data'))
+        });
+        var temp_arr_temp = new Array();
+        $('.hidden').each(function (i,val) {
+            temp_arr_temp.push($('.hidden').eq(i).attr('attr-data'))
+        });
+
+        $.ajax({
+            url: '/index.php?m=Home&c=BjResource&a=ajaxScreening',
+            type: 'GET',
+            //dataType: 'json',
+            data:{'temp_arr':temp_arr,'p':page,'other':2,'temp_arr_temp':temp_arr_temp},
+            success: function (data) {
+                $('.block').html(data);
+                $("html,body").animate({scrollTop:0}, 300);
+            },
+            error: function () {
+                alert('cuo');
+            }
+        });
+    }
+
+		$('.checkedBoxImg').click(function () {
+			if($(this).attr('attr-data') == undefined){
+				return false
+			}else {
+				if($(this).hasClass('choose') == true){
+						$(this).removeClass("choose");
+				}else{
+						$(this).addClass("choose");
+				}
+				return_ajax();
+			}
+
+		});
+
+    $('#a').click(function () {
+        $(this).addClass("choose");
+        $('#b').removeClass("choose");
+        return_ajax();
+    });
+    $('#b').click(function () {
+        $(this).addClass("choose");
+        $('#a').removeClass("choose");
+        return_ajax();
+    });
+
+    function callback(data) {
+        var arr = data.split("&p=");
+
+        return_ajax(arr[1]);
+    }
+</script>
+
+<script>
+    /************************************************************************************************************/
+    //前台知识树状态保存
+    $('.resource_classify').find('a').live('click',function () {
+		$('.resource_classify').find('.heightcolor').removeClass('heightcolor');
+		$(this).addClass('heightcolor');
+        storage.a=$('.resource_classify').html();
+
+    });
+    $('.resource_classify').html(storage.a);
+	 $('.resource_classify').css('min-height',$('#contentWrapper').height())
+
+    /****************************************************清除localStorage操作*******************************************************/
+    $('.return_a,#gohome,#navThumImg5,#navThumImg1,#navThumImg2,#navThumImg3,#navThumImg4').click(function () {
+        var storage=window.localStorage;storage.removeItem("a");
+    })
+	if($('.heightcolor').eq(0).siblings('img').css('visibility') == 'visible'){
+		$('.heightcolor').eq(0).siblings('img').click();
+	}else{
+
+	}
+		$('.resource_points').removeClass('active');
+		$('.resource_classify').find('a').on('click',function(){
+
+			$(this).parent().parent().siblings().children('.active').children('img').click()
+		})
+		$('.resource_subject').children('a').on('click',function(){
+			for(var i=0;i<$('.resource_subject').length;i++){
+				if($(this).parent().siblings().eq(i).children('img').attr('src') == '/Public/img/resource/zhankai1.png'){
+					$(this).parent().siblings('.resource_subject').eq(i).children('img').click()
+				}
+			}
+		})
+		$('#lanmushuxing,#ziyuanleixing,#ziyuangeshi').click(function(){
+			if($(this).attr('src') == "/Public/img/resource/checked1.png"){
+				$(this).parent().parent().siblings().find('img').addClass('choose').attr('src','/Public/img/resource/checked2.png');
+				return_ajax();
+			}else{
+				$(this).parent().parent().siblings().find('img').removeClass('choose').attr('src','/Public/img/resource/checked1.png');
+				return_ajax();
+			}
+		})
+		$('.resource_classify').show()
+
+</script>

@@ -1,0 +1,646 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		班级管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="javascript:;">班级管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php/Admin/Class/classList" method="get">
+	<p class="blueText fs16">班级查询</p>
+	<div class="grid condensed cellBox">
+            <input type="hidden" class="class_order" name="order" value="0" >
+		<div class="row cells3">
+			<div class="cell">
+				<label>省份：</label>
+				<select id="province_list" class="input-control" name="province">
+					<option value="0">-请选择-</option>
+				    <volist name="province_list" id="province_item">
+                                            <option value="{$province_item.id}" <if condition="$province_item['id']==$province"> selected="true"</if> >{$province_item.name}</option>    
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>市区：</label>
+				<select id="city_list" class="input-control" name="city">
+					<option value="0">-请选择-</option>
+				    <volist name="city_list" id="city_item">
+                                        <option value="{$city_item.id}" <if condition="$city_item['id']==$city"> selected="true"</if> >{$city_item.name}</option>    
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>区县：</label>
+				<select id="district_list" class="input-control" name="district">
+					<option value="0">-请选择-</option>
+				    <volist name="district_list" id="district_item">
+                                        <option value="{$district_item.id}" <if condition="$district_item['id']==$district"> selected="true"</if> >{$district_item.name}</option>    
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>学校：</label>
+				<select id="school_list" class="input-control" name="school">
+					<option value="0">-请选择-</option>
+                                    <volist name="school_list" id="school_item">
+                                        <option value="{$school_item.id}" <if condition="$school_item['id']==$school_id"> selected="true"</if> >{$school_item.name}</option>    
+                                    </volist>
+				</select>
+			</div>
+                    <div class="cell">
+				<label>学校名称：</label> 
+				<input type="text" class="input-control school_name" name="school_name" value="{$school_name}" placeholder="请输入学校名称">
+			</div>
+                        <div class="cell">
+				<label>学校状态：</label>
+				<select id="school_status" class="input-control" name="school_status">
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$school_status==='1'"> selected="true"</if> >-正常-</option>
+                                        <option value="0" <if condition="$school_status==='0'"> selected="true"</if> >-禁用-</option>
+				</select>
+			</div> 
+			
+			<div class="cell">
+				<label>学校代码：</label>
+				<input type="text" class="input-control school_code" name="school_code" value="{$school_code}" placeholder="请输入学校代码">
+			</div>
+			<div class="cell">
+				<label>学校性质：</label>
+				<select id="school_category" class="input-control" name="school_cat">
+					<option value="">-请选择-</option>
+                                    <volist name="school_category" id="school_category_item">
+                                            <option value="{$key}" <if condition="$key==$school_cat and $school_cat!=''">selected="true"</if> >{$school_category_item}</option>
+                                    </volist>
+				</select>
+			</div> 
+			<div class="cell">
+				<label>年级：</label>
+				<select id="grade_list" class="input-control" name="grade">
+					<option value="0">-请选择-</option>
+					<volist name="grade_list" id="grade_item">
+						<option value="{$grade_item.id}" <if condition="$grade_item['id']==$grade">selected="true"</if> >{$grade_item.name}</option>
+					</volist>
+				</select>
+			</div>
+                        <div class="cell">
+				<label>班级代码：</label>
+				<input type="text" class="input-control class_code" name="class_code" value="{$class_code}" placeholder="请输入班级代码">
+			</div>
+			<div class="cell">
+				<label>班级：</label> 
+                                <input type="text" class="input-control class_name" name="class_name" value="{$class_name}" placeholder="请输入班级" maxlength="7">
+			</div>
+			<div class="cell">
+				<label>班级状态：</label>
+				<select id="class_flag" class="input-control" name="class_flag">
+					<option value=''>-请选择-</option>
+					<option value="1" <if condition="$class_flag==='1'">selected="true"</if> >正常</option>
+					<option value="2" <if condition="$class_flag==='2'">selected="true"</if> >移交中</option>
+					<option value="0" <if condition="$class_flag==='0'">selected="true"</if> >停用</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>班级类型：</label>
+				<select id="class_status" class="input-control" name="class_status">
+					<option value="">-请选择-</option>
+                                        <option value="1" <if condition="$class_status=='1'">selected="true"</if> >校建班</option>
+                                        <option value="2" <if condition="$class_status=='2'">selected="true"</if> >个人班</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<input type='hidden' name='order' class="order_class" value='0' />
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>-->
+		<input type='submit' value='查询' class='blueBtn' />
+		<input type='button' value='重置' class='blueBtn resetButton' />
+	</div>
+</form>
+
+<div class="grayBox">
+	<div class="left">
+		<span class="btns" id="addBtn">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="">
+			<a href="{:U('Class/createClass')}">添加</a>
+		</span>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-import.png" alt="">
+			<a href="{:U('Class/importClassView')}">导入</a>
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt="">
+			<a href="javascript:;" class='export_btn'>批量导出</a>        
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt="">
+			<a href="{:U('Class/exportedClassAll')}&{$condition_str}">导出全部</a>
+		</span>
+	</div>
+	<div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue-->
+			<if condition="$order=='asc'">
+				<button class="upBtn upBtnBlue"></button>
+				<button class="downBtn "></button>
+				<else />
+				<button class="upBtn "></button>
+				<button class="downBtn downBtnBlue"></button>
+			</if>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>
+</div>
+
+<p class="blueText fs16">班级列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center"><input type="checkbox" class="check_all mr5">全选</th>
+			<th class="text-center">序号</th>
+			<th class="text-center">年级</th>
+			<th class="text-center">班级</th>
+			<th class="text-center">班级代码</th>
+			<th class="text-center">所属学校</th>
+                        <th class="text-center">学校状态</th>
+			<th class="text-center">班级状态</th>
+			<th class="text-center">班级类型</th>
+			<th class="text-center">创建教师</th>
+			<th class="text-center">创建教师手机号</th>
+			<th class="text-center">操作</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+		<volist name="list" id="item" key="key">
+			<tr>
+				<td class="text-center">
+					<input type="checkbox" attr="{$item.id}" class="check_child" name="checkbox">
+				</td>
+				<td class="text-center">
+					{$key}
+				</td>
+				<td class="text-center">
+					{$item.grade}
+				</td>
+				<td class="text-center">
+					{$item.class_name}
+				</td>
+				<td class="text-center">
+					{$item.class_code}
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$item.school_name}
+				</td>
+                                <td class="text-center">
+                                    <if condition="$item['school_flag'] eq 1">
+					正常
+                                    <else />
+                                        停用
+                                    </if>
+				</td>
+				<td class="text-center">
+                                    <if condition="$item['flag'] eq 1">
+					正常
+                                    <elseif condition="$item['flag'] eq 2" />
+                                        移交中
+                                    <else />
+                                        停用
+                                    </if>
+				</td>
+				<td class="text-center">
+                                    <if condition="$item['class_status'] eq 1">
+					校建班
+                                    <else />
+                                        个人班
+                                    </if>
+				</td>
+				<td class="text-center">
+					{$item.teacher_name}
+				</td>
+				<td class="text-center">
+					{$item.telephone}
+				</td>
+				<td class="text-center">
+                                    <a href="{:U('Class/classDetail')}&id={$item.id}" class="operBtn" >查看</a>
+                                    <a href="{:U('Class/updateClass')}&id={$item.id}" class="operBtn" >修改</a>
+                                <if condition="$item['flag'] eq 1">
+                                    <a href="javascript:;" class="operBtn disable_button class_status_button">停用</a>
+                                <else />
+                                    <a href="javascript:;" class="operBtn enable_button class_status_button">启用</a> 
+                                </if> 
+                                    <a href="javascript:;" class="operBtn transfer_class" >移交</a>
+                                    <a href="javascript:;" class="operBtn delete_class" >删除</a>
+                                    <input type="hidden" value="{$item.id}" class="class_id" />
+                                    <input type="hidden" value="{$item.class_status}" class="class_type" />
+				</td>
+			</tr>
+		</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+ 
+<!--移交弹窗1-->
+<div class="fullscr1" id="transfer1">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">移交</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20">
+				<div class="selectBox mt30">
+					<label for="">接收教师：</label>
+					<input type="text" class="input-control personalTeacherTel" name="" value="" placeholder="请输入教师手机号">
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureTran2">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelTran2">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<!--移交弹窗2-->
+<div class="fullscr1" id="transfer2">
+	<div class="adminNotifyBox1 aBoxHeight">
+		<div class="adminNotifyTitle">移交</div>
+		<div class="adminNotifyContent aConHeight">
+			<div class="adminSelect pt20"> 
+				<div class="selectBox mb10">
+					<label for="">移交教师：</label>
+					<input type="text" class="input-control schoolTeacherTel" name="" value="" placeholder="请输入教师手机号">
+				</div>
+                                <div class="selectBox mb10">
+					<label for="">接收教师：</label>
+					<input type="text" class="input-control schoolTargetTeacherTel" name="" value="" placeholder="请输入教师手机号">
+				</div>
+                                <div class="selectBox mt10 mb10">
+					<label for="">移交的学科：</label>
+					<select class="input-control transfer_course" id="" name="">
+						<option value='0'>-请选择-</option> 
+					</select>
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureTran22">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelTran22">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+	$(document).ready(function () {
+		$('#listWrapper').DataTable({
+			"scrollCollapse": true,
+			"paging": false,
+			"bSort": false,
+			"aoColumns": [
+				{"width": "6%"},
+				{"width": "6%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "10%"},   //6
+                                {"width": "6%"},
+				{"width": "6%"},
+				{"width": "8%"},
+				{"width": "6%"},
+				{"width": "8%"},
+				{"width": "20%"}
+            ]
+		});
+	});
+        
+        
+        //点击批量导出
+        $(".export_btn").click(function(){
+            var check_input=$('#body').find("[name='checkbox']:checked");
+            if(check_input.length<1){
+                $.Notify({
+                    caption: '提示',
+                    content: '请勾选您要导出的账号',
+                    type: 'warning'
+                });
+                return false;
+            }
+            var form="";
+            form = $("<form></form>");
+            form.attr('action',"{:U('Class/exportedClass')}");
+            form.attr('method','post');
+            
+            for(var i=0;i<check_input.length;i++){ 
+                var temp_val=$(check_input[i]).attr('attr'); 
+                var temp= $("<input type='hidden' name='hid[]'/>")
+                $(temp).attr('value',temp_val);
+                form.append(temp);
+            } 
+            form.appendTo("body");
+            form.css('display','none');
+            form.submit();
+        });
+        
+        $('.schoolTeacherTel').blur(function(){
+            var tel=$('.schoolTeacherTel').val(); 
+            var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+            if (tel == '') {  
+                return false;
+            }else if (!regMobilePhone.test(tel)) { 
+                $.NotifyBox.NotifyOne('注意','教师手机号格式错误！','确定');
+                return false;
+            }
+            $(".transfer_course option:not(:eq(0))").remove();
+            $.ajax({
+                type:"post",
+                url:"{:U('Class/getTeacherCourseByClass')}",
+                dataType:"json",
+                data:{'tel':tel},
+                success: function(msg){
+                    if(msg.status==200){  
+                        for(var i=0;i<msg.data.length;i++){
+                            var clone_course=$(temp_option).clone(true);
+                            $(clone_course).val(msg.data[i].course_id);
+                            $(clone_course).text(msg.data[i].course_name);
+                            $('.transfer_course').append(clone_course);
+                        }
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+        
+        var class_id=0;
+        $(".transfer_class").click(function(){
+            var type=$(this).siblings('.class_type').val();
+            class_id=$(this).siblings('.class_id').val();
+            if(type==1){
+                //校建班
+                $("#transfer2").show();
+            }else{
+                //个人班
+                $("#transfer1").show();
+            }
+        });
+        $("#sureTran2").click(function(){
+            //个人班点击确定进行移交
+            var targetTeacherTel=$('.personalTeacherTel').val();
+            $.ajax({
+                type:"post",
+                url:"{:U('Class/transferClass')}",
+                dataType:"json",
+                data:{'class_id':class_id,'destTeacherTelephone':targetTeacherTel},
+                success: function(msg){
+                    if(msg.status==200){  
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+        
+        $("#cancelTran2").click(function(){
+            $("#transfer1").hide();
+        });
+        
+        
+        $("#sureTran22").click(function(){
+            //校建班点击确定进行移交
+            var sendTeacherTel=$('.schoolTeacherTel').val();
+            var targetTeacherTel=$('.schoolTargetTeacherTel').val();
+            var course_id=$('.transfer_course').val();
+            var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/; 
+            if (sendTeacherTel == '') {  
+                return false;
+            }else if (!regMobilePhone.test(sendTeacherTel)) { 
+                $.NotifyBox.NotifyOne('注意','移交教师手机号格式错误！','确定');
+                return false;
+            }
+            if (targetTeacherTel == '') {  
+                return false;
+            }else if (!regMobilePhone.test(targetTeacherTel)) { 
+                $.NotifyBox.NotifyOne('注意','接收教师手机号格式错误！','确定');
+                return false;
+            }
+            if(course_id==0 || course_id==''){
+                $.NotifyBox.NotifyOne('注意','移交学科不能为空!','确定');
+                return false;
+            }
+            $.ajax({
+                type:"post",
+                url:"{:U('Class/transferClass')}",
+                dataType:"json",
+                data:{'class_id':class_id,'destTeacherTelephone':targetTeacherTel,'sendTeacherTelephone':sendTeacherTel,'sendTeachercourse':course_id},
+                success: function(msg){
+                    if(msg.status==200){  
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+        
+        $("#cancelTran22").click(function(){
+            $("#transfer2").hide();
+        });
+        
+        //删除班级 
+        $('.delete_class').click(function(){ 
+            var id=$(this).siblings('.class_id').val();    
+            $.ajax({
+                type:"post",
+                url:"{:U('Class/deleteClass')}",
+                dataType:"json",
+                data:{'id':id},
+                success: function(msg){
+                    if(msg.status==200){  
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');               
+                        return false;
+                    }
+                }
+            })
+        });
+        
+        //点击启用或停用 
+        $('.class_status_button').click(function(){ 
+            var id=$(this).siblings('.class_id').val();   
+            var obj=this;
+            $.ajax({
+                type:"post",
+                url:"{:U('Class/udpateClassManagement')}",
+                dataType:"json",
+                data:{'id':id},
+                success: function(msg){
+                    if(msg.status==200){  
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+        
+        var temp_option="<option value='0'>-请选择-</option>";
+        //省份发生变化
+        $('#province_list').change(function(){ 
+            $("#city_list option:not(:eq(0))").remove();
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#province_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getCityByProvince')}",
+                dataType:"json",
+                data:{'province_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#city_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        //城市发生变化
+        $('#city_list').change(function(){ 
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#city_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getDistrictByCity')}",
+                dataType:"json",
+                data:{'city_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#district_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        //区县发生变化
+        $('#district_list').change(function(){ 
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#district_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getSchoolByDistrict')}",
+                dataType:"json",
+                data:{'district_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#school_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        
+</script>
+
+<script> 
+	//点击重置 
+	$('.resetButton').click(function () { 
+		$('#province_list').find('option:eq(0)').attr('selected', true);
+		$('#city_list').find('option:eq(0)').attr('selected', true);
+		$('#district_list').find('option:eq(0)').attr('selected', true);
+                $('#school_list').find('option:eq(0)').attr('selected', true);
+                $('#school_status').find('option:eq(0)').attr('selected', true); 
+                $('.school_name').val('');
+                $('.school_code').val('');
+                $('#school_category').find('option:eq(0)').attr('selected', true); 
+                $('#grade_list').find('option:eq(0)').attr('selected', true);  
+                $('.class_code').val('');
+                $('.class_name').val('');
+                $('#class_flag').find('option:eq(0)').attr('selected', true);
+                $('#class_status').find('option:eq(0)').attr('selected', true); 
+	});
+
+	//点击排序
+	$('.upBtn').click(function () {
+		if (!$(this).hasClass('upBtnBlue')) {
+			$(this).addClass('upBtnBlue');
+		}
+		$('.downBtn').removeClass('downBtnBlue');
+		$('.order_class').val(1);
+		$('#form_submit').submit();
+	});
+
+	$('.downBtn').click(function () {
+		if (!$(this).hasClass('downBtnBlue')) {
+			$(this).addClass('downBtnBlue');
+		}
+		$('.upBtn').removeClass('upBtnBlue');
+		$('.order_class').val(0);
+		$('#form_submit').submit();
+	});
+</script>
+
+<script>
+	//全选
+	$('.check_all').click(function () {
+		var childCheck = $('.check_child');
+		var temp_status = true;
+		if ($(this)[0].checked == true) {
+			//本次选中
+			temp_status = true;
+		} else {
+			//本次取消
+			temp_status = false;
+		}
+		for (var i = 0; i < childCheck.length; i++) {
+			childCheck[i].checked = temp_status
+		}
+	});
+
+	//取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				$('.check_all').removeAttr('checked', 'checked');
+				$('.check_all').removeProp('checked', 'checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $("[name='checkbox']:checked").length) {
+					$('.check_all').attr('checked', 'checked');
+					$('.check_all').prop('checked', 'checked');
+				};
+			}
+		}
+	};
+</script>

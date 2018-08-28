@@ -1,0 +1,85 @@
+<layout name="student_layout_1"/>
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+
+<div>
+    <a href="{:U('Student/activities')}" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div class="activities_top activities_top_my">
+	<div class="search">
+		<button class="search_btn"></button>
+		<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资源名称">
+	</div>
+</div>
+<div class="activties_title">
+    <a href="{:U('Student/activityTrain')}"><img src="__PUBLIC__/img/activity/blue2.png" alt=""></a>
+    <a href="{:U('Student/activityResearch')}"><img class="title_img" src="__PUBLIC__/img/activity/red1.png" alt=""></a>
+    <a href="{:U('Student/activityExperience')}"><img src="__PUBLIC__/img/activity/green2.png" alt=""></a>
+    <a href="{:U('Student/activityAbroad')}"><img  src="__PUBLIC__/img/activity/purple2.png" alt=""></a>
+</div>
+<div class="actBottom">
+	<ul class="row activities_ul" id="activities_ul1">
+		<volist name="list" id="data" empty="暂时没有资讯信息">
+		<if condition ="$data.class_id eq 3">
+		<li class="col-md-3 activities_li">
+			<div class="activities_box" style="border:5px solid #f5716c;">
+                <a href="{:U('Student/activityDetails?id=')}{$data.id}">
+                    <img class="activities_img" src="/Resources/socialactivity/{$data.short_content}" alt="">
+                    <p class="activities_title">{$data.title}</p>
+                    <if condition="$data.is_new eq yes">
+                        <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                   </if>
+                </a>
+                <p class="activities_p">
+                                    <span class="left">
+                                        <img src="__PUBLIC__/img/resource/watch.png" alt="">
+                                        <span>{$data.browse_count}</span>
+                                    </span>
+                                    <span>
+                                        <img src="__PUBLIC__/img/resource/like.png" alt="">
+                                        <span>{$data.zan_count}</span>
+                                    </span>
+                                    <span class="right">
+                                        <img src="__PUBLIC__/img/resource/collect.png" alt="">
+                                        <span>{$data.favor_count}</span>
+                                    </span>
+                </p>
+                <p class="activities_p">
+                    <span class="left">{$data.publisher}</span>
+                    <span class="right">{$data.create_at|date="Y-m-d H:i",###}</span>
+                </p>
+			</div>
+		</li>
+		</if>
+		</volist>
+	</ul>
+</div>
+<div class="Pagination">{$page}</div>
+<script>
+	//点击搜索框
+	$('.search_btn').click(function () {
+		var string = '';
+		var keyword = $(".search_text").val();
+		if (keyword != '') {
+			keyword = '&keyword=' + keyword;
+		}
+
+		string = keyword ;
+		location.href = "index.php?m=Home&c=Student&a=activityResearch" + string;
+	});
+	//回车搜索
+	$(".search_text").keydown(function (evt) {
+		if (event.keyCode == "13") { //keyCode=13是回车键
+			var evt = (evt) ? evt : ((window.event) ? window.event : "")
+			var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+			var string = '';
+			var keyword = $(".search_text").val();
+			if (keyword != '') {
+				keyword = '&keyword=' + keyword;
+			}
+			string = keyword ;
+			location.href = "index.php?m=Home&c=Student&a=activityResearch" + string;
+
+		}
+	})
+</script>		

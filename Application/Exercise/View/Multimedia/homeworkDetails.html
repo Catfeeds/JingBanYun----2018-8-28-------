@@ -1,0 +1,426 @@
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<style>
+	.filterInner {
+		overflow: hidden;
+	}
+
+	.filterBox label {
+		float: left;
+		width: 70px !important;
+		margin-right: 5px;
+		line-height: 18px
+	}
+
+	.filterBox .labelSpan {
+		max-width: 300px;
+		display: inline-block;
+		word-break: break-all;
+		line-height: 18px
+	}
+</style>
+
+<div class="boxOutter">
+	<div class="of borderBottom pt10">
+		<span class="tabBtn left text-center">基本信息</span>
+		<?php if(in_array('Multimedia/updateOssExercises',session('exercises_permissions'))){ ?>
+		<button type="button" name="button" class="btn right mt_10" id="modifyBtn">修改</button>
+		<?php }?>
+	</div>
+	<div class="filterOutter of pt10 pb0 borderNone mb0">
+		<div class="filterInner">
+			<div class="filterBox">
+				<label>单词/句子 -</label>
+				<span class="labelSpan">{$exercise_info.words}</span>
+			</div>
+			<div class="filterBox">
+				<label>翻&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;译 -</label>
+				<span class="labelSpan">{$exercise_info.analysis|html_entity_decode}</span>
+			</div>
+			<div class="filterBox">
+				<label>OSS地址 -</label>
+				<span class="labelSpan">{$exercise_info.subject_name}</span>
+			</div>
+		</div>
+		
+		<div class="filterInner">
+			<div class="filterBox">
+				<label>ID -</label>
+				<span class="labelSpan">{$id}</span>
+			</div>
+			<div class="filterBox">
+				<label>类&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型 -</label>
+				<span class="labelSpan">{$exercise_info.ordinary_type.name}</span>
+			</div>
+			<div class="filterBox">
+				<label>录入人员 -</label>
+				<span class="labelSpan">{$exercise_info.creator_name}</span>
+			</div>
+		</div>
+
+		<div class="filterInner">
+			<div class="filterBox">
+				<label>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态 -</label>
+				<span class="labelSpan">{$exercise_info.status}</span>
+			</div>
+			<div class="filterBox">
+				<label>录入时间 -</label>
+				<span class="labelSpan">{$exercise_info.create_at|date='Y-m-d H:i:s',###}</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="of borderBottom pt10">
+		<span class="tabBtn left text-center">所属教材树</span>
+	</div>
+	<div class="filterOutter of pt10 pb20">
+		<div class="filterInner">
+			<div class="filterBox">
+				<label>版&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本 -</label>
+				<span class="labelSpan">{$exercise_info.version_name}</span>
+			</div>
+			<div class="filterBox">
+				<label>学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科 -</label>
+				<span class="labelSpan">{$exercise_info.cnamecourse}</span>
+			</div>
+			<div class="filterBox">
+				<label>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级 -</label>
+				<span class="labelSpan">{$exercise_info.grade_name}</span>
+			</div>
+		</div>
+		
+		<div class="filterInner">
+			<div class="filterBox">
+				<label>分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册 -</label>
+				<span class="labelSpan">{$exercise_info.section_name}</span>
+			</div>
+			<div class="filterBox">
+				<label>章 -</label>
+				<span class="labelSpan">{$exercise_info.chapter_name}</span>
+			</div>
+			<div class="filterBox">
+				<label>节 -</label>
+				<span class="labelSpan">{$exercise_info.festival_name}</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="tableTop mb20">
+		<div class="tableTitle">习题追踪</div>
+	</div>
+	<table class="tableCommon borderNone mt20">
+		<thead>
+		<tr>
+			<th width="20%">序号</th>
+			<th width="20%">操作</th>
+			<th width="20%">操作人</th>
+			<th width="20%">时间</th>
+			<th width="20%">备注</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php foreach ($exercise_info['track'] as $trackK => $trackV): ?>
+		<tr>
+			<td><?=$trackK+1?></td>
+			<td><?=$trackV['oper_name']?></td>
+			<td><?=$trackV['operator_name']?></td>
+			<td><?=$trackV['oper_time']?></td>
+			<td class="showDetails"><a href="javascript:"><?=$trackV['comment']?></a></td>
+		</tr>
+		<?php endforeach ?>
+		</tbody>
+	</table>
+</div>
+
+<!-- 弹窗：修改信息 -->
+<div class="fullBack"></div>
+<div class="adminNotifyBox modifyInfo thirdPublishLong" id="modifyInfo">
+	<div class="adminNotifyTitle">
+		修改信息
+	</div>
+	<div class="adminNotifyContent">
+		<div class="thirdMain">
+			<div>
+				<label for="">单词/语句</label>
+				<input type="text" class="inputCommon" id="word" value="{$exercise_info.words}" placeholder="请输入英文单词/英文语句">
+				<div class="modifyError"></div>
+			</div>
+			<div>
+				<label for="">翻&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;译</label>
+				<input type="text" class="inputCommon" id="translate" value="{$exercise_info.analysis|html_entity_decode}" placeholder="请输入中文翻译">
+				<div class="modifyError"></div>
+			</div>
+			<div>
+				<label for="">oss地址</label>
+				<input type="text" class="inputCommon" id="ossAdress" value="{$exercise_info.subject_name}" placeholder="请输入音频的oss地址">
+				<div class="modifyError"></div>
+			</div>
+			<div>
+				<label for="">版&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本</label>
+				<select name="" id="versions" class="inputCommon" onchange="getcharp()">
+					<option value="0">请选择</option>
+					<volist name="versionData" id="versionDataList">
+                        <if condition="$versionDataList['id'] eq $exercise_info['version_id']"><option value="{$versionDataList.id}" selected>{$versionDataList.name}</option>
+                            <else /><option value="{$versionDataList.id}">{$versionDataList.name}</option>
+                        </if>
+					</volist>
+				</select>
+				<div class="modifyError"></div>
+			</div>
+			<div>
+				<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label>
+				<select name="" id="grade" class="inputCommon" onchange="getcharp()">
+					<option value="0">请选择</option>
+					<volist name="grade" id="gradeList">
+
+                        <if condition="$gradeList['id'] eq $exercise_info['grade_id']"><option value="{$gradeList.id}" selected>{$gradeList.grade}</option>
+                            <else /><option value="{$gradeList.id}">{$gradeList.grade}</option>
+                        </if>
+
+					</volist>
+				</select>
+				<div class="modifyError"></div>
+			</div>
+			<div>
+				<label for="">分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</label>
+				<select name="" id="volume" class="inputCommon"  onchange="getcharp()">
+					<option value="0">请选择</option>
+					<option value="1" <if condition="$exercise_info['section_id'] eq 1">selected</if> >上册</option>
+					<option value="2" <if condition="$exercise_info['section_id'] eq 2">selected</if> >下册</option>
+					<option value="3" <if condition="$exercise_info['section_id'] eq 3">selected</if> >全一册</option>
+				</select>
+				<div class="modifyError"></div>
+			</div>
+			<div>
+				<label for="">章</label>
+				<select name="" id="chapter" class="inputCommon" onchange="getChildcharp()">
+					<option value="0">请选择</option>
+				</select>
+				<div class="modifyError"></div>
+			</div>
+			<div>
+				<label for="">节</label>
+				<select name="" id="section" class="inputCommon">
+					<option value="0">请选择</option>
+				</select>
+				<div class="modifyError"></div>
+			</div>
+		</div>
+	</div>
+	<p class="adminNotifyButton">
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="modifySure" onclick="return check()">确定</a>
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="modifyCancel">取消</a>
+	</p>
+</div>
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/paper.js"></script>
+
+<script>
+    var is_chapter = "{$exercise_info.chapter}";
+    var is_festival = "{$exercise_info.festival}";
+    var is_type = "{$exercise_info.ordinary_type.name}";
+    console.log(is_type)
+	//点击“修改”，弹窗出现
+	$('#modifyBtn').click(function() {
+		$('.fullBack,#modifyInfo').show();
+		$('body').css('overflow-y','hidden');
+	})
+
+	//点击“取消”，弹窗隐藏
+	$('#modifyCancel').click(function() {
+		$('.fullBack,#modifyInfo').hide();
+		$('body').css('overflow-y','auto');
+		$('.modifyError').css('padding','8px 0').text('');
+	})
+
+	function check() {
+		var word = $('#word').val(); // 单词/语句
+		var translate = $('#translate').val(); // 翻译
+		var ossAdress = $('#ossAdress').val(); // 音频地址
+		var versions = $('#versions').val(); // 版本
+		var grade = $('#grade').val(); // 年级
+		var volume = $('#volume').val(); // 分册
+		var chapter = $('#chapter').val(); // 章
+		var section = $('#section').val(); // 节
+		var regWord = /[\u4E00-\u9FA5]|[\uFF00-\uFFFF]/; // 汉字和中文符号
+		var regUrl = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/; // 网址
+		var regChinese = /^[\u4e00-\u9fa5]+$/;
+		var regSymbol = /^[^\x00-\xff]+$/;
+
+		var version_name = $("#versions").find("option:selected").text();
+		var grade_name = $("#grade").find("option:selected").text();
+		var section_name = $("#volume").find("option:selected").text();
+		var chapter_name = $("#chapter").find("option:selected").text();
+		var festival_name = $("#section").find("option:selected").text();
+
+		//验证英文/语句
+		if(word == '') {
+			$('#word').siblings('.modifyError').css('padding','3px 0').text('请输入单词/语句。');
+		} else if(regWord.test(word)) {
+			$('#word').siblings('.modifyError').css('padding','3px 0').text('请输入英文单词短语、英文语句及英文标点。');
+		} else {
+			$('#word').siblings('.modifyError').css('padding','8px 0').text('');
+		}
+
+		//验证中文翻译
+		if(is_type == '词汇') {
+			if(translate == '') {
+				$('#translate').siblings('.modifyError').css('padding','3px 0').text('请输入翻译。');
+			} else if(!regChinese.test(translate) && !regSymbol.test(translate)) {
+				$('#translate').siblings('.modifyError').css('padding','3px 0').text('请输入中文翻译及中文标点。');
+			} else {
+				$('#translate').siblings('.modifyError').css('padding','8px 0').text('');
+			}
+		}
+
+		//验证oss地址
+		if(ossAdress == '') {
+			$('#ossAdress').siblings('.modifyError').css('padding','3px 0').text('请输入音频的oss地址。');
+		} else if(!regUrl.test(ossAdress)) {
+			$('#ossAdress').siblings('.modifyError').css('padding','3px 0').text('地址格式错误。');
+		} else {
+			$('#ossAdress').siblings('.modifyError').css('padding','8px 0').text('');
+		}
+		
+		//验证版本
+		if(versions == 0) {
+			$('#versions').siblings('.modifyError').css('padding','3px 0').text('请选择版本。');
+		} else {
+			$('#versions').siblings('.modifyError').css('padding','8px 0').text('');
+		}
+
+		//验证年级
+		if(grade == 0) {
+			$('#grade').siblings('.modifyError').css('padding','3px 0').text('请选择年级。');
+		} else {
+			$('#grade').siblings('.modifyError').css('padding','8px 0').text('');
+		}
+
+		//验证分册
+		if(volume == 0) {
+			$('#volume').siblings('.modifyError').css('padding','3px 0').text('请选择分册。');
+		} else {
+			$('#volume').siblings('.modifyError').css('padding','8px 0').text('');
+		}
+
+		//验证章
+		if(chapter == 0) {
+			$('#chapter').siblings('.modifyError').css('padding','3px 0').text('请选择章。');
+		} else {
+			$('#chapter').siblings('.modifyError').css('padding','8px 0').text('');
+		}
+
+		//验证节
+		if(section == 0) {
+			$('#section').siblings('.modifyError').css('padding','3px 0').text('请选择节。');
+		} else {
+			$('#section').siblings('.modifyError').css('padding','8px 0').text('');
+		}
+
+		if($('.modifyError').text() == '') {
+			$('.fullBack,#modifyInfo').hide();
+			$('body').css('overflow-y','auto');
+
+			var id = "{$id}";
+
+			var requestdata={id:id,word:word,translate:translate,ossAdress:ossAdress,versions:versions,grade:grade,volume:volume,chapter:chapter,section:section,version_name:version_name,grade_name:grade_name,section_name:section_name,chapter_name:chapter_name,festival_name:festival_name}
+			$.ajax({
+				type: "POST",   //访问WebService使用Post方式请求
+				url: 'index.php?m=Exercise&c=Multimedia&a=updateOssExercises', //调用WebService的地址和方法名称组合---WsURL/方法名
+				data:requestdata,
+				dataType:'json',
+				beforeSend:function () {
+					loading('createAnswerQuestions');
+				},
+				success: function(res){
+					console.log(res);
+					if (res.status ==200) {
+						removeLoad('createAnswerQuestions');
+						window.location.href="index.php?m=Exercise&c=Multimedia&a=homeworkEntering";
+					} else {
+						removeLoad('createAnswerQuestions');
+						$.NotifyBox.NotifyPromptOne('错误信息','添加失败','关闭');
+					}
+				}
+			});
+
+
+
+		}
+
+
+
+	}
+    getcharp();
+	function getcharp(){
+		var version_id = $('#versions').val();
+		var course_id = "{$exercise_info.course_id}";
+		var grade_id = $('#grade').val();
+		var school_term = $('#volume').val();//分册
+
+		$("#chapter option:not(:eq(0))").remove();
+		$("#section option:not(:eq(0))").remove();
+
+
+		$.ajax({
+			type: 'POST',
+			url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+			cache: false,
+			data:{'version':version_id,'courseId':course_id,'grade_id':grade_id,'school_term':school_term,'level':1},
+			async: false,
+			dataType:'json',
+			success: function(msg){
+				if(msg.status == 200){
+					if(msg.data.length){
+						var html = '';
+						var	option =  "<option value='{0}'>{1}</option>";
+                        var	options =  "<option value='{0}' selected>{1}</option>";
+						html += option.format(0,'请选择');
+						$(msg.data).each(function (i, n) {
+							if (is_chapter == n.id) {
+                                html += options.format(n.id, n.tree_point_name);
+                            }else {
+                                html += option.format(n.id, n.tree_point_name);
+                            }
+
+							$('#chapter').html(html);
+						})
+					}
+				}
+			}
+		})
+	}
+    getChildcharp();
+	function getChildcharp(){
+		var id = $('#chapter').val();
+		$("#section option:not(:eq(0))").remove();
+
+		$.ajax({
+			type: 'POST',
+			url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+			cache: false,
+			data:{'id':id,'level':2},
+			async: false,
+			dataType:'json',
+			success: function(msg){
+				if(msg.status == 200){
+					if(msg.data.length){
+						var html = '';
+						var	option =  "<option value='{0}'>{1}</option>";
+                        var	options =  "<option value='{0}' selected>{1}</option>";
+						html += option.format(0,'请选择');
+						$(msg.data).each(function (i, n) {
+                            if (is_festival == n.id) {
+                                html += options.format(n.id, n.tree_point_name);
+                            }else {
+                                html += option.format(n.id, n.tree_point_name);
+                            }
+							$('#section').html(html);
+						})
+					}
+				}
+			}
+		})
+	}
+</script>

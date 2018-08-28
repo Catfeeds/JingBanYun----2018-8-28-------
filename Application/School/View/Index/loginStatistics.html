@@ -1,0 +1,506 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/highcharts/code/highcharts.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/exporting.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/export-data.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/no-data-to-display.js"></script>
+
+<style>
+	.contentMain {
+		padding: 0;
+	}
+
+	.indexContent .roleText {
+	    background: url({$oss_path}public/web_img/Icons/select20-8.png) no-repeat 90px center ;
+	}
+
+	[v-cloak] {
+		display: none;
+	}
+</style>
+
+<div class="standardMain grayText pb0">
+	{$introduce}
+</div>
+
+<div id="admin" v-cloak>
+	<div class="standardMain hrefContent">
+		<a href="{:U('Index/index')}" class="returnBack">人员登录统计</a>
+		>
+		<span class="thePage" v-if="role == 2">教师</span>
+		<span class="thePage" v-if="role == 3">学生</span>
+		<span class="thePage" v-if="role == 4">家长</span>
+	</div>
+
+	<div class="clearBoth"></div>
+
+	<div class="indexOutter">
+		<div class="standardMain grayText">
+			统计日期：{{ allTime }}
+		</div>
+
+		<div class="standardMain roleContent">
+			<div class="roleBtn" v-bind:class="{ active: role == 2 }" v-on:click="changeRole($event)">教师</div>
+			<div class="roleBtn" v-bind:class="{ active: role == 3 }" v-on:click="changeRole($event)">学生</div>
+			<div class="roleBtn" v-bind:class="{ active: role == 4 }" v-on:click="changeRole($event)">家长</div>
+		</div>
+
+		<div class="standardMain indexContent">
+			<div class="indexTitle" v-if="role == 2">教师登录统计</div>
+			<div class="indexTitle" v-if="role == 3">学生登录统计</div>
+			<div class="indexTitle" v-if="role == 4">家长登录统计</div>
+			<div class="pieOutter" style="height: 370px">
+				<div class="pieLeft">
+					<div id="roleloginCondition" class="pieDiv"></div>
+					<div class="coverBox"></div>
+				</div>
+				<div class="lineRight">
+					<div class="chartEmptyBox" v-if="roleloginLineDataLength == 0">
+						<div class="blackTitle mb10">登录人数统计</div>
+						<img src="__PUBLIC__/img/admin/denglurenshu.png" alt="" class="emptyImg">
+					</div>
+					<div id="roleloginNumber" class="lineDiv"></div>
+					<div class="coverBox"></div>
+				</div>
+			</div>
+
+			<div class="indexTitle" v-if="role == 2">教师登录情况</div>
+			<div class="indexTitle" v-if="role == 3">学生登录情况</div>
+			<div class="indexTitle" v-if="role == 4">家长登录情况</div>
+			<div class="columnOutter">
+				<!-- 只有教师没有 -->
+				<div class="roleFilter roleFilterAb" v-if="role != 2">
+					<div class="roleText" :gradeId="gradeOneId" v-on:click="showGrade">{{ gradeOne }}</div>
+					<ul class="roleUl">
+						<li v-for="(gradeArr, index) in gradeList" v-bind:class="{ active: index == 0 }" :gradeId="gradeArr.id" v-on:click="changeGrade($event)">{{ gradeArr.grade }}</li>
+					</ul>
+				</div>
+				<div class="chartEmptyBox" v-if="roleloginColumnDataLength == 0 && role == 2">
+					<div class="blackTitle">登录统计</div>
+					<img src="__PUBLIC__/img/admin/denglutongji.png" alt="" class="emptyImg">
+				</div>
+				<div class="chartEmptyBox" v-if="roleloginColumnDataLength == 0 && role != 2">
+					<div class="blackTitle">登录统计</div>
+					<img src="__PUBLIC__/img/admin/denglutongjiBig.png" alt="" class="emptyImg">
+				</div>
+				<div id="roleloginSubject" class="columnDiv"></div>
+				<div class="coverBox"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 将日期转换为年月日格式 -->
+<script>
+	Date.prototype.Format = function (fmt) { //author: meizz 
+	    var o = {
+	        "M+": this.getMonth() + 1, //月份 
+	        "d+": this.getDate(), //日 
+	        "h+": this.getHours(), //小时 
+	        "m+": this.getMinutes(), //分 
+	        "s+": this.getSeconds(), //秒 
+	        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+	        "S": this.getMilliseconds() //毫秒 
+	    };
+	    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+	    for (var k in o)
+	    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+	    return fmt;
+	}
+</script>
+
+<script>
+	var role = "{$role}";
+	var times = "{$times}";
+	var startTime = "{$startTime}";
+	var endTime = "{$endTime}";
+	var gradeList = {$gradeList};
+
+	var admin = new Vue({
+		el: '#admin',
+		data: {
+			times: times,
+			startTime: startTime,
+			endTime: endTime,
+			allTime: '',
+			role: role,
+			gradeList: gradeList,
+			gradeOne: '',
+			gradeOneId: '',
+			//登录情况统计饼图
+			roleloginPieUrl: '/index.php?m=School&c=Index&a=loginStatisticsByPieChart',
+			//登录情况饼图
+			roleloginPieData: '',
+			//登录情况统计折线图
+			roleloginLineUrl: '/index.php?m=School&c=Index&a=loginStatisticsByLineChart',
+			//登录情况折线图
+			roleloginLineData: '',
+			//登录情况折线图长度
+			roleloginLineDataLength: '',
+			//登录情况折线图X轴
+			roleloginLinexAxis: '',
+			//登录情况统计柱形图
+			roleloginColumnUrl: '/index.php?m=School&c=Index&a=loginStatisticsByBarChart',
+			//登录情况柱形图
+			roleloginColumnData: '',
+			//登录情况的X轴
+			roleloginColumnX: [],
+			//登录情况柱形图长度
+			roleloginColumnDataLength: '',
+			//登录情况柱形图X轴题目
+			roleloginColumnXName: ''
+		},
+		created: function () {
+			// 获取时间
+			this.getAllTime();
+			// 获取年级
+			this.getGrade();
+			// 获取登录情况统计饼图
+			this.getRoleloginPie();
+			// 获取登录情况统计折线图
+			this.getRoleloginLine();
+			// 获取登录情况统计柱形图
+			this.getRoleloginColumn();
+		},
+		methods: {
+			// 获取时间
+			getAllTime: function(){
+				if(this.times == "day") {
+					var start = new Date(this.startTime).Format("yyyy年MM月dd日");
+					var end = new Date(this.endTime).Format("yyyy年MM月dd日");
+					this.allTime = start+' - '+end;
+				} else if(this.times == "month") {
+					this.allTime = new Date(this.startTime).Format("yyyy年MM月");
+				} else if(this.times == "year") {
+					this.allTime = new Date(this.startTime).Format("yyyy年");
+				}
+			},
+			// 取得第一个年级
+			getGrade: function(){
+				if(gradeList.length > 0) {
+					this.gradeOne = gradeList[0].grade;
+					this.gradeOneId = gradeList[0].id;
+				} else {
+					this.gradeOne = "暂无年级";
+				}
+			},
+			// 获取登录情况统计饼图
+			getRoleloginPie: function(){ 
+				this.$http.post(this.roleloginPieUrl, {
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times,
+					role: this.role
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.roleloginPieData = response.data.data;
+
+    					// 饼图-登录情况统计
+						Highcharts.chart('roleloginCondition', {
+							colors: ['#6cb1fe', '#e2efff'],
+							title: {
+								text: '登录情况统计'
+							},
+							exporting: {
+								enabled: false,
+							},
+							tooltip: {
+								headerFormat: '{series.name}<br>',
+								pointFormat: '{point.name}: {point.num} {point.percentage:.1f}%'
+							},
+							plotOptions: {
+								pie: {
+									allowPointSelect: true,  // 可以被选择
+									cursor: 'pointer',       // 鼠标样式
+									dataLabels: {
+										enabled: true,
+										format: '{point.percentage:.1f}%<br>{point.name} {point.num}',
+										style: {
+											color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+										}
+									}
+								}
+							},
+							lang: {
+								noData: '暂无数据'
+							},
+							series: [{
+								type: 'pie',
+								borderWidth: 2,
+								name: '登录情况占比',
+								data: this.roleloginPieData
+							}]
+						});
+
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取登录情况统计折线图
+			getRoleloginLine: function(){ 
+				this.$http.post(this.roleloginLineUrl, {
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times,
+					type: this.role
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.roleloginLineData = response.data.data.data;
+    					this.roleloginLinexAxis = response.data.data.timeList;
+    					if(response.data.data.data) {
+    						this.roleloginLineDataLength = response.data.data.data.length;
+
+    						$('#roleloginNumber').show();
+	    					// 折线图-登录人数统计
+							Highcharts.chart('roleloginNumber', {
+								title: {
+									text: '登录人数统计'
+								},
+								subtitle: {
+									text: ''
+								},
+								colors: ['#f89203'],
+								yAxis: {
+									title: {
+										text: '登录人数(个)',
+										align: 'high',
+										rotation: 360,
+										offset: 40,
+										y: 15,
+										style: { 
+											"font-weight": "bold"
+										}
+									},
+									lineWidth: 1,
+									endOnTick: false
+								},
+								xAxis: {
+									title: {
+										text: '日期',
+										align: 'high',
+										style: { 
+											"font-weight": "bold"
+										}
+									},
+									categories: this.roleloginLinexAxis,
+									gridLineWidth: 1
+								},
+								exporting: {
+									enabled: false,
+								},
+								legend: {
+									enabled: false
+								},
+								plotOptions: {
+									series: {
+										label: {
+											connectorAllowed: false
+										}
+									}
+								},
+								series: this.roleloginLineData,
+								responsive: {
+									rules: [{
+										condition: {
+											maxWidth: 500
+										},
+										chartOptions: {
+											legend: {
+												layout: 'horizontal',
+												align: 'center',
+												verticalAlign: 'bottom'
+											}
+										}
+									}]
+								}
+							});
+						} else {
+							this.roleloginLineDataLength = 0;
+							$('#roleloginNumber').hide()
+						}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取登录情况统计柱形图
+			getRoleloginColumn: function(){ 
+				this.$http.post(this.roleloginColumnUrl, {
+					startTime: this.startTime,
+					endTime: this.endTime,
+					times: this.times,
+					role: this.role,
+					grade: this.gradeOneId
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.roleloginColumnData = response.data.data;
+    					if(response.data.data) {
+    						this.roleloginColumnDataLength = response.data.data.length;
+
+    						this.roleloginColumnX = [];
+    						for(m = 0; m < response.data.data.length; m++) {
+	    						this.roleloginColumnX.push(response.data.data[m].name);
+	    					}
+
+	    					if(this.role == 2) {
+	    						this.roleloginColumnXName = '学科'
+	    					} else {
+	    						this.roleloginColumnXName = '班级'
+	    					}
+
+    						$('#roleloginSubject').show();
+	    					// 柱形图-教师登录情况
+							Highcharts.chart('roleloginSubject',{
+							    chart: {
+							        type: 'column'
+							    },
+							    title: {
+							        text: '登录统计'
+							    },
+							    subtitle: {
+							        text: ''
+							    },
+							    colors: ['#ffce55'],
+							    xAxis: {
+							        categories: this.roleloginColumnX,
+							        title: {
+										text: this.roleloginColumnXName,
+										align: 'high',
+										style: { 
+											"font-weight": "bold"
+										}
+									}
+							    },
+							    yAxis: {
+							        min: 0,
+							        title: {
+										text: '登录人数(个)',
+										align: 'high',
+										rotation: 360,
+										offset: 40,
+										y: 15,
+										style: { 
+											"font-weight": "bold"
+										}
+									},
+									allowDecimals: false,
+									lineWidth: 1,
+									endOnTick: false
+							    },
+							    legend: {
+									enabled: false
+								},
+							    tooltip: {
+							        headerFormat: '{series.name}<br>',
+									pointFormat: '{point.name}: {point.y}',
+							        shared: true,
+							        useHTML: true
+							    },
+							    plotOptions: {
+							        column: {
+							            borderWidth: 0
+							        },
+							        series: {
+							            borderWidth: 0,
+							            pointWidth: 35,
+							            dataLabels: {
+							                enabled: true,
+							                format: '{point.y}',
+							                style:{
+							                    textOutline: "none"
+						                    }
+							            }
+							        }
+							    },
+							    exporting: {
+									enabled: false,
+								},
+								lang: {
+									noData: '暂无数据'
+								},
+						   		series: [{
+						   			name: '登录',
+						            colorByPoint: true,
+						            data: this.roleloginColumnData
+						        }]
+							});
+						} else {
+							this.roleloginColumnDataLength = 0;
+							$('#roleloginSubject').hide()
+						}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 改变角色
+			changeRole: function(e){
+				var index = $(e.currentTarget).index();
+				$(e.currentTarget).addClass('active').siblings('.roleBtn').removeClass('active');
+				if(index == 0) {
+					this.role = 2;
+				} else if(index == 1) {
+					this.role = 3;
+				} else if(index == 2) {
+					this.role = 4;
+				}
+				// 获取登录情况统计饼图
+				this.getRoleloginPie();
+				// 获取登录情况统计饼图
+				this.getRoleloginLine();
+				// 重置年级
+				this.getGrade();
+				$('.roleUl li:first-child').addClass('active').siblings('li').removeClass('active');
+				// 获取登录情况统计柱形图
+				this.getRoleloginColumn();
+			},
+			// 年级下拉框
+			showGrade: function(e){
+				if($(e.currentTarget).hasClass('active')) {
+					$('.roleUl').stop(false,true).slideUp('fast',function(){
+						$('.roleText').removeClass('active')
+					})
+				} else {
+					$(e.currentTarget).addClass('active');
+					$('.roleUl').stop(false,true).slideDown('fast')
+				}
+			},
+			// 改变年级
+			changeGrade: function(e){
+				$(e.currentTarget).addClass('active').siblings('li').removeClass('active');
+				this.gradeOne = $(e.currentTarget).text();
+				this.gradeOneId = $(e.currentTarget).attr('gradeId');
+				$('.roleUl').stop(false,true).slideUp('fast',function(){
+					$('.roleText').removeClass('active')
+				});
+				// 获取登录情况统计
+				this.getRoleloginColumn()
+			}
+		}
+	})
+</script>
+
+<script>
+	$('body').click(function(){
+		if($(event.target).is('.roleText') || $(event.target).is('.roleUl li')){
+
+		} else {
+			$('.roleUl').stop(false,true).slideUp('fast',function(){
+				$('.roleText').removeClass('active')
+			})
+		}
+	})
+</script>

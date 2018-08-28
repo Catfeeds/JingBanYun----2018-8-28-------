@@ -1,0 +1,52 @@
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/newActivity.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<include file="./Application/Home/View/Common/myCollectionHeader.html" />
+<div >
+	<a href="{:U('Activity/my')}" title="返回" class="btn btnReturn1" style="top: 0px;">返回</a>
+</div>
+<div class="newActivity_top of pdtnone">
+	<div class="search right me_search">
+		<form method="post" action="">
+		<button class="search_btn">搜索</button>
+		<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="关键字搜索" maxlength="28">
+		</form>
+	</div>
+</div>
+<notempty name="list">
+<div class="newActBoxGray me_div1">
+	<?php if($id == 1){?>
+	<div class="newActBox_name bgnone">
+		<div class="newActBox_left activity_o">赛事</div>
+	</div>
+	<?php }else{?>
+	<div class="newActBox_name">
+		<div class="newActBox_left activity_t">培训</div>
+	</div>
+	<?php }?>
+	<ul class="row match_ul">
+		<?php foreach($list as $value){?>
+		<li class="col-lg-3 col-md-4 col-sm-6 text-center p0">
+			<div class="match_li">
+				<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>">
+					<div class="actLi_top" style="background: url(Resources/socialactivity/<?php echo $value['short_content']?>) center; background-size: 100%">
+						<!--<img src="__PUBLIC__/img/activity/huorejinxing.png" alt="" class="smallCircle">-->
+					</div>
+					<div class="history_title" title="<?php echo $value['title']?>">
+						<?php echo $value['title']?>
+					</div>
+				</a>
+			</div>
+		</li>
+		<?php }?>
+	</ul>
+</div>
+</notempty>
+
+<empty name="list">
+	<div class="emptyDiv">
+		<img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+		<if condition="$kw eq 1 "> <p>抱歉，没有搜索到相关的活动！</p>
+		</if>
+	</div>
+</empty>

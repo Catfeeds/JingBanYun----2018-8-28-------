@@ -1,0 +1,200 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+<div class="indexOutter overHidden">
+	<div class="standardMain hrefContent">
+		<a href="{:U('Student/studentList')}" class="returnBack">学生列表</a>
+		>
+		<span class="thePage">修改学生信息</span>
+	</div>
+
+	<form action="{:U('Student/studentModify')}" method="post" onsubmit="return checkInfo()">
+		<div class="standardMain classContent tableContent mt0">
+			<div class="blueBox">
+		        <span class="left blueTitle">修改学生</span>
+				<a href="javascript:;" class="blackText right" id="">
+					<img src="__PUBLIC__/img/admin/baocun.png" alt="" class="mr5">
+	                <input type='submit' class="submitInput" value='保存修改' onClick="return checkInfo()"/>
+				</a>
+	            <a href="javascript:;" class="blackText right mr20" id="">
+                    <img src="__PUBLIC__/img/admin/yichu.png" alt="" class="mr5">
+                    <input type='button' class="remove_school submitInput" value='从学校移除'/>
+	            </a>
+		</div>
+
+
+		<div class="grid condensed infoOutter infoOutterModify">
+        	<input type="hidden" value="{$data.id}" name="id"/>
+			<div class="row cells3 infoBox">
+				<div class="cell">
+					<label>学生姓名：</label>
+					<input type="text" class="input-control student_name" name="student_name" value="{$data.student_name}" placeholder="请输入学生姓名">
+	                <span class="redStar">*</span>
+				</div>
+                <div class="cell">
+					<label>登录密码：</label>
+					<input type="password" class="input-control password" name="password" value="{$data.password}" placeholder="请输入6-16位登录密码" minlength="6" maxlength="16" onchange="changePwd(this)">
+                    <span class="redStar">*</span>
+				</div>
+				<div class="cell">
+					<label>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</label>
+					<select id="sex" class="input-control" name="sex">
+						<option value="0">-请选择-</option>
+                        <option value="男" <if condition="$data['sex'] eq '男'">selected="true"</if> >男</option>
+						<option value="女" <if condition="$data['sex'] eq '女'">selected="true"</if> >女</option>
+					</select>
+                    <span class="redStar">*</span>
+				</div>
+				<div class="cell">
+					<label>家长手机号：</label>
+					<span class="disabledText">{$data.parent_tel}</span>
+				</div>
+				<div class="cell">
+					<label>出生日期：</label>
+                    <input type="text" name="birth_date" value="{$data.birth_date}" id="dateBirthday" class="input-control birth_date" placeholder="出生年月" autocomplete="off" onkeydown="return false">
+                    <span class="redStar">*</span>
+				</div>
+			</div>
+		</div>
+	</form>
+
+	<div class="tabBox">
+		<ul class="left tabUl" id="tabUl">
+			<li class="tabLi tabActive">学生的班级</li>
+			<li class="tabLi">学生的家长</li>
+		</ul>
+		<div class="tabCon" id="tabCon">
+			<iframe class="tabConActive" id="classFrame" style="width: 100%;" frameborder="0" src="{:U('Student/student_iframe_class')}&id={$data.id}"></iframe>
+			<iframe id="parentFrame" style="width: 100%;" frameborder="0" src="{:U('Student/student_iframe_parent')}&id={$data.id}"></iframe>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="";
+				}
+			}
+		}
+	}
+
+</script>
+
+<script>
+    var student_id="{$data.id}";
+        //学校移除学生
+        $('.remove_school').click(function(){
+            var status=2;
+            var id=student_id;
+            $.ajax({
+                type:"post",
+                url:"{:U('Student/updateApplyStatus')}",
+                dataType:"json",
+                data:{'id':id,'status':status},
+                success: function(msg){
+                    if(msg.status==200){
+                        location.href="{:U('Student/studentList')}";
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+
+        function IsDate(mystring) {
+            var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+            var str = mystring;
+            if (!reg.test(str)  || RegExp.$2>12 || RegExp.$3>31){
+                return false;
+            }
+            return true;
+        }
+
+        function checkInfo(){
+            //联系人姓名
+            var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+            var linkmanName = $('.student_name').val();
+            if (linkmanName == '') {
+                $.NotifyBox.NotifyOne('注意','姓名不能为空！','确定'); 
+                return false;
+            } else if (!regName.test(linkmanName)) {
+                $.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+                return false;
+            }
+
+            if(changePassword == 1) {
+                var pwd = $.trim($('.password').val());
+                if(pwd == ''){
+                    $.NotifyBox.NotifyOne('注意','请输入密码！','确定');
+                    return false;
+                } else if(pwd.length < 6 || pwd.length > 16) {
+                    $.NotifyBox.NotifyOne('注意','请输入6-16位密码！','确定');
+                    return false;
+                }
+            }
+
+            var sex_value=$('#sex').val();       
+            if(sex_value==0){ 
+                $.NotifyBox.NotifyOne('注意','请选择性别！','确定');
+                return false;
+            }
+            
+		    var birth_date=$('.birth_date').val();
+            //出生日期
+            if(birth_date==''){
+                $.NotifyBox.NotifyOne('注意','请填写出生日期！','确定');
+                return false;
+            } else if(IsDate(birth_date)==false) {
+                    $.NotifyBox.NotifyOne('注意','出生日期格式错误！','确定');
+                    return false;
+            }
+            return true;
+        }
+
+    var changePassword;
+    function changePwd(obj) {
+        changePassword = 1;
+    }
+</script>
+<!--开始时间 结束时间-->
+<script>
+    !function(){
+        laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var actstart = {
+        elem: '#dateBirthday',
+        format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+        max: laydate.now(), //最大日期
+        istime: true,
+        istoday: false
+    };
+
+    laydate(actstart);
+</script>

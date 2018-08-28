@@ -1,0 +1,102 @@
+﻿<layout name="teacher_layout_withouticon" />
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link href="__PUBLIC__/css/activity.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/myMessage.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<style>
+    .laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+        box-sizing: content-box;
+    }
+
+    #laydate_hms {
+        display: none !important
+    }
+</style>
+
+<div class="main_opr">
+	<a href="javascript:;" class="btn btn-main-opr-active">
+		我的消息(<span class="unReadMessageCount"> </span>)
+	</a>
+</div>
+
+<div class="messageContentCopy" style="display: none;">
+
+<div style="float:right;">
+	<input type="text" placeholder="请选择时间" id="datepicker" value="{$date}" title="请选择时间" readonly>
+    <label for="datepicker"><img src="__PUBLIC__/img/birthday2.png" alt="" style="width: 25px"></label>
+	<div class="search" style="margin-left: 10px">
+		<button class="search_btn">搜索</button>
+		<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入关键字">
+	</div>
+</div>
+
+<div class="btnChoice">
+	<button class="btn btn-red btn-padding border-radius6" onclick="showDeleteDialog()">删除</button>
+	<button class="btn btn-red btn-padding border-radius6" onclick="markAllRead();">全部标记为已读</button>
+	<select id="statusSelect" class="btn-select btn-padding" name="">
+		<option value="">-标记为-</option>
+		<option value="1">未读信息</option>
+		<option value="2">已读信息</option>
+	</select>
+</div>
+
+<div class="messageContent">
+
+
+</div>
+
+</div>
+
+<div class="emptyDiv" style="display: none;">
+	<img src="{$oss_path}public/web_img/Empty/myMessage.png" alt="">
+	<p>暂时还没有收到消息哦！</p>
+</div>
+
+
+<!--确认删除-->
+<div class="modal fade" id="deleteDialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">删除前确认</h4>
+			</div>
+			<div class="modal-body">
+				<p>请再次确定您要将选中的数据删除</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="deleteSelectedMessage()">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	var templateInner = '<li>\
+			<input type="checkbox" class="left mesCheckbox" mid="{0}" id="messagechecked_{0}">\
+			<a href="/index.php?m=Home&c=Teach&a=myMessageDetails&id={0}" onclick="refreshLocalReadStatus({0},2)" class="left mesA {2}" mid="{0}" id="messagelink_{0}">{1}</a>\
+			</li>';
+</script>
+
+<script>
+    !function(){
+        laydate.skin('dahong');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var startTime = {
+        elem: '#datepicker',
+        format: 'YYYY-MM-DD',
+//      min: laydate.now(), //设定最小日期为当前日期
+        max: '2099-06-16', //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+
+        }
+    };
+    laydate(startTime);
+</script>

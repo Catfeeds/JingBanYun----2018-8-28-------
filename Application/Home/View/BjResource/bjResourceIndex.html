@@ -1,0 +1,1176 @@
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=3.1" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/bjResourceList.css?v=4" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<!-- <link rel="stylesheet" href="__PUBLIC__/css/font-awesome.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/ace.min.css"> -->
+<style>
+	#ietanchuang {
+		width: 473px;
+		height: 280px;
+		position: fixed;
+		top: 37%;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: 0 auto;
+		background: url(__PUBLIC__/img/toolTip/ietanchuang.png) no-repeat;
+		border-radius: 10px;
+		z-index: 20161002;
+		font-size: 16px;
+		color: #666;
+		display: none;
+	}
+
+	#ietanchuang span {
+		padding: 7px 50px;
+		background-color: #04c9a8;
+		position: absolute;
+		top: 200px;
+		left: 170px;
+		border-radius: 8px;
+		cursor: pointer;
+		color: #fff;
+	}
+
+	.glyphicon-chevron-left:before {
+		content: none;
+	}
+
+	.glyphicon-chevron-right:before {
+		content: none;
+	}
+
+	.glyphicon-chevron-left {
+	    background: url(/Public/img/activity/left.png) no-repeat center;
+	}
+
+	.glyphicon-chevron-right {
+	    background: url(/Public/img/activity/right.png) no-repeat center;
+	}
+
+	.resourceIntro {
+		display: block;
+	    overflow: hidden;
+	    clear: both;
+	    font-size: 17px;
+	    font-weight: 600;
+	    padding-top: 8px;
+	    padding-left: 18px;
+	}
+</style>
+<div class="main_opr">
+	<!--    <a href="{:U('Teach/myFavorBjResource')}" title="我收藏的资源" class="btn btn-main-opr">我收藏的资源</a>-->
+</div>
+
+<div class="resource_box bothBorder">
+	<!--
+       <div class="resource_border" style="position:relative">
+    	<div class="experimentBox">
+			<div class="experiment">
+					<a href="{:U('BjResource/bjResourceTools')}">
+						<img src="__PUBLIC__/img/resource/nobook.gif" alt="" title="精选资源" style="width:110px">
+					</a>
+				</div>
+				<div class="nobookButton">
+				   <ul class="nobookButtonUl">
+					   <li>
+						   <a class="borderTopNone" href="{:U('BjResource/bjResourceTools')}&cat=0">小学科学</a>
+					   </li>
+					   <li>
+						   <a href="{:U('BjResource/bjResourceTools')}&cat=1">生物实验</a>
+					   </li>
+					   <li>
+						   <a href="{:U('BjResource/bjResourceToolsPhysics')}" class="nobookli3">物理实验室</a>
+					   </li>
+					   <li>
+						   <a href="{:U('BjResource/bjResourceMaths')}" >数学精品</a>
+					   </li>
+				   </ul>
+				</div>
+		</div>
+
+-->
+	<div class="resource_top">
+		<div class="search">
+			<div class="search_left">
+				<select name="" id="resource_type">
+					<option value="">-选择类型-</option>
+                                    <volist name="resource_type" id="item_type">
+					<option value="{$item_type.id}">{$item_type.type_name}</option>
+                                    </volist>
+				</select>
+				<button class="search_btn">搜索</button>
+				<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资源包含的关键字" maxlength="28" autocomplete="off">
+			</div>
+			<div class="search_right">
+				<a href="javascript:;" class="filter_a">高级检索</a>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="resource_middle">
+		<div class="left_title">
+			<img src="__PUBLIC__/img/resource/anzhangjiezhishidianliulan.png" alt=""><span><b>按章节知识点浏览</b></span>
+		</div>
+		<div class="resource_classify">
+			<?php foreach($knowledge_tree as $item_tree){ ?>
+			<div class="resource_subject"><?php if(strpos($item_tree['course_name'],'传统文化') === false && strpos($item_tree['course_name'],'科学') === false  && !empty($item_tree['child'])) { ?><img src="__PUBLIC__/img/resource/shouqi1.png"  class="resource_subjectimg"><?php } ?>
+                            <a attr_course="{$item_tree.id}" href="{:U('BjResource/bjResourceList')}&course={$item_tree.id}" title="{$item_tree.course_name}">{$item_tree.course_name}</a>
+                            <div >
+                                <ul>
+									<?php foreach($item_tree['child'] as $textbook_item) {?>
+
+                                        <li class="gradeBorder">
+                                                <div  class="resource_grade">
+													<?php foreach($textbook_item['chapter'] as $textbook_item_item){
+														if(!empty($textbook_item_item['chapter']) && $textbook_item_item['chapter'] !== '-1'){ ?>
+													<img src="__PUBLIC__/img/resource/shouqi1.png" attr_id="<?php echo $textbook_item['id']?>" class="resource_gradeimg">
+													<?php break;} }?>
+                                                    <a href="{:U('BjResource/bjResourceList')}&textbook={$textbook_item.id}" title="<?php echo str_replace($item_tree['course_name'],'',$textbook_item['name']) ?>"><?php echo str_replace($item_tree['course_name'],'',$textbook_item['name']) ?></a>
+                                                </div >
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                        </div>
+
+                    <?php }?>
+		</div>
+			</div>
+
+
+
+
+	<div class="resource_bottom">
+	<volist name="column_sort" id="sort">
+		<if condition="($sort eq BOUTIQUE_RESOURCE_COLUMN_ID)">
+		<div class="resource_name">
+			<div class="resource_left">精品资源</div>
+			<div class="resource_right"><a href="{:U('BjResource/bjResourceSearch')}&column_type={$boutique_num}" class="resource_a">更多>></a></div>
+			<div class="resourceIntro">本版块资源大部分从国外引进，目前包含小学科学和初高中的数学、物理、化学、生物学科的高互动性资源。</div>
+			<div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+				<!-- Indicators -->
+				<ol class="carousel-indicators">
+					<li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+					<li data-target="#carousel-example-generic" data-slide-to="1"></li>
+					<li data-target="#carousel-example-generic" data-slide-to="2"></li>
+				</ol>
+
+				<!-- Wrapper for slides -->
+				<div class="carousel-inner" role="listbox">
+                                    <?php for($i=0;$i<ceil(count($boutique_resource)/3);$i++){
+                                        if($i==0){
+                                    ;?>
+                                            <div class="item active">
+                                        <?php }elseif($i==1){;?>
+                                            <div class="item">
+                                        <?php }else{;?>
+                                            <div class="item">
+                                        <?php }?>
+                                                <ul class="nobook_ul">
+                                                    <?php if(($i+1)*3<=count($boutique_resource)){;
+                                                        for($j=$i*3;$j<($i+1)*3;$j++){
+                                                    ?>
+                                                            <li>
+                                                                    <a href="<?php echo 'index.php?m=Home&c=BjResource&a=bjResourceDetails&id='.$boutique_resource[$j]['resource_id'] ;?>" target="_blank" onclick="browserCount($(this))" attr-data="<?php echo $boutique_resource[$j]['resource_id']?>">
+                                                                            <img src="<?php if(strpos($boutique_resource[$j]['pc_cover'],'http') === false){ echo $oss_path.$boutique_resource[$j]['pc_cover'];}else{echo $boutique_resource[$j]['pc_cover'];} ?>" alt="<?php echo $boutique_resource[$j]['resource_name'];?>" class="banner_img">
+                                                                    </a>
+                                                                            <p><a href="<?php echo 'index.php?m=Home&c=BjResource&a=bjResourceDetails&id='.$boutique_resource[$j]['resource_id'] ;?>" target="_blank" onclick="browserCount($(this))" attr-data="<?php echo $boutique_resource[$j]['resource_id']?>"><?php echo $boutique_resource[$j]['resource_name'];?></a></p>
+                                                                            <span class="left"><?php echo $boutique_resource[$j]['course_name'];?></span>
+                                                                            <span class="right"><?php if($boutique_resource[$j]['textbook_number']>1){echo '多分册';}else{echo $boutique_resource[$j]['textbook'];}?></span>
+
+                                                            </li>
+                                                        <?php   }
+                                                    }else{;
+                                                        for($j=$i*3;$j<count($boutique_resource);$j++){
+                                                    ?>
+                                                            <li>
+
+                                                                    <a href="<?php echo 'index.php?m=Home&c=BjResource&a=bjResourceDetails&id='.$boutique_resource[$j]['resource_id'] ;?>" target="_blank" onclick="browserCount($(this))" attr-data="<?php echo $boutique_resource[$j]['resource_id']?>">
+                                                                        <img src="<?php if(strpos($boutique_resource[$j]['pc_cover'],'http') === false){ echo $oss_path.$boutique_resource[$j]['pc_cover'];}else{echo $boutique_resource[$j]['pc_cover'];} ?>" alt="<?php echo $boutique_resource[$i]['resource_name'];?>" class="banner_img">
+                                                                    </a>
+                                                                            <p><a href="<?php echo 'index.php?m=Home&c=BjResource&a=bjResourceDetails&id='.$boutique_resource[$j]['resource_id'] ;?>" onclick="browserCount($(this))" target="_blank" attr-data="<?php echo $boutique_resource[$j]['resource_id']?>"><?php echo $boutique_resource[$i]['resource_name'];?></a></p>
+                                                                            <span class="left"><?php echo $boutique_resource[$i]['course_name'];?></span>
+                                                                            <span class="right"><?php if($boutique_resource[$j]['textbook_number']>1){echo '多分册';}else{echo $boutique_resource[$j]['textbook'];}?></span>
+
+                                                            </li>
+
+                                                    <?php } };?>
+                                                </ul>
+                                            </div>
+                                    <?php };?>
+				</div>
+
+				<!-- Controls -->
+				<a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+					<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+					<span class="sr-only">Previous</span>
+				</a>
+				<a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+					<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+					<span class="sr-only">Next</span>
+				</a>
+			</div>
+		</div>
+		</if>
+
+		<if condition="($sort eq RECOMMEND_RESOURCE_CLOUMN_ID)">
+		<div class="resource_name">
+			<div class="resource_left">推荐资源</div>
+			<div class="resource_right"><a href="{:U('BjResource/bjResourceSearch')}&column_type={$recommend_num}" class="resource_a">更多>></a></div>
+			<div class="resourceIntro">本版块为教材配套的微课、备课素材等教学资源。</div>
+			<ul class="resource_ul" style="margin-top: 5px;">
+                            <volist name="recommend_resource" id="recommend_item">
+				<li class="resource_li">
+					<div class="res_box borderBottom">
+						<a href="{:U('BjResource/bjResourceDetails')}&id={$recommend_item.resource_id}" target="_blank" class="bjresource_img">
+
+								<img class="resource_img" src="<?php  if(strpos($recommend_item['pc_cover'],'http') === false){ echo $oss_path.$recommend_item['pc_cover']; }else{ echo $recommend_item['pc_cover']; } ?>" alt="">
+
+						</a>
+					</div>
+					<div class="resource_rightname">
+						<p class="of borderBottom p5 m0 " style="height:31px">
+							<switch name="recommend_item.file_type">
+								<case value="pdf">
+									<img src="__PUBLIC__/img/resource/pdf.png" alt="" class="left">&nbsp;
+									{$recommend_item.type_name}
+								</case>
+								<case value="word">
+									<img src="__PUBLIC__/img/resource/word.png" alt="" class="left">&nbsp;
+									{$recommend_item.type_name}
+								</case>
+								<case value="ppt">
+									<img src="__PUBLIC__/img/resource/ppt.png" alt="" class="left">&nbsp;
+									{$recommend_item.type_name}
+								</case>
+								<case value="image">
+									<img src="__PUBLIC__/img/resource/tupian.png" alt="" class="left">&nbsp;
+									{$recommend_item.type_name}共{$recommend_item.count}张图片
+								</case>
+								<case value="condensed">
+									<img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="left">&nbsp;
+									{$recommend_item.type_name}
+								</case>
+								<case value="swf">
+									<img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="left ieSwfImg">&nbsp;
+									{$recommend_item.type_name}
+								</case>
+								<case value="video">
+									<img src="__PUBLIC__/img/resource/shipin.png" alt="" class="left">&nbsp;
+									{$recommend_item.type_name}
+								</case>
+								<case value="audio">
+									<img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="left">&nbsp;
+									{$recommend_item.type_name}
+								</case>
+								<case value="html">
+									<img src="__PUBLIC__/img/resource/html.png" alt="" class="left">&nbsp;
+									{$recommend_item.type_name}
+								</case>
+								<case value="mixed">
+									<img src="__PUBLIC__/img/app/icon_mixed.png" alt="" class="left">
+									&nbsp;&nbsp;{$recommend_item.type_name}
+								</case>
+							</switch>
+						</p>
+
+						<a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$recommend_item.resource_id}">
+							<p class="resource_subname pl10 pr10 borderBottom m0 ">{$recommend_item.resource_name}</p>
+                                                </a>
+                                                        <p class="resource_sub  m0 text-center pt5 pb5"><if condition="$recommend_item['textbook_number'] gt 1">多分册<else />{$recommend_item.textbook}</if></p>
+
+					</div>
+				</li>
+                            </volist>
+			</ul>
+		</div>
+		</if>
+		<if condition="($sort eq RECOMMEND_RESOURCE_ROWS)">
+			<if condition="$culture_resource_count gt 0">
+                <div class="resource_name">
+			<div class="resource_left width140">传统文化资源</div>
+			<div class="resource_right"><a href="{:U('BjResource/bjResourceSearch')}&column_type={$culture_resource_num}" class="resource_a"></a></div>
+			<ul class="resource_ul">
+				<if condition="$culture_resource_count eq 1">
+					<volist name="culture_resource" id="culture_resource_item">
+				<!-- 传统文化显示一个 -->
+						<div class="resource_li1 of">
+							<a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$culture_resource_item.resource_id}" style="color:#333">
+							<div class="left ">
+								<img src="{$oss_path}{$culture_resource_item.pc_cover}" alt="" class="sinology1_img" />					</div>
+								<div class="left resource_w580 ml20">
+									<img src="__PUBLIC__/img/sinology/fufei.png" alt="" / class="ff_icon">
+									<div class="">
+										<switch name="culture_resource_item.file_type">
+											<case value="pdf">
+												<img src="__PUBLIC__/img/resource/pdf.png" alt="" class="left">
+											</case>
+											<case value="word">
+												<img src="__PUBLIC__/img/resource/word.png" alt="" class="left">
+											</case>
+											<case value="ppt">
+												<img src="__PUBLIC__/img/resource/ppt.png" alt="" class="left">
+											</case>
+											<case value="image">
+												<img src="__PUBLIC__/img/resource/tupian.png" alt="" class="left">
+											</case>
+											<case value="condensed">
+												<img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="left">
+											</case>
+											<case value="swf">
+												<img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="left">
+											</case>
+											<case value="video">
+												<img src="__PUBLIC__/img/resource/shipin.png" alt="" class="left">
+											</case>
+											<case value="audio">
+												<img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="left">
+											</case>
+											<case value="mixed">
+												<img src="__PUBLIC__/img/app/icon_mixed.png" alt="" class="left">
+											</case>
+										</switch>
+									</div>
+									<p class="text-center f18 mb20 mt10">
+										<b>《{$culture_resource_item.resource_name}》</b>
+									</p>
+									<div class="describe">
+										<img src="__PUBLIC__/img/resource/jianjie.png" alt="" / class="jianjie">
+										<div class="of h68 mt-10">
+											<p class="describe_p">
+												{$culture_resource_item.description}
+											</p>
+										</div>
+
+										<img src="__PUBLIC__/img/resource/muzhi.png" alt="" / class="muzhi">
+									</div>
+									<p	class="qianbao">
+										价格：{$culture_resource_item.real_price}元/套
+									</p>
+								</div>
+							</a>
+						</div>
+					</volist>
+				<elseif condition="($culture_resource_count eq 2) OR ($culture_resource_count eq 4)"/>
+				<!-- 传统文化显示两个 -->
+       <volist name="culture_resource" id="culture_resource_item">
+				<li class="resource_li">
+					<div class="res_box">
+						<img src="__PUBLIC__/img/sinology/fufei.png" alt="" / class="ff_icon">
+
+						<a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$culture_resource_item.resource_id}" class="bjresource_img">
+							<img class="resource_img" src="{$oss_path}{$culture_resource_item.pc_cover}" alt="">
+						</a>
+					</div>
+					<div class="resource_rightname">
+						<switch name="culture_resource_item.file_type">
+                            <case value="pdf">
+                                <img src="__PUBLIC__/img/resource/pdf.png" alt="" class="left">
+                            </case>
+                            <case value="word">
+                                <img src="__PUBLIC__/img/resource/word.png" alt="" class="left">
+                            </case>
+                            <case value="ppt">
+                                <img src="__PUBLIC__/img/resource/ppt.png" alt="" class="left">
+                            </case>
+                            <case value="image">
+                                <img src="__PUBLIC__/img/resource/tupian.png" alt="" class="left">
+                            </case>
+                            <case value="condensed">
+                                <img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="left">
+                            </case>
+                            <case value="swf">
+                                <img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="left">
+                            </case>
+                            <case value="video">
+                                <img src="__PUBLIC__/img/resource/shipin.png" alt="" class="left">
+                            </case>
+                            <case value="audio">
+                                <img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="left">
+                            </case>
+							<case value="mixed">
+								<img src="__PUBLIC__/img/app/icon_mixed.png" alt="" class="left">
+							</case>
+                        </switch>
+						<a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$culture_resource_item.resource_id}">
+							<p class="resource_subname mt60">《{$culture_resource_item.resource_name}》</p>
+							<p class="resource_subtype">价格：{$culture_resource_item.real_price}元/套</p>
+						</a>
+					</div>
+				</li>
+        </volist>
+				<else />
+		<volist name="culture_resource" id="culture_resource_item" key="k">
+	<!--传统文化显示三个  -->
+			<if condition="$k eq 1">
+			<li class="resource_li3">
+							<a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$culture_resource_item.resource_id}" >
+											<img src="{$oss_path}{$culture_resource_item.pc_cover}"  class="banner_img sinology_img">
+												<img src="__PUBLIC__/img/sinology/fufei.png" alt="" / class="ff_icon">
+							</a>
+											<p><a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$culture_resource_item.resource_id}">{$culture_resource_item.resource_name}</a></p>
+											<span class="left"><switch name="culture_resource_item.file_type">
+                                                <case value="pdf">
+                                                    <img src="__PUBLIC__/img/resource/pdf.png" alt="" class="left">
+                                                </case>
+                                                <case value="word">
+                                                    <img src="__PUBLIC__/img/resource/word.png" alt="" class="left">
+                                                </case>
+                                                <case value="ppt">
+                                                    <img src="__PUBLIC__/img/resource/ppt.png" alt="" class="left">
+                                                </case>
+                                                <case value="image">
+                                                    <img src="__PUBLIC__/img/resource/tupian.png" alt="" class="left">
+                                                </case>
+                                                <case value="condensed">
+                                                    <img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="left">
+                                                </case>
+                                                <case value="swf">
+                                                    <img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="left">
+                                                </case>
+                                                <case value="video">
+                                                    <img src="__PUBLIC__/img/resource/shipin.png" alt="" class="left">
+                                                </case>
+                                                <case value="audio">
+                                                    <img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="left">
+                                                </case>
+												<case value="html">
+									                 <img src="__PUBLIC__/img/resource/html.png" alt="" class="left">&nbsp;
+								                </case>
+												<case value="mixed">
+														<img src="__PUBLIC__/img/app/icon_mixed.png" alt="" class="left">
+													</case>
+                                            </switch></span>
+											<span class="right"><img src="__PUBLIC__/img/sinology/money.png" alt="" /><b>价格：{$culture_resource_item.real_price}元/套</b></span>
+
+			</li>
+			<elseif condition="$k eq 2" />
+			<li class="resource_li3 m90">
+							<a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$culture_resource_item.resource_id}" >
+											<img src="{$oss_path}{$culture_resource_item.pc_cover}"  class="banner_img sinology_img">
+												<img src="__PUBLIC__/img/sinology/fufei.png" alt="" / class="ff_icon">
+							</a>
+											<p><a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$culture_resource_item.resource_id}">{$culture_resource_item.resource_name}</a></p>
+											<span class="left"><switch name="culture_resource_item.file_type">
+                                                <case value="pdf">
+                                                    <img src="__PUBLIC__/img/resource/pdf.png" alt="" class="left">
+                                                </case>
+                                                <case value="word">
+                                                    <img src="__PUBLIC__/img/resource/word.png" alt="" class="left">
+                                                </case>
+                                                <case value="ppt">
+                                                    <img src="__PUBLIC__/img/resource/ppt.png" alt="" class="left">
+                                                </case>
+                                                <case value="image">
+                                                    <img src="__PUBLIC__/img/resource/tupian.png" alt="" class="left">
+                                                </case>
+                                                <case value="condensed">
+                                                    <img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="left">
+                                                </case>
+                                                <case value="swf">
+                                                    <img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="left">
+                                                </case>
+                                                <case value="video">
+                                                    <img src="__PUBLIC__/img/resource/shipin.png" alt="" class="left">
+                                                </case>
+                                                <case value="audio">
+                                                    <img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="left">
+                                                </case>
+												<case value="html">
+									                <img src="__PUBLIC__/img/resource/html.png" alt="" class="left">&nbsp;
+								                </case>
+												<case value="mixed">
+														<img src="__PUBLIC__/img/app/icon_mixed.png" alt="" class="left">
+													</case>
+                                            </switch></span>
+											<span class="right"><img src="__PUBLIC__/img/sinology/money.png" alt="" /><b>价格：{$culture_resource_item.real_price}元/套</b></span>
+
+			</li>
+			<else />
+			<li class="resource_li3">
+							<a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$culture_resource_item.resource_id}" >
+											<img src="{$oss_path}{$culture_resource_item.pc_cover}"  class="banner_img sinology_img">
+												<img src="__PUBLIC__/img/sinology/fufei.png" alt="" / class="ff_icon">
+							</a>
+											<p><a target="_blank" href="{:U('BjResource/bjResourceDetails')}&id={$culture_resource_item.resource_id}">{$culture_resource_item.resource_name}</a></p>
+											<span class="left"><switch name="culture_resource_item.file_type">
+                                                <case value="pdf">
+                                                    <img src="__PUBLIC__/img/resource/pdf.png" alt="" class="left">
+                                                </case>
+                                                <case value="word">
+                                                    <img src="__PUBLIC__/img/resource/word.png" alt="" class="left">
+                                                </case>
+                                                <case value="ppt">
+                                                    <img src="__PUBLIC__/img/resource/ppt.png" alt="" class="left">
+                                                </case>
+                                                <case value="image">
+                                                    <img src="__PUBLIC__/img/resource/tupian.png" alt="" class="left">
+                                                </case>
+                                                <case value="condensed">
+                                                    <img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="left">
+                                                </case>
+                                                <case value="swf">
+                                                    <img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="left">
+                                                </case>
+                                                <case value="video">
+                                                    <img src="__PUBLIC__/img/resource/shipin.png" alt="" class="left">
+                                                </case>
+                                                <case value="audio">
+                                                    <img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="left">
+                                                </case>
+												<case value="html">
+									                <img src="__PUBLIC__/img/resource/html.png" alt="" class="left">&nbsp;
+								                </case>
+												<case value="mixed">
+														<img src="__PUBLIC__/img/app/icon_mixed.png" alt="" class="left">
+													</case>
+                                            </switch></span>
+											<span class="right"><img src="__PUBLIC__/img/sinology/money.png" alt="" /><b>价格：{$culture_resource_item.real_price}元/套</b></span>
+
+			</li>
+			</if>
+		</volist>
+			</if>
+			</ul>
+		</div>
+		</if>
+		</if>
+	</volist>
+		<!-- <div class="resource_name">
+			<div class="resource_left" style="width:130px">赛事获奖资源</div>
+			<div class="resource_right"><a href="{:U('BjResource/bjResourceList')}&column_type={$hj_num}" class="resource_a">更多>></a></div>
+			<ul class="resource_ul3">
+                            <volist name="hj_resource" id="item_hj">
+				<li>
+					<div>
+						<a href="{:U('BjResource/bjResourceDetails')}&id={$item_hj.resource_id}">
+							<p>
+                                                            <switch name="item_hj.file_type">
+                                                                <case value="pdf">
+                                                                    <img src="__PUBLIC__/img/resource/s_pdf.png" alt="" class="left res_typeimages">
+                                                                </case>
+                                                                <case value="word">
+                                                                    <img src="__PUBLIC__/img/resource/s_word.png" alt="" class="left res_typeimages">
+                                                                </case>
+                                                                <case value="ppt">
+                                                                    <img src="__PUBLIC__/img/resource/s_ppt.png" alt="" class="left res_typeimages">
+                                                                </case>
+                                                                <case value="image">
+                                                                    <img src="__PUBLIC__/img/resource/tupian.png" alt="" class="left res_typeimages">
+                                                                </case>
+                                                                <case value="condensed">
+                                                                    <img src="__PUBLIC__/img/resource/zip.png" alt="" class="left res_typeimages">
+                                                                </case>
+                                                                <case value="swf">
+                                                                    <img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="left res_typeimages">
+                                                                </case>
+                                                                <case value="video">
+                                                                    <img src="__PUBLIC__/img/resource/shipin.png" alt="" class="left res_typeimages">
+                                                                </case>
+                                                                <case value="audio">
+                                                                    <img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="left res_typeimages">
+                                                                </case>
+                                                            </switch>
+
+                                                        {$item_hj.resource_name}
+                                                        </p>
+                                                </a>
+							<p class="resource_green">来源：
+                                                                    {$item_hj.chinesesource}
+                                                        </p>
+							<p class="resource_green">创作者：{$item_hj.author}</p>
+							<p class="resource_green">学科：{$item_hj.course_name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<if condition="$item_hj['textbook_number'] gt 1">多分册<else />{$recommend_item.textbook}</if></p>
+
+					</div>
+				</li>
+                            </volist>
+			</ul>
+		</div> -->
+	</div>
+
+	<div class="filtepopups">
+		<img src="__PUBLIC__/img/classManage/icon_delete.png" alt="" class="delete">
+		<p class="fp1">选择检索控制条件</p>
+		<p class="fp2">高级检索是利用多条件组合的方式，指定检索范围以达到检索的精准度要求，以下检索条件均为选填，您可以任意自由组合条件进行检索。</p>
+		<form action="{:U('BjResource/bjResourceSearch')}" method='get'>
+                        <input type='hidden' name='m' value='Home'/>
+                        <input type='hidden' name='c' value='BjResource'/>
+                        <input type='hidden' name='a' value='bjResourceSearch'/>
+			<div class="formdiv">
+				<label for="">关&nbsp; 键&nbsp; 字：</label>
+				<div class="rightdiv">
+					<input type="text" name='keyword' placeholder="请输入资源包含的关键字">
+				</div>
+			</div>
+			<div class="formdiv">
+				<label for="">资源格式：</label>
+				<div class="rightdiv">
+					<select name="file_type">
+                                            <option value="">--选择--</option>
+                                            <volist name="bj_resource_file_type" id="item_file">
+                                                <option value="{$item_file.value}">{$key}</option>
+                                            </volist>
+					</select>
+				</div>
+			</div>
+			<div class="formdiv">
+				<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：</label>
+				<div class="rightdiv">
+					<select name="course" id="t_course">
+                                            <option value="">--选择--</option>
+                                            <volist name="course_list" id="course_item">
+                                                <option value="{$course_item.id}">{$course_item.name}</option>
+                                            </volist>
+					</select>
+				</div>
+			</div>
+			<div class="formdiv">
+				<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</label>
+				<div class="rightdiv">
+					<select name="grade" id="t_grade">
+                                            <option value="">--选择--</option>
+                                            <volist name="grade_list" id="grade_item">
+						<option value="{$grade_item.id}">{$grade_item.name}</option>
+                                            </volist>
+					</select>
+				</div>
+			</div>
+			<div class="formdiv">
+				<label for="">教材分册：</label>
+				<div class="rightdiv">
+					<select name="school_term" id="t_textbook">
+                                            <option value="">--选择--</option>
+                                            <option value="1">上册</option>
+                                            <option value="2">下册</option>
+                                            <option value="3">全一册</option>
+					</select>
+				</div>
+			</div>
+			<div class="formdiv">
+				<label for="">所属章节：</label>
+				<div class="rightdiv">
+					<select name="chapter" id="chapter" class="select220">
+                                            <option value="">--选择--</option>
+					</select>
+					&nbsp;&nbsp;&nbsp;
+					<select name="festival" id="festival" class="select220" style="margin-left: 8px;">
+                                            <option value="">--选择--</option>
+					</select>
+				</div>
+				<div class="red">
+						请先选择学科年级教材分册
+				</div>
+			</div>
+			<div class="formdiv">
+				<label for="">上架时间：</label>
+				<div class="rightdiv">
+                                    <input type="text" class="select220" name='s_time' id="startTime" readonly>
+                                    &nbsp;至
+                                    <input type="text" class="select220 right" name='e_time' id="endTime" readonly>
+				</div>
+			</div>
+			<div class="formdiv">
+				<label for="">作&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;者：</label>
+				<div class="rightdiv">
+                                    <input type="text" name='author' placeholder="请输入作者姓名">
+				</div>
+			</div>
+			<div class="formdiv text-center">
+				<button class="filterbtn">开始检索</button>
+			</div>
+		</form>
+	</div>
+	<div id="bg">
+
+	</div>
+</div>
+</div>
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script>
+    storage=window.localStorage;
+	$(function(){
+		img_wh()
+	})
+	function img_wh(){
+		for(var i=0;i<$('.resource_img').length;i++) {
+			var wid = $('.resource_img')[i].width;
+			var hei = $('.resource_img')[i].height;
+			if(wid/hei >= 1) {
+				$('.resource_img').eq(i).css({
+					'width' : '95%',
+					'height' : 'auto',
+					'max-width' : 'auto',
+					'max-height' : '95%'
+				})
+			} else {
+				$('.resource_img').eq(i).css({
+					'width' : 'auto',
+					'height' : '95%',
+					'max-width' : '95%',
+					'max-height' : 'auto'
+				})
+			}
+		}
+	}
+	$('.carousel-control,.carousel-indicators').click(function(){
+		img_wh()
+	})
+</script>
+<script>
+        //点击搜索
+        $('.search_btn').click(function(){
+            var resource_type=$('#resource_type').val();
+            var keyword=$('.search_text').val();
+            var string='';
+            if(resource_type!=''){
+                string='&attr_type='+resource_type;
+            }
+            if(keyword!=''){
+                string+='&keyword='+keyword;
+            }
+            var url="/index.php?m=Home&c=BjResource&a=bjResourceSearch"+string;
+            location.href=url;
+        });
+       $(".search_text").keydown(function (evt) {
+				if (event.keyCode == "13") { //keyCode=13是回车键
+				var evt = (evt) ? evt : ((window.event) ? window.event : "")
+				var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+				$('.search_btn').click();
+
+			}
+		})
+        var option='<option value=""></option>';
+
+        //分册变化
+        $("#t_textbook,#t_grade,#t_course").change(function () {
+            var course_val = $("#t_course").val();
+            var grade_val = $("#t_grade").val();
+            var textbook_val = $("#t_textbook").val();
+
+            $("#chapter option:not(:eq(0))").remove();
+            $("#festival option:not(:eq(0))").remove();
+            if (course_val==false || grade_val==false ||  textbook_val == false ) {
+                return false;
+            }
+            $.getJSON("/index.php?m=Home&c=BjResource&a=getNextLevelKnowledge", {
+                    'course_id': course_val,
+                    'grade_id':grade_val,
+                    'school_term':textbook_val,
+                    'level': 1
+            }, function (msg) {
+                    var length = msg.data.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg.data[i].knowledge_name);
+                            $(temp).val(msg.data[i].id);
+                            $("#chapter").append(temp);
+                    }
+            });
+        });
+        //章发生变化
+        $("#chapter").change(function () {
+            var chapter_val = $("#chapter").val();
+            $("#festival option:not(:eq(0))").remove();
+            if (chapter_val == 0) {
+                return false;
+            }
+            $.getJSON("/index.php?m=Home&c=BjResource&a=getNextLevelKnowledge", {
+                    'id': chapter_val
+            }, function (msg) {
+                    var length = msg.data.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg.data[i].knowledge_name);
+                            $(temp).val(msg.data[i].id);
+                            $("#festival").append(temp);
+                    }
+            });
+        });
+
+
+        var culture_resource_id="{$culture_resource_id}";
+        var image_showqi_element='/Public/img/resource/shouqi1.png';
+        function toggleDiv(a, b,level,c) {
+		$(a).live('click', function () {
+                    switch(level){
+                        case 0:
+                            if ($(this).parent().find(b).css('display') == 'none') {
+                                    if($(this).children('a').attr('attr_course')==culture_resource_id){
+                                        //传统资源
+                                        return false;
+                                    }
+
+                                    $(this).attr('src', '__PUBLIC__/img/resource/zhankai1.png');
+                                    $(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+																		if($('#contentWrapper').attr('class').indexOf('fullscreen') == -1 && $(document).scrollTop()>265){
+																			$('body').animate({
+																				scrollTop:$(this).parent().index()*40+265
+																			},1000)
+																		}
+                              	$(this).parent().find('.resource_grade,.resource_unt,.resource_les,.resource_points').removeClass('active')
+                                    $(this).parent().find(b).show().children('a,img').show()
+                            } else {
+                                    $(this).attr('src', '/Public/img/resource/shouqi1.png');
+                                    $(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                                    $(this).parent().find(b).hide().find('div,p,a,img').hide();
+																		$(this).parentsUntil('.resource_subject').find('*').removeClass('active')
+
+																		$(this).parent().find('.resource_grade,.resource_unt,.resource_les,.resource_points').removeClass('active')
+																		$(this).parent().find('.resource_lesdiv').hide()
+                            }
+                            //
+                            break;
+                        default:
+                            if($(this).attr('src')==image_showqi_element){
+                                $(this).attr('src', '__PUBLIC__/img/resource/zhankai1.png');
+
+																// $(this).siblings('div').show().children().show().children('a,img').show()
+																	$(this).parent(c).addClass('active');
+																	$(this).parent(c).parent().siblings().find('.active').removeClass('active')
+																	$(this).parent(c).parent().siblings().find(c).removeClass('active')
+
+
+																// $(this).parent().parent().next().children().addClass('active')
+                            }else{
+                                $(this).attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+
+																	$(this).parent(c).removeClass('active');
+																		$(this).siblings().find('.resource_unt,.resource_les,.resource_points').removeClass('active')
+																// $(this).parent().parent().next().children().removeClass('active')
+                            }
+
+                            if($(this).parent().find(b).length){
+                                if ($(this).parent().find(b).css('display') == 'none' ) { //显示操作
+                                        $(this).attr('src', '__PUBLIC__/img/resource/zhankai1.png');
+                                        if ($(this).siblings('div').find('img').css('display') !== 'none') {
+                                            $(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                                            $(this).siblings('div').show().find(b).show().children().show();
+
+																						// $(this).parent().after('div').addClass('active')
+																						$(this).parent(c).parent().siblings().find(c).removeClass('active');
+																						$(this).siblings().find('.resource_les').removeClass('active')
+
+
+                                        } else {
+
+                                            // $(this).siblings('div').show().find(b).show().find('div,p,a,img').show();
+																						  $(this).siblings('div').show().find(b).show().children().show();
+                                        }
+                                        //$(this).siblings('div').show().find(b).show().children().show();
+                                } else { //隐藏操作
+                                        $(this).attr('src', '/Public/img/resource/shouqi1.png');
+
+                                            if ($(this).siblings('div').find('img').css('display') !== 'none') {
+                                                $(this).siblings('div').find('img').attr('src', '__PUBLIC__/img/resource/shouqi1.png');
+                                                $(this).siblings('div').hide().find(b).hide().find('div,p,a').hide();
+
+                                            } else {
+                                                $(this).siblings('div').hide().find(b).hide().find('div,p,a,img').hide();
+
+                                            }
+
+                                }
+                            }else{
+                                var id=$(this).attr('attr_id');
+                                var obj=this;
+                                request_url="{:U('BjResource/getNextLevelKnowledge')}&id="+id+'&level='+level;
+                                $.ajax({
+                                type: 'get',
+                                url: request_url,
+                                cache: false,
+                                async: false,
+                                dataType:'json',
+                                success: function(msg){
+                                    if(msg.data.length){
+                                        switch(level){
+                                            case 1:
+                                                    var element='<div class="resource_untdiv" style="display: block;">'+
+                                                                '<div  class="resource_unt" style="display: block;">'+
+                                                                    '<img src="__PUBLIC__/img/resource/shouqi1.png" alt="" class="resource_untimg">\n\
+                                                                    <a href="/index.php?m=Home&c=BjResource&a=bjResourceList&chapter=">unit1</a>'+
+                                                                '</div >'+
+                                                        '</div>';
+                                                break;
+                                            case 2:
+                                                    var element='<div class="resource_lesdiv" style="display: block;">'+
+                                                                    '<div  class="resource_les" style="display: block;">'+
+                                                                        '<img src="__PUBLIC__/img/resource/shouqi1.png" alt="" class="resource_lesimg">\n\
+                                                                        <a href="/index.php?m=Home&c=BjResource&a=bjResourceList&festival=">lesson1</a>'+
+                                                                    '</div >'+
+                                                                '</div>';
+                                                break;
+                                            case 3:
+                                                    var element='<div class="resource_pointdiv" style="display: block;">'+
+                                                                    '<div class="resource_points" style="display: block;">'+
+                                                                        '<img src="__PUBLIC__/img/resource/shouqi1.png" alt="" class="resource_pointsimg">\n\
+                                                                        <a href="/index.php?m=Home&c=BjResource&a=bjResourceList&knowledge=">知识点不超过20个字</a>'+
+                                                                    '</div >'+
+                                                                '</div>';
+                                                break;
+                                            case 4:
+                                                    var element='<div class="resource_pointlist" style="display: block;"><div class="resource_pointlistdiv" style="display: block;">'+'<a href="/index.php?m=Home&c=BjResource&a=bjResourceList&child_knowledge=" style="display: block;" class="resource_pointlistA">知识点不超过20个字111</a>'+'</div></div>';
+                                                break;
+                                        }
+                                        for(var i=0;i<msg.data.length;i++){
+                                            var clone_data=$(element).clone(true);
+                                            $(clone_data).find('img').attr('attr_id',msg.data[i].id);
+                                            $(clone_data).find('a').text(msg.data[i].knowledge_name);
+																						$(clone_data).find('a').attr('title',msg.data[i].knowledge_name);
+                                            var url=$(clone_data).find('a').attr('href');
+                                            url=url+msg.data[i].id;
+                                            $(clone_data).find('a').attr('href',url);
+                                            if(msg.data[i].knowledge_count == 0){
+                                                $(clone_data).find('img').css('visibility', 'hidden');
+											}else{
+                                                $(clone_data).find('img').show();
+											}
+                                            $(obj).parent().append(clone_data);
+																						// bigHover();
+																						asd()
+
+                                        }
+
+                                    }
+                                }
+                            });
+                        }
+                        break;
+                    }
+
+		})
+	}
+
+	toggleDiv('.resource_subjectimg', '.resource_grade',0);
+	toggleDiv('.resource_gradeimg', '.resource_unt',1,'.resource_grade');
+	toggleDiv('.resource_untimg', '.resource_les',2,'.resource_unt');
+	toggleDiv('.resource_lesimg', '.resource_points',3,'.resource_les');
+	toggleDiv('.resource_pointsimg', '.resource_pointlistdiv',4,'.resource_points');
+	$('.filter_a').on('click', function () {
+		$('#bg,.filtepopups').show();
+		$('body').css('overflow-y','hidden')
+	})
+	$('.delete').click(function () {
+		$('#bg,.filtepopups').hide();
+			$('body').css('overflow-y','auto')
+	})
+</script>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script type="text/javascript">
+	!function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+</script>
+
+<script>
+	$('.experimentBox').hover(function () {
+		$('.nobookButtonUl').stop().slideDown('100')
+	}, function () {
+		$('.nobookButtonUl').stop().slideUp()
+	})
+
+	var Sys = {};
+	var ua = navigator.userAgent.toLowerCase();
+	var s;
+	(s = ua.match(/rv:([\d.]+)\) like gecko/)) ? Sys.ie = s[1]:
+		(s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1] :
+		(s = ua.match(/firefox\/([\d.]+)/)) ? Sys.firefox = s[1] :
+		(s = ua.match(/chrome\/([\d.]+)/)) ? Sys.chrome = s[1] :
+		(s = ua.match(/opera.([\d.]+)/)) ? Sys.opera = s[1] :
+		(s = ua.match(/version\/([\d.]+).*safari/)) ? Sys.safari = s[1] : 0;
+
+	for(var i = 0;i<$('.ieSwfImg').length;i++){
+	    $('.ieSwfImg').eq(i).parentsUntil('li').parent().addClass('ieSwfLi')
+	}
+
+	$('.ieSwfLi').click(function () {
+		var userAgent = navigator.userAgent;
+		var isOpera = userAgent.indexOf("Opera") > -1;
+		if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+			if (userAgent.indexOf("MSIE 9.0") > 0 || userAgent.indexOf("MSIE 10.0")) {
+				$.NotifyBox.NotifyPromptOne('提示','暂不支持IE浏览器查看哦，<br>请选择其他浏览器！','确定');
+				return false;
+			}
+		}
+	})
+
+	$('#chapter,#festival').click(function(){
+
+		if($('#t_course').val() == ''&& $('#t_grade').val() == ''&& $('#t_textbook').val() == ''){
+			$('.red').show()
+		}
+	})
+	$('#t_course,#t_grade,#t_textbook').change(function(){
+		$('.red').hide()
+	})
+	$(".h68").each(function (i) {
+		var divH = $(this).height();
+		var $p = $("p", $(this)).eq(0);
+		var newP = $.trim($p.html());
+		var regEnglish = /^(([a-zA-Z]{0,10000}))$/;
+        if (regEnglish.test(newP) == false) {
+        	while ($p.outerHeight() > divH) {
+				$p.text($p.text().replace(/(\s)*([a-zA-Z0-9]+|\W)(\.\.\.)?$/, "..."));
+			};
+        }
+
+	})
+	function bigHover() {
+		$('.resource_classify').find('img').hover(function(){
+			$(this).stop().animate({width:'22px'});
+		},function(){
+			$(this).stop().animate({width:'20px'})
+		})
+		$('.resource_classify,.resource_subject,.resource_grade,.resource_untdiv').find('a').hover(function(){
+			$(this).stop().animate({fontSize:'20px'})
+		},function(){
+			$(this).stop().animate({fontSize:'16px'})
+		})
+	}
+// bigHover()
+
+	//前台知识树状态保存
+	$('.resource_classify').find('a').live('click',function () {
+		$('.resource_classify').find('.heightcolor').removeClass('heightcolor');
+
+		$(this).addClass('heightcolor');
+        storage.a=$('.resource_classify').html();
+    });
+    $('.resource_classify').html(storage.a);
+	$('.return_a,#gohome,#navThumImg5,#navThumImg1,#navThumImg2,#navThumImg3,#navThumImg4').click(function () {
+        var storage=window.localStorage;storage.removeItem("a");
+    })
+    //浏览nobook资源和万邦资源时统计浏览数量
+	function browserCount(a) {
+	    var resources_id = a.attr('attr-data');
+        $.ajax({
+            type: "POST",
+            async: false,
+            url: "/index.php?m=Home&c=BjResource&a=browsCount",
+            data: {id:resources_id},
+            dataType: "json",
+            success: function(){
+				return true;
+            },
+			error:function () {
+				return false;
+            }
+        });
+    }
+		function asd(){
+		$('.resource_classify').find('img').click(function(){
+				var listName = $(this).parent().attr('class');
+				switch(listName){
+					case 'resource_subject':
+							for(var a = 0;a<$(this).parent().siblings().length;a++){
+								if($(this).parent().siblings().eq(a).children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+									$(this).parent().siblings().eq(a).children('img').siblings('div').find('div,img,a').hide();
+									$(this).parent().siblings().eq(a).children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+									$(this).parent().siblings().eq(a).children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+								}
+							}
+					 break;
+					case 'resource_grade':
+					for(var b = 0;b<$(this).parent().parent().siblings().length;b++){
+						if($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+							$(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+							$(this).parent().parent().siblings().eq(b).children().children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+							$(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+						}
+					}
+					break;
+					case 'resource_unt':
+					for(var b = 0;b<$(this).parent().parent().siblings().length;b++){
+						if($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+							$(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+							$(this).parent().parent().siblings().eq(b).children().children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+							$(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+						}
+					}
+					break;
+					case 'resource_les':
+					for(var b = 0;b<$(this).parent().parent().siblings().length;b++){
+						if($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+							$(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+							$(this).parent().parent().siblings().eq(b).children().children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+							$(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+						}
+					}
+					break;
+					case 'resource_points':
+					for(var b = 0;b<$(this).parent().parent().siblings().length;b++){
+						if($(this).parent().parent().siblings().eq(b).children().children('img').attr('src') =='__PUBLIC__/img/resource/zhankai1.png' ){
+							$(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('div').hide();
+							$(this).parent().parent().siblings().eq(b).children().children('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+							$(this).parent().parent().siblings().eq(b).children().children('img').siblings('div').find('img').attr('src','__PUBLIC__/img/resource/shouqi1.png');
+						}
+					}
+					break;
+				}
+		})
+	}
+	asd()
+</script>
+
+<script>
+	// 超过20个字，显示省略号
+	$('.resource_subname').each(function(){
+		var maxwidth=20;
+		var trimString = $.trim($(this).html());
+		if(trimString.length > maxwidth){
+			$(this).html(trimString.substring(0,maxwidth)+'…');
+		}
+	});
+	function aText(){
+		$('.expertInfoMoreText').each(function(){
+		var maxwidth=100;
+		var trimString = $.trim($(this).html());
+		if(trimString.length > maxwidth){
+			$(this).html(trimString.substring(0,maxwidth)+'…'+'<span class="detailSpan">[详细]</span>');
+		}
+	});
+	}
+	$('.resource_middle').css('min-height',$('#contentWrapper').height())
+	$('.resource_classify').find('a').on('click',function(){
+
+		$(this).parent().parent().siblings().children('.active').children('img').click()
+	})
+	$('.resource_subject').children('a').on('click',function(){
+		for(var i=0;i<$('.resource_subject').length;i++){
+			if($(this).parent().siblings().eq(i).children('img').attr('src') == '/Public/img/resource/zhankai1.png'){
+				$(this).parent().siblings('.resource_subject').eq(i).children('img').click()
+			}
+		}
+	})
+</script>
+<script src="__PUBLIC__/js/jquery-2.0.3.min.js"></script>

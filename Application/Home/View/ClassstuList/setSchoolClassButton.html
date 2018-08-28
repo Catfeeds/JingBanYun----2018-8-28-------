@@ -1,0 +1,56 @@
+<div class="Setting_box">
+
+   <div class="InformationSetting" style="display: block;">
+       <p>班级编号：{$data_stu.class_info.class_code} &nbsp;&nbsp;&nbsp;&nbsp;任教学科：{$dict_string_name} &nbsp;&nbsp;&nbsp;&nbsp;班级状态：{$data_stu.class_info.flag_name}</p>
+       <div class="bjclass">
+           <p class="fontColorEf">班级信息查看</p>
+           <p>年级：{$data_stu.class_info.grade}</p>
+           <p>班级：{$data_stu.class_info.name}</p>
+           <p>学科：{$dict_string_name}</p>
+           <!--<p class="pborder">管理员：{$data_stu.class_info.class_teacher}</p>-->
+       </div>
+
+           <?php if ($is_show_hide != 1): ?>
+                <?php if ($data_stu['class_info']['flag'] != 0): ?>
+                   <div class="divborder">
+                       <p class="fontColorEf">移交班级</p>
+                       <p>任教学科:
+                           <select name="" id="dict_course_id" class="width200 ">
+                               <option value="">请选择学科</option>
+                               <volist name="dict_course_list" id="course_data" empty="">
+                                   <option value="{$course_data.course_id}">{$course_data.course_name}</option>
+                               </volist>
+                           </select>
+                       </p>
+                       <p>
+                           接收老师:
+                           <input type="text" class="width200 margintop5 TeacherPhone" placeholder="请输入接收老师手机号">
+                       </p>
+                       <button class="right padding15 margintop-65 TransferTeacherclass" classid="{$classid}">移交班级</button>
+                   </div>
+                <?php endif ?>
+        <?php endif ?>
+       <?php if ( !empty($dest_teacher_list)): ?>
+                <volist name="dest_teacher_list" id="course_lsit" empty="">
+                   <div class="divborder">
+                       <p class="fontColorEf">移交后</p>
+                       <p>接收老师：{$course_lsit.t_name}</p>
+                       <p>接受学科：{$course_lsit.t_dict_name}</p>
+                       <p>
+                           接收老师手机号：{$course_lsit.t_phone}
+                       </p>
+                       <button class="right padding15 margintop-65 RevokeclassTeacher" classid="{$classid}" handoff="{$course_lsit.id}">撤销移交</button>
+                   </div>
+                </volist>
+            <div>
+       <?php endif ?>
+       </div>
+       <div class="leaveClass">
+           <p class="fontColorEf">离开班级</p>
+       
+           <p class="colorccc">离开班级后您将解除与此班级的关联联系，无法在我的班级中找到与此班级</p>
+           <button class="right padding15 margintop-50 deleteClassAlldata" classid="{$classid}" status="{$data_stu.class_info.class_status}">离开班级</button>
+       </div>
+    </div>
+	
+</div>

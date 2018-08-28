@@ -1,0 +1,123 @@
+<layout name="parent_layout_1"/>
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<style>
+    .list {
+        position: relative;
+        height: 50px;
+        margin-bottom: 30px;
+        width: 500px;
+    }
+
+    .list_avatar {
+        position: absolute;
+        left: 0;
+        top: -13px;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        z-index: 10;
+    }
+    .infoWrapper {
+        background-color: #F9EDED;
+        height: 50px;
+        margin-left: 50px;
+        padding-left: 30px;
+        border-radius: 6px;
+    }
+
+    .nowrap {
+        vertical-align: middle !important;
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 200px;
+    }
+
+    .points {
+        color: #E08A00;
+        font-size: 30px;
+        position: absolute;
+        right: 15px;
+        top: 5px;
+    }
+</style>
+<div class="listview set-border padding10">
+    <div class="list">
+        <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+
+        <img onerror="img_teacher(this)" class="list_avatar" src=<?=C('oss_path').$data['avatar'] ?> >
+        <?php else: ?>
+        <img onerror="img_teacher(this)" class="list_avatar" src="__ROOT__/Uploads/Avatars/{$data.publisher_id}_t.jpg">
+        <?php endif; ?>
+
+        <div class="infoWrapper">
+            <div>
+                {$data.name} {$data.school_name}
+            </div>
+            <div class="nowrap" style="color: #919090;margin-top: 6px;">
+                {$data.brief_intro}
+            </div>
+            <div class="points">
+                <img height="40" src="__PUBLIC__/img/jifen.png">
+                {$data.points}
+            </div>
+        </div>
+    </div>
+    <div class="padding10">
+        <div style="margin-top: 20px">邮箱：{$data.email}</div>
+        <div style="margin-top: 20px">简介：{$data.brief_intro}</div>
+    </div>
+    <h3>分享的教学资源：</h3>
+    <empty name="resources">
+        <div class="emptyResult">尚未发布任何资源</div>
+    </empty>
+    <notempty name="resources">
+        <table class="table striped hovered border" style="margin-top: 20px;">
+            <thead>
+            <tr>
+                <th>发布单位/人</th>
+                <th>资源名称</th>
+                <th class="text-center">发布时间</th>
+                <th class="text-center">获赞数</th>
+                <th class="text-center">收藏数</th>
+                <th class="text-center">观看数</th>
+                <th class="text-center">教材分册</th>
+                <th class="text-center">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="resources" id="dataResource" empty="">
+                <tr id="l_{$dataResource.id}">
+                    <td>
+                        {$dataResource.teacher_name}
+                    </td>
+                    <td>
+                        <h3 class="list_title">
+                            <a target="_blank" href="{:U('Parent/resourceDetails?goback=false&id=')}{$dataResource.id}">{$dataResource.name}</a>
+                        </h3>
+
+                        <div class="list_sub_title">{$dataResource.description}</div>
+                    </td>
+                    <td class="text-center">{$dataResource.create_at|date="Y-m-d H:i",###}</td>
+                    <td class="text-center">
+                        {$dataResource.zan_count}
+                    </td>
+                    <td class="text-center">
+                        {$dataResource.favorite_count}
+                    </td>
+                    <td class="text-center">
+                        {$dataResource.follow_count}
+                    </td>
+                    <td class="text-center">
+                        {$dataResource.textbook}
+                    </td>
+                    <td class="text-center">
+                        <a target="_blank" href="{:U('Parent/resourceDetails?goback=false&id=')}{$dataResource.id}" class="button">查看</a>
+                    </td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
+    </notempty>
+</div>

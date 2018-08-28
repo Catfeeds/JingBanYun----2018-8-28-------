@@ -1,0 +1,240 @@
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+
+<div class="boxOutter">
+
+    <div class="">
+        <include file="CreateExercise:editcommheaderComleation" />
+        <div class="answerDiv">
+
+        </div>
+
+        <include file="CreateExercise:editfooter" />
+        </li>
+        </ul>
+    </div>
+
+    <div class="borderBottom mt10">
+        <span class="text-center tabBtn">试题追踪</span>
+    </div>
+    <table class="tableCommon borderNone mt20">
+        <thead>
+        <tr>
+            <th width="20%">序号</th>
+            <th width="20%">操作</th>
+            <th width="20%">操作人</th>
+            <th width="20%">时间</th>
+            <th width="20%">备注</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($exercise_info['track'] as $trackK => $trackV): ?>
+        <tr>
+            <td><?=$trackK+1?></td>
+            <td><?=$trackV['oper_name']?></td>
+            <td><?=$trackV['operator_name']?></td>
+            <td><?=$trackV['oper_time']?></td>
+            <td class="showDetails"><a href="javascript:"><?=$trackV['comment']?></a></td>
+        </tr>
+        <?php endforeach ?>
+        </tbody>
+    </table>
+</div>
+
+
+<div class="layerOutter">
+    <div class="exerciseTitle">
+        <div class="exerciseOutter">
+            <div class="exerciseMain">
+                <span class="claimScore">(n分)</span>
+                <span class="claimcaption">这里是题干。</span>
+            </div>
+            <div class="exerciseMinor">
+                <div class="exerciseRemark">
+                    <span class="remarkTitle">【答案】</span>
+                    <span class="remarkText remarkAnswer"></span>
+                </div>
+                <div class="exerciseRemark">
+                    <span class="remarkTitle">【解析】</span>
+                    <span class="remarkText remarkParse">这里是解析。</span>
+                </div>
+            </div>
+            <div class="exerciseDifficulty">
+                难度：<span></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input type="hidden" name="repeat_commit" class="repeat_commit" value="{:session('TOKEN')}">
+
+<input type="hidden" class="_send_paperid" value="{$paper_id}">
+<input type="hidden" class="nextE" value="{$NextE.id}">
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+    var completionA = UE.getEditor('completionA');
+    var messageJx = UE.getEditor('messageJx');
+</script>
+<script type="text/javascript">
+    var arr = new Array();
+    var completionN = 0;
+    var number;
+    var clickbefore = $('.answerDiv').children('div').length;
+    var messageArray= new Array();
+    arr = ['%E3%84%96']
+    $('.getTxt').on('click',function(){
+        clickbefore = $('.answerDiv').children('div').length;
+        completionN = 0 ;
+        var str = completionA.getContentTxt();
+        code = encodeURI(str);
+        for(var i=0;i<arr.length;i++){
+            var inputLength = code.split(arr[i]).length-1;
+            completionN = completionN + inputLength;
+            number = completionN + inputLength;
+        }
+        if(completionN-clickbefore>0){
+        $(this).siblings('.color3baeab').hide()
+            for(var i=clickbefore;i<completionN;i++){
+                var strHtml="";
+                strHtml +=  '<div class="comAnswerBox">';
+                strHtml +=  '<div class="dib mtb10 ">';
+                strHtml +=  '<span class="color3baeabFixed w64 mr0 text-right vertical-top">答案</span>';
+                strHtml +=  '<div style="width: 580px;" class="dib">';
+                strHtml +=  '<script type="text/plain" id="AnswermessageA'+i+'" name="message" style="width:100%;height:50px;">'
+                strHtml +=  '<\/script>';
+                strHtml +=  '</div>';
+                strHtml +=  '</div>';
+                strHtml +=  '<div class="dib mtb10 vertical-top ml10">';
+                strHtml +=  '<span class="color3baeabFixed  mr0">分数</span>';
+            strHtml +=  '<input type="number" class="inputCommon fraction'+i+'" placeholder="分数" onkeyup="" min="0"><div class="red mt10 dn" >*该项为必选项</div>';
+                strHtml +=  '</div>';
+                strHtml +=  '</div>';
+                $('.answerDiv').append(strHtml);
+                eval('var testVar = \'AnswermessageA\'+i');
+                messageArray[i] = UE.getEditor(testVar);
+            }
+        }else if (completionN-clickbefore == 0) {
+            return false
+        }else {
+            for (var j = completionN; j < clickbefore; j++) {
+                $('.answerDiv').children('div').last().remove();
+                messageArray[j].destroy();
+                messageArray.removeByValue(j);
+            }
+        }
+        clickbefore = completionN;
+    })
+
+    //索引查询到要删除的元素
+    Array.prototype.removeByValue = function(id) {
+        var id = parseInt( id );
+        for(var i=0; i<this.length; i++) {
+            if(this[i] == id) {
+                this.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+</script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/editcomm.js"></script>
+
+<script>
+    var numCount = "{$exercise_info.answer_count}";
+    //显示答案
+    var scoreinfo = '{$exercise_info.score}';
+    scoreinfo = scoreinfo.split(',');
+    var answerinfo = '{$exercise_info.answer}';
+    answerinfo = answerinfo.split('jingbanyunxx');
+
+    for(var i=0; i< numCount;i++) {
+        var answerDiv="";
+        answerDiv +=  '<div class="comAnswerBox">';
+        answerDiv +=  '<div class="dib mtb10 ">';
+        answerDiv +=  '<span class="color3baeabFixed w64 mr0 text-right vertical-top">答案</span>';
+        answerDiv +=  '<div style="width: 580px;" class="dib">';
+        answerDiv +=  '<script type="text/plain" id="AnswermessageA'+i+'" name="message" style="width:100%;height:50px;">'
+        answerDiv +=  '<\/script>';
+        answerDiv +=  '</div>';
+        answerDiv +=  '</div>';
+        answerDiv +=  '<div class="dib mtb10 vertical-top ml10">';
+        answerDiv +=  '<span class="color3baeabFixed  mr0">分数</span>';
+        answerDiv +=  '<input type="number" class="inputCommon fraction'+i+'" placeholder="分数" value="'+scoreinfo[i]+'"><div class="red mt10 dn" >*该项为必选项</div>';
+        answerDiv +=  '</div>';
+        answerDiv +=  '</div>';
+        $('.answerDiv').append(answerDiv);
+        eval('var AnswertestVar = \'AnswermessageA\'+i');
+        messageArray[i] = UE.getEditor(AnswertestVar);
+        messageArray[i].info =  answerinfo[i];
+        messageArray[i].ready(function() {
+            this.setContent(this.info);
+        });
+    }
+    $('.editExercise').click(function(){
+        if(resShow()>0){
+            return false
+        }
+    })
+    function resShow(){
+        var a = 0;
+        if($('.subjectLi').eq(1).find('.color3baeab').length == 0){
+            $('.subjectLi').eq(1).children('.red').show();
+            a++
+        }else {
+            $('.subjectLi').eq(1).children('.red').hide();
+        }
+
+        if(UE.getEditor('completionA').getContentLength() == 0){
+            $('#completionA').parent().siblings('.red').show();
+            a++
+        }else{
+            $('#completionA').parent().siblings('.red').hide();
+        }
+        if($('.answerDiv').children().length == 0){
+            $('.getTxt').siblings('.red').show();
+            a++
+        }else{
+            $('.getTxt').siblings('.red').hide();
+        }
+        for (var i = 0; i < $('.answerDiv').children().length; i++) {
+            if(UE.getEditor('AnswermessageA'+[i]).getContentLength() == 0 || $('.answerDiv').children().eq(i).find('input').val()=='' || $('.answerDiv').children().eq(i).find('input').val()<=0){
+                $('.answerDiv').children().eq(i).find('.red').show();
+                a++;
+            }else {
+                $('.answerDiv').children().eq(i).find('.red').hide();
+            }
+        }
+        if($('.presentation').children('option:checked').text() == '请选择' ||$('.presentation').children('option:checked').text() == '' ){
+            $('.presentation').siblings('.red').show();
+            a++
+        }else {
+            $('.presentation').siblings('.red').hide();
+        }
+        if(UE.getEditor('messageJx').getContentLength() == 0){
+            $('.jxtext').show();
+            a++
+        }else{
+            $('.jxtext').hide();
+        }
+        return a
+    }
+</script>
+
+
+<script>
+    $('.previewAllBtn').click(function(){
+        previewCompletion()
+    })
+
+    //试题审核时需要的
+    function checkHtml(){
+        $('.previewAllBtn').bind('click').click();
+        return $('.layerOutter').html()
+    }
+</script>
+
+
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/newRender.js"></script>

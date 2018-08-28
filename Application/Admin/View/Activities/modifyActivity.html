@@ -1,0 +1,1638 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/uploadify/uploadify.css">
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+<link href="__PUBLIC__/css/adminActivity.css" rel="stylesheet" type="text/css" />
+
+<style>
+	.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+		box-sizing: content-box;
+	}
+	.qq-uploader{
+		max-height: 540px
+	}
+	.topDiv {
+		text-align: center;
+	}
+
+	#isNumber {
+		display: inline-block;
+		width: 18px;
+		height: 18px;
+		position: relative;
+		top: -2px
+	}
+</style>
+<div class="fullscr1" id="addCon">
+    <div class="adminNotifyBox1 aBoxHeight" style="height:414px">
+        <div class="adminNotifyTitle">新增报名信息</div>
+        <div class="adminNotifyContent aConHeight" style="height:370px">
+            <input type="hidden" id="editRegInfoIndex"/>
+            <div class="adminSelect pt20">
+                <div class="selectBox mb10">
+                    <label for="">信息名称：</label>
+                    <input disabled type="text" class="input-control num" id="infoName" value="" maxlength="15" placeholder="请输入信息名称">
+                </div>
+                <div class="selectBox mb10">
+                    <label for="">内容长度：</label>
+                    <input disabled type="text" class="input-control" name="" id="infoLength" value="" placeholder="请输入内容长度">
+                </div>
+                <div class="selectBox mb10">
+                    <label for="">文本框提示：</label>
+                    <input disabled type="text" class="input-control" name="" id="infoPlaceHolder" value="" maxlength="15" placeholder="请输入文本框提示">
+                </div>
+                <div class="selectBox mb10">
+                    <div class="topDiv">
+                        <input disabled type="checkbox" id="isNumber" class="topCheck">
+                        仅限数字
+                    </div>
+                </div>
+            </div>
+            <p class="adminNotifyButton">
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="confirmRegInfo">确定</a>
+            </p>
+        </div>
+    </div>
+</div>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}" style="box-sizing:border-box;">&lt; 返回</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/modifyActivity" enctype="multipart/form-data" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput" data-show-error-hint="true">
+        <input type="hidden" name="id" value="{$data.id}">
+        <div class="example">
+           <span class="exampl">基本信息</span>
+            <div class="form_section">
+                <label for="title">活动主题</label>
+                <div class="input-control text full-size">
+                    <input value="{$data.title}" type="text" name="title" id="title" data-validate-func="required" maxlength="50" placeholder="必填，不超过50字" data-validate-hint="活动主题不能为空">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="">是否为“作品评比”活动</label>&nbsp;&nbsp;
+                <input type="radio" name="activityType" value="1" id="yesType" <?=$data['is_work_compare_activity'] ==1?'checked':'' ?>/>是
+                <input type="radio" name="activityType" value="2" id="noType" <?=$data['is_work_compare_activity'] ==2?'checked':'' ?> />否
+            </div>
+
+            <div class="form_section" >
+                <label for="">是否限制人数</label>&nbsp;&nbsp;
+				<input type="radio" name="number" value="1" id="yesNum" <?=$data['is_disable'] ==1?'checked':'' ?> />是
+				<input type="radio" name="number" value="2" id="noNum" <?=$data['is_disable'] ==2?'checked':'' ?> />否
+            </div>
+
+            <div class="form_section limitBox" <?=$data['is_disable'] ==1?'style="display:block;"':'' ?> >
+                <label for="limitNums">限制人数</label>
+                <div class="input-control text full-size">
+                    <input type="text" value="{$data.apply_people_number}" name="limitNums" id="limitNums"  placeholder="请输入限制人数" data-validate-hint="限制人数不能为空" onblur="return checkNum();">
+                </div>
+            </div>
+
+           <div class="form_section">
+                <label for="">备注</label>
+                <div class="input-control text full-size">
+                    <input type="text" value="{$data.remark}" name="remark" id="remark" placeholder="请输入备注">
+                </div>
+            </div>
+
+           <div class="form_section codeBox"  <?=$data['is_disable'] ==1?'style="display:block;"':'' ?>  >
+                <label for="">是否需要生成邀请码</label>&nbsp;&nbsp;
+				<input type="radio" name="code" value="2" id="yesCode" <?=$data['is_generate'] ==2?'checked':'' ?> />是
+				<input type="radio" name="code" value="1" id="noCode"<?=$data['is_generate'] ==1?'checked':'' ?> />否
+           		<button type="button" class="button info codeBtn <?=$data['is_disable'] ==1?'codeBtnGray':'' ?>" <?=$data['is_generate'] ==2?'disabled':'' ?>>生成邀请码</button>
+
+                    <a href="javascript:;" class="codeCheck" <?=$data['is_generate'] ==2?'style="display:inline-block;"':'' ?> >查看</a>
+
+
+            </div>
+            <div class="form_section" style="display:none">
+                <label for="">活动开始呈现时间</label>
+                <input value="{$data.display_activity_startendtime}" type="text" name="activityTimeDisplay" id="activityTimeDisplay" data-validate-func="required" class="input_control_short" value="" data-validate-hint="活动开始呈现时间不能为空" placeholder="活动开始呈现时间" >
+            </div>
+            <div class="form_section">
+                <label for="">活动开始时间</label>
+                <input type="text" name="activityStart" value='{$data.activitystart}' data-validate-func="required" id="activityStart" class="input_control_short" value="" data-validate-hint="活动开始时间不能为空" placeholder="活动开始时间" readonly>
+                <label for="">活动结束时间</label>
+                <input type="text" name="activityEnd" value='{$data.activityend}' data-validate-func="required" id="activityEnd" class="input_control_short" value="" data-validate-hint="活动结束时间不能为空" placeholder="活动结束时间" readonly>
+            </div>
+            <div class="form_section" style="display:none">
+                <label for="">报名开始呈现时间</label>
+                <input value="{$data.display_activity_apply_startendtime}" type="text" name="applyTimeDisplay" id="applyTimeDisplay" data-validate-func="required" class="input_control_short" value="" data-validate-hint="报名开始呈现时间不能为空" placeholder="报名开始呈现时间" >
+            </div>
+             <div class="form_section">
+                 <label for="">是否是直播</label>&nbsp;&nbsp;
+                 <input type="radio" name="is_live" value="1" id="isLive" <?=$data['is_live'] ==1?'checked':'' ?>/>是
+                 <input type="radio" name="is_live" value="0" id="isNotLive" <?=$data['is_live'] ==0?'checked':'' ?> />否
+             </div>
+             <div class="form_section liveOption" id="liveTime">
+                 <label for="">本次直播时间</label>
+                 <input type="text" name="liveStart" value='{$data.livestart|date="Y-m-d H:i:s",###}' id="liveStart"  class="input_control_short" value="" hint="直播开始时间不能为空" placeholder="直播开始时间" readonly>
+                 <label for="">至</label>
+                 <input type="text" name="liveEnd" value='{$data.liveend|date="Y-m-d H:i:s",###}' id="liveEnd"  class="input_control_short" value="" hint="直播结束时间不能为空" placeholder="直播结束时间" readonly>
+             </div>
+
+             <div class="form_section liveOption" id="liveUrl">
+                 <label for="">本次直播地址</label>
+                 <input type="text" value='{$data.url}' name="ingUrl" id="ingUrl"  class="input_control_short" value="" hint="" placeholder="直播地址" >
+
+             </div>
+             <div class="form_section liveOption" id="liveJumpSwitch">
+                 <label for="">是否允许直播开始后直接从列表页跳转至直播页"</label>&nbsp;&nbsp;
+                 <input type="radio" name="home_jump_url" value="1" id="" <?=$data['home_jump_url'] ==1?'checked':'' ?>/>是
+                 <input type="radio" name="home_jump_url" value="0" id="" <?=$data['home_jump_url'] ==0?'checked':'' ?> />否
+             </div>
+
+            <div class="form_section notLiveOption">
+                <label for="">报名开始时间</label>
+                <input type="text" name="applyStart" value='{$data.applystart}'   id="applyStart" class="input_control_short" value="" data-validate-hint="报名开始时间不能为空" placeholder="报名开始时间" readonly>
+                <label for="">报名结束时间</label>
+                <input type="text" name="applyEnd" value='{$data.applyend}'   id="applyEnd" class="input_control_short" value="" data-validate-hint="报名结束时间不能为空" placeholder="报名结束时间" readonly>
+            </div>
+             <div class="form_section notLiveOption">
+                 <label for="">是否显示限制人数 报名人数 报名按钮</label>&nbsp;&nbsp;
+                 <input type="radio" name="display_people_register" value="1" id="disReg" <?=$data['display_people_register'] ==1?'checked':'' ?> />是
+                 <input type="radio" name="display_people_register" value="0" id="unDisReg" <?=$data['display_people_register'] ==0?'checked':'' ?> />否
+             </div>
+             <div class="form_section notLiveOption"  id="roles">
+                 <label for="title">报名角色</label>
+                 <div class="full-size spanCheck">
+                     <?php $selectRole = explode(',',$data['role']); ?>
+                     <span><input disabled type="checkbox" name="role[]" value="2" <?= (in_array(2,$selectRole)) ?  'checked' : ''  ?>/>教师</span>
+                     <span><input disabled type="checkbox" name="role[]" value="3" <?= (in_array(3,$selectRole)) ?  'checked' : ''  ?>/>学生</span>
+                     <span><input disabled type="checkbox" name="role[]" value="4" <?= (in_array(4,$selectRole)) ?  'checked' : ''  ?>/>家长</span>
+
+                 </div>
+             </div>
+            <div class="form_section notLiveOption"  >
+                <label for="title">报名信息</label>
+                <div class="full-size spanCheck">
+                    <?php $selectFields = explode(',',$data['selectedfields']); ?>
+
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="1" <?= (in_array(1,$selectFields)) ?  'checked' : ''  ?>/>姓名</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="2" <?= (in_array(2,$selectFields)) ?  'checked' : ''  ?>/>学科</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="3" <?= (in_array(3,$selectFields)) ?  'checked' : ''  ?>/>参评课题</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="4" <?= (in_array(4,$selectFields)) ?  'checked' : ''  ?>/>所属区县</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="5" <?= (in_array(5,$selectFields)) ?  'checked' : ''  ?>/>学校</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="6" <?= (in_array(6,$selectFields)) ?  'checked' : ''  ?>/>学校地址</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="7" <?= (in_array(7,$selectFields)) ?  'checked' : ''  ?>/>性别</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="8" <?= (in_array(8,$selectFields)) ?  'checked' : ''  ?>/>年龄</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="9" <?= (in_array(9,$selectFields)) ?  'checked' : ''  ?>/>学历</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="10" <?= (in_array(10,$selectFields)) ?  'checked' : ''  ?>/>职称</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="11" <?= (in_array(11,$selectFields)) ?  'checked' : ''  ?>/>电子邮箱</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="12" <?= (in_array(12,$selectFields)) ?  'checked' : ''  ?>/>学校邮编</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="13" <?= (in_array(13,$selectFields)) ?  'checked' : ''  ?>/>办公电话</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="14" <?= (in_array(14,$selectFields)) ?  'checked' : ''  ?>/>移动电话</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="15" <?= (in_array(15,$selectFields)) ?  'checked' : ''  ?>/>地方课程</span>
+                    <span><input disabled type="checkbox" name="selectedFields[]" value="16" <?= (in_array(16,$selectFields)) ?  'checked' : ''  ?>/>校本课程</span>
+                    <script>
+                        var additionalInfo = '{$data['additional_info']}'
+                        var spanTemplate = '<span><input disabled  type="checkbox" class="additionalInfoCheckBox" checked=""><a onclick="editRegInfo({1})" style="cursor:pointer">{0}</a></span>';
+                        additionalInfo = eval('(' + additionalInfo + ')');
+                        $(additionalInfo).each(function(i,n){
+                            document.write(spanTemplate.format(n.name,i));
+                        })
+                    </script>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="title">所属版块</label>
+                <div class="input-control text full-size">
+                    <select disabled id="class_id" name="class_id"
+                            data-validate-func="required"
+                            data-validate-hint="所属版块不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="classes" id="dataClass" empty="暂时没有信息">
+                            <option value="{$dataClass.id}" <?php if($dataClass['id']==$data['class_id'])echo "selected";?>>{$dataClass.class}
+                            </option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="stakeholder">活动面向人群</label>
+
+                <div class="input-control text full-size">
+                    <input value="{$data.stakeholder}" type="text" name="stakeholder" id="stakeholder" data-validate-func="required" data-validate-hint="活动面向人群不能为空" maxlength="100" placeholder="必填，不超过100字">
+                </div>
+            </div>
+            <div class="form_section" id="voteDivs">
+                <volist name="voteData" id="voteData" >
+                      <div class="form_section">
+                      	  <label for="stakeholder">投票ID</label>
+						  <div class="input-control text full-size">
+							  <input value="{$voteData.vote_id}" type="number" name="voteId[]" class="voteid" data-validate-func="required"
+							  data-validate-hint="投票ID为空" maxlength="100" placeholder="必填，不超过100字">
+						  </div>
+					  </div>
+
+                     <div class="form_section">
+                     	  <label for="stakeholder">投票名称</label>
+						  <div class="input-control text full-size">
+							  <input value="{$voteData.vote_name}" type="text" name="voteName[]" class="votename" data-validate-func="required"
+							  data-validate-hint="投票名称不能为空" maxlength="100" placeholder="必填，不超过100字">
+						  </div>
+					</div>
+                </volist>
+            </div>
+            <div class="form_section"><a class="right" href="javascript:void(0);" onclick="deleteVoteInfo()">删除投票</a><a class="right" href="javascript:void(0);" onclick="addVoteInfo()">添加投票</a>
+            </div>
+            <div class="form_section">
+                <label for="title">图像(显示在移动端的图像,格式jpg或png)</label>
+                <div class="input-control text full-size">
+                    <input type="file" name="filepic" id="file">
+                </div>
+                <div style="font-size:.75rem;color: #666">* 若不想修改图像，可保持此项为空</div>
+            </div>
+            <if condition="$data['class_id'] eq 1">
+            <div class="form_section" id="accessorySupport" >
+                <label for="title">是否支持上传附件</label>
+                <div class="input-control text full-size">
+                    <select disabled id="is_upload" name="is_upload" data-validate-func="required" data-validate-hint="请选择是否支持上传附件">
+                        <option value="0">-请选择-</option>
+                        <option <if condition="$data.is_upload eq 1">selected=true</if> value="1">支持</option>
+                        <option <if condition="$data.is_upload eq 0">selected=true</if> value="0">不支持</option>
+                    </select>
+                </div>
+            </div>
+             <if condition="$data['is_upload'] eq 1">
+            <div class="form_section"  id="uploadInfoSelect">
+                <label for="title">上传信息</label>
+                <?php $uploadInfoSelectFields = explode(',',$data['upload_info']); ?>
+                <div class="full-size spanCheck" id="uploadSelectedGroup">
+                    <span><input disabled type="checkbox" name="uploadSelectedFields[]" value="1" <?= (in_array(1,$uploadInfoSelectFields)) ?  'checked' : ''  ?>/>年级</span>
+                    <span style="display:none"><input disabled type="checkbox"  name="uploadSelectedFields[]" value="2" <?= (in_array(2,$uploadInfoSelectFields)) ?  'checked' : ''  ?>/>学科</span>
+                    <span><input disabled type="checkbox" name="uploadSelectedFields[]" value="3" <?= (in_array(3,$uploadInfoSelectFields)) ?  'checked' : ''  ?>/>名称</span>
+                    <span><input disabled type="checkbox" name="uploadSelectedFields[]" value="4" <?= (in_array(4,$uploadInfoSelectFields)) ?  'checked' : ''  ?>/>描述</span>
+                    <span><input disabled type="checkbox" name="uploadSelectedFields[]" value="5" <?= (in_array(5,$uploadInfoSelectFields)) ?  'checked' : ''  ?>/>参赛寄语</span>
+                </div>
+            </div>
+            <div class="form_section"  id="fileTypeSelect">
+                <label for="title">上传类型</label>
+                <?php $workFileTypes = explode(',',$data['work_extension']); ?>
+                <div class="full-size spanCheck" id="uploadTypeCheckGroup">
+                    <span><input disabled type="checkbox" name="uploadFileType[]" value=".avi,.mp4,.flv..mov,.wmv,.mpg" <?= (in_array('avi',$workFileTypes)) ?  'checked' : ''  ?>/>视频</span>
+                    <span><input disabled type="checkbox" name="uploadFileType[]" value=".png,.jpg" <?= (in_array('png',$workFileTypes)) ?  'checked' : ''  ?>/>图片</span>
+                    <span><input disabled type="checkbox" name="uploadFileType[]" value=".mp3" <?= (in_array('mp3',$workFileTypes)) ?  'checked' : ''  ?>/>音频</span>
+                    <span><input disabled type="checkbox" name="uploadFileType[]" value=".doc,.docx" <?= (in_array('doc',$workFileTypes)) ?  'checked' : ''  ?>/>WORD</span>
+                    <span><input disabled type="checkbox" name="uploadFileType[]" value=".ppt,.pptx" <?= (in_array('ppt',$workFileTypes)) ?  'checked' : ''  ?>/>PPT</span>
+                    <span><input disabled type="checkbox" name="uploadFileType[]" value=".pdf" <?= (in_array('pdf',$workFileTypes)) ?  'checked' : ''  ?>/>PDF</span>
+                    <span><input disabled type="checkbox" name="uploadFileType[]" value=".swf" <?= (in_array('swf',$workFileTypes)) ?  'checked' : ''  ?>/>SWF</span>
+                </div>
+            </div>
+            </if>
+            </if>
+        </div>
+        <br>
+
+        <div class="example courseGradeGroup" >
+            <span class="exampl">是否选择全年级或者全学科</span>
+            <p class="infoP"><input type="checkbox" name="allgradeorcourse[]" value="1" class="infoCheckbox allgrade">全年级</label></p>
+            <p class="infoP"><input type="checkbox" name="allgradeorcourse[]" value="2" class="infoCheckbox allcourse">全学科</label></p>
+        </div>
+
+        <div class="example courseGradeGroup" >
+            <div class="form_section">
+                <label for="childrens">已选择</label><br/><br/>
+                <div>
+                    <div class="select_class_grade" >
+                        <div class="select_span">
+                            <volist name="grade_class_select" id="grade_class_i" empty="">
+                                            <span style="border: 1px solid gray;margin-left:20px;margin-bottom: 10px;padding:2px 4px">
+                                                <span attr="{$grade_class_i.course_id}" class="select_course">{$grade_class_i.course_name}</span>
+                                                <span attr="{$grade_class_i.grade_id}" class="select_grade">{$grade_class_i.grade}</span>
+                                                <!--<span attr="{$grade_class_i.class_id}" class="select_class">{$grade_class_i.class_name}</span>-->
+                                                <a class="delete_info" style="cursor:pointer;"> x</a>&nbsp;
+                                            </span>
+                            </volist>
+                        </div>
+                        <div class="child_input">
+                            <volist name="grade_class_select" id="grade_class_i" empty="">
+                                <div class="child_div">
+                                    <input type="hidden" name="grade[]" class="hidden_grade" value="{$grade_class_i.grade_id}"/>
+                                    <!--<input type="hidden" name="class[]" class="hidden_class" value="{$grade_class_i.class_id}"/> -->
+                                    <input type="hidden" name="course[]" class="hidden_course" value="{$grade_class_i.course_id}"/>
+                                </div>
+                            </volist>
+                            <input type="hidden" name="gradecoursename[]" class="gradecoursename" value=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form_section grade_is_show courseGradeGroup">
+                <label for="school_id">任教年级</label>
+
+                <div class="input-control text full-size">
+                    <select id="grade_id" class="grade_id" name="grade_id" >
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade">
+                            <!--{$data['grade_id']==$dataGrade['id']?'selected':''}-->
+                            <option value="{$dataGrade.id}" >{$dataGrade.grade}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+
+
+            <div class="form_section course_is_show courseGradeGroup">
+                <label for="school_id">任教学科</label>
+
+                <div class="input-control text full-size">
+                    <select id="course_id" class="course_id" name="course_id" >
+                        <option value="">-请选择-</option>
+                        <volist name="courses" id="dataCourse">
+                            <!--{$data['course_id']==$dataCourse['id']?'selected':''}-->
+                            <option value="{$dataCourse.id}" >{$dataCourse.course_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="example">
+            <span class="exampl">活动信息</span>
+            <div>
+                <textarea type="text/plain" id="content" name="content" style="width:100%;height:340px;">
+                {$data.content}
+                </textarea>
+            </div>
+        </div>
+
+        <div class="example" >
+            <span class="exampl">上传活动资料</span>
+            <div style="float: left;word-break: break-all;width: 70%;">
+            	<div id="fine-uploader" >
+
+				</div>
+            </div>
+
+            <div class="resource_right_div"  style="float: right;width: 30%;word-break: break-all;padding: 0 10px">
+                    <div style="width:100%;display: none;" class="resource_image">
+                        <img src="{$real_file_path}{$data.file_path}" />
+                    </div>
+                    <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.pdf</a>-->
+                    <div style="width:100%;display: none;" class="resource_pdf">
+                        <a target="_blank" href="{$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                    </div>
+
+                    <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.doc</a>-->
+                    <div style="width:100%;display: none;" class="resource_word">
+                        <a target="_blank" href="/index.php?m=Home&c=Teach&a=downloadResource&url={$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                    </div>
+
+                    <div style="width:100%;display: none;" class="resource_swf">
+                        <a target="_blank" href="{$real_file_path}{$data.file_path}">{$real_file_path}{$data.file_path}</a>
+                    </div>
+                    <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.swf</a>-->
+
+                    <div style="width:100%;display: none;" class="resource_swf">
+                        <a target="_blank" href="/index.php?m=Home&c=Teach&a=downloadResource&url={$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                    </div>
+
+                    <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.ppt</a>-->
+                    <div style="width:100%;display: none;" class="resource_ppt">
+                        <a target="_blank" href="/index.php?m=Home&c=Teach&a=downloadResource&url={$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                    </div>
+
+                    <div id='plv' style="width:0%;display: none;">
+                        <audio src="/i/horse.ogg" controls="controls">
+
+                        </audio>
+                    </div>
+
+                    <div id="plvmp4" style="width:0%;display: none;">
+                        <video src="123.mp4" width="400" height="400" controls preload></video>
+                    </div>
+
+            </div>
+		</div>
+
+        <input type="hidden" name="codename" class="codename">
+        <div class="form_section">
+            <div id="attachmentWrapper" style="display: none;">
+            </div>
+            <div id="videoWrapper" style="display: none;">
+                <!--<input type="file" id="uploadToBLWS" accept=".jpg,.png">-->
+                <input type="button" onclick="javascript:$('#uploadToBLWS').uploadify('upload','*')" value="上传视频">
+                <input type="hidden" value="" name="vid" id="vid">
+                <input type="hidden" value="" name="vid_file_path" id="vid_file_path">
+                <input type="hidden" value="" name="playerwidth" id="playerwidth">
+                <input type="hidden" value="" name="playerduration" id="playerduration">
+                <input type="hidden" value="" name="vid_fullpath" id="vid_fullpath">
+                <input type="hidden" value="" name="vid_image_path" id="vid_image_path">
+                <input type="hidden" value="" name="is_transition" id="is_transition">
+                <!--<input type="hidden" value="" name="mp4Source" id="mp4Source">-->
+                <input type='hidden' name='real_type' id='real_type' />
+            </div>
+        </div>
+
+
+        <div class="hidden_ids">
+            <volist name="resource_list" id="resource_item" empty="" key="i">
+                <if condition="$resource_item['type'] eq 'video'">
+                    <input type="hidden" attr_id="{$resource_item.id}" value="{$resource_item.id}" name="hidden_resource[]" vid_image='{$resource_item.activity_file_path}' attr_type='{$resource_item.type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.activity_file_path}"/>
+                    <elseif condition="$data['type'] eq 'audio'"/>
+                    <input type="hidden" attr_id="{$resource_item.id}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.activity_file_path}"/>
+                    <else />
+                    <input type="hidden" attr_id="{$resource_item.id}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="{$resource_item.activity_file_path}" attr_path="{$resource_item.activity_file_path}"  />
+                </if>
+            </volist>
+        </div>
+
+        <div class="info_show">
+            <p>
+
+            </p>
+        </div>
+        <input type="hidden" name="newgradchordata" class="newgradchordata" value="">
+        <input type="hidden" name="gradchordata" class="gradchordata" value="{$gcids}">
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button info" onclick="return check();">发布</button>
+        </div>
+    </form>
+</div>
+
+<!--提示框-->
+<div class="remindBox" id="newCode">
+	<h4>提示</h4>
+	<p>新邀请码已生成</p>
+	<div class="buttonBox">
+		<a href="javascript:;" class="cancel">取消</a>
+		<a href="javascript:;" class="check">查看</a>
+	</div>
+</div>
+
+<!--邀请码弹窗-->
+<div class="fullBlack"></div>
+<div class="codeOutter">
+	<span class="codeClose"></span>
+	<div class="codeInner">
+		<table id="listWrapper" class="table striped hovered border">
+			<thead>
+				<tr>
+					<th class="text-center">序号</th>
+                    <th class="text-center">邀请码</th>
+                    <th class="text-center">是否使用</th>
+                    <th class="text-center">状态</th>
+				</tr>
+			</thead>
+            <tbody class="codecentent">
+            <volist name="codelist" key="keys" id="codedata" empty="暂时没有生成邀请码">
+                <tr>
+                    <td class="text-center">
+                        {$keys}
+                    </td>
+                    <td class="text-center">{$codedata.invitation_code}</td>
+
+                    <td class="text-center">
+                        <?php if ($codedata['status']==1): ?>
+                                未使用
+                            <?php else: ?>
+                              已使用
+                        <?php endif ?>
+                    </td>
+                    <td class="text-center">
+                        <?php if ($codedata['status']==1): ?>
+                            正常
+                            <?php else: ?>
+                            废弃
+                        <?php endif ?>
+                    </td>
+                </tr>
+            </volist>
+            </tbody>
+		</table>
+	</div>
+</div>
+<input type="hidden" class="is_panduan" value="{$is_panduan}">
+
+
+<!--提示框-->
+<div class="remindBox" id="changeCode">
+	<h4>提示</h4>
+	<p class="changeP"></p>
+	<div class="buttonBox">
+		<a href="javascript:;" class="cancel">取消</a>
+		<a href="{:U('InvitationCode/lookCodeDetails?id=')}{$data.id}&titles={$data.title}" class="changeCode"></a>
+	</div>
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+
+<script>
+    var um = UM.getEditor('content');
+    var is_click_generate = "{$data['is_generate']}"; //如果等于2就是已经选择了邀请码那么不管怎么点击都要是灰色的 1或者空都是未选择邀请码 点击是否生成邀请码的时候变成绿色可点击
+    $('.codeCheck').click(function(){
+        $('.fullBlack').css('display','block');
+        $('.codeOutter').css('display','block');
+    });
+</script>
+<script>
+    function refreshLiveForm(){
+        var isLive = $('#isLive')[0].checked;
+        if(isLive) {
+            $('.liveOption').show();
+            $('.notLiveOption').hide();
+        }
+        else {
+            $('.liveOption').hide().find('input').val('');
+            $('.notLiveOption').show();
+        }
+    }
+    $('#isLive,#isNotLive').click(function(){
+        refreshLiveForm()
+    })
+    refreshLiveForm();
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+
+    $('#class_id').change(function(){
+        var pid = $(this).val();
+        if(pid!=5) {
+            $('.courseGradeGroup').show();
+        }
+        if(pid == 2) //培训
+        {
+            $('#is_upload').val(0);
+            $('#accessorySupport').hide()
+        }
+        else if(pid == 1)
+        {
+            $('#accessorySupport').show()
+        }
+        $.get('index.php?m=Home&c=Admin&a=childPid', {"pid": pid}, function (res) {
+            var htmltmp = res.info;
+
+                var str = '';
+                str += '<option value="0">请选择</option>';
+                for (var i=0;i<htmltmp.length;i++) {
+
+                    str += '<option value="'+htmltmp[i].id+'">'+htmltmp[i].class+'</option>';
+                }
+
+                $("#child_class_name").find("option").remove();
+                $('#child_class_name').append(str);
+
+
+        });
+    });
+</script>
+
+
+<script>
+    //点击是否限制人数的 ‘是’
+    $('#yesNum').click(function(){
+        $(this).attr('checked',true);
+        $('#noNum,#yesCode,#noCode').prop("checked",false);
+		$('#limitNums').attr('data-validate-func','required');
+        $('.codeCheck').hide();
+        if($(this).is(':checked')){
+            $('.limitBox,.codeBox').show();
+            if (is_click_generate !=2 ) {
+//                $('.codeBtn').addClass('codeBtnGray').attr('disabled',false);
+				$('.codeBtn').addClass('codeBtnGray').attr('disabled',true);
+            }else{
+                $('.codeBtn').addClass('codeBtnGray').attr('disabled',true);
+            }
+		}
+    })
+
+	//点击是否生成邀请码的 ‘是’
+	$('#yesCode').unbind('click').click(function(){
+		$(this).attr('checked',true);
+		$('#noCode').prop("checked",false);
+		if (is_click_generate !=2) {
+			$('.codeBtn').removeClass('codeBtnGray').prop("disabled",false);
+		}else{
+			$('.codeBtn').addClass('codeBtnGray').attr('disabled',true);
+		}
+
+		if($(this).is(':checked')){
+
+			$('.codeBtn').unbind('click').click(function(){
+				console.log(222);
+				var con;
+				con = confirm('确定生成邀请码');
+				if(con == true) {
+					var nums = $('#limitNums').val();
+					var g=/^-?\d+$/;
+					var gr = g.test(nums);
+					if(gr == false || gr<0) {
+						alert('请填写正确的限制人数');
+						return false;
+					}
+					if (is_click_generate !=2) {
+						$('.codeBtn').removeClass('codeBtnGray').prop('disabled',false);
+					}else{
+						$('.codeBtn').addClass('codeBtnGray').attr('disabled',true);
+					}
+
+					$('.codeCheck').show();
+
+					$.get('/index.php?m=Home&c=InvitationCode&a=getCodeView', {"codenum":nums}, function (res) {
+						var viewstr = '';
+						var codeids = '';
+                        var ii=1;
+						for (var i=0; i<res.length;i++) {
+							viewstr+='<tr>';
+							viewstr+='<td class="text-center">'+(ii+i)+'</td>';
+							viewstr+='<td class="text-center">'+res[i]+'</td>';
+							viewstr+='<td class="text-center">未使用</td>';
+							viewstr+='<td class="text-center">正常</td>';
+							viewstr+='</tr>';
+							if (i==0) {
+								codeids+=res[i];
+							} else {
+								codeids+=','+res[i];
+							}
+
+						}
+						$('.codename').val(codeids);
+						$('.codecentent').html(viewstr);
+
+					})
+				} else {
+
+				}
+			})
+		}
+	})
+	//点击是否生成邀请码的 ‘否’
+	$('#noCode').unbind('click').click(function(){
+		$(this).attr('checked',true);
+		$('#yesCode').prop("checked",false);
+		$('.codeBtn').addClass('codeBtnGray').attr('disabled',true);
+		$('.codeCheck').hide();
+	})
+
+    //点击是否限制人数的 ‘否’
+    $('#noNum').click(function(){
+        $(this).attr('checked',true);
+        $('#yesNum,#yesCode,#noCode').prop("checked",false);
+        $('.codeCheck').hide();
+        if($(this).is(':checked')){
+            $('.limitBox,.codeBox').hide();
+            if (is_click_generate !=2) {
+                $('.codeBtn').removeClass('codeBtnGray');
+            } else{
+                $('.codeBtn').addClass('codeBtnGray').attr('disabled',true);
+            }
+
+        }
+    })
+</script>
+
+<!--限制人数改变-->
+<script>
+	var limitNums = $('#limitNums').val();
+	console.log(limitNums);
+
+	function checkNum() {
+		var limitNumsNew = $('#limitNums').val();
+		if(is_click_generate == 2) {
+			if(limitNumsNew > limitNums ) {
+				console.log('大于');
+				$('#changeCode').show();
+				$('.changeP').html('请到邀请码管理中心添加邀请码');
+				$('.changeCode').html('去添加');
+			} else if(limitNumsNew < limitNums) {
+				console.log('小于');
+				$('#changeCode').show();
+				$('.changeP').html('请到邀请码管理中心删除邀请码');
+				$('.changeCode').html('去删除');
+			}
+		}
+	}
+
+	$('.cancel').click(function() {
+		$(this).parent().parent().hide()
+	})
+</script>
+
+<script type="text/javascript">
+	!function(){
+		laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#activityStart',
+		format: 'YYYY-MM-DD hh:mm:ss',
+		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+//			 appstart.max = datas;
+//			 append.max = datas;
+		}
+	};
+
+	var actend = {
+		elem: '#activityEnd',
+		format: 'YYYY-MM-DD hh:mm:ss',
+		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+			 appstart.max = datas;
+			 append.max = datas;
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+
+	//报名起始时间
+	var appstart = {
+		elem: '#applyStart',
+		format: 'YYYY-MM-DD hh:mm:ss',
+		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 append.min = datas; //开始日选好后，重置结束日的最小日期
+			 append.start = datas //将结束日的初始值设定为开始日
+		}
+	};
+
+	var append = {
+		elem: '#applyEnd',
+		format: 'YYYY-MM-DD hh:mm:ss',
+		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			appstart.max = datas; //结束日选好后，重置开始日的最大日期
+		}
+	};
+	laydate(appstart);
+	laydate(append);
+
+    //直播起始时间
+    var liveStart = {
+        elem: '#liveStart',
+        format: 'YYYY-MM-DD hh:mm:ss',
+        min: laydate.now(), //设定最小日期为当前日期
+        max: '2099-06-16', //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            append.min = datas; //开始日选好后，重置结束日的最小日期
+            append.start = datas //将结束日的初始值设定为开始日
+        }
+    };
+
+    var liveEnd = {
+        elem: '#liveEnd',
+        format: 'YYYY-MM-DD hh:mm:ss',
+        min: laydate.now(),
+        max: '2099-06-16',
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            appstart.max = datas; //结束日选好后，重置开始日的最大日期
+        }
+    };
+    laydate(liveStart);
+    laydate(liveEnd);
+</script>
+
+<script type="text/javascript">
+    function getBriefDateScale(start,end)
+    {
+        if(start.getYear() == end.getYear())
+        {
+            if(start.getMonth() == end.getMonth())
+            {
+                if(start.getDate() == end.getDate())
+                {
+                    return start.format('yyyy年mm月dd日');
+                }
+                else
+                {
+                    return start.format('yyyy年mm月dd日') + '-' + end.getDate() + '日';
+                }
+            }
+            else
+            {
+                return start.format('yyyy年mm月dd日') + '-' + end.format('mm月dd日') ;
+            }
+        }
+        else
+        {
+            return start.format('yyyy年mm月dd日') + '-' + end.format('yyyy年mm月dd日');
+        }
+    }
+    function timeCheck()
+    {
+        var isLive = $('#isLive')[0].checked;
+        var activityStart = $('#activityStart').val();
+        var activityEnd   = $('#activityEnd').val();
+        var applyStart    = $('#applyStart').val();
+        var applyEnd      = $('#applyEnd').val();
+        if(activityStart == '' || activityEnd == '' || (!isLive && (applyStart == '' || applyEnd == '')) )
+        {
+            $.Notify({
+                caption: '提示',
+                content: '活动/报名起止时间不能为空',
+                type: 'warning'
+            });
+            return false;
+        }
+        if(activityStart == activityEnd)
+        {
+            $.Notify({
+                caption: '提示',
+                content: '活动起止时间不能相同',
+                type: 'warning'
+            });
+            return false;
+        }
+        activityStart = new Date(activityStart);
+        activityEnd = new Date(activityEnd);
+        applyStart = new Date(applyStart);
+        applyEnd = new Date(applyEnd);
+        $('#activityTimeDisplay').val(getBriefDateScale(activityStart,activityEnd));
+        $('#applyTimeDisplay').val(getBriefDateScale(applyStart,applyEnd));
+        return true;
+    }
+    function check() {
+        if(!timeCheck())
+            return false;
+        //资源名称
+        if(!onFileCheck()){
+            return false;
+        }
+//        if($('#file').val() == '') {
+//            $.Notify({
+//                caption: '提示',
+//                content: '活动图片不能为空',
+//                type: 'warning'
+//            });
+//            return false;
+//        }
+        //TODO: PROECESS uploadInfo
+        $('#vid').val('');
+        $('#vid_file_path').val('');
+        $('#playerwidth').val('');
+        $('#playerduration').val('');
+        $('#vid_fullpath').val('');
+        $('#vid_image_path').val('');//is_transition
+        $('#is_transition').val('');
+
+        for(var key in uploadInfo){
+            $('#vid_file_path').val($('#vid_file_path').val() + uploadInfo[key].vid_file_path +',#');
+            var width = typeof(uploadInfo[key].playerwidth) != 'undefined' ? uploadInfo[key].playerwidth : '0*0';
+
+            $('#playerwidth').val($('#playerwidth').val() + width +',');
+            var duration = typeof(uploadInfo[key].playerduration) != 'undefined' ? uploadInfo[key].playerduration : '00:00:00';
+
+            $('#playerduration').val($('#playerduration').val() + duration +',');
+            var vid = typeof(uploadInfo[key].vid) != 'undefined' ? uploadInfo[key].vid : '0';
+            $('#vid').val($('#vid').val() + vid +',');
+
+            var vid_fullpath= typeof(uploadInfo[key].vid_fullpath) != 'undefined' ? uploadInfo[key].vid_fullpath : '0';
+            $('#vid_fullpath').val($('#vid_fullpath').val()+vid_fullpath+',');
+
+            var vid_image_path= typeof(uploadInfo[key].vid_image_path) != 'undefined' ? uploadInfo[key].vid_image_path : '0';
+            $('#vid_image_path').val($('#vid_image_path').val()+vid_image_path+',');
+
+            var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+            $('#is_transition').val($('#is_transition').val()+vid_transition+',');
+        }
+
+       /* if(!$(".hidden_grade").length){
+            alert("请选择任教信息");
+            return false;
+        }*/
+        var lengtype = $("#child_class_name option").length;
+        if (lengtype > 1) {
+            var typeid = $('#child_class_name').val();
+            if (typeid=='' || typeid<=0) {
+                alert('请选择所属类型');
+                return false;
+            }
+        }
+        var strids = '';
+        var i=0;
+        $('.select_span').children('span').each(function () {
+            if (i==0) {
+                strids+=$(this).children('span').eq(0).text()+'-'+$(this).children('span').eq(1).text();
+            } else {
+                strids+='|'+$(this).children('span').eq(0).text()+'-'+$(this).children('span').eq(1).text();
+            }
+            i++;
+        });
+        $('.newgradchordata').val(strids);
+
+
+        return true;
+    }
+    var uploadInfo = {};
+</script>
+
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script type="text/template" id="qq-template">
+        <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+            <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+                <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+            </div>
+            <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+                <span class="qq-upload-drop-area-text-selector"></span>
+            </div>
+            <div class="qq-upload-button-selector qq-upload-button">
+                <div>上传文件</div>
+            </div>
+            <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+            <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+                <li>
+                    <div class="qq-progress-bar-container-selector">
+                        <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                    </div>
+                    <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                    <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+                    <span class="qq-upload-file-selector qq-upload-file"></span>
+                    <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                    <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                    <span class="qq-upload-size-selector qq-upload-size"></span>
+                    <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
+                    <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
+
+                    <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+                </li>
+            </ul>
+
+            <dialog class="qq-alert-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Close</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-confirm-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">No</button>
+                    <button type="button" class="qq-ok-button-selector">Yes</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-prompt-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <input type="text">
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                    <button type="button" class="qq-ok-button-selector">Ok</button>
+                </div>
+            </dialog>
+        </div>
+    </script>
+<script>
+    function changeInputFilter(){
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').attr('accept',acceptStr);
+    }
+    changeInputFilter();
+
+    function onFileCheck(){
+        if($('li').hasClass('qq-upload-fail')){
+            alert('有文件上传错误');
+            return false;
+        }
+        return true;
+    }
+    var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById('fine-uploader'),
+        request1Enable : true,
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mov","mp4","mp3"),
+            inputName:'Filedata',
+        },
+        request: {
+            endpointnum: 0,
+            endpoint: '/index.php?m=Admin&c=Activities&a=upload_file_jb',
+            params:{},
+            inputName:'file[]',
+        },
+        validation:{
+            allowedExtensions: ['jpeg', 'jpg', 'gif', 'png','mp4','mov','mp3','doc','docx','ppt','pptx','pdf','swf'],
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'
+        },
+        retry: {
+            enableAuto: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[id];
+        },
+        responseCallBack: function(id,specNum,xhr){
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                alert('上传失败!错误原因'+e);
+                return false;
+            }
+            if(specNum == 0){
+                if(result.code == 0){
+                    if(typeof(uploadInfo[id])== 'undefined'){
+                        uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid_file_path'] = result.res+':'+result.name;
+                    uploadInfo[id]['vid_image_path'] = result.message_video_image;     //这里是视频截图,如果不是视频这里就是空
+                    uploadInfo[id]['is_transition'] = result.is_transition;            //这里是视频转换状态。
+                    return true;
+                }else{
+                    alert(result.msg);
+                }
+            }else if(specNum == 1){
+                if(result.error == 0){
+                    //alert("上传成功!VID:"+result.data[0].vid);
+                    //TODO: add result.res to XXX
+                    if(typeof(uploadInfo[id])== 'undefined')
+                    {
+                        uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid'] = result.data[0].vid;
+                    uploadInfo[id]['playerwidth'] = result.data[0].playerwidth + '*' +result.data[0].playerheight;
+                    uploadInfo[id]['duration'] = result.data[0].duration;
+                    uploadInfo[id]['vid_fullpath'] = result.data[0].mp4;
+                    return true;
+                }else{
+                    alert("上传失败!错误码:"+result.error);
+                }
+            }
+            return false;
+        }
+    });
+
+</script>
+
+<!--查看邀请码-->
+<script>
+    var resource_path='';
+	$('.codeCheck,.check').click(function(){
+		$('.fullBlack,.codeOutter').show();
+		$(document.body).css('overflow-y','hidden');
+		$('#newCode').hide();
+	})
+
+	$('.codeClose').click(function(){
+		$('.fullBlack,.codeOutter').hide();
+		$(document.body).css('overflow-y','auto');
+	})
+
+    function init_funtion(){
+        //var temp_ul='<div class="qq-uploader-selector qq-uploader"></div>'
+        var temp_li='<div class="show_div" style="margin-left:10px;margin-top:10px;border 1px gray solid buttom;"><img src=""><input type="hidden" /><span style="margin-left:20px;cursor:pointer;"></span><a href="javascript:" class="delete_button" style="margin-left:10px;cursor:pointer;">删除</a></div>';
+        var other_file_id=3;
+        var copy_li,copy_ul;
+
+        //这里开始复制
+        var all_exists_input=$('.hidden_ids').children('input');
+        for(var i=0;i<all_exists_input.length;i++){
+            copy_li=$(temp_li).clone(true);
+            $(copy_li).find('a').attr('attr_class',($(all_exists_input[i]).attr('attr_class')));
+            $(copy_li).find('a').attr('attr_type',($(all_exists_input[i]).attr('attr_type')));
+            //$(copy_li).find('img').css('width',100);
+
+            $(copy_li).find('span').text($(all_exists_input[i]).attr('attr_path'));
+            if($(all_exists_input[i]).attr('attr_type')=='video'){
+                var vid_image_path='';
+                if($(all_exists_input[i]).attr('vid_image').indexOf('http')== -1){
+                    vid_image_path="{$oss_path}"+$(all_exists_input[i]).attr('vid_image');
+                }else{
+                    vid_image_path=$(all_exists_input[i]).attr('vid_image');
+                }
+
+                //$(copy_li).find('img').attr('src',vid_image_path)
+                $(copy_li).find('input').val($(all_exists_input[i]).attr('attr_path'));
+
+            }else if($(all_exists_input[i]).attr('attr_type')=='audio'){
+                //$(copy_li).find('img').remove();
+                $(copy_li).find('input').val($(all_exists_input[i]).attr('attr_path'));
+
+            }else{
+                //$(copy_li).find('img').remove();
+                $(copy_li).find('input').val($(all_exists_input[i]).attr('attr_path'));
+            }
+            if (i == 0) {
+                //console.log($(all_exists_input[i]).attr('attr_path'));
+                //console.log($(all_exists_input[i]).attr('attr_type'));
+                var firstresource = "{$oss_path}"+$(all_exists_input[i]).attr('attr_path');
+                var typeres = $(all_exists_input[i]).attr('attr_type');
+                console.log(typeres);
+                switch(typeres){
+                    case 'image':
+                        $(".resource_image").css('display','block');
+                        $(".resource_image").children('img').attr('src',firstresource);
+                        break;
+                    case 'png':
+                        $(".resource_image").css('display','block');
+                        $(".resource_image").children('img').attr('src',firstresource);
+                        break;
+                    case 'jpg':
+                        $(".resource_image").css('display','block');
+                        $(".resource_image").children('img').attr('src',firstresource);
+                        break;
+                    case 'mp3':
+                        $("#plv").find('audio').attr('src',firstresource);
+                        $("#plv").css('display','block');
+                        break;
+                    case 'video':
+                    case 'audio':
+                    case 'mp4':
+                        $("#plvmp4").find('video').attr('src',firstresource);
+                        $("#plvmp4").css('display','block');
+                        break;
+                    case 'swf':
+                        $(".resource_swf").css('display','block');
+                        $(".resource_swf").children('a').attr('href',firstresource);
+                        break;
+                    case 'pdf':
+                        $(".resource_pdf").css('display','block');
+                        $(".resource_pdf").children('a').attr('href',firstresource).text(firstresource);
+                        break;
+                    case 'word':
+                    case 'doc':
+                        $(".resource_word").css('display','block');
+                        $(".resource_word").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+firstresource).text(firstresource);
+                        break;
+                    case 'ppt':
+                        $(".resource_ppt").css('display','block');
+                        $(".resource_ppt").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+firstresource).text(firstresource);
+                        break;
+                    case 'zip':
+                        $(".resource_zip").css('display','block');
+                        $(".resource_zip").children('a').attr('href',firstresource).text(firstresource);
+                        break;
+                }
+
+            }
+            $('.qq-upload-list-selector').append(copy_li);
+        }
+    }
+    init_funtion();
+
+    $(".delete_button").live('click',function(){
+        $('.resource_right_div').find('div').css('display','none');
+        var contact_class=$(this).attr('attr_class');
+        var resource_ytpe = $(this).attr('attr_type');
+        $("."+contact_class).remove();
+        $(this).parent().remove();
+        //判断是否还有已存在的,并操作
+        if($('.show_div').length>0){
+            //这里替换右侧
+            resource_path=$('.show_div').eq(0).find('input').val();
+            resource_info_type=$('.show_div').eq(0).find('a').attr('attr_type');//下一个资源的类型
+            console.log(resource_info_type);
+            switch(resource_info_type){
+                case 'image':
+                    $(".resource_image").children('img').attr('src',resource_path);
+                    break;
+                case 'png':
+                    $(".resource_image").children('img').attr('src',resource_path);
+                    break;
+                case 'jpg':
+                    $(".resource_image").children('img').attr('src',resource_path);
+                    break;
+                case 'video':
+                case 'audio':
+                case 'mp4':
+                    resource_path = "{$oss_path}"+resource_path;
+                    $("#plvmp4").find('video').attr('src',resource_path);
+                    $("#plvmp4").css('display','block');
+                    break;
+                case 'mp3':
+                    resource_path = "{$oss_path}"+resource_path;
+                    $("#plv").find('audio').attr('src',resource_path);
+                    $("#plv").css('display','block');
+                    break;
+
+                case 'swf':
+
+                    $(".resource_swf").children('a').attr('href',resource_path).text(resource_path);
+                    $(".resource_swf").css('display','block');
+                    break;
+                case 'pdf':
+
+                    $(".resource_pdf").children('a').attr('href',resource_path).text(resource_path);
+                    $(".resource_pdf").css('display','block');
+                    break;
+                case 'word':
+                case 'doc':
+                    $(".resource_word").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text(resource_path);
+                    $(".resource_word").css('display','block');
+                    break;
+                case 'ppt':
+                    console.log('进来ppt');
+                    $(".resource_ppt").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text(resource_path);
+                    console.log('显示ppt');
+                    $(".resource_ppt").css('display','block');
+                    break;
+                case 'zip':
+                    $(".resource_zip").children('a').attr('href',resource_path).text(resource_path);
+                    $(".resource_zip").css('display','block');
+                    break;
+            }
+        }else{
+            //这里删除
+            $(".resource_right_div").remove();
+        }
+    });
+
+    //点击查看大图
+    $(".show_div").find('span').live('click',function(){
+        $('.resource_right_div').find('div').css('display','none');
+        var resource_ytpe_p = $(this).siblings('a').attr('attr_type');
+
+        switch(resource_ytpe_p){
+            case 'image':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $(".resource_image").children('img').attr('src',resource_path);
+                $(".resource_image").css('display','block');
+                break;
+            case 'png':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $(".resource_image").children('img').attr('src',resource_path);
+                $(".resource_image").css('display','block');
+                break;
+            case 'jpg':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $(".resource_image").children('img').attr('src',resource_path);
+                $(".resource_image").css('display','block');
+                break;
+            case 'video':
+            case 'audio':
+            case 'mp4':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $("#plvmp4").find('video').attr('src',resource_path);
+                $("#plvmp4").css('display','block');
+                break;
+            case 'mp3':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $("#plv").find('audio').attr('src',resource_path);
+                $("#plv").css('display','block');
+                break;
+            case 'swf':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $(".resource_swf").children('a').attr('href',resource_path).text();
+                $(".resource_swf").css('display','block');
+                break;
+            case 'pdf':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $(".resource_pdf").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                $(".resource_pdf").css('display','block');
+                break;
+            case 'word':
+            case 'doc':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $(".resource_word").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text('点击查看'+resource_path);
+                $(".resource_word").css('display','block');
+                break;
+            case 'doc':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $(".resource_word").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text('点击查看'+resource_path);
+                $(".resource_word").css('display','block');
+                break;
+            case 'ppt':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $(".resource_ppt").children('a').attr('href',"/index.php?m=Home&c=Teach&a=downloadResource"+"&url="+resource_path).text('点击查看'+resource_path);
+                $(".resource_ppt").css('display','block');
+                break;
+            case 'zip':
+                resource_path=$(this).siblings('input').val();
+                resource_path = "{$oss_path}"+resource_path;
+                $(".resource_zip").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                $(".resource_zip").css('display','block');
+                break;
+        }
+    });
+
+</script>
+
+<script>
+
+
+    function showChooseSchoolDlg() {
+        document.getElementById("bg").style.display = "block";
+        document.getElementById("show").style.display = "block";
+        $('#schoolWrapper').height($('#show').height() - 130);
+
+    }
+
+    function checkSelect(){
+        var is_grade_show = $('.allgrade').is(':checked');
+        var is_course_show = $('.allcourse').is(':checked');
+        console.log(is_grade_show);
+        console.log(is_course_show);
+        if (is_grade_show==true) {
+            var grade_val=0;
+            var course_val=$("#course_id").val();
+            if(course_val){
+                return true;
+            }else{
+                return false;
+            }
+        } else if (is_course_show==true) {
+            var grade_val=$("#grade_id").val();
+            var course_val=0;
+            if(grade_val){
+                return true;
+            }else{
+                return false;
+            }
+        } else if (is_course_show==true &&is_grade_show==true ) {
+            var grade_val=0;
+            var course_val=0;
+            return true;
+        } else {
+            var grade_val=$("#grade_id").val();
+            var course_val=$("#course_id").val();
+            if(grade_val && course_val){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+    }
+
+    var temp_div="<div class='child_div'>"+
+            "<input type='hidden' name='grade[]' class='hidden_grade' value=''/>"+
+            "<input type='hidden' name='course[]' class='hidden_course' value=''/>"+
+            "</div>";
+    var temp_span="<span style='border: 1px solid gray;margin-left:20px;'>"+
+            "<span attr='' class='select_course'></span>&nbsp;"+
+            "<span attr='' class='select_grade'></span>&nbsp;"+
+            "<a class='delete_info'>x</a>&nbsp;"+
+            "</span>";
+
+    //创建元素并判断该span是否存在
+    function createElement(){
+        var course_id=$("#course_id").val();
+        var course_text=$("#course_id option:selected").text();
+        var grade_id=$("#grade_id").val();
+        var grade_text=$("#grade_id option:selected").text();
+
+        /*if ( is_panduan==1  ) {
+            $(".select_span").html('');//先清空数据
+            $(".child_input").html('');
+        }*/
+
+        var is_grade_show = $('.allgrade').is(':checked');
+        var appendname='';
+        if(is_grade_show) {
+            appendname = '全年级';
+        }
+        var is_course_show = $('.allcourse').is(':checked');
+        if(is_course_show) {
+            appendname = '全学科';
+        }
+
+        if(is_grade_show==true && is_course_show==true) {
+            appendname='全年级-全学科';
+        }
+
+        if(is_grade_show!=true && is_course_show!=true) {
+
+            $('.child_input').each(function(){
+                var is_panduangrade = $(this).find('.child_div').find('input').eq(0).val();
+                var is_panduancourse = $(this).find('.child_div').find('input').eq(1).val();
+
+
+                if (is_panduangrade == 0 || is_panduancourse==0) { //全年级和全学科删除
+
+                    $(this).find('.child_div').remove();
+                }
+            })
+
+            $('.select_span').each(function(){
+                var is_panduangrade_text = $(this).find('span').find('span').eq(0).text();
+                var is_panduancourse_text = $(this).find('span').find('span').eq(1).text();
+
+                if (is_panduangrade_text == '全学科' || is_panduancourse_text=='全年级') { //全年级和全学科删除
+                    $(this).find('span').remove();
+                    $(this).find('.child_div').remove();
+                }
+            })
+        }
+
+
+        //这里拿span进行比对的
+        var check_course=$(".select_course[attr="+course_id+"]");
+        var check_grade=$(".select_grade[attr="+grade_id+"]");
+        if(check_course.length && check_grade.length){
+            alert('您已经选择过该信息');
+            return false;
+        }
+
+        //return false;
+        if(is_grade_show==true) {
+
+            var inner_span=$(temp_span).clone(true);
+            $(inner_span).find(".select_course").attr("attr",course_id).text(course_text);
+            $(inner_span).find(".select_grade").attr("attr",grade_id).text(appendname);
+
+            var inner_div=$(temp_div).clone(true);
+            $(inner_div).find('.hidden_grade').val(0);
+            $(inner_div).find('.hidden_course').val(course_id);
+
+            $(".select_span").append(inner_span);
+            $(".child_input").append(inner_div);
+        } else if(is_course_show==true) {
+
+            var inner_span=$(temp_span).clone(true);
+            $(inner_span).find(".select_course").attr("attr",course_id).text(appendname);
+            $(inner_span).find(".select_grade").attr("attr",grade_id).text(grade_text);
+
+            var inner_div=$(temp_div).clone(true);
+            $(inner_div).find('.hidden_grade').val(grade_id);
+            $(inner_div).find('.hidden_course').val(0);
+
+            $(".select_span").append(inner_span);
+            $(".child_input").append(inner_div);
+
+        }else if(is_grade_show==true && is_course_show==true){
+            var inner_span=$(temp_span).clone(true);
+            $(inner_span).find(".select_course").attr("attr",course_id).text(course_text);
+            $(inner_span).find(".select_grade").attr("attr",grade_id).text(appendname);
+
+            var inner_div=$(temp_div).clone(true);
+            $(inner_div).find('.hidden_grade').val(0);
+            $(inner_div).find('.hidden_course').val(0);
+
+            $(".select_span").append(inner_span);
+            $(".child_input").append(inner_div);
+        } else {
+
+            var inner_span=$(temp_span).clone(true);
+            $(inner_span).find(".select_course").attr("attr",course_id).text(course_text);
+            $(inner_span).find(".select_grade").attr("attr",grade_id).text(grade_text);
+
+            var inner_div=$(temp_div).clone(true);
+            $(inner_div).find('.hidden_grade').val(grade_id);
+            $(inner_div).find('.hidden_course').val(course_id);
+
+            $(".select_span").append(inner_span);
+            $(".child_input").append(inner_div);
+        }
+
+
+    }
+
+    //年级等发生改变的时候,都要判断下拉是否都选中
+    $("#course_id,#grade_id").change(function(){
+        if(checkSelect()==false){
+            return false;
+        }
+        //判断是否有过去选择过得元素
+        createElement();
+    });
+
+    //点击已选择的删除
+    $(".delete_info").live('click',function(){
+        var current_index=$(this).parent().index();
+        $(".child_input").find(".child_div").eq(current_index).remove();
+        $(this).parent().remove();
+    });
+
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+
+    //筛选全年级和全学科
+    $(".allgrade").live('click',function(){
+        $(".select_span").html('');//先清空数据
+        $(".child_input").html('');
+
+
+        var is_grade_show = $(this).is(':checked');
+        var is_course_show = $('.allcourse').is(':checked');
+
+        if (is_grade_show==true && is_course_show==true) {
+
+            $('.grade_is_show').hide();
+            $('.course_is_show').hide();
+        } else {
+            if (is_grade_show==false && is_course_show==false) {
+                $('.grade_is_show').show();
+                $('.course_is_show').show();
+            } else {
+                if (is_grade_show==true) {
+                    $('.grade_is_show').css('display','none');
+                }else {
+                    $('.course_is_show').css('display','none');
+                    $('.grade_is_show').css('display','block');
+                }
+            }
+
+        }
+
+    });
+
+    $(".allcourse").live('click',function(){
+        $(".select_span").html('');//先清空数据
+        $(".child_input").html('');
+
+        var is_course_show = $(this).is(':checked');
+        var is_grade_show = $('.allgrade').is(':checked');
+        if (is_grade_show==true && is_course_show==true) {
+            $('.grade_is_show').hide();
+            $('.course_is_show').hide();
+        } else {
+            if (is_grade_show==false && is_course_show==false) {
+                $('.grade_is_show').show();
+                $('.course_is_show').show();
+            } else {
+                if (is_course_show == true) {
+                    $('.course_is_show').css('display', 'none');
+                } else {
+                    $('.grade_is_show').css('display', 'none');
+                    $('.course_is_show').css('display', 'block');
+                }
+            }
+        }
+
+
+    });
+    var voteDivTemplate = '<div class="input-control text full-size"><label for="stakeholder">投票ID</label>\
+            <input type="number" name="voteId[]" class="voteid" min=1 data-validate-func="required"\
+    data-validate-hint="投票ID为空" maxlength="100" placeholder="必填">\
+            </div>\
+            <div class="input-control text full-size">\
+            <label for="stakeholder">投票名称</label>\
+            <input type="text" name="voteName[]" class="votename" data-validate-func="required"\
+    data-validate-hint="投票名称不能为空" maxlength="100" placeholder="必填，不超过100字">\
+            </div>';
+    function addVoteInfo() {
+        $('#voteDivs').append(voteDivTemplate);
+    }
+    function deleteVoteInfo()
+    {
+        var voteLength = $('.voteid').length;
+        if(0 != voteLength)
+        {
+            $('.voteid').eq(voteLength-1).parent().remove();
+            $('.votename').eq(voteLength-1).parent().remove();
+        }
+    }
+    function editRegInfo(index)
+    {
+        $('.adminNotifyTitle').text('报名信息');
+        $('#infoName').val(additionalInfo[index].name);
+        $('#infoLength').val(additionalInfo[index].maxLength);
+        $('#infoPlaceHolder').val(additionalInfo[index].placeholder);
+        $('#isNumber').attr('checked',(additionalInfo[index].type == 'number') ? true:false);
+        $('#addCon').show();
+    }
+    $('#confirmRegInfo').click(function(){
+        $('#addCon').hide();
+    })
+</script>

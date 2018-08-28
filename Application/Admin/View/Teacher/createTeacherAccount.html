@@ -1,0 +1,430 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		教师管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('Teacher/teacherList')}">教师管理</a>>>
+			<a href="javascript:;">创建教师</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form" action="{:U('Teacher/createTeacherAccount')}" method="post" onsubmit="return checkInfo()">
+<div class="blueBox">
+	<span class="blueText left fs16">创建教师</span>
+	<a href="javascript:;" class="blackText right submitA" id="">
+		<label for="submitSave"><img src="{$oss_path}public/web_img/Admin/icon-complete.png" alt="" class="mr5"></label>
+		<input type='submit' class="submitInput" id="submitSave" value='完成创建'/>
+	</a>
+	<a href="javascript:;" class="blackText right submitA mr20" id="">
+		<label for="submitAdd"><img src="{$oss_path}public/web_img/Admin/icon-add2.png" alt="" class="mr5"></label>
+		<input type='submit' class="submitInput" id="submitAdd" value='添加任教班级'/>
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+    <input type="hidden" class="next_flag" name="next_flag" value="0"/> 
+    <input type="hidden" class="grade_course_ids" name="grade_course_ids"/>
+
+	<!--<p class="blueText fs16">教师查询</p>-->
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>省份：</label>
+				<select id="province_list" class="input-control" name="province" required>
+					<option value="0">-请选择-</option> 
+                                    <volist name="province_list" id="province_item">
+                                        <option value="{$province_item.id}" <if condition="$province_item['id']==$province">selected="true"</if> >{$province_item.name}</option>
+                                    </volist>
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>市区：</label>
+				<select id="city_list" class="input-control" name="city" required>
+					<option value="0">-请选择-</option> 
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>区县：</label>
+				<select id="district_list" class="input-control" name="district" required>
+					<option value="0">-请选择-</option> 
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>学校：</label>
+				<select id="school_list" class="input-control" name="school" required>
+					<option value="0">-请选择-</option> 
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>教师姓名：</label>
+				<input type="text" class="teacher_name input-control" name="name"  placeholder="请输入教师姓名"  autocomplete="off" required>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>教师手机号：</label>
+				<input type="text" class="telephone input-control" name="telephone"  placeholder="请输入教师手机号" required autocomplete="off">
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>登录密码：</label>
+				<input type="password" class="password input-control" name="password" placeholder="请输入登录密码"  autocomplete="off" required>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>性别：</label>
+				<select id="sex" class="input-control" name="sex">
+					<option value="0">-请选择-</option>
+					<option value="男">男</option>
+					<option value="女">女</option>
+				</select>
+                                <span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>邮箱：</label>
+				<input type="text" class="email input-control" name="email" autocomplete="off"  placeholder="请输入邮箱">
+			</div>
+		</div>
+		<div class="row cells1" style="margin-top:8px !important">
+			<div class="cell">
+				<label>简介：</label>
+				<textarea name="brief_info" id="brief_info" class="textarea-control" maxlength="40"></textarea>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="bgGray mb10">
+	<p class="blueText nobold fs16">请选择任教年级学科</p>
+	<div class="grid condensed cellBox" style="width: 90%">
+		<div class="row cells3">
+			<div class="cell">
+				<label>任教年级：</label>
+				<select id="grade_" class="input-control" name="" required>
+					<option value="0">-请选择-</option> 
+                                    <volist name="grade_list" id="grade_item">
+                                        <option value="{$grade_item.id}">{$grade_item.name}</option>
+                                    </volist>
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>任教学科：</label>
+				<select id="course_" class="input-control" name="" required>
+					<option value="0">-请选择-</option> 
+                                    <volist name="course_list" id="course_item">
+                                        <option value="{$course_item.id}">{$course_item.name}</option>
+                                    </volist>
+				</select>
+				<span class="redStar">*</span>
+			</div>
+		</div>
+	</div>
+	<img src="{$oss_path}public/web_img/Admin/icon-append.png" alt="" class="checkImg" id="appendGrade" >
+</div>
+
+<div class="ml20 mr20" id="gradeCourse"> 
+</div>
+
+<!--<div class="bgGray mb10 mt20">
+	<p class="blueText nobold fs16">请选择任教班级</p>
+	<div class="grid condensed cellBox" style="width: 90%">
+		<div class="row cells3">
+			<div class="cell">
+				<label>任教年级：</label>
+				<select id="" class="input-control" name="" required>
+					<option value="0">-请选择-</option>
+					<option value="1">一年级</option>
+					<option value="2">二年级</option>
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>任教学科：</label>
+				<select id="" class="input-control" name="" required>
+					<option value="0">-请选择-</option>
+					<option value="1">英语</option>
+					<option value="2">语文</option>
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>任教班级：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">一班</option>
+					<option value="2">二班</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<img src="{$oss_path}public/web_img/Admin/icon-append.png" alt="" class="checkImg" id="appendClass" onclick="return showChooseGrade()">
+</div>
+
+<div class="ml20 mr20" id="classCourse">
+	<span class="gradeSpan mr10">
+		一年级一班英语
+		<span class="redClose">×</span>
+	</span>
+	<span class="gradeSpan mr10">
+		一年级一班语文
+		<span class="redClose">×</span>
+	</span>
+</div>-->
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+        //直接保存
+        $("#submitSave").click(function(){
+            $('.next_flag').val(0);
+        });
+
+        //添加任教班级按钮进行保存
+        $("#submitAdd").click(function(){
+            $('.next_flag').val(1);
+        });
+    
+        var temp_option="<option value='0'>-请选择-</option>";
+        //省份发生变化
+        $('#province_list').change(function(){ 
+            $("#city_list option:not(:eq(0))").remove();
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#province_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getCityByProvince')}",
+                dataType:"json",
+                data:{'province_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#city_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        //城市发生变化
+        $('#city_list').change(function(){ 
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#city_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getDistrictByCity')}",
+                dataType:"json",
+                data:{'city_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#district_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        //区县发生变化
+        $('#district_list').change(function(){ 
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#district_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getSchoolByDistrict')}",
+                dataType:"json",
+                data:{'district_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#school_list").append(clone_option);
+                    }
+                }
+            })
+        }); 
+    
+        
+        $('.redClose').live('click',function(){
+            $(this).parent().remove();
+        });
+        
+        var grade_course_span='<span class="gradeSpan mr10" attr_id="1">'+
+                            '<font class="text">一年级英语 </font>'+
+                            '<span class="redClose" >×</span>'+
+                        '</span>';
+    
+        $('#appendGrade').click(function(){ 
+            var grade_value=$('#grade_').val();
+            var grade_text=$('#grade_').find('option:selected').text();    
+            var course_value=$('#course_').val();                       
+            var course_text=$('#course_').find('option:selected').text();  
+
+            if(grade_value==false){
+                $.NotifyBox.NotifyOne('注意','请选择年级！','确定');
+                return false;
+            } 
+            if(course_value==false){
+                $.NotifyBox.NotifyOne('注意','请选择学科！','确定');
+                return false;
+            } 
+            var temp_span=$(grade_course_span).clone(true);
+            $(temp_span).find('.text').text(grade_text+course_text);
+            $(temp_span).attr('attr_id',grade_value+'_'+course_value);  
+            //判断该年级学科是否已经创建
+            if($('#gradeCourse').find('.gradeSpan').length){
+                var gradeSpanAll=$('#gradeCourse').find('.gradeSpan');
+                for(var i=0;i<gradeSpanAll.length;i++){
+                    if($(gradeSpanAll[i]).attr('attr_id')==(grade_value+'_'+course_value)){
+                        $.NotifyBox.NotifyOne('注意','该年级学科您已选择过！','确定');
+                        return false;
+                    }  
+                }
+            }
+            $('#gradeCourse').append(temp_span);
+        });
+        
+        
+        //验证
+        function checkInfo(){   
+                var province_val,city_val,district_val,school_val;
+                province_val=$("#province_list").val();
+                city_val=$("#city_list").val();
+                district_val=$("#district_list").val();
+                school_val=$("#school_list").val();
+                if(province_val==0){
+                    $.NotifyBox.NotifyOne('注意','省份不能为空！','确定');
+                    return false;
+                }
+                if(city_val==0){
+                    $.NotifyBox.NotifyOne('注意','城市不能为空！','确定');
+                    return false;
+                }
+                if(district_val==0){
+                    $.NotifyBox.NotifyOne('注意','区县不能为空！','确定');
+                    return false;
+                }
+                if(school_val==0){
+                    $.NotifyBox.NotifyOne('注意','学校不能为空！','确定');
+                    return false;
+                }
+                
+                var sex_value=$('#sex').val();       
+                var pwd=$('.password').val();
+                if(sex_value==0){ 
+                    $.NotifyBox.NotifyOne('注意','请选择性别！','确定');
+                    return false;
+                } 
+                if(pwd==false){
+                    $.NotifyBox.NotifyOne('注意','请输入密码！','确定');
+                    return false;
+                }
+            
+		//联系人姓名
+		var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		var linkmanName = $('.teacher_name').val();
+		if (!regName.test(linkmanName)) {
+			$.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+			return false;
+		} else if (linkmanName == '') {
+			$.NotifyBox.NotifyOne('注意','姓名不能为空！','确定'); 
+			return false;
+		}
+		
+		//联系人电话
+		var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		var linkmanPhone = $('.telephone').val();
+		if (!regMobilePhone.test(linkmanPhone)) { 
+                        $.NotifyBox.NotifyOne('注意','教师手机号格式错误！','确定');
+			return false;
+		} else if (linkmanPhone == '') { 
+                        $.NotifyBox.NotifyOne('注意','请输入教师手机号！','确定');
+			return false;
+		}
+		
+		//联系人邮箱
+		var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+		var linkmanEmail = $('.email').val();
+                if(linkmanEmail!=''){
+                    if (!regEmail.test(linkmanEmail)) { 
+                            $.NotifyBox.NotifyOne('注意','邮箱格式错误！','确定');
+                            return false;
+                    }
+                } 
+                
+                
+                //年级学科  
+                var string='';
+                var grade_course_selected_all=$('#gradeCourse').find('.gradeSpan');
+                for(var i=0;i<grade_course_selected_all.length;i++){
+                    string+=$(grade_course_selected_all[i]).attr('attr_id')+',';
+                } 
+                string=string.substr(0,string.length-1); 
+                if(string==''){
+                    $.NotifyBox.NotifyOne('注意','请创建任教年级学科！','确定');
+                    return false; 
+                }else{
+                    $('.grade_course_ids').val(string);
+                }
+            var linkmanPhone = $('.telephone').val();
+			var tip = true;
+                $.ajax({
+					url:"<?php echo U('Teacher/checkPhone')?>",
+					dataType:"json",
+					type:"post",
+					data:{"telephone":linkmanPhone},
+                    async:false,
+					success:function (data) {
+						if(data.status == 400){
+						    tip = false;
+                            $.NotifyBox.NotifyOne('注意',data.msg,'确定');
+						}
+                    }
+				});
+                if(tip == false){
+                    return false;
+				}
+		return true;
+	} 
+        
+</script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+
+var options = {
+	success: showResponse, // post-submit callback
+	resetForm: false,
+	dataType: 'json'
+};
+
+// bind to the form's submit event
+$('#form').submit(function () {
+	$(this).ajaxSubmit(options);
+	$('#submit').attr('disabled',true);
+
+	return false;
+});
+
+function showResponse(responseText, statusText) {
+	switch (responseText.status) {
+		case 200:
+			$.NotifyBox.NotifyOneCall('注意', '创建教师账号成功', '确定',function(){
+				window.location.href = responseText.data.redirectUrl;
+			});
+			break;
+		default:
+			$.NotifyBox.NotifyOne('注意', responseText.message, '确定');
+			break;
+	}
+
+}
+</script>

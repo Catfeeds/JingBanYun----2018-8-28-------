@@ -1,0 +1,324 @@
+<layout name="admin_layout_back" />
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		学生管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('Student/studentList')}">学生管理</a>>>
+			<a href="javascript:;">修改学生信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form action="{:U('Student/studentModify')}" method="post" onsubmit="return checkInfo()">
+	<div class="blueBox">
+		<span class="blueText left fs16">修改学生</span> 
+                <if condition="$data['school_id'] neq $other_school_id">
+                    <a href="javascript:;" class="blackText right submitA" id="">
+                            <img src="{$oss_path}public/web_img/Admin/icon-remove.png" alt="" class="mr5">
+                            <input type='button' class="remove_school submitInput" value='从学校移除' />
+                    </a> 
+                </if>
+		<a href="javascript:;" class="blackText right mr20 submitA" id="">
+			<img src="{$oss_path}public/web_img/Admin/icon-modify.png" alt="" class="mr5">
+			<input type='submit' class="submitInput" value='保存修改' />
+		</a>
+	</div>
+	<hr class="thin bg-grayLighter mb10">
+	<p class="left fs14" style="color: #999; width: 100%">注：不能任意修改学生学校信息，如要修改学生的学校信息，修改学校信息后，该学生与之前的校建班级会自动解除任教关系。</p>
+
+	<div class="grid condensed cellBox">
+		<input type="hidden" value="{$data.id}" name="id" />
+		<div class="row cells3">
+			<div class="cell">
+				<label>省份：</label>
+				<select id="province_list" class="input-control" name="province">
+                                    <option value="0">-请选择-</option>
+                                    <volist name="province_list" id="province_item">
+                                        <option value="{$province_item.id}" <if condition="$province_item['id']==$data['province_id']"> selected="true"</if> >{$province_item.name}</option>    
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>市区：</label>
+				<select id="city_list" class="input-control" name="city">
+					<option value="0">-请选择-</option>
+				    <volist name="city_list" id="city_item">
+                                            <option value="{$city_item.id}" <if condition="$city_item['id']==$data['city_id']"> selected="true"</if> >{$city_item.name}</option>    
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>区县：</label>
+				<select id="district_list" class="input-control" name="district">
+					<option value="0">-请选择-</option>
+				    <volist name="district_list" id="district_item">
+                                        <option value="{$district_item.id}" <if condition="$district_item['id']==$data['district_id']"> selected="true"</if> >{$district_item.name}</option>    
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>学校：</label>
+				<select id="school_list" class="input-control" name="school">
+					<option value="0">-请选择-</option>
+				    <volist name="school_list" id="school_item">
+                                        <option value="{$school_item.id}" <if condition="$school_item['id']==$data['school_id']"> selected="true"</if> >{$school_item.name}</option>    
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>学校编码：</label>
+                                <input type="text" class="input-control school_code" name="school_code" value="{$data.school_code}" placeholder="请输入学校代码" disabled="true">
+			</div>
+			<div class="cell">
+				<label>学生姓名：</label>
+				<input type="text" class="input-control student_name" name="student_name" value="{$data.student_name}" placeholder="请输入学生姓名">
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>家长手机号：</label>
+				<input type="text" class="input-control telephone" name="telephone" value="{$data.parent_tel}" placeholder="请输入家长手机号" disabled="true" maxlength="11" required>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>登录密码：</label>
+				<input type="password" class="input-control password" name="password" value="{$data.password}" placeholder="请输入学生登录密码" maxlength="6">
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>性别：</label>
+				<select id="sex" class="input-control" name="sex">
+					<option value="0">-请选择-</option>
+					<option value="男" <if condition="$data['sex'] eq '男'">selected="true"</if> >男</option>
+					<option value="女" <if condition="$data['sex'] eq '女'">selected="true"</if> >女</option>
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>出生日期：</label>
+				<input type="text" name="birth_date" value="{$data.birth_date}" id="datepicker" class="input-control birth_date" placeholder="出生年月" autocomplete="off" onkeydown="return false">
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>账号状态：</label>
+				<select id="account_status" class="input-control" name="status">
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$data['flag']==='1'"> selected="true"</if> >正常</option>
+					<option value="0" <if condition="$data['flag']==='0'"> selected="true"</if> >停用</option>
+				</select>
+			</div> 
+		</div>
+	</div>
+</form>
+
+<div class="tabBox">
+	<ul class="left tabUl" id="tabUl">
+		<li class="tabLi tabActive">学生的班级</li>
+		<li class="tabLi">学生的家长</li>
+	</ul>
+	<div class="tabCon" id="tabCon">
+		<iframe class="tabConActive" id="classFrame" style="width: 100%;" frameborder="0" src="{:U('Student/student_iframe_class')}&id={$data.id}"></iframe>
+		<iframe id="parentFrame" style="width: 100%;" frameborder="0" src="{:U('Student/student_iframe_parent')}&id={$data.id}"></iframe>
+	</div>
+</div>
+
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script src="__PUBLIC__/js/importCommon.js"></script>
+<script>
+	window.onload = function () {
+		var tabs = document.getElementById("tabUl").getElementsByTagName("li");
+		var divs = document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for (var i = 0; i < tabs.length; i++) {
+			tabs[i].onclick = function () {
+				change(this);
+			}
+		}
+
+		function change(obj) {
+			for (var i = 0; i < tabs.length; i++) {
+				if (tabs[i] == obj) {
+					tabs[i].className = "tabLi tabActive";
+					divs[i].className = "tabConActive";
+				} else {
+					tabs[i].className = "tabLi";
+					divs[i].className = "";
+				}
+			}
+		}
+	}
+</script>
+
+<!--------------日历----------------->
+<script>
+    //学校改变
+    $("#school_list").change(function(){
+        var id=$("#school_list").val();
+        $.ajax({
+            type: "post",
+            url: "{:U('Common/getSchoolInfo')}",
+            dataType: "json",
+            data: {'school_id': id,},
+            success: function (msg) { 
+                $('.school_code').val(msg.data.school_code);
+            }
+        })
+    });
+    
+	var student_id = "{$data.id}";
+	//学校移除学生
+	$('.remove_school').click(function () {
+		var status = 2;
+		var id = student_id;
+		$.ajax({
+			type: "post",
+			url: "{:U('Student/updateApplyStatus')}",
+			dataType: "json",
+			data: {
+				'id': id,
+				'status': status
+			},
+			success: function (msg) {
+				if (msg.status == 200) {
+					location.href = "{:U('Student/studentList')}";
+				} else if (msg.status == 400) {
+					$.NotifyBox.NotifyNotLogin();
+				} else {
+					$.NotifyBox.NotifyOne('注意', msg.msg, '确定');
+					return false;
+				}
+			}
+		})
+	});
+
+	$(function () {
+		$("#datepicker").datepicker({
+			dateFormat: "yy-mm-dd",
+			//			showOn: "both",
+			//			buttonImage: "/Public/img/birthday.png",
+			//			buttonImageOnly: true,
+			showButtonPanel: true,
+			changeMonth: true,
+			maxDate: '0',
+			changeYear: true,
+			yearRange: "1950:2050"
+		});
+	});
+
+	function IsDate(mystring) {
+		var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+		var str = mystring;
+		if (!reg.test(str) || RegExp.$2 > 12 || RegExp.$3 > 31) {
+			return false;
+		}
+		return true;
+	}
+
+	function checkInfo() { 
+                var province,city,district,school;
+                var account_status,apply_school_status;
+                province=$("#province_list").val();
+                city=$("#city_list").val();
+                district=$("#district_list").val();
+                school=$("#school_list").val();
+                account_status=$("#account_status").val(); 
+                if(province==0 || province==false){
+                    $.NotifyBox.NotifyOne('注意', '请选择省份！', '确定');
+                    return false;
+                }
+                if(city==0 || city==false){
+                    $.NotifyBox.NotifyOne('注意', '请选择城市！', '确定');
+                    return false;
+                }
+                if(district==0 || district==false){
+                    $.NotifyBox.NotifyOne('注意', '请选择区县！', '确定');
+                    return false;
+                }
+                if(school==0 || school==false){
+                    $.NotifyBox.NotifyOne('注意', '请选择学校！', '确定');
+                    return false;
+                }
+                if(account_status=='' || account_status===false){
+                    $.NotifyBox.NotifyOne('注意', '请选择账号状态！', '确定');
+                    return false;
+                } 
+                
+		var student_name = $('.student_name').val();
+		var password = $('.password').val();
+		var sex = $('#sex').val();
+		//var telephone=$('.telephone').val();
+		var birth_date = $('.birth_date').val();
+                var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		if (student_name == false) {
+			$.NotifyBox.NotifyOne('注意', '学生姓名不能为空！', '确定');
+			return false;
+		}else if(!regName.test(student_name)){
+                        $.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+                        return false;
+                }
+		if (password == '') {
+			$.NotifyBox.NotifyOne('注意', '请填写学生登录密码！', '确定');
+			return false;
+		}
+		if (sex == 0 || sex == '') {
+			$.NotifyBox.NotifyOne('注意', '请选择性别！', '确定');
+			return false;
+		}
+		/*if(telephone==''){
+		    $.NotifyBox.NotifyOne('注意','请填写手机号！','确定');
+		    return false;
+		}*/
+		if (birth_date == '') {
+			$.NotifyBox.NotifyOne('注意', '请填写出生日期！', '确定');
+			return false;
+		} else {
+			if (IsDate(birth_date) == false) {
+				$.NotifyBox.NotifyOne('注意', '出生日期格式错误！', '确定');
+				return false;
+			}
+		} 
+		return true;
+	}
+</script>
+<script>
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+</script>

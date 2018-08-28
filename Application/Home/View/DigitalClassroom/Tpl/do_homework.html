@@ -1,0 +1,72 @@
+<div class="box_ctrl" id="student_homework_ctrl">
+    <div class="sub_opr_wrapper" id="lesson_info_ctrl">
+        <button id="loadInClassHomeworkCtrl" class="sub_opr selected" onclick="loadInClassHomework(this)">课堂作业</button>
+        <button id="loadOutClassHomeworkCtrl" class="sub_opr" onclick="loadOutClassHomework(this)">课后作业</button>
+    </div>
+</div>
+<div id="student_homework_list" class="table_wrapper" style="overflow-y: auto;">
+</div>
+<div id="btn_tuya_homework_wrapper">
+    <img onclick="toggleTuYaForHomework()" id="btn_tuya_homework_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png" title="启用/禁用白板">
+    <img onclick="beginTuYaHomework()" id="btn_tuya_homework_ctrl_pen" class="btn_tuya_sub_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_deactive.png" style="display: none;" title="绘制">
+    <img onclick="clearHomeworkTuYa()" id="btn_tuya_homework_ctrl_eraser" class="btn_tuya_sub_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_deactive.png" style="display: none;"
+         title="擦除">
+    <img onclick="clearAllHomeworkTuYa()" id="btn_tuya_homework_ctrl_clear" class="btn_tuya_sub_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_blank_deactive.png" style="display: none;"
+         title="清空">
+    <img onclick="toggleTuYaForHomeworkOpacity()" id="btn_tuya_homework_ctrl_opacity" class="btn_tuya_sub_ctrl"
+         width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_deactive.png" style="display: none;"
+         title="透明控制">
+
+    <div id="homeworkColorPickerWrapper" class="colorPickerWrapper btn_tuya_sub_ctrl" style="display: none;">
+        <span onclick="changeHomeworkTuyaLineColor('#ff0000')" class="colorPicker colorPicker_red selected"
+              data-color="#ff0000"></span>
+        <br>
+        <span onclick="changeHomeworkTuyaLineColor('#D8A209')" class="colorPicker colorPicker_yellow"
+              data-color="#D8A209"></span>
+        <br>
+        <span onclick="changeHomeworkTuyaLineColor('green')" class="colorPicker colorPicker_green"
+              data-color="green"></span>
+        <br>
+        <span onclick="changeHomeworkTuyaLineColor('#000000')" class="colorPicker colorPicker_black"
+              data-color="#000000"></span>
+        <br>
+    </div>
+</div>
+<div id="whiteboard_homework" class="whiteboard">
+    <canvas id="homework_canvas">
+        您的浏览器不支持白板功能
+    </canvas>
+</div>
+<script>
+    function loadInClassHomework(obj) {
+        $('#homework_complate_details').css('display','none');
+        $('#student_homework_list').load('__URL__/loadStudentInClassHomework?class_id={$classId}&classroom_id={$classroomId}&student_id=' + studentId);
+        $('#student_homework_ctrl .sub_opr').removeClass('selected');
+        $(obj).addClass('selected');
+    }
+
+    function loadOutClassHomework(obj) {
+        $('#homework_complate_details').css('display','none');
+        $('#student_homework_list').load('__URL__/loadStudentOutClassHomework?class_id={$classId}&classroom_id={$classroomId}&student_id=' + studentId);
+        $('#student_homework_ctrl .sub_opr').removeClass('selected');
+        $(obj).addClass('selected');
+    }
+
+    function ajax_loadHomework() {
+        if ($('#loadInClassHomeworkCtrl').hasClass('selected')) {
+            loadInClassHomework(document.getElementById('loadInClassHomeworkCtrl'));
+        } else {
+            loadOutClassHomework(document.getElementById('loadOutClassHomeworkCtrl'));
+        }
+    }
+
+    $('#student_homework_list').height($(window).height() - 120);
+
+    loadInClassHomework(document.getElementById('loadInClassHomeworkCtrl'));
+
+</script>

@@ -1,0 +1,174 @@
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<div class="boxOutter">
+
+	<div class="borderBottom pt10 pb10">
+		<ul class="subjectUl subjectUl1">
+			<li class="subjectLi xueduan">
+				<span class="color3baeabFixed">分类</span>
+				<?php foreach (C('questionCategory') as $CategoryK => $CategoryV): ?>
+						<span class="color333 questionCategory" questionCategory="<?=$CategoryV['id']?>"><?=$CategoryV['name']?></span>
+				<?php endforeach ?>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</li>
+			<li class="subjectLi subjectLiGrade">
+				<span class="color3baeabFixed">年级</span>
+				<?php foreach (C('PAPERGRADE') as $GradeK => $GradeV): ?>
+					<span class="color333 Gradeid" Gradeid="<?=$GradeV['id']?>" ><?=$GradeV['name']?></span>
+				<?php endforeach ?>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</li>
+			<li class="subjectLi fence">
+				<span class="color3baeabFixed ">分册</span>
+				<?php foreach (C('schoolTerm') as $TermK => $TermV): ?>
+					<span class="color333 Termid" Termid="<?=$TermV['id']?>" ><?=$TermV['name']?></span>
+				<?php endforeach ?>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</li>
+		</ul>
+	</div>
+	<div class="pb10 borderBottom pt10">
+		<label for="">年份 </label><input type="number" name="name" value="" class="inputCommon yearinfo" placeholder="年份"><span class="red classred dn">*该项为必选项或填写错误</span>
+		<label for="" class="ml30">地区 </label><input type="text" name="name" value="" class="inputCommon regioninfo" placeholder="地区"><span class="red classred dn">*该项为必选项</span>
+	</div>
+	<div class="borderBottom pt10 pb10">
+		<ul class="subjectUl subjectUl2">
+			<li class="subjectLi">
+				<div class="subjectDiv color3baeabFixed">科目</div>
+				<?php foreach ($getCourse as $CourseK => $CourseV): ?>
+					<span class="color333 Courseid" Courseid="<?=$CourseV['id']?>" ><?=$CourseV['name']?></span>
+				<?php endforeach; ?>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</li>
+			<li class="subjectLi">
+				<span class="color3baeabFixed vertical-top lh32">省份</span>
+				<div class="dib cityDiv" style="width: 1075px;">
+				<?php foreach ($city as $CityK => $CityV): ?>
+					<span class="color333 lh32 Cityid" Cityid="<?=$CityV['id']?>"><?=$CityV['name']?></span>
+				<?php endforeach; ?>
+				<span class="red classred "style="display:none">*该项为必选项</span>
+				</div>
+
+
+			</li>
+			<li>
+				<span class="mr0">试卷类型</span>
+				<select  name="" class="mr30 inputCommon paperType"  style="width:auto">
+					<?php foreach (C('paperCategory') as $paperK => $paperV): ?>
+						<option value="<?=$paperV['id']?>"><?=$paperV['name']?></option>
+					<?php endforeach; ?>
+				</select>
+				<span class="mr0">试卷名称</span>
+				<input type="text" class="inputCommon  paper_name" name="name" value="" placeholder="必填">
+				<span class="red classred " style="display:none">*该项为必选项</span>
+				<span class="mr0 ml30">试卷模块数目</span>
+				<select name="" class="inputCommon paper_model_num" style="width:auto" id="moduleNum">
+					<option>请选择</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option  value="10">10</option>
+				</select>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</li>
+			<li class="tableLi mt10">
+			</li>
+		</ul>
+	</div>
+	<div class="mtb10">
+		<?php if(in_array('CreateExercise/EditPaperInfo',session('exercises_permissions'))){ ?>
+		<button type="button" name="button" class="btn sureBtn">存为草稿</button>
+		<?php }?>
+	</div>
+</div>
+<input type="hidden" name="repeat_commit" class="repeat_commit" value="{:session('TOKEN')}">
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/paper.js"></script>
+<script type="text/javascript">
+	$('.sureBtn').click(function(){
+		if(reshow()>0){
+			return false
+		}
+	})
+	$('.xueduan>span').click(function(){
+		if($(this).text() == '中考' || $(this).text() == '高考'||$(this).text() == '小升初'){
+			$('.subjectLiGrade').find('.Gradeid,.red').hide();
+			$('.subjectLiGrade').find('.Gradeid').eq(0).addClass('color3baeab');
+			$('.fence').find('.Termid,.red').hide();
+			$('.fence').find('.Termid').eq(0).addClass('color3baeab')
+		}else{
+			$('.subjectLiGrade').find('.Gradeid').show();
+			$('.subjectLiGrade').find('.Gradeid').eq(0).removeClass('color3baeab');
+			$('.fence').find('.Termid').show()
+			$('.fence').find('.Termid').eq(0).removeClass('color3baeab')
+		}
+	})
+	function reshow(){
+		var a = 0;
+		for (var i = 0; i < 3; i++) {
+			if($('.subjectUl1').children().eq(i).find('.color3baeab').length == 0){
+				$('.subjectUl1').children().eq(i).find('.red').show();
+				a++
+			}else {
+				$('.subjectUl1').children().eq(i).find('.red').hide();
+			}
+		}
+		for (var j = 0; j < 2; j++) {
+			if($('.subjectUl2').children().eq(j).find('.color3baeab').length == 0){
+				$('.subjectUl2').children().eq(j).find('.red').show();
+				a++
+			}else {
+				$('.subjectUl2').children().eq(j).find('.red').hide();
+			}
+		}
+		var inputName = ['.paper_name']
+		for(var b=0;b<inputName.length;b++){
+			if($(inputName[b]).val() == ''){
+				$(inputName[b]).next('.red').show();
+				a++
+			}else {
+				$(inputName[b]).next('.red').hide();
+			}
+		}
+		var nian = $('.yearinfo').val()
+		var date1=new Date;
+		var year1=date1.getFullYear();
+		if(nian.indexOf('.') == 1 || nian >year1|| $('.yearinfo').val() == ''|| $('.yearinfo').val() =='0'){
+			$('.yearinfo').next('.red').show();
+			a++
+		}else {
+			$('.yearinfo').next('.red').hide();
+		}
+		if($('.paper_model_num').children('option:selected').val() == '请选择'){
+				$('.paper_model_num').next('.red').show();
+				a++
+		}else{
+			$('.paper_model_num').next('.red').hide();
+
+		}
+		var nm = 0
+		for (var u= 0; u< $('.big_topic_name').length; u++) {
+			if($('.big_topic_name').eq(u).val() == ''){
+				nm++
+			}
+		}
+		for (var t= 0; t< $('.big_topic_describe').length; t++) {
+			if($('.big_topic_describe').eq(t).val() == ''){
+				nm++
+			}
+		}
+		if(nm >0){
+			$('.tableLi').find('.red').show();
+			a++
+		}else{
+			$('.tableLi').find('.red').hide();
+		}
+		return a
+	}
+</script>

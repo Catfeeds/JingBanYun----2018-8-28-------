@@ -1,0 +1,327 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+</style>
+
+<div class="main_opr">
+    <a href="{:U('TeacherHomework/homeworkList')}" title="作业列表" class="btn btn-main-opr">作业列表</a>
+    <a href="{:U('TeacherHomework/publishHomework')}" title="布置作业" class="btn btn-main-opr">布置作业</a>
+    <a href="{:U('TeacherHomework/myCollectionList')}" title="我的收藏" class="btn btn-main-opr">我的收藏</a>
+    <a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+    <a href="javascript:;" title="试卷库" class="btn btn-main-opr btn-main-opr-active">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="slideFilterOutter">
+		<div class="slideFilterBox">
+			<div class="slideFilterTop">
+				<span class="borderSpanBox">
+					<span class="slideFilterTitle">学科</span>
+					<img src="__PUBLIC__/img/homeworkV1/downCornerBlack.png" alt="" class="downCornerBlack">
+					<span class="borderSpan"></span>
+				</span>
+			</div>
+			<div class="slideFilterBottom">
+				<span class="slideFilterOne active" @click="slideFilter($event)" courseId="">全部</span>
+				<span class="slideFilterOne" v-for="(courseData, index) in courseList" @click="slideFilter($event)" :courseId="courseData.id">{{ courseData.name }}</span>
+			</div>
+		</div>
+		<div class="slideFilterBox">
+			<div class="slideFilterTop">
+				<span class="borderSpanBox">
+					<span class="slideFilterTitle">年级</span>
+					<img src="__PUBLIC__/img/homeworkV1/downCornerBlack.png" alt="" class="downCornerBlack">
+					<span class="borderSpan"></span>
+				</span>
+			</div>
+			<div class="slideFilterBottom">
+				<span class="slideFilterOne active" @click="slideFilter($event)" gradeId="">全部</span>
+				<span class="slideFilterOne" v-for="(gradeData, index) in gradeList" @click="slideFilter($event)" :gradeId="gradeData.id">{{ gradeData.name }}</span>
+			</div>
+		</div>
+		<div class="slideFilterBox">
+			<div class="slideFilterTop">
+				<span class="borderSpanBox">
+					<span class="slideFilterTitle">类型</span>
+					<img src="__PUBLIC__/img/homeworkV1/downCornerBlack.png" alt="" class="downCornerBlack">
+					<span class="borderSpan"></span>
+				</span>
+			</div>
+			<div class="slideFilterBottom">
+				<span class="slideFilterOne active" @click="slideFilter($event)" typeId="">全部</span>
+				<span class="slideFilterOne" v-for="(typeData, index) in typeList" @click="slideFilter($event)" :typeId="typeData.id">{{ typeData.name}}</span>
+			</div>
+		</div>
+		<div class="slideFilterBox">
+			<div class="slideFilterTop">
+				<span class="borderSpanBox">
+					<span class="slideFilterTitle">地区</span>
+					<img src="__PUBLIC__/img/homeworkV1/downCornerBlack.png" alt="" class="downCornerBlack">
+					<span class="borderSpan"></span>
+				</span>
+			</div>
+			<div class="slideFilterBottom">
+				<span class="slideFilterOne active" @click="slideFilter($event)" cityId="">全部</span>
+				<span class="slideFilterOne" v-for="(cityData, index) in cityList" @click="slideFilter($event)" :cityId="cityData.id">{{cityData.name}}</span>
+			</div>
+		</div>
+		<div class="slideFilterBox">
+			<div class="slideFilterTop">
+				<span class="borderSpanBox">
+					<span class="slideFilterTitle">年份</span>
+					<img src="__PUBLIC__/img/homeworkV1/downCornerBlack.png" alt="" class="downCornerBlack">
+					<span class="borderSpan"></span>
+				</span>
+			</div>
+			<div class="slideFilterBottom">
+				<span class="slideFilterOne active" @click="slideFilter($event)" yearId="">全部</span>
+				<span class="slideFilterOne" v-for="(yearData, index) in yearList" @click="slideFilter($event)" :yearId="yearData.id">{{yearData.name}}</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="emptyDiv mt30" v-if="listData == ''">
+        <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Empty/sorry.png" alt="" class="sorry">
+        <p>抱歉，暂无试卷！</p>
+    </div>
+
+	<div class="testPaperOutter">
+		<!-- 循环以下 -->
+		<a :href="'/index.php?m=Home&c=TeacherHomework&a=testPaperDetails&paperId='+paperData.id" class="testPaperBox"  v-for="(paperData, index) in listData" :exerciseId="paperData.id">
+			<div class="testPaperSubject textHidden">{{ paperData.course_name }}</div>
+			<div class="testPaperTitle">{{ paperData.paper_name }}</div>
+			<div class="textPaperLabelOutter">
+				<div class="textPaperLabelBox" v-if="paperData.paper_type != '' && paperData.paper_type != null">
+					<span class="textPaperLabel textHidden">{{ paperData.paper_type }}</span>
+				</div>
+				<div class="textPaperLabelBox" v-if="paperData.period != '' && paperData.period != null">
+					<span class="textPaperLabel textHidden">{{ paperData.period }}</span>
+				</div>
+				<div class="textPaperLabelBox" v-if="paperData.year != '' && paperData.year != null">
+					<span class="textPaperLabel textHidden">{{ paperData.year }}年</span>
+				</div>
+				<div class="textPaperLabelBox" v-if="paperData.region != '' && paperData.region != null">
+					<span class="textPaperLabel textHidden">{{ paperData.region }}</span>
+				</div>
+			</div>
+		</a>
+
+		<div class="downLoading pt10">
+            <img src="__PUBLIC__/img/homeworkV1/loading.png" alt="" class="loadingRotate">
+            加载中...
+        </div>
+
+	</div>
+</div>
+
+<script>
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+            paperWhereUrl : '/index.php?m=Home&c=TeacherHomework&a=getVersionAndCourseList',
+            paperUrl: '/index.php?m=Home&c=TeacherHomework&a=ExercisesPaperList',
+            course_id: 2,
+            page: 1,
+            listData: {},
+			courseList: {},
+			gradeList: {},
+			typeList: [],
+            cityList: [],
+            yearList: [],
+            courseId: '',
+            gradeId: '',
+            typeId: '',
+            cityId: '',
+            yearId: '',
+            workData:{},
+            pageIndex: 1, 
+            pageSize: 18,
+            scrollAllow: false
+		},
+		created: function () {
+			this.getPaperList();
+			this.getVersionAndCourseList();
+		},
+		methods: {
+			// 选中筛选项
+			slideFilter: function(event){
+				var thisText = $(event.target).text();
+				var thisParentIndex = $(event.target).parent().parent('.slideFilterBox').index();
+				if(thisParentIndex == 0) {
+					if(thisText == '全部') {
+						thisText = '学科';
+					}
+					this.courseId = $(event.target).attr('courseId');
+				} else if(thisParentIndex == 1) {
+					if(thisText == '全部') {
+						thisText = '年级';
+					}
+					this.gradeId = $(event.target).attr('gradeId');
+				} else if(thisParentIndex == 2) {
+					if(thisText == '全部') {
+						thisText = '类型';
+					}
+					this.typeId = $(event.target).attr('typeId');
+				} else if(thisParentIndex == 3) {
+					if(thisText == '全部') {
+						thisText = '地区';
+					}
+					this.cityId = $(event.target).text();
+				} else if(thisParentIndex == 4) {
+					if(thisText == '全部') {
+						thisText = '年度';
+					}
+					this.yearId = $(event.target).text();
+				}
+				$(event.target).addClass('active').siblings().removeClass('active').parent('.slideFilterBottom').stop(false,true).slideUp().siblings('.slideFilterTop').find('.slideFilterTitle').text(thisText);
+				this.getPaperList();
+			},
+			//获取试卷列表
+            getPaperList: function(res){
+            	this.pageIndex = 1;
+                this.pageSize = 20;
+                this.scrollAllow = true;
+
+                this.$http.post(this.paperUrl, {
+                	city_id: this.cityId,
+                	year: this.yearId,
+                	paper_type: this.typeId,
+                	grade: this.gradeId,
+                	course_id: this.courseId,
+                	page: this.page,
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.listData = response.data.data;
+                        this.scrollAllow = true;
+            			this.scroll();
+
+                        if(response.data.data.length < this.pageSize) {
+                        	this.scrollAllow = false
+                        }
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+			//获取学科和年级
+            getVersionAndCourseList: function(res){
+                this.$http.post(this.paperWhereUrl, {
+                    //course_id: this.course_id,
+                    //page:this.page
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.courseList = response.data.data.course_list;
+                        this.gradeList = response.data.data.gradelist;
+                        this.typeList = response.data.data.papertypeList;
+                        this.cityList = response.data.data.regionList;
+                        this.yearList = response.data.data.yearlist;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            scroll:function(){
+                var that = this
+                $(window).scroll(function () {
+                    //已经滚动到上面的页面高度
+                    var scrollTop = $(this).scrollTop();
+                    //页面高度
+                    var scrollHeight = $(document).height();
+                    //浏览器窗口高度
+                    var windowHeight = $(this).height();
+
+                    //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+                    if (scrollTop + windowHeight == scrollHeight) {
+                        if(that.scrollAllow == true) {
+                            $('.downLoading').show();
+                            that.pageIndex++;
+
+                            that.$http.post(this.paperUrl, {
+			                	city_id: that.cityId,
+			                	year: that.yearId,
+			                	paper_type: that.typeId,
+			                	grade: that.gradeId,
+			                	course_id: that.courseId,
+			                	page: that.page,
+			                    pageIndex: that.pageIndex,
+			                    pageSize: that.pageSize
+			                }, {
+			                    emulateJSON: 'application/x-www-form-urlencoded'
+			                }).then(function (response) {
+			                    if(response.status == '200'){
+			                        that.listData = response.data.data;
+
+			                        $('.downLoading').hide();
+
+                                    if(response.data.data == '') {
+                                        that.scrollAllow = false
+                                    }
+			                    } else {
+			                        console.log('错误1')
+			                    }
+			                }, function (response) {
+			                    console.log('错误2')
+			                })
+                        }
+                    }
+                });
+            }
+		}
+	})
+</script>
+
+
+<script>
+	// 鼠标滑过筛选框显示
+	$('.slideFilterBox').hover(function(){
+		$(this).find('.borderSpan').show();
+		$(this).find('.slideFilterBottom').stop(false,true).slideDown();
+	},function(){
+		$(this).find('.borderSpan').hide();
+		$(this).find('.slideFilterBottom').stop(false,true).slideUp();
+	})
+
+	// 标题格式
+	function title() {
+		$('.testPaperTitle').each(function(i, n){
+			if($(this).text().length <= 8) {
+				$(this).css({
+					'text-align': 'center',
+					'line-height': '84px',
+					'padding': 0
+				})
+			} else if($(this).text().length > 8 && $(this).text().length <= 16) {
+				$(this).css({
+					'text-align': 'left',
+					'line-height': '28px',
+					'padding': '14px 0'
+				})
+			} else if($(this).text().length > 16) {
+				$(this).css({
+					'text-align': 'left',
+					'line-height': '28px',
+					'padding': 0
+				})
+			}
+			console.log()
+		})
+	}
+
+	title()
+</script>

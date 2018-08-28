@@ -1,0 +1,139 @@
+<layout name="admin_layout"/>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 学校列表" class="button {:session('btntheme')}">&lt; 返回 学校列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/createShcoolOp" method="post" data-role="validator"
+          data-on-error-input="notifyOnErrorInput" data-show-error-hint="true">
+        <div class="example" data-text="基本信息">
+
+            <div class="form_section">
+                <label for="name">姓名</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="name" id="name" data-validate-func="required" data-validate-hint="姓名不能为空"
+                           maxlength="20">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="telephone">手机号</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="telephone" id="telephone" data-validate-func="required"
+                           data-validate-hint="手机号不能为空" maxlength="11">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="telephone">密码</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="password" id="password" data-validate-func="required"
+                           data-validate-hint="密码不能为空" maxlength="20">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="email">邮箱</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="email" id="email" maxlength="30">
+                </div>
+            </div>
+
+            <div class="form_section" style="height: 152px">
+                <label for="brief_intro">简介</label>
+
+                <div class="input-control text full-size">
+                    <textarea id="brief_intro" name="brief_intro" rows="2"
+                              maxlength="200">{$data.brief_intro}</textarea>
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="school_id">任教学科</label>
+
+                <div class="input-control text full-size">
+                    <select id="course_id" name="course_id" data-validate-func="required" data-validate-hint="任教学科不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="courses" id="dataCourse">
+                            <option value="{$dataCourse.id}">{$dataCourse.course_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="school_id">任教年级</label>
+
+                <div class="input-control text full-size">
+                    <select id="grade_id" name="grade_id" data-validate-func="required" data-validate-hint="任教年级不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade">
+                            <option value="{$dataGrade.id}">{$dataGrade.grade}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="school_id">所在学校</label>
+
+                <div class="input-control text full-size">
+                    <select id="school_id" name="school_id" data-validate-func="required" data-validate-hint="学校不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="schools" id="dataSchool">
+                            <option value="{$dataSchool.id}">{$dataSchool.school_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+        <br>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button {:session('btntheme')}" onclick="return check();">保存</button>
+        </div>
+    </form>
+</div>
+<script>
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+
+    function check() {
+
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regTel.test($("#telephone").val())) {
+            $.Notify({
+                caption: '提示',
+                content: '手机号格式不正确',
+                type: 'warning'
+            });
+            return false;
+        }
+        var regEmail = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+        if (!regEmail.test($("#email").val())) {
+            $.Notify({
+                caption: '提示',
+                content: '邮箱格式不正确',
+                type: 'warning'
+            });
+            return false;
+        }
+        return true;
+    }
+</script>
+

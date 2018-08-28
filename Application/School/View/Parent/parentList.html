@@ -1,0 +1,295 @@
+<layout name="admin_layout_school"/>
+
+<style>
+	.classContent .classTab.active {
+		background: #fff url({$oss_path}public/web_img/Admin/tiao.png) no-repeat center top;
+	}
+</style>
+
+<div class="indexOutter overHidden">
+	<div class="standardMain classContent tableContent">
+		<div class="classContentTop">
+			<div class="classTabBox">
+				<a href="javascript:;" class="classTab swiper-slide active">现有人员</a>
+				<a href="{:U('ToAudit/teacherList')}" class="classTab swiper-slide">待审核人员</a>
+				<div class="classTabLine"></div>
+				<div class="classTabLine top"></div>
+			</div>
+		</div>
+		<div class="standardMain roleBtnContent">
+			<?php
+            if(session('school.parent_id')!=0){ ?>
+			<a href="{:U('Teacher/teacherList')}" class="commonBtnBlue operateBtnTwo">教师</a>
+			<a href="{:U('Student/studentList')}" class="commonBtnBlue operateBtnTwo">学生</a>
+			<a href="javascript:;" class="commonBtnBlue operateBtnTwo active">家长</a>
+			<?php }else{ ?>
+			<a href="{:U('Teacher/teacherList')}" class="commonBtnBlue operateBtnTwo">教师</a>
+			<a href="{:U('Student/studentList')}" class="commonBtnBlue operateBtnTwo">学生</a>
+			<a href="javascript:;" class="commonBtnBlue operateBtnTwo active">家长</a>
+			<a href="{:U('SchoolAdmin/adminList')}" class="commonBtnBlue operateBtnTwo">管理员</a>
+			<?php } ?>
+		</div>
+
+		<form id="form_submit" action="/index.php?m=School&c=Parent&a=parentList" method="get">
+			<input type="hidden" value="School" name="m">
+			<input type="hidden" value="Parent" name="c">
+			<input type="hidden" value="parentList" name="a">
+			<div class="cellBox">
+	            <input type="hidden" class="order_class" name="order"/>
+				<div class="cell">
+					<label class="letSpace4">家长姓名</label>
+					<input type="text" class="input-control parent_name" name="name" value="{$parent_name}" placeholder="请输入家长姓名">
+				</div>
+				<div class="cell">
+					<label class="letSpace5">家长手机号</label>
+					<input type="text" class="input-control telephone" name="telephone" value="{$telephone}" placeholder="请输入家长手机号">
+				</div>
+				<div class="cell">
+					<label class="letSpace4">权限类型</label>
+					<select id="permissions" class="input-control" name="privilege_type">
+						<option value="0">-请选择-</option>
+                        <option value="1" <if condition="$privilege_type eq 1">selected="true"</if> >个人VIP</option>
+                        <option value="2" <if condition="$privilege_type eq 2">selected="true"</if> >普通权限</option>
+					</select>
+				</div>
+				<div class="cell">
+					<label class="letSpace4">学生姓名</label>
+					<input type="text" class="input-control student_name" name="student_name" value="{$student_name}" placeholder="请输入学生姓名">
+				</div>
+				<div class="cell">
+					<label>学生所在年级</label>
+					<select id="grade_list" class="input-control" name="grade">
+                        <option value="0">-请选择-</option>
+                        <volist name="grade_list" id="grade_item">
+                            <option value="{$grade_item.id}" <if condition="$grade_item['id']==$grade">selected="true"</if> >{$grade_item.name}</option>
+                        </volist>
+					</select>
+				</div>
+				<div class="cell">
+					<label>学生所在班级</label>
+					<select id="class_list" class="input-control" name="class">
+                        <option value="0">-请选择-</option>
+					</select>
+				</div>
+				<hr class="thin bg-grayLighter">
+				<input type='submit' value='搜索' class='commonBtnBlue operateBtn search'/>
+			</div>
+		</form>
+
+		<div class="tableOutter">
+			<div class="standardMain operateBtnContent">
+		            <a href="javascript:;" class="commonBtnBlue operateBtn export export_btn">导出</a>
+		            <a href="{:U('Parent/exportedParentAll')}{$condition_string}" class="commonBtnBlue operateBtn export">导出全部</a>
+			</div>
+
+			<table id="listWrapper" class="table striped hovered border newTable">
+				<thead>
+			        <tr>
+			            <th style="width: 100px"><input type="checkbox" class="check_all">全选</th>
+			            <th style="width: 70px">序号</th>
+			            <th style="width: 105px">家长姓名</th>
+			            <th style="width: 105px">性别</th>
+			            <th>学生姓名</th>
+			            <th style="width: 140px">权限类型</th>
+			            <th style="width: 140px">家长手机号</th>
+			            <th style="width: 140px">账号状态</th>
+			            <th style="width: 140px">操作</th>
+			        </tr>
+				</thead>
+				<tbody id="body">
+					<empty name="list">
+                        <tr>
+                            <td colspan="9" style="color: #999">
+                                暂无信息
+                            </td>
+                        </tr>
+                    </empty>
+                    <notempty name="list">
+			            <volist name="list" id="item" key="key">
+			                <tr>
+		                        <td>
+		                            <input type="checkbox" name="checkbox" class="check_child" attr="{$item.id}">
+								</td>
+								<td>
+									{$key}
+								</td>
+								<td>
+									{$item.parent_name}
+								</td>
+								<td>
+									{$item.sex}
+								</td>
+								<td>
+									{$item.student_name}
+								</td>
+								<td>
+		                            <if condition="$item['permissions_status'] eq 1">
+		                                个人VIP
+		                            <else />
+		                                普通权限
+		                            </if>
+								</td>
+								<td>
+									{$item.telephone}
+								</td>
+								<td>
+		                            <if condition="$item['flag'] eq 1">
+		                                正常
+		                            <else />
+		                                停用
+		                            </if>
+								</td>
+								<td>
+		                            <a href="{:U('Parent/parentDetail')}&id={$item['id']}" class="operBtn" id="">查看</a>
+								</td>
+							</tr>
+			            </volist>
+			        </notempty>
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+		</div>
+	</div>
+</div>
+
+<script>
+     //点击批量导出
+    $(".export_btn").click(function(){
+        var check_input=$('#body').find("[name='checkbox']:checked");
+        if(check_input.length<1){
+            $.Notify({
+                caption: '提示',
+                content: '请勾选您要导出的账号',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('Parent/exportedParent')}");
+        form.attr('method','post');
+
+        for(var i=0;i<check_input.length;i++){
+            var temp_val=$(check_input[i]).attr('attr');
+            var temp= $("<input type='hidden' name='hid[]'/>")
+            $(temp).attr('value',temp_val);
+            form.append(temp);
+        }
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+
+    var temp_class_span="<option value='0'>-请选择-</option>";
+    //点击重置
+    $('.resetButton').click(function(){
+        $('.parent_name').val('');
+        $('.telephone').val('');
+        $('#permissions').find('option:eq(0)').attr('selected',true);
+        $('.student_name').val('');
+        $('#grade_list').find('option:eq(0)').attr('selected',true);
+        $('#class_list').find('option:eq(0)').attr('selected',true);
+    });
+
+    //年级发生改变
+    $("#grade_list").change(function(){
+        $("#class_list option:not(:eq(0))").remove();
+        var grade_id=$("#grade_list").val();
+        if(grade_id==false){
+            return false;
+        }
+        $.ajax({
+            type:"post",
+            dataType:"json",
+            url:"{:U('Common/getClassByGrade')}",
+            data:{'grade_id':grade_id},
+            success: function(msg){
+                if(msg.status==200){
+                    for(var i=0;i<msg.data.length;i++){
+                        var temp_span=$(temp_class_span).clone(true);
+                        $(temp_span).val(msg['data'][i].class_id);
+                        $(temp_span).text(msg['data'][i].class_name);
+                        $("#class_list").append(temp_span);
+                    }
+                }
+            }
+        });
+    });
+
+     var classId = "<?php echo empty($class) ? 0 : $class ?>";
+     var gradeId = "<?php echo empty($grade) ? 0 : $grade ?>";
+     if(classId != 0 && gradeId != 0){
+         $.ajax({
+             type:"post",
+             dataType:"json",
+             url:"{:U('Common/getClassByGrade')}",
+             data:{'grade_id':gradeId},
+             success: function(msg){
+                 if(msg.status==200){
+                     for(var i=0;i<msg.data.length;i++){
+                         var temp_span=$(temp_class_span).clone(true);
+                         $(temp_span).val(msg['data'][i].class_id);
+                         if(classId == msg['data'][i].class_id){
+                             $(temp_span).attr('selected','true');
+                         }
+                         $(temp_span).text(msg['data'][i].class_name);
+                         $("#class_list").append(temp_span);
+                     }
+                 }
+             }
+         });
+     }
+
+    //点击排序
+    $('.upBtn').click(function(){
+        if(!$(this).hasClass('upBtnBlue')){
+            $(this).addClass('upBtnBlue');
+        }
+        $('.downBtn').removeClass('downBtnBlue');
+        $('.order_class').val(1);
+        $('#form_submit').submit();
+    });
+
+    $('.downBtn').click(function(){
+        if(!$(this).hasClass('downBtnBlue')){
+            $(this).addClass('downBtnBlue');
+        }
+        $('.upBtn').removeClass('upBtnBlue');
+        $('.order_class').val(0);
+        $('#form_submit').submit();
+    });
+
+
+    //全选
+    $('.check_all').click(function(){
+            var childCheck=$('.check_child');
+            var temp_status=true;
+            if($(this)[0].checked==true){
+                    //本次选中
+                    temp_status=true;
+            }else{
+                    //本次取消
+                    temp_status=false;
+            }
+            for(var i=0;i<childCheck.length;i++){
+                    childCheck[i].checked=temp_status
+            }
+    });
+
+    //取消全选
+    var lis_m = document.getElementsByClassName('check_child');
+    for (var j = 0; j < lis_m.length; j++) {
+            lis_m[j].index = j;
+            lis_m[j].onclick = function () {
+                    if ($(this)[0].checked == false) {
+                             $('.check_all').removeAttr('checked','checked');
+                             $('.check_all').removeProp('checked','checked');
+                    } else if ($(this)[0].checked == true) {
+                            if (lis_m.length == $("[name='checkbox']:checked").length) {
+                                    $('.check_all').attr('checked','checked');
+                                    $('.check_all').prop('checked','checked');
+                            };
+                    }
+            }
+    };
+</script>

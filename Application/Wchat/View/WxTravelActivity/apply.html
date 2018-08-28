@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>【京彩游】新年特辑</title>
+	<link rel="stylesheet" href="__PUBLIC__/css/app/wxTravel.css?v=5">
+	<link rel="stylesheet" href="__PUBLIC__/css/appCommon.css">
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+
+	<script>
+		$(function(){
+			var winHeight = $(window).height();
+			$('body').css('min-height',winHeight);
+			$('.inputName').val('');
+			$('.inputAge').val('');
+			$('.inputPhone').val('');
+		})
+	</script>
+</head>
+<body>
+<div class="mainOutter">
+	<div class="mainBox" id="">
+		<div class="family"><span>1</span></div>
+		<img src="__PUBLIC__/img/icon/close.png" alt="" class="close" onclick="closeDelete(this)">
+
+		<div class="inputBox">
+			<span class="left">时<span class="emptyWhite">空空</span>间：</span>
+			<span class="inputLine">1月28日</span>
+		</div>
+		<div class="inputBox">
+			<span class="left">儿童姓名：</span>
+			<input type="text" class="inputLine inputName" name="name" placeholder="请输入儿童姓名">
+			<div class="error"></div>
+		</div>
+		<div class="inputBox">
+			<span class="left">儿童年龄：</span>
+			<input type="tel" class="inputLine inputAge" name="age" placeholder="请输入儿童年龄" maxlength="2">
+			<div class="error"></div>
+		</div>
+		<div class="inputBox">
+			<span class="left">联系电话：</span>
+			<input type="tel" class="inputLine inputPhone" name="phone" placeholder="请输入联系电话" maxlength="11">
+			<div class="error"></div>
+		</div>
+	</div>
+
+</div>
+
+
+<div class="applyBtnOutter">
+	<div class="checkBox">
+		<input type="checkbox" class="checkbox" id="checkbox" checked>
+		<label for="checkbox">
+			<img src="{$oss_path}public/web_img/Register/check.png" alt="" class="checkImg">
+		</label>
+		<a href="{:U('WxTravelActivity/enrolmentAgreement')}" class="agreeA">我已阅读并同意《报名协议》</a>
+		<span class="checkError">* 勾选后方可报名</span>
+	</div>
+	<div class="applyBtnInner">
+		¥<span class="applyPay"><?= number_format($price1,2,'.','') ?></span>
+		<button type="button" class="button" id="applyBtn">报名</button>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/notifyApp.js" defer async="true"></script>
+<script src="__PUBLIC__/js/wxPay/wxPay.js?t=928"></script>
+
+<script>
+	var price = {$price1};
+	var twoPrice = {$price2};
+	var threePrice = {$price3};
+
+	// 是否同意协议
+	$('.checkImg').click(function(){
+		if($('.checkbox').prop("checked") == true) {
+			$(this).attr("src","{$oss_path}public/web_img/Register/checkNot.png")
+		} else{
+			$(this).attr("src","{$oss_path}public/web_img/Register/check.png")
+		}
+	})
+
+
+	//报名
+	$(document).on('click','#applyBtn',function(){
+		var regName = /^(([\u4E00-\u9FA5]{2,10})|([a-zA-Z]{3,50}))$/;
+		var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		var regAge = /^[0-9]*$/;
+		var check = $('#checkbox').prop("checked");
+		var flag = true;
+
+	//验证姓名
+	$('.inputName').each(function(){
+		if($.trim($(this).val()) == '') {
+			$(this).siblings('.error').show().text('* 必填项');
+			flag = false;
+		} else if(regName.test($(this).val()) == false) {
+			$(this).siblings('.error').show().text('* 格式有误');
+			flag = false;
+		} else {
+			$(this).siblings('.error').hide();
+		}
+	})
+
+	//验证年龄
+	$('.inputAge').each(function(){
+		if($.trim($(this).val()) == '') {
+			$(this).siblings('.error').show().text('* 必填项');
+			flag = false;
+		} else if($.trim($(this).val()) < 6) {
+			$(this).siblings('.error').show().text('* 大于5岁');
+			flag = false;
+		} else if(regAge.test($(this).val()) == false) {
+			$(this).siblings('.error').show().text('* 格式有误');
+			flag = false;
+		} else {
+			$(this).siblings('.error').hide();
+		}
+	})
+
+	//验证手机号
+	$('.inputPhone').each(function(){
+		if($.trim($(this).val()) == '') {
+			$(this).siblings('.error').show().text('* 必填项');
+			flag = false;
+		} else if(regTel.test($(this).val()) == false) {
+			$(this).siblings('.error').show().text('* 格式有误');
+			flag = false;
+		} else {
+			$(this).siblings('.error').hide();
+		}
+	})
+
+	//验证是否勾选协议
+	if(check == false) {
+		$('.checkError').show();
+		flag = false;
+	} else {
+		$('.checkError').hide();
+	}
+
+	if(flag != false) {
+		var price = (parseFloat($('.applyPay').text()));
+		var applyList = [];
+		var openId = $.wxFunction.getOpenId();
+
+		$('.mainBox').each(function(){
+			var inputType = 1;//本家庭的类型
+			var inputDate = '2018-01-28 09:00:00';//本家庭的时间
+			var inputName = $(this).find('.inputName').val();//本家庭的儿童姓名
+			var inputAge = $(this).find('.inputAge').val();//本家庭的儿童年龄
+			var inputPhone = $(this).find('.inputPhone').val();//本家庭的儿童电话
+			applyObj = {"type": inputType, "activity_time": inputDate, "name": inputName, "age": inputAge, "phone": inputPhone};
+			applyList.push(applyObj)
+		})
+		console.log(applyList)
+
+		$.ajax({
+			url:'/index.php/Wchat/WxTravelActivity/ajaxAdd',
+			type:'post',
+			data:{
+				'applyList': applyList,
+				'openid' : openId,
+				'pay_fee' : price
+			},
+			dataType:'json',
+			success:function (msg) {
+				if(msg.status == 200){
+					$.wxFunction.pay(msg.data,successCallback);
+				}
+				else
+				{
+					$.NotifyBox.NotifyPromptOne('提示', msg.message, '确定')
+				}
+			},
+			error:function (msg) {
+				$.NotifyBox.NotifyPromptOne('提示', '操作失败，请联系客服人员。', '确定')
+			}
+		})
+	}
+})
+	function successCallback()
+	{
+		location.replace("/index.php/Wchat/WxTravelActivity/success")
+	}
+
+
+	// 计算总价
+	function moneyAll(){
+		var familyLength = familyType.length;
+		var money = 0;
+		var discount = {$discount};
+		$.each(familyType,function(index,item){
+			// index是索引值（即下标）,item是每次遍历得到的值；
+			if(item == 1) {
+				if(familyLength < 3) {
+					money = money + price;
+				} else {
+					money = money + price * discount;
+				}
+			} else if(item == 2) {
+				if(familyLength < 3) {
+					money = money + twoPrice;
+				} else {
+					money = money + twoPrice * discount;
+				}
+			} else if(item == 3) {
+				if(familyLength < 3) {
+					money = money + threePrice;
+				} else {
+					money = money + threePrice * discount;
+				}
+			}
+		});
+		$('.applyPay').text(money.toFixed(2))
+	}
+</script>
+
+<script>
+	function CheckIsAndroid() {
+		var browser = {
+			versions: function () {
+				var u = navigator.userAgent,
+						app = navigator.appVersion;
+				return { //移动终端浏览器版本信息
+					ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+					android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+					iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+					iPad: u.indexOf('iPad') > -1, //是否iPad
+				};
+			}(),
+		}
+		if (browser.versions.android)
+			return true;
+		return false;
+	}
+
+
+	function CheckIsIOS() {
+		var browser = {
+			versions: function () {
+				var u = navigator.userAgent,
+						app = navigator.appVersion;
+				return { //移动终端浏览器版本信息
+					ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+					android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+					iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+					iPad: u.indexOf('iPad') > -1, //是否iPad
+				};
+			}(),
+		}
+		if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+			return true;
+		}
+	}
+
+	$('body').on('touchstart',function(){
+		if (CheckIsIOS()) {
+			$('input').blur()
+		}
+	});
+
+	$('.mainBox').on('touchstart',function(e){
+		if (CheckIsIOS()) {
+			e.stopPropagation()
+		}
+	});
+
+
+
+</script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="__PUBLIC__/js/share.js?v=20170705"></script>
+<script>
+	var appId = '{$signPackage.appId}';
+	var timestamp = '{$signPackage.timestamp}';
+	var nonceStr = '{$signPackage.nonceStr}';
+	var signature = '{$signPackage.signature}';
+	var title = '【京彩游】新春福利大放送啦～';
+	var content = '春节前的大福利原价198元，现价98元！还在等什么快打开信看一看吧！';
+	var linkimgUrl = 'http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/activity/youxue.jpg?t=1';
+	var res_id = '16384';
+	var type = 2;
+	var url = '{$url}';
+	share_weixin(appId, timestamp, nonceStr, signature, title, content, linkimgUrl,res_id,type,url);
+</script>
+</body>
+</html>

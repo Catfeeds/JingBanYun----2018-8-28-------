@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>资讯详情</title>
+    <link rel="stylesheet" href="__PUBLIC__/css/appExpertInformationDetails.css?ver=1" media="screen" title="no title" charset="utf-8">
+    <script type="text/javascript" src="__PUBLIC__/js/rem.js"></script>
+    <script type="text/javascript" src="http://www.zeptojs.cn/zepto.min.js"></script>
+  </head>
+  <style>
+      .textIndent2{
+          text-indent:2em;
+      }
+  </style>
+  <body>
+      <h1 class="text-center dataTitle">{$data.title}</h1>
+      <div class="borderBottom">
+          <img src="{$oss_path}{$data.mobile_cover_add}" alt="" / class="topImg">
+          <p class="p3 ">
+            <span class="fz1-4 w31">{$data.publisher}</span>
+            <span class="fz1-4 w31 text-center">阅读：{$data.browse_count}</span>
+            <span class="fz1-4 w31 right text-right">{$data.up_time|date="Y-m-d",###}</span>
+          </p>
+      </div>
+      <div style="display:none" id="contentDN">
+          <?php echo html_entity_decode($data['content'])?>
+      </div>
+      <script>
+          String.prototype.format = function (args) {
+              if (arguments.length > 0) {
+                  var result = this;
+                  if (arguments.length == 1 && typeof (args) == "object") {
+                      for (var key in args) {
+                          var reg = new RegExp("({" + key + "})", "g");
+                          result = result.replace(reg, args[key]);
+                      }
+                  }
+                  else {
+                      for (var i = 0; i < arguments.length; i++) {
+                          if (arguments[i] == undefined) {
+                              return "";
+                          }
+                          else {
+                              var reg = new RegExp("({[" + i + "]})", "g");
+                              result = result.replace(reg, arguments[i]);
+                          }
+                      }
+                  }
+                  return result;
+              } else {
+                  return this;
+              }
+              return result;
+          }
+
+          var template='<div class="work p3 fz1-4">\
+                  <div class="workTitle bgf7 borderleft p10 ">\
+                  <h3 class="text-center">{0}</h3>\
+                  <p class="w50 left">\
+                  {1}\
+          </p>\
+          <p class="w50 left">\
+                  {2}\
+          </p>\
+          <p>\
+          学校年级：{3} {4}\
+          </p>\
+          </div>\
+          <div class="workContent">\
+                  {5}\
+          </div>\
+          </div>';
+          $('#contentDN').children('div').each(function(i,n){
+              var text = '';
+              $(n).find('.worksText').each(function(i,n){
+                  text += '<p class="textIndent2">' + $(n).html() + '</p>'
+              })
+              var author = '';
+              try {
+                  $(n).find('.fz16').each(function(i,n){
+                      if($(n).html().replace(/&nbsp;/g, '').indexOf('作者') > -1)
+                      {
+                          author = $(n).html().replace(/&nbsp;/g, '');
+                      }
+                  })
+              }catch(e){;}
+              var teacher = '</br>';
+              try {
+                  $(n).find('.fz16').each(function(i,n){
+                      if($(n).html().replace(/&nbsp;/g, '').indexOf('教师') > -1)
+                      {
+                          teacher = $(n).html().replace(/&nbsp;/g, '');
+                      }
+                  })
+              }catch(e){;}
+              var school = '';
+              try {
+                  $(n).find('.fz16').each(function(i,n){
+                      if($(n).html().replace(/&nbsp;/g, '').indexOf('学校') > -1)
+                      {
+                          school = $(n).html().replace(/&nbsp;/g, '').match(/：(.*)/)[1];
+                      }
+                  })
+              }catch(e){;}
+              var grade = '';
+              try {
+                  $(n).find('.fz16').each(function(i,n){
+                      if($(n).html().replace(/&nbsp;/g, '').indexOf('年级') > -1)
+                      {
+                          grade = $(n).html().replace(/&nbsp;/g, '').match(/：(.*)/)[1];
+                      }
+                  })
+              }
+              catch(e){;}
+              var workDiv = template.format($(n).find('.fz').text(),
+                                            author,
+                                            teacher,
+                                            school,
+                                            grade,
+                                            text
+                                            )
+              document.write(workDiv)
+          })
+      </script>
+      <if condition="$flag neq 1">
+      <?php if(!empty($recommendData)) : ?>
+      <div class="recommendations">
+        <p class="recommendations_p">
+          相关推荐<span class="right" onclick="showMore()">更多>></span>
+        </p>
+      </div>
+      <?php endif; ?>
+      <div class="recommendationslist">
+          <ul>
+              <volist name="recommendData" id="recommendData">
+                  <li class="of">
+                      <a href="{$recommendData.url}">
+                      <if condition="$recommendData['img_url'] neq ''">
+                      <div class="left">
+                          <img src="{$recommendData.img_url}" alt="" / class="img100">
+                      </div>
+                      </if>
+                      <div class=" p5 recommendationslistDiv of">
+                          <p class=" of recommendationslistTitle">{$recommendData.title}</p>
+                          <p class="f15">
+                              <span>{$recommendData.content1}</span>
+                              <span class="right mr3  color666">{$recommendData.content2}</span>
+                          </p>
+                      </div>
+                      </a>
+                  </li>
+              </volist>
+          </ul>
+      </div>
+      </if>
+  </body>
+<script>
+    /*function rightUI() {
+        return {
+            'type': 0,
+            'share': {
+                'url': "http://{$_SERVER['SERVER_NAME']}__URL__/informationDetails?id={$data['id']}&flag=1",
+                'title': "{$data['title']}",
+                'content': "<?php echo mb_substr(preg_replace(" /\r |\n / ",'',strip_tags(htmlspecialchars_decode($data['content']))),0,40); ?>"
+       }
+    };
+    }*/
+    var columnId = {$data['type']};
+    if(window.navigator.userAgent.indexOf('=2.8.') != -1){
+        $('.recommendations_p .right').hide();
+    }
+    function showMore(){
+        var data = {
+            "page":"NewsMoreVC",
+            "id":columnId,
+            "name":"{$columnInfo['name']}",
+            "style":"{$columnInfo['style']}"
+
+        }
+
+        if(CheckIsAndroid()){
+            AppFunction.showColumn(JSON.stringify(data));
+        }
+        else if(CheckIsIOS()){
+            window.webkit.messageHandlers.iosModel.postMessage(data);
+        }
+    }
+    function CheckIsAndroid() {
+        var browser = {
+            versions: function () {
+                var u = navigator.userAgent,
+                        app = navigator.appVersion;
+                return { //移动终端浏览器版本信息
+                    ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                    android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                    iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                    iPad: u.indexOf('iPad') > -1, //是否iPad
+                };
+            }(),
+        }
+        //if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+        //    return false;
+        //}
+        if (browser.versions.android)
+            return true;
+        return false;
+    }
+
+
+    function CheckIsIOS() {
+        var browser = {
+            versions: function () {
+                var u = navigator.userAgent,
+                        app = navigator.appVersion;
+                return { //移动终端浏览器版本信息
+                    ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                    android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                    iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                    iPad: u.indexOf('iPad') > -1, //是否iPad
+                };
+            }(),
+        }
+        if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+            return true;
+        }
+    }
+</script>
+  <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+  <script src="__PUBLIC__/js/share.js?v=20170705"></script>
+  <script>
+      var appId = '{$signPackage.appId}';
+      var timestamp = '{$signPackage.timestamp}';
+      var nonceStr = '{$signPackage.nonceStr}';
+      var signature = '{$signPackage.signature}';
+      var title = '{$data.title}';
+      var content = '<?php echo mb_substr(preg_replace("/\r|\n/",'',strip_tags($data['content'])),0,40); ?>';
+      var linkimgUrl = 'http://{$WEB_URL}/Public/img/sharelogo.png';
+      var res_id = '{$data.id}';
+      var type = 2;
+      share_weixin(appId, timestamp, nonceStr, signature, title, content, linkimgUrl,res_id,type);
+  </script>
+</html>

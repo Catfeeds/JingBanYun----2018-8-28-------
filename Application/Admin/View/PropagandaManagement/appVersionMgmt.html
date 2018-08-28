@@ -1,0 +1,122 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/jquery-2.1.1.min.js"></script>
+<script src="__PUBLIC__/bootstrap/js/bootstrap.js"></script>
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		版本列表
+		<span class="blueSpan">
+			<a href="javascript:;">宣传管理</a>>>
+			<a href="javascript:;">APP版本管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+<a href="{:U('AppVersionControl/publishApp')}" title="添加" class="button primary ">发布新版</a>
+<div class="listview padding20 tabContent">
+    <p class="blueText fs16">版本列表</p>
+    <div class="tab-pane fade in active" >
+      <div class="padding10">
+        <table id="listWrapper" class="table striped hovered border">
+          <thead>
+            <tr>
+              <th class="text-center">APP名称</th>
+              <th class="text-center">版本类型</th>
+			  <th class="text-center">版本值</th>
+              <th class="text-center">版本号</th>
+              <th class="text-center">发布时间</th>
+              <th class="text-center">下载地址</th>
+              <th class="text-center">是否强制更新</th>
+                <th class="text-center">状态</th>
+              <th class="text-center">操作</th>
+            </tr>
+          </thead>
+          <tbody class="teacherhtml">
+          <volist name="data" id="item">
+            <tr>
+                <td class="text-center" >
+                    {$item.app_name}
+                </td>
+              <td class="text-center" >
+								{$item.system_type}
+              </td>
+							<td class="text-center" >
+								{$item.version_number}
+							</td>
+              <td class="text-center" >
+              {$item.version}
+              </td>
+              <td class="text-center" >
+                  {$item.putaway_time|date='Y-m-d H:i:s',###}
+              </td>
+							<td class="text-center" >
+								{$item.download_path}
+							</td>
+              <td class="text-center" >
+              <if condition="$item.update_forced eq 1">
+              是
+              <else/>
+              否
+              </if>
+              </td>
+              <td class="text-center updown" >
+                  <if condition="$item.putaway_status eq 1">
+                  上架
+                  <else/>
+                  下架
+              </if>
+              </td>
+              <td class="text-center" >
+              <if condition="$item.putaway_status eq 2">
+                  <a href="#" class="operBtn " onclick="a(this)" attr-type="{$item.system_type}" attr-data="{$item.id}" attr-status="{$item.putaway_status}">上架</a>
+              <else/>
+                  <a href="#" class="operBtn " onclick="a(this)" attr-type="{$item.system_type}" attr-data="{$item.id}" attr-status="{$item.putaway_status}">下架</a>
+              </if>
+
+              <a href="{:U('AppVersionControl/publishAppSave')}&id={$item.id}" class="operBtn">修改</a>
+              </td>
+            </tr>
+            </volist>
+          </tbody>
+        </table>
+        <div class="Pagination teacherPage">{$page}</div>
+      </div>
+    </div>
+</div>
+<script src="/Public/js/notify/adminNotify.js?v=2" type="text/javascript"></script>
+<script type="text/javascript">
+
+ function a(a){
+      var id = $(a).attr('attr-data');
+      var type = $(a).attr('attr-type');
+      var putaway_status = $(a).attr('attr-status');
+      if(putaway_status == '1'){
+          var putaway = '2';
+      }else{
+          var putaway = '1'
+      }
+    $.ajax({
+      url:"{:U('AppVersionControl/ajaxPutawayStatus')}",
+      data:{'id':id,'putaway':putaway,'type':type},
+        dataType:'json',
+    type:"post",
+        success:function (msg) {
+            if(msg.status == 200){
+                if(putaway == '2'){
+                    $(a).attr('attr-status','2');
+                    $(a).text('上架');
+                    $(a).parent('td').siblings('.updown').text('下架');
+                }else{
+                    $(a).attr('attr-status','1');
+                    $(a).text('下架');
+                    $(a).parent('td').siblings('.updown').text('上架')
+                }
+
+            }else{
+                $.NotifyBox.NotifyOne('提示', msg.message, '确定');
+            }
+        }
+    })
+  }
+</script>

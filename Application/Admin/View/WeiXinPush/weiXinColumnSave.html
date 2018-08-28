@@ -1,0 +1,124 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/uploadify/uploadify.css">
+<link href="__PUBLIC__/css/adminActivity.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+
+<style>
+    .laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+        box-sizing: content-box;
+    }
+
+    .qq-uploader {
+        max-height: 540px
+    }
+    .dn{
+        display:none
+    }
+
+    .topDiv {
+        text-align: center;
+    }
+
+    #isNumber {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        position: relative;
+        top: -2px
+    }
+</style>
+
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}" style="box-sizing:border-box;">&lt; 返回</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/weiXinColumnSave" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput" data-show-error-hint="true" >
+        <input type="hidden" name="id" value="<?php echo $id?>">
+        <div class="example tip" >
+            <label for="stakeholder">标题</label>
+
+            <div class="input-control text full-size">
+                <input type="text" name="title" value="<?php echo $title?>" id="title" data-validate-func="required"
+                       data-validate-hint="" maxlength="100" placeholder="必填，不超过100字" required>
+            </div>
+            <label for="stakeholder">状态</label>
+            <div class="input-control text full-size">
+                <select id="status" name="status" class="input-control input-control-before" required>
+                    <option value="-1">-请选择-</option>
+                    <option value="1" <?php if($status == '1'){echo 'selected';}?>>-上架-</option>
+                    <option value="0" <?php if($status == '0'){echo 'selected';}?>>-下架-</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="example courseGradeGroup" >
+            <span class="exampl">类型</span>
+
+            <div class="input-control text full-size">
+                <select id="class_name" name="type" class="input-control input-control-before" required disabled>
+                    <option value="-1">-请选择-</option>
+                    <option value="1"<?php if($type == '1'){echo 'selected';}?>>-标题-</option>
+                    <option value="2" <?php if($type == '2'){echo 'selected';}?>>-列表-</option>
+                </select>
+            </div>
+        </div>
+        <div style="margin-bottom: 12px; display: none" id="add">
+            <a href="javascript:addButton()" title="添加" class="button primary {:session('btntheme')}" style="box-sizing:border-box;">修改</a>
+        </div>
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button info" onclick="return check();">修改</button>
+        </div>
+    </form>
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script type="text/javascript">
+    !function(){
+        laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //显示时间
+    var appstart = {
+        elem: '#applyTimeDisplay',
+        format: 'YYYY-MM-DD hh:mm:ss',
+        min: laydate.now(), //设定最小日期为当前日期
+        max: '2099-06-16', //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            actstart.min = datas;
+            actend.min = datas;
+            append.min = datas; //开始日选好后，重置结束日的最小日期
+            append.start = datas //将结束日的初始值设定为开始日
+        }
+    };
+    laydate(appstart);
+</script>
+<script>
+    function check() {
+        if($('#title').val() == '' || $('#title').val() == null){
+            $.NotifyBox.NotifyOne('注意','标题不能为空','确定');
+            return false;
+        }
+        if($('#status').val() == '' || $('#status').val() == null || $('#status').val() == '-1'){
+            $.NotifyBox.NotifyOne('注意','状态不能为空','确定');
+            return false;
+        }
+        if($('#class_name').val() == '' || $('#class_name').val() == null || $('#class_name').val() == '-1'){
+            $.NotifyBox.NotifyOne('注意','类型不能为空','确定');
+            return false;
+        }
+    }
+
+
+</script>
+

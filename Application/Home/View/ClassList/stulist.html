@@ -1,0 +1,387 @@
+<style>
+    /*-------------导入框----------------*/
+
+    #import_outer {
+        display: none;
+    }
+
+    .import {
+        width: 800px;
+        height: 400px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        margin-left: -400px;
+        margin-top: -200px;
+        background: url(__PUBLIC__/img/home/33.png) no-repeat left top;
+        background-size: 100% 100%;
+        z-index: 29
+    }
+
+    .close_btn {
+        float: right;
+        margin: 25px 35px 0 0;
+        cursor: pointer;
+		line-height: 20px;
+    }
+
+    .close_btn img {
+        width: 20px;
+    }
+
+    .info .title_content {
+        width: 115px;
+    }
+
+    .item {
+        width: 28%;
+    }
+
+    .download_form {
+        width: 100%;
+        margin: 80px 0 50px 55px;
+    }
+
+    .browse {
+        width: 100%;
+        margin-left: 70px;
+    }
+
+    .browse input {
+        width: 500px;
+    }
+
+    .file {
+        width: 100%;
+        margin: 30px 0 0 70px;
+    }
+
+    .outer {
+        width: 650px;
+        height: 17px;
+        border: 1px solid #ccc;
+        float: left;
+        margin-top: 8px;
+    }
+
+    .inner {
+        width: 2%;
+        height: 15px;
+        background: #E9C232;
+    }
+    /*-----------------导入成功-------------------*/
+
+    .import_success,
+    .import_fail,
+    .export_success,
+    .export_fail {
+        display: none;
+        width: 500px;
+        height: 300px;
+        position: fixed;
+        top: 40%;
+        left: 32%;
+        z-index: 9999;
+        background: url(/Public/img/home/30.png) no-repeat center;
+        background-size: 100% 100%;
+    }
+
+    .success_top,
+    .fail_top {
+        overflow: hidden;
+        padding: 50px 0 0 80px;
+    }
+
+    .success_top img,
+    .fail_top img {
+        width: 30%;
+        float: left;
+    }
+
+    .success_top p,
+    .fail_top p {
+        float: left;
+        font-size: 40px;
+        color: #666;
+        padding-top: 35px;
+    }
+
+    .success_bottom,
+    .fail_bottom {
+        text-align: center;
+    }
+
+    .success_bottom button,
+    .fail_bottom button {
+        width: 120px;
+        height: 50px;
+        border: none;
+        background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+        background-size: 100% 100%;
+        color: #fff;
+        font-size: 20px;
+        position:relative;
+        top:20px;
+    }
+	.btn3{
+		padding: 4px 14px !important;
+    margin-left: 16px;
+    letter-spacing: 4px;
+    color: #60584D;
+    background-color: #fff;
+    border: 2px solid #E9C232;
+	}
+	.btn3:hover{
+		background: #e9c232;
+		color: #fff
+	}
+	.classbox {
+		font-size: 16px;
+		line-height: 24px;
+		color: #333;
+		position: relative;
+		text-indent: 20px;
+		margin: 0 auto;
+		
+		border-left: 2px solid #efca33
+	}
+
+	.yuan{
+		width: 30px;
+		height: 30px;
+		border-radius: 20px;
+		color: #fff;
+		background: #efca33;
+		 text-align: center;
+		text-indent: 0;
+		line-height:30px;
+		position: absolute;
+		top: -4px;
+    	left: -17px;
+	}
+</style>
+<div class="Stu_box">
+    <div class="class_wrapper">
+        <div>
+            班级编号：{$data_stu.class_info.class_code} &nbsp;&nbsp;&nbsp;&nbsp;班级状态：{$data_stu.class_info.flag_name}
+        </div>
+        <span>班级成员：学生{$data_stu.stu_count}人  待审核学生{$data_stu.wating_stu}人</span>
+
+        <span class="right right40 tea_stu">筛选：
+            <span class="padding5  "><span style="position: relative;z-index: 2;" classid="{$classid}" class_status="{$data_stu.class_info.class_status}">已通过的学生</span><span class="padding5Active"></span></span>
+                <span class="padding5 "><span class="student_nosiftings" classid="{$classid}" class_status="{$data_stu.class_info.class_status}">未通过的学生</span></span>
+                </span>
+        <div class="class_screen">
+            <div class="search">
+                <button ōnkeydown="return disableEnter(event)" class="search_btn" classid="{$classid}" class_status="{$data_stu.class_info.class_status}">搜索</button>
+                <input type="text" class="search_text" placeholder="输入学生姓名，手机号可搜索学生">
+            </div>
+            <div class="right right40 btn4right">
+                <input type="checkbox" name="name" value="" class="allCheck">全选
+                <button href="" class="padding15" id="export_btn" classid="{$classid}">批量导出</button>
+                <?php if ($data_stu['class_info']['flag'] !=0): ?>
+                    <button href="" class="padding15" id="import_btn">批量导入</button>
+                    <button href="" class="padding15 addstubtn">添加学生</button>
+                    <button href="" class="padding15 piliangdel">批量移除</button>
+                <?php endif ?>
+            </div>
+        </div>
+        <input type="hidden" class="hiddenclass_status" value="{$data_stu.class_info.class_status}">
+
+        <div class="row stulistinfo">
+            <!--			教师筛选学生-->
+            <volist name="list" id="data" empty="">
+                <div class="col-lg-3 col-md-6 col-sm-12 student_list" student_id="{$data.student_id}">
+                    <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+                    <img class="avatar" width="58" height="58" onerror="img_teacher(this)" sex="{$data.sex}" src="<?php echo C('oss_path').$data['avatar']?>">
+                    <?php else: ?>
+                        <?php if ( $data['sex']=='男' ): ?>
+                            <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_m.png">
+                        <?php else: ?>
+                            <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_w.png">
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <span class="name">{$data.student_name}</span>
+                    <input type="checkbox" name="stuselect" class="stuselect">
+                    <br>
+                    <span class="sex">{$data.sex}</span>
+                    <br>
+                    <br>
+                    <p class="parent_tel">家长手机号：{$data.parent_tel}</p>
+                    <p class="email">邮箱地址：{$data.email}</p>
+                    <?php if ($data_stu['class_info']['flag'] !=0): ?>
+                        <img src="__PUBLIC__/img/classManage/icon_delete.png" alt="" class="delete_student" classid="{$classid}" delid="{$data.student_id}" >
+                    <?php endif ?>
+                </div>
+            </volist>
+            <empty name="list">
+                <input type="hidden" class="student_num_is_empty" value="1">
+                <div style="min-height:1550px">
+					<div class="m20" >
+						<p>班级内暂无班级成员，可让学生通过班级编号<span style="color:red">{$data_stu.class_info.class_code}</span>或选择已有班级加入班级</p>
+
+					</div>
+					<div  class="classbox pb20">
+						<div class="yuan">1</div>
+						<p class="pb20">先让学生注册平台账号，注册成功后登录平台进入"我的班级"，输入班级编号或选择已有班级即可加入学校创建的校建班级</p>
+						<img src="__PUBLIC__/img/classManage/zijian1.jpg" alt="" class="ml30">
+					</div>
+					<div  class="classbox pb20">
+						<div class="yuan">2</div>
+						<p class="pb20">学生输入班级编号即可申请加入，学生申请加入的记录将显示在下方表格中</p>
+						<img src="__PUBLIC__/img/classManage/zijian2.jpg" alt="" class="ml30">
+					</div>
+					<div  class="classbox pb20">
+						<div class="yuan">3</div>
+						<p class="pb20">教师在班级管理页面中查看未通过审核学生列即可审批学生加入</p>
+						<img src="__PUBLIC__/img/classManage/zijian3.jpg" alt="" class="ml30">
+					</div>
+					<div  class="classbox">
+
+						<div class="yuan">4</div>
+						<p>学生加入班级成功</p>
+					</div>
+           		</div>
+            </empty>
+        </div>
+        <div>
+
+        </div>
+    </div>
+
+    <div id="Popup" class="yichubanji_student">
+        <p><span>移除学生</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+        <p style="margin-bottom:50px">确定将此学生移除班级？</p>
+        <p>
+            <button class="quedingyichu">确定</button>
+        </p>
+    </div>
+    <div class="news" style="display: none;">
+        <p><span>导入成功</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+        <p style="margin-bottom:0">已经导入成功请点击确定刷新</p>
+        <p>
+            <button class="daorusuccess" style="width:100px">确定</button>
+        </p>
+    </div>
+    <div id="addstudentTk">
+        <p id="addstuP">添加学生<img src="__PUBLIC__/img/classManage/close_btn_s.png" alt=""></p>
+        <!--    <span><input type="radio" checked="checked">您的学生已经注册京版云账号</span><span><input type="radio" checked="checked">还未注册京版云账号</span>-->
+        <div>
+            <input type="radio" id="student_register" checked="checked">
+            <label for="student_register" id="student_registerlb">还未注册京版云账号</label>
+            <input type="radio" id="student_noregister">
+            <label for="student_noregister" id="student_noregisterlb">您的学生已经注册京版云账号</label>
+        </div>
+        <div id="student_registerDiv">
+           <div class="no_register">该学生已注册，请选择"您的学生已注册京版云账号"直接添加学生加入班级</div>
+            <p><span>学生姓名</span>: &nbsp;
+                <input type="text" class="student_name">
+                 <br>
+                <span class="name_error">请填写学生姓名</span>
+            </p>
+            <p><span>家长手机号</span>: &nbsp;
+                <input type="text" class="parent_tel_data" maxlength="11">
+                <br>
+                <span class="tel_error">请填写家长手机号</span>
+            </p>
+            <p><span>登录密码</span>: &nbsp;
+                <input type="password" class="password">
+                 <br>
+                <span class="pas1_error">请填写密码</span>
+            </p>
+            <p><span>确认密码</span>: &nbsp;
+                <input type="password" class="pass">
+                 <br>
+                <span class="pas2_error">请确认密码</span>
+            </p>
+            <p class="pbtn registeraddstu">
+                <button>确定</button>
+            </p>
+        </div>
+        <div id="student_noregisterDiv" style="padding-top:30px">
+            <p><span>学生姓名</span>: &nbsp;
+                <input type="text" class="add_student_name">
+                   <br>
+                   <span class="name_error1"></span>
+            </p>
+            <p><span>家长手机号</span>: &nbsp;
+                <input type="text" class="add_parent_tel" maxlength="11">
+                 <br>
+				   <span class="tel_error1"></span>
+            </p>
+            <p class="pbtn existsaddstu" style="margin-top:40px">
+                <button>确定</button>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+<div id="import_outer" style="background:#fff;">
+    <div class="import">
+        <div class="close_btn">
+            <img src="__PUBLIC__/img/home/close.png" alt="">
+        </div>
+        <div class="download_form">
+            <a href="{:U('ClassList/downloadStudentListFile')}" target="_blank" title="下载" class="button">下载示例表格</a>
+        </div>
+        <div class="browse">
+            <input type="text" id="address" placeholder="链接地址">
+            <a href="javascript:;" title="浏览" class="btn btn3 browse_button">浏览</a>
+            <input type="file" name="file" style="display:none;" accept=".csv" class="file_csv" id="file_csv" />
+            <a href="javascript:;" title="上传" class="btn  btn3 upload_file" classid="{$classid}">上传</a>
+        </div>
+		<div style="color:red;text-indent:70px" class="csvtishi">请选择需要上传的csv格式文件</div>
+    </div>
+</div>
+
+<form action="{:U('Teach/teacherdownloadFileCsv')}" method="post">
+    <div class="import_error_csv news">
+        <p><span>导入失败!</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+        <div class="htmlerrorcsv"></div>
+        <p style="margin-top:40px">
+            导入失败，请点击查看信息
+        </p>
+
+        <input type="submit" value="立即查看导入失败信息"  class="daorusuccess">
+    </div>
+</form>
+
+<form action="{:U('Teach/teacherdownloadFileCsv')}" method="post">
+    <div class="import_error_csv_all news">
+        <p><span>导入成功</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+        <div class="htmlerrorcsv_all"></div>
+        <p style="margin-top:40px">
+            已为之前未注册过账号的学生/家长
+        </p>
+        <p>
+            创建了平台账号登录密码为123456
+        </p>
+        <input type="submit" value="立即查看导入失败信息"  class="daorusuccess">
+
+    </div>
+</form>
+
+<!-------------------导入成功---------------------->
+<div class="import_error_csv_all_success news">
+
+    <p><span>导入成功</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+    <div class="htmlerrorcsv_all"></div>
+    <p style="margin-top:40px">
+        已为之前未注册过账号的学生/家长
+    </p>
+    <p>
+        创建了平台账号登录密码为123456
+    </p>
+    <input type="button" value="点击查看"  class="daorusuccess">
+
+
+</div>
+
+
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+
+
+
+

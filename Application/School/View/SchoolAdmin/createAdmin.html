@@ -1,0 +1,256 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+	<div class="standardMain hrefContent">
+		<a href="{:U('SchoolAdmin/adminList')}" class="returnBack">管理员列表</a>
+		>
+		<span class="thePage">创建管理员</span>
+	</div>
+
+	<form action="{:U('SchoolAdmin/createAdmin')}" method="post" onsubmit="return checkInfo()">
+		<div class="standardMain classContent tableContent mt0">
+			<div class="blueBox">
+				<span class="left blueTitle">创建管理员</span>
+				<a href="javascript:;" class="blackText right submitA" id="" >
+					<img src="__PUBLIC__/img/admin/baocun.png" alt="" class="mr10">
+					<input type='submit' class="submitInput" value='保存' onClick="return checkInfo()"/>
+				</a>
+			</div>
+
+			<div class="grid condensed infoOutter infoOutterModify">
+				<div class="row cells3 infoBox">
+					<div class="cell">
+						<label>管理员账号：</label>
+						<input type="text" class="input-control account_name" name="account_name" value="" placeholder="请输入管理员账号" autocomplete="off" required>
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>登录密码：</label>
+						<input type="password" class="input-control password" name="password" value="" placeholder="请设置管理员登录密码" autocomplete="off" required>
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>管理员姓名：</label>
+						<input type="text" class="input-control real_name" name="real_name" value="" placeholder="请输入管理员姓名" required>
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>管理员手机号：</label>
+						<input type="text" class="input-control telephone" name="telephone" value="" placeholder="请输入管理员手机号" maxlength="11" required>
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>管理员邮箱：</label>
+						<input type="email" class="input-control email" name="email" value="" placeholder="请输入管理员邮箱">
+					</div>
+				</div>
+			</div>
+
+			<p class="tableTitle pl20">添加权限</p>
+			<div class="tabBox">
+				<ul class="left tabUl" id="tabUl">
+					<volist name="permissions_list" id="permissions_item" key="_key">
+			                <if condition="$_key eq 1">
+			                    <li class="tabLi tabActive">
+									<input type="checkbox" value="{$permissions_item.id}" name="per_id[]" class="admincheck mr5 checkParent"  >
+									{$permissions_item.module_name}
+			                    </li>
+			                <else />
+			                    <li class="tabLi">
+									<input type="checkbox" value="{$permissions_item.id}" name="per_id[]" class="admincheck mr5 checkChild"  >
+									{$permissions_item.module_name}
+			                    </li> 
+			                </if>
+			            </volist> 
+				</ul>
+				<div class="tabCon" id="tabCon">
+		            <volist name="permissions_list" id="permissions_items" key="key">
+						<if condition="$key eq 1">
+		                    <div class="divTable tabConActive">
+								<ul class="mgmtUl">
+									<volist name="permissions_items.child" id="item_child">
+										<li class="mgmtLi">
+											<input type="checkbox" value="{$item_child.id}" name="per_id[]" class="admincheck mr5"  >
+												{$item_child.module_name}
+										</li>
+									</volist>
+								</ul>
+		                    </div>
+		                <else />
+		                    <div class="divTable">
+								<ul class="mgmtUl">
+									<volist name="permissions_items.child" id="item_child">
+										<li class="mgmtLi">
+											<input type="checkbox" value="{$item_child.id}" name="per_id[]" class="admincheck mr5"  >
+											{$item_child.module_name}
+										</li>
+									</volist>
+								</ul>
+		                    </div>
+		                </if>
+		            </volist> 
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByClassName("divTable");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].index = i;
+			tabs[i].onclick=function(){
+				change(this);
+			}
+			
+			//全选
+			tabs[i].childNodes.item(1).onclick=function(){
+				var index_ = this.parentNode.index;
+				var childCheck=divs[index_].childNodes.item(1).getElementsByClassName("mgmtLi");
+				var temp_status=true;
+				if(this.checked==true){
+					//本次选中
+					temp_status=true;
+				}else{
+					//本次取消
+					temp_status=false;
+				}
+				for(var j=0;j<childCheck.length;j++){
+					childCheck[j].childNodes.item(1).checked=temp_status
+				}
+			}
+			
+			//单选
+			var check_m = divs[i].childNodes.item(1).getElementsByClassName("mgmtLi");
+			for(var m=0;m<check_m.length;m++){
+				check_m[m].childNodes.item(1).onclick=function(){
+					if ($(this)[0].checked == true) {
+						$('.tabActive').children('input').attr('checked','checked');
+						$('.tabActive').children('input').prop('checked','checked');
+					} else if ($(this)[0].checked == false) {
+						if ($(this).parent().siblings().find("[type='checkbox']:checked").length == 0) {
+							$('.tabActive').children('input').removeAttr('checked','checked');
+							$('.tabActive').children('input').removeProp('checked','checked');
+						}
+					}
+				}
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="divTable tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="divTable";
+				}
+			}
+		} 
+
+	} 
+</script>
+ 
+<!--表单验证-->
+<script>
+	function checkInfo(){ 
+        //管理员账号 不能是特殊字符
+		var regAcco = /^[~'!@#$%^&*()-+_=:^]+$/;
+		var aname = $.trim($('.account_name').val());
+		if (aname == '') {
+			$.NotifyBox.NotifyOne('注意','管理员账号不能为空','确定'); 
+			return false;
+		} else if (regAcco.test(aname) == true) {
+			$.NotifyBox.NotifyOne('注意','管理员账号格式不正确','确定'); 
+			return false;
+		};    
+                
+		//登录密码 只能是字母和数字
+		var regPwd = /^[0-9a-zA-Z]+$/;
+		var pwd = $.trim($('.password').val());
+		if(pwd == ''){
+            $.NotifyBox.NotifyOne('注意','请输入密码','确定');
+            return false;
+        } else if (regPwd.test(pwd) == false) {
+			$.NotifyBox.NotifyOne('注意','登录密码只能输入数字或字母','确定');
+			return false;
+		};
+		
+		//管理员姓名 只能是汉字和字母
+		var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		var rname = $('.real_name').val();
+		if (rname == '') {
+			$.NotifyBox.NotifyOne('注意','管理员姓名不能为空','确定');
+			return false;
+		} else if (regName.test(rname) == false) {
+			$.NotifyBox.NotifyOne('注意','管理员姓名格式不正确','确定');
+			return false;
+		};
+		
+		//管理员手机号
+		var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		var tel = $('.telephone').val();
+		if (tel == '') {
+			$.NotifyBox.NotifyOne('注意','管理员手机号不能为空','确定');
+			return false;
+		} else if (regTel.test(tel) == false) {
+			$.NotifyBox.NotifyOne('注意','管理员手机号格式不正确','确定');
+			return false;
+		};
+		
+		//管理员邮箱
+		var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+		var email = $('.email').val();
+		if (email != '') {
+            if (regEmail.test(email) == false) {
+				$.NotifyBox.NotifyOne('注意','管理员邮箱格式不正确','确定');
+				return false;
+			}  
+			return true;
+        }
+    }
+</script>
+
+<script>
+	//全选
+    $('.check_all').click(function(){
+        var childCheck=$('.check_child');
+        var temp_status=true;
+        if($(this)[0].checked==true){
+            //本次选中
+            temp_status=true;
+        }else{
+            //本次取消
+            temp_status=false;
+        }
+        for(var i=0;i<childCheck.length;i++){
+            childCheck[i].checked=temp_status
+        }
+    });
+	
+    //取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				 $('.check_all').removeAttr('checked','checked');
+				 $('.check_all').removeProp('checked','checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $("[name='checkbox']:checked").length) {
+					$('.check_all').attr('checked','checked');
+					$('.check_all').prop('checked','checked');
+				};
+			}
+		}
+	};
+</script>
+
+ 

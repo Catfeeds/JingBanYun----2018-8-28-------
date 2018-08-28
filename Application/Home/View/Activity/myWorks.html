@@ -1,0 +1,265 @@
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/activity.css" type="text/css" rel="stylesheet">
+
+<style>
+	.actBottom {
+		background: none;
+	}
+	
+	.filterUl {
+		width: 60%;
+	}
+	
+	.filterUl .filterLi {
+		width: 25%;
+	}
+	
+	.filterContent {
+		z-index: 3
+	}
+	
+	.actBottom {
+		padding-bottom: 50px
+	}
+</style>
+
+
+
+<include file="./Application/Home/View/Common/myCollectionHeader.html"/>
+
+<div class="filterBox">
+	<ul class="filterUl left">
+		<li class="filterLi">
+			<a href="javascript:;" class="filterTitleBox">
+				<span class="filterTitleOutter">
+					<span class="filterTitle">学段</span>
+				</span>
+				<span class="filterChoice">小学</span>
+			</a>
+			<div class="filterContent">
+				<ul class="filConUl" name="period">
+					<li class="filConLi">
+						<span class="filConA {$filterSelect['period'] == 0 ? 'filConAActive':''}" selectId="0" >全部</span>
+					</li>
+					<li class="filConLi">
+						<span class="filConA {$filterSelect['period'] == 1? 'filConAActive':''}" selectId="1">小学</span>
+					</li>
+					<li class="filConLi">
+						<span class="filConA {$filterSelect['period'] == 2? 'filConAActive':''}" selectId="2">初中</span>
+					</li>
+					<li class="filConLi">
+						<span class="filConA {$filterSelect['period'] == 3? 'filConAActive':''}" selectId="3">高中</span>
+					</li>
+				</ul>
+			</div>
+		</li>
+		<li class="filterLi">
+			<a href="javascript:;" class="filterTitleBox">
+				<span class="filterTitleOutter">
+					<span class="filterTitle">学科</span>
+				</span>
+				<span class="filterChoice"></span>
+			</a>
+			<div class="filterContent">
+				<ul class="filConUl" name="course">
+					<li class="filConLi">
+						<span class="filConA {$filterSelect['course'] == 0? 'filConAActive':''}" selectId="0" >全部</span>
+					</li>
+					<volist name="courses" id="courses">
+						<li class="filConLi" >
+							<span class="filConA {$filterSelect['course'] == $courses['id']? 'filConAActive':''}" selectId="{$courses.id}">{$courses.name}</span>
+						</li>
+					</volist>
+
+				</ul>
+			</div>
+		</li>
+		<li class="filterLi">
+			<a href="javascript:;" class="filterTitleBox">
+				<span class="filterTitleOutter">
+					<span class="filterTitle">年级</span>
+				</span>
+				<span class="filterChoice"></span>
+			</a>
+			<div class="filterContent">
+				<ul class="filConUl" name="grade">
+					<li class="filConLi">
+						<span class="filConA {$filterSelect['grade'] == 0 ? 'filConAActive':''}" selectId="0">全部</span>
+					</li>
+					<volist name="grades" id="grades">
+						<li class="filConLi">
+							<span class="filConA {$filterSelect['grade'] == $grades['id']? 'filConAActive':''}" selectId="{$grades.id}">{$grades.name}</span>
+						</li>
+					</volist>
+				</ul>
+			</div>
+		</li>
+		<li class="filterLi">
+			<a href="javascript:;" class="filterTitleBox">
+				<span class="filterTitleOutter">
+					<span class="filterTitle">类型</span>
+				</span>
+				<span class="filterChoice"></span>
+			</a>
+			<div class="filterContent">
+				<ul class="filConUl" name="category">
+					<li class="filConLi">
+						<span class="filConA {$filterSelect['category'] == 0 ? 'filConAActive':''}" selectId="0">全部</span>
+					</li>
+					<volist name="categorys" id="categorys">
+						<li class="filConLi">
+							<span class="filConA {$filterSelect['category'] == $categorys['id'] ? 'filConAActive':''}" selectId="{$categorys.id}">{$categorys.class}</span>
+						</li>
+					</volist>
+
+				</ul>
+			</div>
+		</li>
+	</ul>
+	<div class="right">
+		<div class="search">
+			<button class="search_btn">搜索</button>
+			<input type="text" name="keyword" value="{$filterSelect.keyword}" class="search_text" placeholder="请输入作品名称或活动名称">
+		</div>
+	</div>
+</div>
+
+<empty name="data">
+    <div class="emptyDiv">
+		<if condition="$kw eq 1 ">
+			<img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+			<p>抱歉，没有搜索到相关的活动作品！</p>
+		<else />
+			<img src="{$oss_path}public/web_img/Empty/myCollect.png" alt="">
+			<p>您还没有收藏活动作品哦！</p>
+			<p>赶快去<a href="{:U('Activity/activities?auth_id=6')}">京版活动</a>收藏吧！</p>
+		</if>
+    </div>
+</empty>
+<notempty name="data">
+<div class="actBottom">
+	<ul class="row activities_ul">
+		<volist name="data" id="data">
+		<li class="col-md-3 activities_li">
+			<div class="boxShadow">
+				<div class="works_box">
+					<if condition="$data.class_id neq 6">
+					    <a class="works_title" href="{:U('Activity/activityWorkDetails?id=')}{$data.works_id}" title="">{$data.works_name}</a>
+					<else/>
+						<a class="works_title" href="{:U('Activity/teachDesignWorkView?workId=')}{$data.works_id}" title="">{$data.works_name}</a>
+					</if>
+					<p class="activities_p">
+						<span class="left">{$data.course_name}/{$data.grade}</span>
+<!--						<span class="right">{$data.create_at|date="Y-m-d H:i",###}</span>-->
+					</p>
+					<p class="activities_p">
+						<span class="left">{$data.publish_people}</span>
+						<span class="right">{$data.create_at|date="Y-m-d H:i",###}</span>
+<!--
+						<span class="right">
+							<span class="left">
+								<img src="__PUBLIC__/img/resource/watch.png" alt="">
+								<span>{$data.browse_number}</span>
+							</span>
+							<span class="left">
+								<img src="__PUBLIC__/img/resource/like.png" alt="">
+								<span>{$data.zan_count}</span>
+							</span>
+							<span class="left">
+								<img src="__PUBLIC__/img/resource/collect.png" alt="">
+								<span>{$data.favor_count}</span>
+							</span>
+						</span>
+-->
+					</p>
+				</div>
+				<a class="workTypeBox" href="{:U('Activity/myWorks')}&type=work&category={$data.class_id}<?php if($_GET['pc']) echo '&pc='.$_GET['pc']; if($_GET['mycat']) echo '&mycat='.$_GET['mycat'];  ?>">
+				<if condition="$data.class_id eq 6">
+					<img class="workType" src="{$oss_path}public/web_img/Activity/teachingDesign.png" alt="">
+					<elseif condition="$data.class_id eq 7"/>
+					<img class="workType" src="{$oss_path}public/web_img/Activity/teachingCase.png" alt="">
+
+					<elseif condition="$data.class_id eq 8"/>
+					<img class="workType" src="{$oss_path}public/web_img/Activity/teachingCourseware.png" alt="">
+					<elseif condition="$data.class_id eq 9"/>
+					<img class="workType" src="{$oss_path}public/web_img/Activity/teachingPaper.png" alt="">
+					<elseif condition="$data.class_id eq 10"/>
+					<img class="workType" src="{$oss_path}public/web_img/Activity/teachingWeClass.png" alt="">
+				</if>
+				</a>
+				<a href="{:U('Activity/activityApplyDetails?id=')}{$data.activity_id}" class="actName" title="" target="_blank"><span>活动名称：{$data.title}</span></a>
+			</div>
+		</li>
+		</volist>
+	</ul>
+</div>
+</notempty>
+<div class="Pagination">{$page}</div>
+
+<script>
+	    var controller = getQueryString('c');
+		function search()
+		{
+			var string = "";
+			$('.filConAActive').each(function(i,n){
+				var value = $(n).attr('selectId');
+				if(value != 0)
+				{
+					string += '&' + $(n).parent().parent().attr('name') + '=' + value;
+				}
+
+			});
+			var keyword = $(".search_text").val();
+			if (keyword != '') {
+				keyword = '&keyword=' + keyword;
+			}
+			location.href = "index.php?m=Home&c=Activity&a=myWorks"  + string + keyword;
+		}
+        //点击搜索框
+		$('.search_btn').click(function () {
+			search();
+		});
+		//回车搜索
+		$(".search_text").keydown(function (evt) {
+	    	if (event.keyCode == "13") {
+	    		search();
+	    	}
+	    })
+</script>
+
+<script>
+	//筛选项
+	$('.filterLi').hover(function(){
+		$(this).children('.filterContent').filter(':not(:animated)').slideDown()
+	},function(){
+		$(this).children('.filterContent').slideUp()
+	})
+	//点击筛选项选项
+	$('.filConA').click(function(){
+		var cho = $.trim($(this).html());
+		$(this).parent().parent().parent().siblings('.filterTitleBox').children('.filterChoice').html(cho);
+		$(this).addClass('filConAActive').parent().siblings().children('.filConA').removeClass('filConAActive');
+		search();
+	})
+</script>	
+
+<script>
+	//refresh select text
+	$('.filConAActive').each(function(i,n){
+		var cho = $.trim($(this).html());
+		console.log(cho);
+		$(this).parent().parent().parent().siblings('.filterTitleBox').children('.filterChoice').html(cho);
+		$(this).addClass('filConAActive').parent().siblings().children('.filConA').removeClass('filConAActive')
+	})
+	$('.actName').hover(function(){
+		var spanHeight = $(this).children('span').height();
+		$(this).stop().animate({
+			'height':spanHeight+10 
+		})
+	},function(){
+		$(this).stop().animate({
+			'height':'40px'
+		})
+	})
+    
+</script>

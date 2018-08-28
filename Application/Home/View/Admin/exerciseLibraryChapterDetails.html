@@ -1,0 +1,102 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<style>
+    .text-title p{
+        white-space: nowrap;overflow: hidden;text-overflow: ellipsis;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button {:session('btntheme')}">&lt; 返回</a>
+</div>
+<div style="text-align: right;">
+    <label>习题类型：</label>
+    <select name='status' id="category" class="input-control" style="margin-right: 50px">
+            <option value='0'>-请选择-</option> 
+            <volist name='category' id='category_item'>
+                <option value='{$category_item.id}' {$category_item['id']==$choose_category?'selected':''} >{$category_item.template_name}</option>
+            </volist>
+            
+            <option value="video" {$type=='video'?'selected':''}>视频</option>
+            
+    </select>
+    <label>难度系数：</label>
+    <select name='status' id="diffculty" class="input-control" style="margin-right:50px;width:200px" >
+            <option value='0'>-请选择-</option> 
+            <volist name='diffculty' id='diffculty_item'>
+                <option value='{$i}' >{$diffculty_item}</option>
+            </volist>
+    </select>
+    <div class="input-control text" data-role="input" style="width: 50px;"> 
+        <button onclick="search()" class="button"><span class="mif-search"></span></button>
+    </div>
+</div>
+
+<empty name="list">
+    <div class="emptyResult">对不起，没有找到相关内容</div>
+</empty>
+<notempty name="list">
+    <table class="table striped hovered border">
+        <thead>
+        <tr>
+            <th class="text-center">题目编号</th>
+            <th class="text-center">题目名称</th>
+            <th class="text-center">题型</th>
+            <th class="text-center">分值</th>
+            <th class="text-center">难度</th>
+            <th class="text-center">操作</th> 
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="">
+            <tr id="l_{$data.id}">
+                <td class="text-center">
+                    {$data.question_id}
+                </td>
+                <td class="text-center text-title" title="{$data.questions}">
+                   {$data.questions}
+                </td>
+                <td class="text-center" >
+                    {$data.template_name}
+                </td>
+                <td class="text-center">
+                    {$data.points}
+                </td>
+                <td class="text-center">
+                    
+                </td>
+                <td class="text-center">
+                    <a href="javascript:deleteExercise('{$data.id}')" class="button danger">删除</a>
+                    <a href="{:U('Admin/editExerciseLibrary?id=')}{$data.id}" class="button info">编辑</a>
+                </td> 
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+</notempty>
+<script>
+    var chapter_id="{$chapter_id}";
+
+    function deleteExercise(id) {
+        if (confirm('确定要删除吗？')) {
+            $.get('index.php?m=Home&c=Admin&a=deleteExerciseLibrary', {id: id}, function (res) {
+                if (res == 'success') {
+                    alert('删除成功')
+                    window.location.reload();
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+    
+    function search(){
+        var category=$('#category').val();
+        var diffculty=$('#diffculty');
+        var condition_string='';   
+        if(category!=0){
+            condition_string='&cat='+category; 
+        }  
+        
+        location.href='index.php??m=Home&c=Admin&a=exerciseLibraryChapterDetails&id='+chapter_id+condition_string;
+    }
+</script>

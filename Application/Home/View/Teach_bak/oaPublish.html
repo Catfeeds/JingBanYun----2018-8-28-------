@@ -1,0 +1,80 @@
+<layout name="teacher_layout"/>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button {:session('btntheme')}">&lt; 返回</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <div class="bg-blue fg-white text-accent padding10">
+        请选择一个班级，然后您发布的消息将会推送给改班级学生的家长
+    </div>
+    <form action="__URL__/oaPublish" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput"
+          data-show-error-hint="true" onsubmit="return beforeSubmit()">
+        <div class="example" data-text="消息">
+            <div class="form_section">
+                <label for="class_id">班级</label>
+
+                <div class="input-control text full-size">
+                    <select id="class_id" name="class_id" onchange="getTextbooks()" data-validate-func="required"
+                            data-validate-hint="班级不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="classes" id="dataClass" empty="暂时没有信息">
+                            <option value="{$dataClass.id}">{$dataClass.name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="title">消息标题</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="title" id="title" data-validate-func="required"
+                           data-validate-hint="消息标题不能为空">
+                </div>
+            </div>
+
+            <div class="form_section" style="height: 126px">
+                <label for="content">消息内容</label>
+
+                <div class="input-control text full-size">
+                    <textarea id="content" name="content" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="form_section" style="height: 126px">
+                <label class="input-control checkbox">
+                    <input type="checkbox" id="chk_is_need_receipt">
+                    <span class="check"></span>
+                    <span class="caption">需要回执</span>
+                </label>
+                <input type="hidden" name="is_need_receipt" id="is_need_receipt" value="0">
+            </div>
+        </div>
+        <br>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button {:session('btntheme')}">保存</button>
+        </div>
+    </form>
+</div>
+<script>
+
+</script>
+<script>
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+    function beforeSubmit() {
+        var d = $('#chk_is_need_receipt').attr('checked') ? 1 : 0;
+        $('#is_need_receipt').val(d);
+        return true;
+    }
+</script>

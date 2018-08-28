@@ -1,0 +1,126 @@
+<layout name="admin_layout_back" />
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary " style="box-sizing:border-box;">&lt; 返回</a>
+</div>
+<form action="{:U('AppVersionControl/publishApp')}" method="post" onsubmit="">
+	<div class="blueBox">
+		<span class="blueText left fs16">新版本发布</span>
+	</div>
+	<hr class="thin bg-grayLighter mb10">
+	<div class="grid condensed cellBox">
+		<input type="hidden" value="{$data.id}" name="id" />
+		<div class="row cells3">
+			<div class="cell">
+				<label>APP名称：</label>
+				<select  class="input-control" name="app_name" id="app_name">
+					<option value="京版云" <?php if($data['app_name'] == '京版云'){ echo "select=select"; }?>>京版云</option>
+					<option  value="精通教材" <?php if($data['app_name']  == '精通教材'){ echo "select=select"; }?>>精通教材</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>版本类型：</label>
+				<select  class="input-control" name="system_type" id="system_type">
+					<option value="ios" <?php if($data.system_type == 'ios'){ echo "select=select"; }?>>IOS</option>
+					<option  value="android" <?php if($data.system_type  == 'android'){ echo "select=select"; }?>>Android</option>
+				</select>
+			</div>
+      <div class="cell">
+        <label>版本值：</label>
+        <input type="text" class="input-control " id="version_number" name="version_number" value="{$data.version_number}" placeholder="请输入版本值">
+      </div>
+			<div class="cell">
+				<label>版本号：</label>
+				<input type="text" class="input-control " id="version" name="version" value="{$data.version}" placeholder="请输入版本号">
+			</div>
+      <div class="cell">
+          <label>发布时间：</label>
+          <input type="text" name="putaway_time" class="input-control  sendTime_id" id="datepicker" placeholder="发送时间" autocomplete="off" value="<?php echo !empty($data['putaway_time']) ? date('Y-m-d H:i:s',$data['putaway_time']) :  '' ?>">
+      </div>
+			<div class="cell">
+				<label>下载地址</label>
+				<input type="text" class="input-control " id="download_path" name="download_path"  value="{$data.download_path}" placeholder="请输入下载地址">
+			</div>
+			<div class="cell">
+				<label>是否强制更新：</label>
+				<select  class="input-control" name="update_forced" id="update_forced">
+					<option value="1" <?php if($data['update_forced'] == '1'){ echo "select=select"; }?>>是</option>
+					<option  value="0" <?php if($data['update_forced']  == '0'){ echo "select=select"; }?>>否</option>
+				</select>
+			</div>
+		</div>
+		<div class="row cells1" style="margin-top:8px !important">
+			<div class="cell">
+				<label>更新内容：</label>
+				<textarea name="update_content"  id="update_content" class="textarea-control" >{$data.update_content}</textarea>
+			</div>
+		</div>
+	</div>
+  <div class="text-center">
+    <button name="button" class="button" onclick="return check()" type="submit">发布</button>
+  </div>
+</form>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<!--------------日历----------------->
+<script type="text/javascript">
+	!function(){
+		laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#datepicker',
+		format: 'YYYY-MM-DD hh:mm:ss',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+			 appstart.max = datas;
+			 append.max = datas;
+		}
+	};
+	laydate(actstart);
+</script>
+<script>
+    function check() {
+		var app_name = $('#app_name').val();
+        var system_type = $('#system_type').val();
+        var version_number = $('#version_number').val();
+        var version = $('#version').val();
+        var datepicker = $('#datepicker').val();
+        var download_path = $('#download_path').val();
+        var update_forced = $('#update_forced').val();
+        var update_content = $('#update_content').val();
+		if(app_name == ''){
+			$.NotifyBox.NotifyOne('提示','请选择APP名称','确定');
+			return false;
+		}
+        else if(system_type == ''){
+            $.NotifyBox.NotifyOne('提示','版本类型不能为空','确定');
+			return false;
+        }else if(version_number == ''){
+            $.NotifyBox.NotifyOne('提示','版本值不能为空','确定');
+            return false;
+		}else if(version == ''){
+            $.NotifyBox.NotifyOne('提示','版本号不能为空','确定');
+            return false;
+        }else if(datepicker == ''){
+            $.NotifyBox.NotifyOne('提示','发送时间不能为空','确定');
+            return false;
+        }else if(download_path == ''){
+            $.NotifyBox.NotifyOne('提示','下载地址不能为空','确定');
+            return false;
+        }else if(update_forced == ''){
+            $.NotifyBox.NotifyOne('提示','是否强制更新不能为空','确定');
+            return false;
+        }else if(update_content ==''){
+            $.NotifyBox.NotifyOne('提示','更新内容不能为空','确定');
+            return false;
+		}
+    }
+</script>

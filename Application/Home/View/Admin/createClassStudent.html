@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<layout name="admin_layout"/>
+<script src="__PUBLIC__/js/pikaday.min.js"></script>
+<link href="__PUBLIC__/css/pikaday.css" type="text/css" rel="stylesheet">
+<style>
+     .form_section {
+        margin-bottom: 12px;
+    }
+    
+    .phone_box {
+        width:100%; 
+        border:1px solid #ccc; 
+        background:#fff; 
+        position:absolute;
+        top:40.8px;
+        left:0;
+        z-index:9999;
+        display:none;
+    }
+    
+    .phone_ul {
+        padding:5px;
+        width:100%;
+        margin:0;
+        list-style:none;
+        font-size: 14px;
+    }
+    
+    .phone_li {
+        cursor: pointer;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 班级信息列表" class="button {:session('btntheme')}">&lt; 返回 班级信息列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/createClassStudent" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput"
+          data-show-error-hint="true">
+        <div class="example" data-text="基本信息">
+            <input type="hidden" id="id" name="id" value="{$data.id}">
+
+            <div class="form_section">
+                <label for="student_name">学生姓名</label> 
+
+                <div class="input-control text full-size">
+                    <input type="text" name="student_name" id="student_name" data-validate-func="required" value="" data-validate-hint="学生姓名不能为空"/>
+                           
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="sex">性别</label> 
+                    <if condition="$data.sex eq '男'">
+                        <input type="radio" name="sex" value="1" checked="true"/>男
+                        <input type="radio" name="sex" value="2"/>女<br/>
+                    <else />
+                        <input type="radio" name="sex" value="1" />男
+                        <input type="radio" name="sex" value="2" checked="true"/>女<br/>
+                    </if>
+            </div>
+            
+            <div class="form_section">
+                <label for="pwd">密码</label>
+
+                <div class="input-control text full-size">
+                    <input type="password" name="pwd" id="pwd" value="">
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="birth_date">出生年月</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="birth_date" id="datepicker" data-validate-func="required" data-validate-hint="出生年月必填" value="">
+                </div>
+            </div>
+             
+            
+            <div class="form_section">
+                <label for="telephone">家长手机号</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="telephone" id="telephone" value="" autocomplete="off"> 
+                    <div class="phone_box">
+                       <ul class="phone_ul" id="phone_ul"> 
+                       </ul>
+                    </div> 
+                </div>
+            </div>  
+
+            <div class="form_section">
+                <label for="parent_id">家长姓名</label>
+
+                <div class="input-control text full-size"> 
+                    <input id="parent_name" name="parent_name" data-validate-func="required" data-validate-hint="请填写家长" disabled="disabled"/>
+                    
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="email">家长邮箱</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="email" id="email" value="" disabled="disabled">
+                </div>
+            </div>
+ 
+
+        </div>
+<input type="hidden" value="{$class_id}" name="class_id"/>
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button {:session('btntheme')}" onclick="return check();">保存</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    var lispan='<li class="phone_li"><span></span> <span style="display: none;"></span> <span style="display: none;"></span></li>';
+    var option="<option value='0'>-请选择-</option>"; 
+      
+    
+    //手机号按钮发生改变
+     $('#telephone').keyup(function(){
+         var tel=$("#telephone").val(); 
+         if(tel==''){
+            $('.phone_box').hide();
+            $('#teacher_name').val('');
+            $("#email").val('');
+         } 
+         $.ajax({
+             type: "post",
+             url: "index.php?m=Home&c=Admin&a=getParentInfo",
+             data: {'tel':tel},
+             dataType: "json",
+             success: function(msg){
+                 $(".phone_li").remove();
+                 if(msg.status=='success'){ 
+                    if(msg.data.length>0){ 
+                        for(var i=0;i<msg.data.length;i++){
+                            if(i==0){ 
+                                $('#parent_name').val(msg.data[i].parent_name);
+                                $("#email").val(msg.data[i].email);
+                            }
+                            var temp_li_span=$(lispan).clone(true);
+                            $(temp_li_span).children('span').eq(0).text(msg.data[i].telephone);
+                            $(temp_li_span).children('span').eq(1).text(msg.data[i].parent_name);
+                            $(temp_li_span).children('span').eq(2).text(msg.data[i].email);
+                            $("#phone_ul").append(temp_li_span); 
+                        }
+                        $('.phone_box').show();
+                    }else{ 
+                        $('.phone_box').hide();
+                        $('#teacher_name').val('');
+                        $("#email").val('');
+                    }
+                 } 
+             }
+         }); 
+     }) 
+     
+     
+     //点击新增的
+     $(".phone_li").live('click',function(){    
+         $('#telephone').val($(this).children('span').eq(0).text());
+         $('#parent_name').val($(this).children('span').eq(1).text()); 
+         $('#email').val($(this).children('span').eq(2).text()); 
+         $('.phone_box').hide();
+         $('.phone_li').remove();
+     });
+     
+      Date.prototype.Format = function (fmt) { //author: meizz 
+        var o = {
+            "M+": this.getMonth() + 1, //月份 
+            "d+": this.getDate(), //日 
+            "h+": this.getHours(), //小时 
+            "m+": this.getMinutes(), //分 
+            "s+": this.getSeconds(), //秒 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+            "S": this.getMilliseconds() //毫秒 
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+
+    $("#datepicker").change(function () {
+        var time1 = new Date().Format("yyyy-MM-dd");
+        var time2 = $("#datepicker").val();
+        if (time2 > time1) {
+            $("#datepicker").val('');
+            return false;
+        }
+    });
+           
+     
+     var year=new Date().Format("yyyy");
+     var picker = new Pikaday(
+        {
+            field: document.getElementById('datepicker'),
+            firstDay: 1,
+            minDate: new Date('1990-01-01'),
+            maxDate: new Date('2020-12-31'),
+            yearRange: [1990,year]
+        });
+    
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+    
+    function check() { 
+        //判断密码
+        var pwd_val=$('#pwd').val();
+        if(pwd_val.length<6){
+            $.Notify({
+                caption: '提示',
+                content: '密码必须6位含以上',
+                type: 'warning'
+            });
+            return false;
+        }
+        
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regTel.test($("#telephone").val())) {
+            $.Notify({
+                caption: '提示',
+                content: '手机号格式不正确',
+                type: 'warning'
+            });
+            return false;
+        }
+
+        var email = $("#email").val();
+
+        if ( email != '') {
+            var regEmail = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+            if (!regEmail.test($("#email").val())) {
+                $.Notify({
+                    caption: '提示',
+                    content: '邮箱格式不正确',
+                    type: 'warning'
+                });
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    $('#telephone').click(function(){
+        if($(".phone_li").length>0){
+            $('.phone_box').toggle();
+        }
+    })
+</script>
+</body>
+</html>

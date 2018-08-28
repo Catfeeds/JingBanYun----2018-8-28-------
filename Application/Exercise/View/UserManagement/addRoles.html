@@ -1,0 +1,125 @@
+<layout name="admin_layout_exercise"/>
+<div class="boxOutter">
+
+<div class="borderBottom  mb30  of">
+	<?php if(in_array('UserManagement/userManagement',session('exercises_permissions'))){ ?>
+	<a href="{:U('UserManagement/userManagement')}" class="tabBtn left text-center">用户管理</a>
+	<?php }?>
+	<?php if(in_array('UserManagement/roleList',session('exercises_permissions'))){ ?>
+	<button type="button" name="button" class="tabBtn active left">角色管理</button>
+	<?php }?>
+	<?php if(in_array('UserManagement/userBehaviorManagement',session('exercises_permissions'))){ ?>
+	<a href="{:U('UserManagement/userBehaviorManagement')}" class="tabBtn left text-center">用户行为管理</a>
+	<?php }?>
+</div>
+<form action="<?php echo $action ;?>" method="post" onsubmit="return check()">	
+
+<input type="hidden" name="id" value="<?php echo $id ?>">
+	<div class="filterOutter borderNone pb20">
+		<div class="filterInner">
+			<div class="mb10">
+				<label for="">角&nbsp;&nbsp;色&nbsp;&nbsp; 名&nbsp;&nbsp;称</label>
+				<input type="text" class="inputCommon" id="rolename" name="name"  value="<?php echo $info['name']?>" placeholder="请输入角色名称">
+				<span class="red dn">*此项为必填项</span>
+			</div>
+			<div class="">
+				<label for="">角色任务描述</label>
+				<input type="text" class="inputCommon" id="roledesc" name="description" value="<?php echo $info['description']?>"  placeholder="请输入任务描述">
+				<span class="red dn">*此项为必填项</span>
+			</div>
+		</div>
+	</div>
+	<div class="">
+		<div class="borderBottom  mb10 of p10">
+			<span class="spanTitle color3baeab">权限选择</span>
+			<div class="right">
+				<input type="checkBox" name="" value="" class="checkBox checkOne checkAll">全选
+			</div>
+		</div>
+		<div class="checkBoxDiv">
+		<?php foreach($persmissionsList as $item){?>
+			<p class="mt20 mb20">
+				<?php echo $item['module_name']?>
+			</p>
+			<ul class="borderBottom pb20">
+			<li class="m10"><input type="checkBox" name="persmissions[]" <?php if(in_array($item['id'],$checked)){echo 'checked';}?> value="<?php echo $item['id']?>" class="checkBox checkOne checkedLi"><label for=""><?php echo $item['module_name']?></label></li>
+				<?php foreach($item['children'] as $temp){?>
+				<li class="m10"><input type="checkBox" name="persmissions[]" <?php if(in_array($temp['id'],$checked)){echo 'checked';}?> value="<?php echo $temp['id']?>" class="checkBox checkOne checkedLi"><label for=""><?php echo $temp['module_name']?></label></li>
+				<?php }?>
+			</ul>
+			<?php }?>
+			<div class="text-center">
+				<button type="sublimt" class="btn mt30" name="button">确定</button>
+			</div>
+		</div>
+	</div>
+	</form>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script type="text/javascript">
+	function loadCheck() {
+        var tip = true;
+            for(var i = 0;i<$('.checkBoxDiv').find('input').length;i++) {
+                if ($('.checkBoxDiv').find('input').eq(i)[0].checked == false) {
+                    tip = false;
+                }
+            }
+            if(tip == true){
+                $('.checkAll').attr('checked',true)
+            }else{
+                $('.checkAll').attr('checked',false)
+            };
+    };
+    loadCheck();
+	$('.checkAll').click(function(){
+		var checked = $(this).attr('checked');
+		if(checked == 'checked'){
+			$('.checkBoxDiv').find('input').attr('checked',true)
+		}else{
+			$('.checkBoxDiv').find('input').attr('checked',false)
+		}
+	});
+	$('.checkedLi').click(function(){
+		var checked = $(this).attr('checked');
+		var tip = true;
+		if(checked == 'checked'){
+			$(this).attr('checked',true);
+            for(var i = 0;i<$('.checkBoxDiv').find('input').length;i++) {
+                if ($('.checkBoxDiv').find('input').eq(i)[0].checked == false) {
+                    tip = false;
+                }
+            }
+            if(tip == true){
+                $('.checkAll').attr('checked',true)
+			}else{
+                $('.checkAll').attr('checked',false)
+			}
+		}else{
+			$(this).attr('checked',false);
+			$('.checkAll').attr('checked',false)
+		}
+
+	});
+</script>
+<script>
+//***********************************************************验证名称和角色不能为空*******************************************************************
+function check() {
+    var a = 0;
+    if($('#rolename').val() == ''){
+        $('#rolename').siblings('.red').show();
+        a++;
+    }else{
+        $('#rolename').siblings('.red').hide();
+	}
+    if($('#roledesc').val() == ''){
+        $('#roledesc').siblings('.red').show();
+        a++;
+	}else{
+        $('#roledesc').siblings('.red').hide();
+	}
+	if(a > 0){
+        return false;
+	}
+}
+</script>

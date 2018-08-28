@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{$resourceDetails.resource_name}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link href="__PUBLIC__/css/appCommon.css" type="text/css" rel="stylesheet">
+	<link href="__PUBLIC__/css/bjResourceApp.css?ver=6" type="text/css" rel="stylesheet">
+	<link href="__PUBLIC__/swiper/swiper-3.4.2.min.css" type="text/css" rel="stylesheet">
+	<script src="__PUBLIC__/js/rem.js"></script>
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<script src='https://player.polyv.net/script/polyvplayer.min.js'></script>
+</head>
+<style>
+	.iconbtn{
+		margin-top: 5px;
+		border-bottom: 10px solid #ededed;
+		padding-right: 15px;
+	}
+
+	#content,#buylink{
+		position: static;
+		top:0;
+		left: 0;
+		width:100%;
+		height:40%;
+	}
+</style>
+
+<script>
+	// console.log($(window).height()*0.4);
+	$(function(){
+		if($('#resourceDetailsDiv').css('display','block')) {
+			swiper()
+			clickOne = 1;
+		}
+
+		if(detailsUrl.indexOf(urlId)!=-1){
+			hashChange()
+		}
+		$('#content').height($(window).height()*0.4)
+	})
+</script>
+<body>
+	<div id="resourceDetailsDiv" class="of">
+
+<div id="content">
+	<switch name="resourceDetails[0].file_type">
+		<case value="video">
+			<div id="polyMedia" style="display:block;height:100%" ></div>
+		</case>
+		<case value="audio">
+			<div id="polyMedia" style="display:block;height:100%"></div>
+		</case>
+		<case value="image">
+			<img src="{$oss_path}{$contactInfo[0]['resource_path']}" width="100%" id="videoAudioImageId" style="background:#fff" controls></img>
+		</case>
+		<case value="condensed">
+			手机暂不支持压缩包的查看,请登录PC版京版云查看该资源
+		</case>
+		<case value="swf">
+			手机暂不支持FLASH的查看,请登录PC版京版云查看该资源
+		</case>
+		<case value="pdf|word|ppt">
+			<div id="pdfViewer">
+
+			</div>
+		</case>
+	</switch>
+
+</div>
+
+<div id="buylink" style="display:none">
+	<a href="javascript:">
+		<img alt="" src="__PUBLIC__/img/sinology/payphone.png" style="width: 640px; height: 340px;" />
+	</a>
+</div>
+
+<if condition="(($resourceDetails[0]['file_type'] neq 'ppt') AND ($resourceDetails[0]['file_type'] neq 'word') AND ($resourceDetails[0]['file_type'] neq 'pdf') OR $isShare eq 1) ">
+	<div class="of iconbtn">
+		<?php if($isShare == 0) : ?>
+		<div class="right text-center border_left80">
+			<?php if($resourceDetails[0]['iscollect'] == 'no') : ?>
+			<img src="__PUBLIC__/img/resource/icon_shoucang_before.png" alt="" class="cang">
+			<p  class="f14 favorText">值得收藏</p>
+			<?php else : ?>
+			<img src="__PUBLIC__/img/resource/icon_shoucang.png" alt="" class="cang">
+			<p  class="f14 favorText">您已收藏</p>
+			<?php endif ; ?>
+
+		</div>
+		<?php endif ; ?>
+	</div>
+</if>
+
+<div class="content">
+	<div class="resourceName">
+		{$key+1}.{$contactInfo.file_name}
+	</div>
+	<div class="tabResource">
+		<div class="tabDiv tabBrief">简介</div>
+		<div class="tabDiv tabList active">资源列表</div>
+		<div class="tabDiv tabRecommend">相关推荐</div>
+	</div>
+	<div class="recommend_div">
+<!-- 		<p class="name">
+			{$resourceDetails[0].resource_name}
+			<if condition="($resourceDetails[0].file_type neq 'ppt') AND ($resourceDetails[0].file_type neq 'word') AND ($resourceDetails[0].file_type neq 'pdf') ">
+				<img src="__PUBLIC__/img/resource/icon_chakan.png" alt="" class="next right">
+				<else/>
+				<img src="__PUBLIC__/img/resource/icon_guanbi.png" alt="" class="pre right">
+			</if>
+		</p> -->
+		<div class="recommend">
+			<div class="brccc listBox">
+				<div class="resourceNum">共<span class="resNum">0</span>个资源</div>
+				<div class="swiper-container"><div class="listBtnBox swiper-wrapper"></div></div>
+				<volist name="contactInfo" id="contactInfo">
+					<a href="javascript:void(0);" trail="{$contactInfo.trial_status}" charge={$contactInfo.charge_status} size="{$contactInfo.vid_fullsize}" vid="{$contactInfo.vid}" class="res_a" vid_fullpath="{$contactInfo.vid_fullpath}" attr_path="<?php
+					  if($contactInfo['flag'] == 2 && ($resourceDetails[0]['file_type'] == 'ppt' || $resourceDetails[0]['file_type'] == 'word') )
+                       {
+                       $path = explode('.',basename($contactInfo['resource_path']));
+                       $path=$path[0].'.pdf';
+                       $path = 'bjresource/' .$resourceDetails[0]['id'].'/'.contactInfo['id'] .'/' .$path;
+                       echo $oss_path.$path;
+                       }
+                      else if($resourceDetails[0]['file_type'] == 'pdf' || $resourceDetails[0]['file_type'] == 'image')
+                      {
+                       echo $oss_path.$contactInfo['resource_path'];
+                      }
+					?>"><span class="nameSpan">{$key+1}.{$contactInfo.file_name}</span><?php if($orderStatus['is_allowed_browse'] != 1 && $contactInfo['charge_status'] == 1 ) : ?> <span class="trySpan">试听</span><?php endif; ?></a>
+				</volist>
+			</div>
+			<!-- <p class="relevant">相关推荐</p> -->
+			<div class="recommendBox">
+				<ul>
+					<volist name="recommendInfo" id="recommendInfo">
+						<li class="res_list">
+							<a href="{:U('BjResource/bjResourceDetails')}&id={$recommendInfo.id}&userId={$userId}&role={$role}" attr_id="{$recommendInfo.id}">
+								<div class="of pl10">
+									<div class="left">
+										<switch name="recommendInfo.file_type">
+											<case value="swf"><img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="icon left"></case>
+											<case value="video"><img src="__PUBLIC__/img/resource/shipin.png" alt="" class="icon left"></case>
+											<case value="image"><img src="__PUBLIC__/img/resource/tupian.png" alt="" class="icon left"></case>
+											<case value="word"><img src="__PUBLIC__/img/resource/word.png" alt="" class="icon left"></case>
+											<case value="condensed"><img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="icon left"></case>
+											<case value="audio"><img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="icon left"></case>
+											<case value="pdf"><img src="__PUBLIC__/img/resource/pdf.png" alt="" class="icon left"></case>
+											<case value="ppt"><img src="__PUBLIC__/img/resource/ppt.png" alt="" class="icon left"></case>
+										</switch>
+										<img src="<?php if(false === strpos($recommendInfo['mobile_cover'],'http://')) echo $oss_path; ?>{$recommendInfo.mobile_cover}" alt="" class="book">
+									</div>
+									<div class="left">
+										<p>{$recommendInfo.name}</p>
+										<p>来源:{$recommendInfo.chinesesource}  创作者:{$recommendInfo.author}</p>
+										<p>学科:{$recommendInfo.course} {$recommendInfo.grade}{$recommendInfo.term}</p>
+									</div>
+								</div>
+							</a>
+						</li>
+					</volist>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="introduction_div briefBox">
+<!-- 		<p class="introduction">简介
+			<img src="__PUBLIC__/img/resource/icon_guanbi.png" alt="" class="pre right">
+		</p> -->
+		<div class="p20">
+			<p class="briefP briefPName"><span>名称：</span>{$resourceDetails[0].resource_name}
+				<?php if(($resourceDetails[0]['file_type'] == 'ppt' || $resourceDetails[0]['file_type'] == 'word' || $resourceDetails[0]['file_type'] == 'pdf') ) : ?>
+				<?php if($resourceDetails[0]['iscollect'] == 'no') : ?>
+				<img src="__PUBLIC__/img/resource/icon_shoucang_before.png" alt="" class="cang right">
+				<?php else : ?>
+				<img src="__PUBLIC__/img/resource/icon_shoucang.png" alt="" class="cang right">
+				<?php endif ; ?>
+				<?php endif ; ?>
+			</p>
+			<p class="w50 briefP"><span>学科：</span>{$resourceDetails[0].course_name} </p>
+			<p class="w50 briefP"><span>作者：</span>{$resourceDetails[0].author}</p>
+			<p class="w50 briefP"><span>年级：</span>{$resourceDetails[0].grade}</p>
+			<p class="w50 briefP"><span>教材分册：</span>{$resourceDetails[0].term}</p>
+			<p class="briefP"><span>所属章节：</span>{$resourceDetails[0].chapter} {$resourceDetails[0].festival}</p>
+			<p class="briefP"><span>资源概述：</span>{$resourceDetails[0].knowledge_info}</p>
+			<?php if(strpos($resourceDetails[0]['course_name'],'传统文化') === false) : ?>
+			<p class="briefP"><span>知识点：</span></p>
+			<?php
+					$num = count($resourceDetails);
+					for($i = 0;$i< $num; $i++) {
+						if(!empty($resourceDetails[$i]['childknowledge'])){ ?>
+			<p class="briefP"><?php echo $i+1 . '.' . stripslashes($resourceDetails[$i]['childknowledge']); ?></p>
+			<?php }elseif(!empty($resourceDetails[$i]['firstknowledge'])){ ?>
+			<p class="briefP"><?php echo $i+1 . '.' . stripslashes($resourceDetails[$i]['firstknowledge']); ?></p>
+			<?php }elseif(!empty($resourceDetails[$i]['festival'])){ ?>
+			<p class="briefP"><?php echo $i+1 . '.' . stripslashes($resourceDetails[$i]['festival']); ?></p>
+			<?php }else{ ?>
+			<p class="briefP"><?php echo $i+1 . '.' . stripslashes($resourceDetails[$i]['chapter']); ?></p>
+			<?php }
+					} ?>
+			<?php endif; ?>
+		</div>
+	</div>
+</div>
+<if condition="($orderStatus['is_allowed_browse'] neq 1) AND ($resourceDetails[0]['charge_status'] eq 2)">
+	<div class="footer text-center">
+		<div class="w50 ">
+			<img src="__PUBLIC__/img/sinology/rmb.png" alt="" / class="w20"><span>{$resourceDetails[0]['real_price']}元/套</span>
+		</div>
+		<?php if($orderStatus['is_allowed_browse'] == 0) :?>
+		<a class="w50 green" href="{:U( 'BjResource/buyRightNow',array('id'=>$resourceDetails[0]['id']) )}">
+			马上购买
+		</a>
+		<?php else : ?>
+		<a class="w50 green" orderId="{$orderInfo['order_sn']}"  href="{:U( 'BjResource/rightPayment',array('order_sn'=>$orderInfo['order_sn']))}">
+			去支付
+		</a>
+		<?php endif; ?>
+
+	</div>
+</if>
+
+</div>
+<div id="storytellingDiv" >
+	<div class="p30 backgroundeee ">
+		<p>
+			<b class="fz30">简介</b>
+		</p>
+		<p class="text-indent lh24">
+			由王封臣老师主讲的“评书讲国学”系列涵盖11本国学经典书籍，总计365讲音频。运用评书的方式讲解国学，有故事、有领读、有答疑，使得孩子学习国学不再晦涩难懂，单调无味。
+		</p>
+		<p class="text-indent lh24">
+			王封臣，著名评书家、国学教育专家、作家、著名评书表演艺术家刘兰芳的入室弟子，北京市八一、宏志等多所中小学特聘国学教师。
+		</p>
+	</div>
+	<div class="storytellinglist">
+		<ul class="of p0">
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/laozi.png" alt="" / class="m10">
+					<p>
+						老子<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/liji.png" alt="" / class="m10">
+					<p>
+						礼记<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/mozi.png" alt="" / class="m10">
+					<p>
+						墨子<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left mr0">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/shijing.png" alt="" / class="m10">
+					<p>
+						诗经<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/xunzi.png" alt="" / class="m10">
+					<p>
+						荀子<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/zhouyi.png" alt="" / class="m10">
+					<p>
+						周易<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/lunyu.png" alt="" / class="m10">
+					<p>
+						论语<span class="color999">35讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left mr0">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/shangshu.png" alt="" / class="m10">
+					<p>
+						尚书<span class="color999">35讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/zhuangzi.png" alt="" / class="m10">
+					<p>
+						庄子<span class="color999">35讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/hanfeizi.png" alt=""/ class="m10">
+					<p>
+						韩非子 <span class="color999">40讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left mr0">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/mengzi.png" alt="" / class="m10">
+					<p>
+						孟子 <span class="color999">40讲</span>
+					</p>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<?php if($isShare == 0) : ?>
+	<if condition="($orderStatus['is_allowed_browse'] neq 1) AND ($resourceDetails[0]['charge_status'] eq 2)">
+	<div class="footer text-center">
+			<div class="w50">
+				<img src="__PUBLIC__/img/sinology/rmb.png" alt="" / class="w20"><span>{$resourceDetails[0]['real_price']}元/365讲</span>
+			</div>
+		<?php if($orderStatus['is_allowed_browse'] == 0) :?>
+		<a class="w50 green" href="{:U( 'BjResource/buyRightNow',array('id'=>$resourceDetails[0]['id']) )}">
+			马上购买
+		</a>
+		<?php else : ?>
+		<a class="w50 green" orderId="{$orderInfo['order_sn']}"  href="{:U( 'BjResource/rightPayment',array('order_sn'=>$orderInfo['order_sn']))}">
+			去支付
+		</a>
+		<?php endif; ?>
+
+	</div>
+</if>
+	<?php endif; ?>
+</div>
+</body>
+
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/swiper/swiper-3.4.2.jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/js/notify/notifyApp.js"></script>
+<script type="text/javascript">
+	var clickVal;
+	var urlId = <?=GUOXUE_ID?>;
+	var detailsUrl = window.location.href;
+	var clickOne;
+	console.log(detailsUrl)
+	if(detailsUrl.indexOf(urlId)!=-1){
+		$('#resourceDetailsDiv').hide();
+		$('#storytellingDiv').show();
+	}
+	window.onhashchange=function(){
+		hashChange()
+	}
+	function hashChange(){
+			if(window.location.href.indexOf('#') == -1){
+				$('#resourceDetailsDiv').hide();
+				$('#storytellingDiv').show();
+				if(typeof(player) != 'undefined')
+				player.j2s_pauseVideo();
+				$('#contentWrapper').addClass('active')
+			}else {
+				$('#resourceDetailsDiv').show();
+				$('#storytellingDiv').hide();
+				$('#contentWrapper').addClass('active')
+			}
+	}
+	var arrBook = [30,30,30,30,30,30,35,35,35,40,40];
+	var arrClick = [0];//此数组存放和
+	for(var m=1;m<=arrBook.length;m++) {
+		var sum = arrBook.slice(0,m).reduce(function(a,b){return a+b});
+		arrClick.push(sum);
+	}
+
+	$('.storytellinglist').find('li').click(function(){
+		clickVal = $(this).index();
+		$('#resourceDetailsDiv').show();
+		$('#storytellingDiv').hide();
+		if(clickOne == undefined) {
+			swiper();
+		}
+		clickOne = 1;
+		$('.listBtnBox').css('transform', 'translate3d(0px, 0px, 0px)');//左移
+		$('.listBtn')[0].click();
+		// tabToggle($('.tabList'),$('.listBox'),$('.briefBox'),$('.recommendBox'),listOpen);
+		if(!$('.tabList').hasClass('active')){
+			$('.tabList').addClass('active').siblings('.tabDiv').removeClass('active');
+			$('.listBox').show();
+			$('.recommendBox').hide();
+			$('.briefBox').hide();
+		}
+		var lineHeight = 26;//li的高度
+		var int;//整数
+		var rem;//余数
+		var bookNum;//几本书
+		bookNum = arrClick[clickVal];//取得和数组的位置
+		$($('.res_a')[bookNum]).click();//相对应的第一个点击
+	})
+</script>
+<script>
+	var url = "__URL__";
+	var favorStatus = '{$resourceDetails[0].iscollect}';
+	var fileType = '{$resourceDetails[0].file_type}';
+	function showMainInfo()
+	{
+		if(fileType == 'ppt' || fileType == 'pdf' || fileType == 'word')
+		{
+			$('#content').show();
+			$('.recommend_div,.introduction_div').hide();
+		}
+		else {
+			$('.recommend_div').show();
+			// $('.introduction_div').hide();
+		}
+	}
+	function showBriefInfo()
+	{
+		$('#content,.recommend_div').hide();
+		$('.introduction_div').height('100%').show();
+	}
+	function showRelatedResource()
+	{
+		$('#content,.introduction_div').hide();
+		$('.recommend_div').height('100%').show();
+	}
+	$('.next').click(function(){
+		$('.recommend_div').hide();
+		$('.introduction_div').show();
+	})
+	$('.pre').click(function(){
+		showMainInfo();
+	})
+	showMainInfo();
+
+	$('.cang').click(function () {
+		var status = (favorStatus == 'yes') ? 2:1;
+		$.get("__URL__/favorResource", {id: '{$id}',userId: '{$userId}',role:'{$role}',status:status}, function (res) {
+			res = eval('('+res+')');
+			if (res.status == 200) {
+				if (status == 1) {
+					$('.cang').attr('src', '__PUBLIC__/img/resource/icon_shoucang.png');
+					$('.favorText').text('您已收藏');
+					favorStatus = 'yes';
+				}
+				else {
+					$('.cang').attr('src', '__PUBLIC__/img/resource/icon_shoucang_before.png');
+					$('.favorText').text('值得收藏');
+					favorStatus = 'no';
+				}
+			}
+		});
+	});
+
+
+	var isPay=1;
+	$('.res_a').click(function(){
+		displayChange();
+		var resName =  $(this).text();
+		$('.resourceName').text(resName);
+		$('body,html').animate({scrollTop:0},200);
+		switch (fileType) {
+			case 'video':
+			case 'audio':
+				//poly video
+				var vid = $(this).attr('vid');
+				var charge = $(this).attr('charge');
+				var isAllowTrail = $(this).attr('trail');
+				$('#polyMedia').html('')
+
+				if({$orderStatus['is_allowed_browse']} != 1 && charge == 2) {
+					if(isAllowTrail == 1) {
+						var player = polyvObject('#polyMedia').previewPlayer({
+							'width': '100%',
+							'height': '100%',
+							'vid': vid
+						});
+						isPay = 2;
+					}
+					else
+						displayBuyDiv();
+				}
+				else {
+					var player = polyvObject('#polyMedia').videoPlayer({
+						'width': '100%',
+						'height': '100%',
+						'vid': vid
+					});
+				}
+
+				break;
+			case 'image':
+				var file_path = $(this).attr('attr_path');
+				$("#videoAudioImageId").attr('src', file_path);
+				break;
+			case 'swf':
+				break;
+			case 'pdf':
+			case 'word':
+			case 'ppt':
+				var file_path = $(this).attr('attr_path');
+				if(file_path == '')
+					$("#pdfViewer").html('资源转换中,请稍候刷新页面重试');
+				else
+					$("#pdfViewer").html('<iframe id="resourceFrame" frameborder="1" src="__PUBLIC__/pdfjs/viewer/viewer.html?f=' + file_path +'" width="100%" height="100%"/>');
+				break;
+		}
+	})	;
+	$($('.res_a')[0]).click();
+	<if condition="($resourceDetails[0].file_type eq 'ppt') OR ($resourceDetails[0].file_type eq 'word') OR ($resourceDetails[0].file_type eq 'pdf') ">
+			function rightUI() {
+				return {
+
+					'data': ["showBriefInfo","showRelatedResource",""],
+					'type': 2,
+					'share': {
+						'url': "http://{$_SERVER['SERVER_NAME']}__URL__/resourceDetails?id={$data['id']}&flag=1",
+						'title': "{$resourceDetails['resource_name']}",
+						'content': "<?php echo mb_substr(strip_tags($resourceDetails['knowledge_info']),0,40); ?>"
+					}
+
+				};
+			}
+
+
+			</if>
+	function CheckIsAndroid() {
+		var browser = {
+			versions: function () {
+				var u = navigator.userAgent,
+						app = navigator.appVersion;
+				return { //移动终端浏览器版本信息
+					ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+					android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+					iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+					iPad: u.indexOf('iPad') > -1, //是否iPad
+				};
+			}(),
+		}
+		//if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+		//    return false;
+		//}
+		if (browser.versions.android)
+			return true;
+		return false;
+	}
+
+
+	function CheckIsIOS() {
+		var browser = {
+			versions: function () {
+				var u = navigator.userAgent,
+						app = navigator.appVersion;
+				return { //移动终端浏览器版本信息
+					ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+					android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+					iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+					iPad: u.indexOf('iPad') > -1, //是否iPad
+				};
+			}(),
+		}
+		if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+			return true;
+		}
+	}
+	function displayChange()
+	{
+		document.getElementById("buylink").style.display = "none";
+		document.getElementById("content").style.display = "block";
+	}
+	function displayBuyDiv()
+	{
+		document.getElementById("buylink").style.display = "block";
+		document.getElementById("content").style.display = "none";
+		var imgW = $('#content').width();
+		var imgH = $('#content').height();
+		$('#buylink').find('img').css({
+			'width':imgW,
+			'height':imgH
+		})
+	}
+
+
+	function share()
+	{
+		var data = {
+			"content":"<?php echo mb_substr(str_replace(array("\r\n", "\r", "\n"),'',strip_tags($resourceDetails['knowledge_info'])),0,40); ?>",
+			"title":"{$resourceDetails['resource_name']}",
+			"url": "http://{$_SERVER['SERVER_NAME']}__URL__/resourceDetails?id={$data['id']}&flag=1"
+	};
+		if(CheckIsIOS())
+			window.webkit.messageHandlers.iosModel.postMessage(data);
+		if(CheckIsAndroid())
+			AppFunction.shareClick(data);
+	}
+	// $(window).load(function(){
+	// 	$('.iconbtn').css('margin-top',$('#content').height()+10)
+	// })
+	/*window.alert = function(name){
+		var iframe = document.createElement("IFRAME");
+		iframe.style.display="none";
+		iframe.setAttribute("src", 'data:text/plain,');
+		document.documentElement.appendChild(iframe);
+		window.frames[0].window.alert(name);
+		iframe.parentNode.removeChild(iframe);
+	};*/
+	var mediaInfos = {};
+	if(fileType == "video" || fileType == "audio")
+	{
+		mediaInfos['id'] = "{$resourceDetails[0]['id']}";
+		mediaInfos['data'] =  Array();
+		$('.res_a').each(function(i,n){
+			var obj = {
+				'title': $(n).text(),
+				'vid':$(n).attr('vid'),
+				'size':(parseFloat(($(n).attr('size'))/1024/1024)).toFixed(2) + 'MB'
+			};
+			mediaInfos['data'].push(obj);
+		})
+	}
+	function downloadClick()
+	{
+	<?php if($XXXXXXXXX) : ?>
+		// alert('该资源是付费资源\r需付费后才可缓存');
+		$.NotifyBox.NotifyPromptOne('提示','该资源是付费资源\r需付费后才可缓存','确定');
+	<?php else :?>
+		var obj = {
+			'id':"{$resourceDetails[0]['id']}"
+		}
+		if(CheckIsIOS())
+			window.webkit.messageHandlers.iosDownPage.postMessage(obj);
+		if(CheckIsAndroid())
+			AppFunction.showList(JSON.stringify(obj));
+	<?php endif ; ?>
+	}
+	function buy()
+	{
+		var obj = {
+			'id':"{$resourceDetails[0]['id']}"
+		}
+		if(CheckIsIOS())
+			window.webkit.messageHandlers.iosSureOrder.postMessage(obj);
+		if(CheckIsAndroid())
+			AppFunction.showList(JSON.stringify(obj));
+	}
+	function pay(obj)
+	{
+		var obj = {
+			'orderSN':$(obj).attr('orderId')
+		}
+		if(CheckIsIOS())
+			window.webkit.messageHandlers.iosPayOrder.postMessage(obj);
+		if(CheckIsAndroid())
+			AppFunction.showList(obj);
+	}
+	function refreshVidStatus(vids)
+	{
+
+	}
+</script>
+
+<script type="text/javascript">
+	function s2j_onPlayOver() {
+		if (isPay ==2 ){
+			displayBuyDiv();
+		}
+			/*document.getElementById("buylink").style.display = "block";
+			document.getElementById("content").style.display = "none";
+			var imgW = $('#content').width();
+			var imgH = $('#content').height();
+			$('#buylink').find('img').css({
+				'width':imgW,
+				'height':imgH
+			})*/
+	}
+
+</script>
+
+	<!-- swiper -->
+	<script>
+		function swiper(){
+			var windowWidth = $(window).width();
+			var nowLength = $('.listBtnBox').children('.listBtn').length;
+			var nowWidth = $('.listBtnBox').children('.listBtn').width() + 10;
+			var allWidth = nowLength * nowWidth;
+			var result = windowWidth - allWidth;
+			if(result < 20) {
+				console.log(1)
+				var swiper = new Swiper('.swiper-container', {
+			        pagination: '.swiper-pagination',
+			        slidesPerView: 'auto',
+			        paginationClickable: true,
+			        freeMode: true,
+			        cancelable: false
+			    });
+		    }
+		}
+	</script>
+
+	<!-- tab切换 -->
+	<script>
+		function tabToggle(tabName,tabBox,tabBoxOne,tabBoxTwo,func){
+			tabName.click(function(){
+				$('body').scrollTop(0);
+				if(!tabName.hasClass('active')){
+					tabName.addClass('active').siblings('.tabDiv').removeClass('active');
+					tabBox.show();
+					tabBoxOne.hide();
+					tabBoxTwo.hide();
+
+				}
+				if(typeof(func) == "function") {
+					func();
+				}
+			})
+		}
+
+		tabToggle($('.tabBrief'),$('.briefBox'),$('.listBox'),$('.recommendBox'));
+		tabToggle($('.tabList'),$('.listBox'),$('.briefBox'),$('.recommendBox'));
+		tabToggle($('.tabRecommend'),$('.recommendBox'),$('.briefBox'),$('.listBox'));
+	</script>
+
+	<!-- 加分页 -->
+	<script>
+		var resA = $('.listBox').children('a');
+		var resLength = resA.length;
+		var pageNum = 50;//每页显示多少条
+		var btnNum = Math.ceil(resLength/pageNum);//一共有几页
+		// 共有多少资源
+		$('.resourceNum').children('.resNum').html(resLength);
+		//动态增加btn
+		for(i = 0; i < btnNum; i++){
+			var startId = i*pageNum + 1;//btn前边的数
+			var endId = i*pageNum + pageNum;//btn后边的数
+			$(".listBtnBox").append("<span class='listBtn swiper-slide'>"+startId+"-"+endId+"</span>");
+		}
+		// 第一个btn加背景颜色
+		$(".listBtnBox .listBtn:first").addClass('active');
+		// 最后一个btn的值改变
+		var arrLast = $(".listBtnBox .listBtn:last").html().split('-');
+		arrLast.splice(1,1,resLength);
+		if(arrLast[0] == arrLast[1]) {
+			$(".listBtnBox .listBtn:last").html(arrLast[0])
+		} else {
+			$(".listBtnBox .listBtn:last").html(arrLast[0]+"-"+arrLast[1])
+		}
+		// 第一页的a展示
+		resA.slice(0, pageNum).css('display','block');
+		//btn对应的a展示
+		$(".listBtn").click(function(){
+			var btnIndex = $(this).index();//按钮角标
+			var winWidth = $(window).width();//屏幕宽度
+			var btnWidth = btnNum*110;//按钮宽度
+			var transBefore = $('.listBtnBox').css('transform').split(',')[4];//先前的transform
+			var widthDiff = -(btnWidth*1 - winWidth*1 + 20);//与屏幕宽度相比
+			if(btnIndex == 0) {
+				var transWidth = 0;//左移距离
+			} else {
+				var transWidth = -(btnIndex*110);
+			}
+			if(winWidth > btnWidth) {
+				$(this).addClass('active').siblings(".listBtn").removeClass('active');
+			} else {
+				if(widthDiff >= transWidth) {
+					$('.listBtnBox').css('transition-duration', '1000ms');//左移
+					$('.listBtnBox').css('transform', 'translate3d('+widthDiff+'px, 0px, 0px)');//最后的按钮不能到最前边
+				} else {
+					$('.listBtnBox').css('transition-duration', '1000ms');//左移
+					$('.listBtnBox').css('transform', 'translate3d('+transWidth+'px, 0px, 0px)');//左移
+				}
+				$(this).addClass('active').siblings(".listBtn").removeClass('active');
+			}
+			var btnText = $(this).html().split('-');
+			resA.hide().slice(btnText[0]-1,btnText[1]).css('display','block');
+			$('.res_a')[btnText[0]-1].click();//相对应的第一个资源点击
+		})
+	</script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="__PUBLIC__/js/share.js?v=20180124"></script>
+<script>
+	var appId = '{$signPackage.appId}';
+	var timestamp = '{$signPackage.timestamp}';
+	var nonceStr = '{$signPackage.nonceStr}';
+	var signature = '{$signPackage.signature}';
+	//var title = "{$resourceDetails[0]['resource_name']}";
+	//var content = " <?php echo mb_substr(str_replace(array("\r\n", "\r", "\n"),'',strip_tags($resourceDetails[0]['description'])),0,40); ?>";
+	var title = "京版云";
+	var content = "由王封臣老师主讲的“评书讲国学”系列涵盖11本国学经典书籍";
+	var linkimgUrl = 'http://{$WEB_URL}/Public/img/sharelogo.png';
+
+	var res_id = "{$resourceDetails[0]['id']}";
+	var type = 1;
+
+	share_weixin(appId, timestamp, nonceStr, signature, title, content, linkimgUrl,res_id,type);
+
+</script>
+
+<script>
+	var userId = "{$userId}";
+	var role = "{$role}";
+	var tip = "{$tip}";
+	if (userId>0 && role>0 && tip!='') { //在详情页
+		window.addEventListener("popstate", function(e) {
+			alert("我监听到了浏览器的返回按钮事件啦");//根据自己的需求实现自己的功能
+		}, false);
+	} else { //在中间页
+		window.addEventListener("popstate", function(e) {
+			alert("我监听到了浏览器的返回按钮事件啦");//根据自己的需求实现自己的功能
+		}, false);
+	}
+</script>
+</html>

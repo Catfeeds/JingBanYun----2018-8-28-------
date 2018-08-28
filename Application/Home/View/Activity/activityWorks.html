@@ -1,0 +1,81 @@
+<link href="__PUBLIC_METRO__/css/app/table_list4.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/activity.css" type="text/css" rel="stylesheet">
+
+
+<div><a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a></div>
+<div class="searchOutter">
+	<div class="search">
+		<button class="search_btn">搜索</button>
+		<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入作品名称">
+	</div>
+</div>
+
+<div class="activityName">
+	<span class="newActName">
+		<img src="__PUBLIC__/img/activity/workName.png" alt="">
+		{$activity_title}
+	</span>
+</div>
+
+<empty name="works">
+	<div class="emptyResult">暂时没有作品哦！</div>
+</empty>
+
+<notempty name="works">
+	<table class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center" width="10%"><div>姓名</div></th>
+			<th class="text-center" width="20%"><div>学校</div></th>
+			<th class="text-center" width="25%"><div>作品名称</div></th>
+			<th class="text-center" width="15%"><div>学科</div></th>
+			<th class="text-center" width="15%"><div>年级</div></th>
+			<th class="text-center" width="15%"><div>奖项/评级</div></th>
+		</tr>
+	</thead>
+	<tbody>
+	    <volist name="works" id="works" >
+			<tr id="l_{$works.works_id}">
+				<td class="text-center">
+                    {$works.user_name}
+				</td>
+				<td class="text-center">
+					{$works.school_name}
+				</td>
+				<td class="text-center">
+					<?php if($_SERVER['HTTP_HOST'] == 'www.jingbanyun.com' || $_SERVER['HTTP_HOST'] == 'test.jingbanyun.com' && $activity_id == 142){ ?>
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=teachDesignWorkView&workId='.$works['works_id']?>"><?php echo $works['works_name']?></a>
+					<?php }else{?>
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityWorkDetails&id='.$works['works_id']?>"><?php echo $works['works_name']?></a>
+					<?php }?>
+                    {$works.user_name}
+				</td>
+				<td class="text-center">
+					{$works.course_name}
+				</td>
+				<td class="text-center">
+					{$works.grade}
+				</td>
+				<td class="text-center">
+					{$works.ranking}
+				</td>
+			</tr>
+		</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+</notempty>
+<script>
+	function search()
+	{
+		window.location.href = 'index.php?m=Home&c=Activity&a=activityWorks&id={$info.activity_id}' + '&keyword=' + $('.search_text').val();
+	}
+	$(".search_text").keydown(function (evt) {
+		if (event.keyCode == "13") { //keyCode=13是回车键
+			search();
+		}
+	});
+	$('.search_btn').click(function(){
+		search();
+	});
+</script>

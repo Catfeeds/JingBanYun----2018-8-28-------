@@ -1,0 +1,105 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/learnPathList.css" type="text/css" rel="stylesheet">
+
+<style>
+	#contentWrapper {
+		overflow-x: auto;
+		padding-bottom: 40px;
+	}
+</style>
+<div class="main_opr">
+	
+<!--	<a href="{:U('help/learnPathListVideo')}" class="inf_video" target="_blank">操作视频</a>-->
+</div>
+<div class="resource_box">
+    <div class="resource_top">
+        <!--<div class="search">
+            <button class="search_btn"></button>
+            <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入关键字">
+        </div>-->
+    </div>
+
+    <div class="resource_middle">
+        <div class="resource_classify">
+            <p class="classify_p">筛选</p>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">年级：</p>
+            <ul class="classify_ul grade_ul">
+                <li {$grade_code==null? 'class="current_selected"': ''} attr_id=''>全部</li>
+                <volist name="grade_list" id="grade_item">
+                    <li attr_id="{$grade_item.id}" {$grade_item['id']==$grade_code? 'class="current_selected"': ''}>
+                        {$grade_item.grade}
+                    </li>
+                </volist>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">班级：</p>
+            <ul class="classify_ul class_ul">
+                <li {$class_code==null? 'class="current_selected"': ''} attr_id=''>全部</li>
+                <volist name="class_list" id="class_item">
+                    <li attr_id="{$class_item.name}" {$class_item['name']==$class_code? 'class="current_selected"': ''}>
+                        {$class_item.name}
+                    </li>
+                </volist>
+            </ul>
+        </div>
+    </div>
+
+    <div class="resource_border"></div>
+
+    <div class="resource_bottom">
+        <ul class="row public_ul learnPath_ul">
+            <volist name="list" id="data" empty="暂时没有班级哦" key="i">
+                <li class="col-md-4 public_li learnPath_li" id="l_{$data.classid}" >
+					<div class="lea_box" style="background:url({$oss_path}public/web_img/Class/classBack.png)no-repeat center;">
+						<p class="lea_p"><span>{$data.gradename}<br>{$data.classshortname}</span></p>
+						<div class="lea_inner">
+
+							<p><span class="left">班主任：</span><span class="left">{$data['isauth'] == 1 ? '' : $_SESSION['teacher']['name']}</span></p>
+							<p><span class="left">学生数：</span><span class="left">{$data.studentcount}</span></p>
+							<p><span class="left">学&nbsp;&nbsp;&nbsp;&nbsp;校：</span><span class="left">{$data.schoolname}</span></p>
+							<p><span class="left">备&nbsp;&nbsp;&nbsp;&nbsp;注：</span><span class="left">{$data.note}</span></p>
+						</div>
+						<a href="{:U('Teach/classStudentList?classId=')}{$data.classid}" title="学习轨迹" class="button">学习轨迹</a>
+                    </div>
+                </li>
+            </volist>
+        </ul>
+        <div class="Pagination">{$page}</div>
+	</div>
+</div>
+
+<script> 
+    function join_string(){
+        var keyword=$('.search_text').val();
+        var grade_id=$('.grade_ul').find('.current_selected').attr('attr_id');
+        var class_name=$('.class_ul').find('.current_selected').attr('attr_id');
+        var condition='';
+        if(keyword!=''){
+            condition='&keyword='+keyword;
+        }
+        if(grade_id!=''){
+            condition += '&grade=' + grade_id;
+        }
+        if(class_name!=''){
+            condition += '&class=' + class_name;
+        }
+        return condition;
+    }
+    
+    $(".search_btn").click(function(){
+            var string=join_string();   
+            location.href = "index.php?m=Home&c=Teach&a=learnPathList" + string;
+        });
+        
+        
+    $(".classify_ul").children('li').click(function(){
+        $(this).siblings('li').removeClass('current_selected');
+        $(this).addClass('current_selected');
+        var string=join_string();   
+            location.href = "index.php?m=Home&c=Teach&a=learnPathList" + string;
+    });
+</script>

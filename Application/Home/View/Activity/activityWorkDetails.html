@@ -1,0 +1,288 @@
+<link href="__PUBLIC__/css/activity.css" type="text/css" rel="stylesheet">
+
+<div>
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div class="worksOutter">
+	<if condition="$role eq 2">
+	<span class="bgRed mr10 bgRedSpan">{$courses.course_name}</span>
+	<span class="bgRed bgRedSpan">{$workInfo['grade']}</span>
+	</if>
+	<div class="worksMainBox">
+		<div class="worksMain">
+			<img src="__PUBLIC__/img/activity/penImg.png" alt="" class="penImg">
+			<if condition="$existedFavor eq 'yes'">
+				<a href="javascript:;" id="favorIcon">
+					<img src="__PUBLIC__/img/activity/favored.png" alt="" title="取消收藏">
+				</a>
+			<else/>
+				<a href="javascript:;" id="favorIcon">
+					<img src="__PUBLIC__/img/activity/favor.png" alt="" title="收藏">
+				</a>
+			</if>
+			<div class="worksAccessory">
+				<p class="accTitle">{$workInfo['works_name']}作品附件：</p>
+				<ul class="accessoryUl">
+					<li class="accessoryLi">
+						<volist name="works" id="works" key="i">
+							<a href="index.php?m=Home&c=BjResource&a=bjResourceDetails&id=<?php echo $works['id'] ?>" class="left accessoryName browse_resource">
+							{$works.name}
+							</a>
+							<?php if ($_SESSION['teacher']['id'] == $workInfo['user_id'] || $_SESSION['parent']['id'] == $workInfo['user_id'] || $_SESSION['student']['id'] == $workInfo['user_id']) :?>
+							<a href="{$oss_path}{$works.file_path}"  download="{$oss_path}{$works.file_path}" class="right accessoryDown" title="下载此附件">
+								<img src="__PUBLIC__/img/activity/worksDown.png" alt="">
+								下载
+							</a>
+							<?php endif; ?>
+						</volist>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<?php if(in_array('4',explode(',',$data['upload_info']))){ ?>
+	<div class="worksDescription">
+		<span class="bgRed bgRed2">描述</span>
+		<div class="woDes">{$workInfo.works_description}</div>
+	</div>
+	<?php } ?>
+
+	<?php if(in_array('5',explode(',',$data['upload_info']))){ ?>
+	<div class="worksWish">
+		<span class="bgRed">参赛寄语</span>
+		<div class="woWi">{$workInfo.author_remarks}</div>
+	</div>
+	<?php } ?>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/queryLimit.js"></script>
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<!--点赞/收藏-->
+<script>
+    var oss_path = "<?php echo C('oss_path') ;?>";
+    var swfVideoPlay = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">\n\
+                        <param name="allowFullScreen" value="true"/><embed id="ebd" width="{1}" height="{2}" name="plugin" src="{0}" type="application/x-shockwave-flash"><param name="loop" value="false"><param name="movie" value="images/zf03320.swf"></object>';
+    var imageTemplate = '<img src="{0}" />';
+	var videoTemplate = '<video src="{0}" controls></video>';
+	var polyVideoTemplate = '<div id="plv"></div>';
+	var pdfTemplate = '<iframe id="resourceFrame" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={0}" width="100%" height="500"></iframe>';
+
+    $(function () {
+
+/*        $(".accessoryLi a").click(function () {
+			var type  = $(this).attr('type');
+			var file_path = $(this).attr('src');
+            switch (type) {
+
+            case 'audio':
+				$("#contentDisplayer").html(videoTemplate.format(file_path));
+                break;
+			case 'video':
+				$("#contentDisplayer").html(polyVideoTemplate.format(''));
+				var vid = $(this).attr('vid');
+				var player = polyvObject('#plv').videoPlayer({
+					'vid': vid
+				});
+				break;
+            case 'image':
+
+                $("#contentDisplayer").html(imageTemplate.format(file_path));
+                break;
+            case 'swf':
+                var videoEle = swfVideoPlay.format(file_path, 500, 500);
+                $('#contentDisplayer').html(videoEle);
+
+                break;
+			case 'ppt':
+				$.NotifyBox.NotifyPromptOne("提示","您好, PPT文件在线预览时,会有部分动画效果无法观看, 但评委会在下载后查看作品, 因此将不影响您的作品评比.", "确定");
+            case 'pdf':
+            case 'word':
+				$('#contentDisplayer').html(pdfTemplate.format(file_path));
+                break;
+            }
+        });*/
+
+
+var o_status="{$operation_status}";
+var zan= "{$workInfo.zan_count}";
+var favor= "{$workInfo.favor_count}";
+		
+        $('#zanIcon').click(function () {    
+            if(o_status==1){
+                $.notify({
+                    title: '提示',
+                    message: '不能对自己发布的资源进行操作'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            if (!canQuery()) {
+                $.notify({
+                    title: '提示',
+                    message: '请求过于频繁'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+
+            $.get('__URL__/zanWork', { id: '{$workInfo.id}'}, function (res) {
+                if (res.result == 'yes') {
+					zan++;
+					$('#zanIcon').children('span').html(zan);
+                    $('#zanIcon').children('img').attr('src', '__PUBLIC__/img/icon/zaned.png');
+                    $.notify({
+                        title: '提示',
+                        message: '点赞成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+					if(res.status == 402) //self work
+					{
+						$.notify({
+							title: '提示',
+							message: '不能对自己的作品进行点赞'
+						}, {
+							type: 'warning',
+							placement: {
+								from: "top",
+								align: "center"
+							}
+						});
+						return;
+					}
+					zan--;
+					$('#zanIcon').children('span').html(zan);
+                    $('#zanIcon').children('img').attr('src', '__PUBLIC__/img/icon/zan.png');
+                    $.notify({
+                        title: '提示',
+                        message: '已经取消点赞'
+                    }, {
+                        type: 'warning',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#favorIcon').click(function () {
+            if(o_status==1){
+//                $.notify({
+//                    title: '提示',
+//                    message: '不能对自己发布的资源进行操作'
+//                }, {
+//                    type: 'success',
+//                    placement: {
+//                        from: "top",
+//                        align: "center"
+//                    }
+//                });
+				$.NotifyBox.NotifyPromptOne('提示','不能对自己发布的资源进行操作','确定')
+                return false;
+            }
+            if (!canQuery()) {
+//                $.notify({
+//                    title: '提示',
+//                    message: '请求过于频繁'
+//                }, {
+//                    type: 'success',
+//                    placement: {
+//                        from: "top",
+//                        align: "center"
+//                    }
+//                });
+				$.NotifyBox.NotifyPromptOne('提示','请求过于频繁','确定')
+                return false;
+            }
+
+            $.get('__URL__/favorWork',  {id: '{$workInfo.id}'}, function (res) {
+                if (res.result == 'yes') {
+					favor++;
+					$('#favorIcon').children('span').html(favor);
+                    $('#favorIcon').children('img').attr({
+						'src': '__PUBLIC__/img/activity/favored.png',
+						'title': '取消收藏'
+					});
+//                    $.notify({
+//                        title: '提示',
+//                        message: '收藏成功'
+//                    }, {
+//                        type: 'success',
+//                        placement: {
+//                            from: "top",
+//                            align: "center"
+//                        }
+//                    });
+					$.NotifyBox.NotifyPromptOne('提示','收藏成功','确定')
+                } else {
+					favor--;
+					$('#favorIcon').children('span').html(favor);
+                    $('#favorIcon').children('img').attr({
+						'src': '__PUBLIC__/img/activity/favor.png',
+						'title': '收藏'
+					});
+//                    $.notify({
+//                        title: '提示',
+//                        message: '已经取消收藏'
+//                    }, {
+//                        type: 'warning',
+//                        placement: {
+//                            from: "top",
+//                            align: "center"
+//                        }
+//                    });
+					$.NotifyBox.NotifyPromptOne('提示','已经取消收藏','确定')
+                }
+            });
+        })
+       /* try{
+			$('.browse_resource')[0].click();
+		}catch(e){;} */
+    });
+</script>
+
+<!--作者描述为空时-->
+<script>
+	var woDes = $.trim($('.woDes').html());
+	if(woDes == ''){
+		$('.woDes').html('作者没有写描述哦！').css('color','#999')
+	}
+</script>
+
+<!--作者寄语为空时-->
+<script>
+	var woWi = $.trim($('.woWi').html());
+	if(woWi == ''){
+		$('.woWi').html('作者没有写参赛寄语哦！').css('color','#999')
+	}
+</script>
+
+<!-- 学科年级为空时隐藏 -->
+<script>
+	$('.bgRedSpan').each(function(i,n){
+		if($.trim($(this).html()) == '') {
+			$(this).hide()
+		}
+	})
+</script>
+

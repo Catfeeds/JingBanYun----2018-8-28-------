@@ -1,0 +1,213 @@
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/expertInfo.css" type="text/css" rel="stylesheet">
+
+<div>
+	<a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1" style="top: 0px;">返回</a>
+</div>
+
+<div class="expertInfoMoreOutter">
+	<?php if($id == EDUCATION){?>
+	<!--教育新闻title-->
+	<div class="educationalNews">
+		<img src="__PUBLIC__/img/expertInfo/redLeft.png" alt="">
+		教育新闻
+		<div class="search me_search right">
+			<form action="/index.php?m=Home&c=ExpertInformation&a=expertInformationMore" method="post">
+				<input type="hidden" name="id" value="<?php echo $id?>">
+				<button class="search_btn">搜索</button>
+				<input type="text" name="keyword" value="<?php echo $keyword?>" class="search_text" placeholder="关键字搜索" maxlength="28" autocomplete="off">
+			</form>
+		</div>
+	</div>
+	<?php }elseif($id == HOT){?>
+	<!--热点话题title-->
+	<div class="hotTopic">
+		<form action="/index.php?m=Home&c=ExpertInformation&a=expertInformationMore" method="post">
+		<input type="hidden" name="id" value="<?php echo $id?>">
+		<img src="__PUBLIC__/img/expertInfo/hotTopic.png" alt="">
+		热点话题
+		<div class="search me_search right">
+			<!-- <form method="post" action="" id=""> -->
+				<input type="hidden" name="id" value="<?php echo $id;?>">
+				<button class="search_btn">搜索</button>
+				<input type="text" name="keyword" value="<?php echo $keyword?>" class="search_text" placeholder="关键字搜索" maxlength="28" autocomplete="off">
+			<!-- </form> -->
+		</div>
+		</form>
+	</div>
+
+	<?php }elseif($id == TEACH){?>
+	<form action="/index.php?m=Home&c=ExpertInformation&a=expertInformationMore" method="post">
+		<input type="hidden" name="id" value="<?php echo $id?>">
+	<!--教学动态title-->
+	<div class="teachingDynamic">
+		教学动态
+		<div class="search me_search right">
+			<!-- <form method="post" action="" id=""> -->
+				<button class="search_btn">搜索</button>
+				<input type="text" name="keyword" value="<?php echo $keyword?>" class="search_text" placeholder="关键字搜索" maxlength="28" autocomplete="off">
+			<!-- </form> -->
+		</div>
+	</div>
+	</form>
+	<?php }else{?>
+	<form action="/index.php?m=Home&c=ExpertInformation&a=expertInformationMore" method="post">
+		<input type="hidden" name="id" value="<?php echo $id?>">
+	<!--获奖作品title-->
+	<div class="winningWorks">
+		获奖作品
+		<div class="search me_search right">
+			<!-- <form method="post" action="" id=""> -->
+				<button class="search_btn">搜索</button>
+				<input type="text" name="keyword" value="<?php echo $keyword?>" class="search_text" placeholder="关键字搜索" maxlength="28" autocomplete="off">
+			<!-- </form> -->
+		</div>
+	</div>
+	</form>
+	<?php }?>
+	<!-- 搜索结果 -->
+	<div class="searchResult">
+		<?php if(!empty($keyword)){?>
+		京版云为您找到“<?php echo $keyword?>”相关结果约<?php echo $counts?>个
+		<?php }?>
+	</div>
+
+	<!-- 当搜索结果为空时 -->
+	<empty name="list">
+		<div class="emptyDiv">
+	        <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+	        <p>抱歉，没有搜索到相关的资讯！</p>
+		</div>
+	</empty>
+
+	<div class="expertInfoMoreInner">
+		<?php if($id == HOT || $id == EDUCATION) {?>
+		<?php foreach($list as $list_item){?>
+		<!--每页显示5个-->
+		<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id=<?php echo $list_item['id']?>" class="expertInfoMoreMain">
+			<div class="expertInfoMoreTop">
+				<div class="left">
+					<?php echo $list_item['title'] ;?>
+				</div>
+				<div class="right">
+					<?php if(date(‘Y’,$list_item['up_time']) === date(‘Y’,time())){ echo date('m-d',$list_item['up_time']);}else{echo date('Y-m-d',$list_item['up_time']);}?>
+				</div>
+			</div>
+
+			<?php if(!empty($list_item['pc_cover'])){?>
+			<!--教学动态（有图片）只是img p 标签不一样，其他都一样-->
+			<div class="expertInfoMoreBottom">
+				<img src="<?php echo $oss_path.$list_item['pc_cover']?>" alt="" class="expertInfoMoreImg">
+				<p class="expertInfoMoreText expertInfoMoreTextDynamic">
+					<?php echo strip_tags(html_entity_decode($list_item['content'])) ;?>
+				</p>
+				<div class="expertInfoMoreWatch">
+					<img src="__PUBLIC__/img/expertInfo/watch.png" alt="">
+					<?php echo $list_item['browse_count'] ;?>
+				</div>
+			</div>
+			<?php }else{?>
+			<div class="expertInfoMoreBottom">
+				<p class="expertInfoMoreText">
+					<?php echo strip_tags(html_entity_decode($list_item['content'])) ;?>
+				</p>
+				<div class="expertInfoMoreWatch">
+					<img src="__PUBLIC__/img/expertInfo/watch.png" alt="">
+					<?php echo $list_item['browse_count'] ;?>
+				</div>
+			</div>
+			<?php }?>
+		</a>
+		<?php } ?>
+		<?php  }elseif($id == TEACH){?>
+		<?php foreach($list as $list_item){?>
+	 	<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id=<?php echo $list_item['id']?>" class="expertInfoMoreMain">
+			<div class="expertInfoMoreTop">
+				<div class="left">
+					<?php echo $list_item['title']?>
+				</div>
+				<div class="right">
+					<?php if(date(‘Y’,$list_item['up_time']) === date(‘Y’,time())){ echo date('m-d',$list_item['up_time']);}else{echo date('Y-m-d',$list_item['up_time']);}?>
+				</div>
+			</div>
+			<?php if(empty($list_item['pc_cover'])){?>
+			<!--教育新闻/热点话题（无图片）-->
+			<div class="expertInfoMoreBottom">
+				<p class="expertInfoMoreText">
+					<?php echo strip_tags(html_entity_decode($list_item['content']))?>
+				</p>
+				<div class="expertInfoMoreWatch">
+					<img src="__PUBLIC__/img/expertInfo/watch.png" alt="">
+					<?php echo $list_item['browse_count'] ;?>
+				</div>
+			</div>
+			<?php }else{?>
+			<div class="expertInfoMoreBottom">
+				<img src="<?php echo $oss_path.$list_item['pc_cover']?>" alt="" class="expertInfoMoreImg">
+				<p class="expertInfoMoreText expertInfoMoreTextDynamic" >
+					<?php echo strip_tags(html_entity_decode($list_item['content']))?>
+				</p>
+				<div class="expertInfoMoreWatch">
+					<img src="__PUBLIC__/img/expertInfo/watch.png" alt="">
+					<?php echo $list_item['browse_count'] ;?>
+				</div>
+			</div>
+			<?php }?>
+		</a>
+		<?php } ?>
+		<?php  }else{?>
+		<?php foreach($list as $list_item){?>
+		<!--获奖作品部分-->
+		<a href="/index.php?m=Home&c=ExpertInformation&a=winningWorksDetails&id=<?php echo $list_item['id']?>" class="expertInfoMoreMainWorks">
+			<img src="<?php echo $oss_path.$list_item['pc_cover']?>" alt="" class="expertInfoMoreWorksImg">
+			<!--教育新闻/热点话题（无图片）-->
+			<div class="expertInfoMoreRight">
+				<div class="ib expertInfoMoreRightTitle">
+					<?php echo $list_item['title']?>
+				</div>
+				<br>
+				<div class="ib expertInfoMoreRightWatch">
+					<img src="__PUBLIC__/img/expertInfo/watch.png" alt="" class="">
+					<?php echo $list_item['browse_count']?>
+				</div>
+				<br>
+				<div class="oh expertInfoMoreRightTime">
+					<span class="ib left"><?php echo $list_item['linkaddress']?></span>
+					<span class="ib right"><?php if(date(‘Y’,$list_item['up_time']) === date(‘Y’,time())){ echo date('m-d',$list_item['up_time']);}else{echo date('Y-m-d',$list_item['up_time']);}?></span>
+				</div>
+			</div>
+		</a>
+		<?php }?>
+		<?php }?>
+		<!--页码-->
+		<div class="Pagination">{$page}</div>
+	</div>
+	
+</div>
+
+<script>
+	// 超过150个字，显示省略号加详细
+	$('.expertInfoMoreText').each(function(){
+		var maxwidth=150;
+		var trimString = $.trim($(this).html());
+		if(trimString.length > maxwidth){
+			$(this).html(trimString.substring(0,maxwidth)+'…'+'<span class="detailSpan">[详细]</span>');
+		}
+	});
+    function submits(type_values,tip) {
+        var str = '';
+        var id = "<?php echo $id?>";
+        var keyword = $('.search_text').val();
+        if(keyword != ''){
+            str += '&keyword='+keyword;
+        }
+        str += '&id='+id;
+        str = "index.php?m=Home&c=ExpertInformation&a=expertInformationMore" + str;
+        location.href = str;
+    }
+    $('.search_btn').click(function () {
+        submits();
+        return false;
+    });
+</script>
+

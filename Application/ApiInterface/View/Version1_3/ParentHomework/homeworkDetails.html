@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title></title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				font-size: 16px;
+				-webkit-tap-highlight-color: rgba(0,0,0,0);
+				-webkit-tap-highlight-color: transparent;
+			}
+			html,body{
+				height: 100%
+			}
+			body{
+				color: #333;
+			}
+			li{
+				list-style: none;
+			}
+			.p20{
+				padding:10px 20px
+			}
+			.top ul li{
+				overflow: hidden;
+				line-height: 32px;
+				border-bottom: 1px solid #eee
+			}
+			.left{
+				float: left;
+			}
+			.titleft{
+				height: 100%
+			}
+			.pright{
+				width:calc(100% - 80px);
+			}
+			.yellow{
+				color: #f2b718
+			}
+			.right{
+				float: right;
+			}
+			.color999{
+				color: #999
+			}
+			.m10{
+				margin: 10px 0
+			}
+			.youjian{
+				padding-right: 15px;
+				background: url(__PUBLIC__/img/Apphomework/youjian.png) no-repeat right 9px;;
+				background-size: 10px
+			}
+			.border{
+				height: 1px ;
+				background: #eee;
+				position: relative;
+				z-index: 1;
+				top:17px
+			}
+			.text-center{
+				text-align: center;
+			}
+			.of{
+				overflow: hidden;
+			}
+			.title{
+				display: inline-block;
+				padding: 5px 10px;
+				background: #fff;
+				position: relative;
+				z-index: 2
+			}
+			a{
+				text-decoration: none;
+				color:#999
+			}
+			.w20{
+				width: 20%
+			}
+			.qbtn{
+				width: 40px;
+				height: 40px;
+				display: inline-block;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 50%;
+				border: 1px solid #f2b718;
+				margin: 5px
+			}
+			.border-top{
+				border-top: 5px solid #f4f4f4
+			}
+		</style>
+	</head>
+	<body>
+		<div class="top p20">
+			<ul>
+				<li>
+					<p class="left">
+						布置时间：
+					</p>
+					<p class="left buzhi">
+
+					</p>
+				</li>
+				<li>
+					<p class="left">
+						截止时间：
+					</p>
+					<p class="left jiezhi">
+
+					</p>
+					<span class="yellow right status">
+
+					</span>
+				</li>
+				<li>
+					<p class="left titleft">
+						作业要求：
+					</p>
+					<p class="left pright yaoqiu" >
+
+					</p>
+				</li>
+				<li>
+					<p class="left">
+						完成情况：
+					</p>
+					<p class="left">
+						<span class="yiwancheng">0</span>/<span class="zongshu">0</span>人
+					</p>
+					<span class="right color999 youjian">
+						<a href="/ApiInterface/Version1_2/ParentHomework/homeworkSituation?userId={$userId}&role={$role}&homeworkId={$homeworkId}&classId={$classId}&name={$name}" class="setStudentNum"></a>
+					</span>
+				</li>
+			</ul>
+		</div>
+		<div class="p20 border-top">
+			<div class="m10">
+				共<span class="totalCount">0</span>道题<span class="color999">(<span class="totalScore"></span>分)</span>
+			</div>
+			<?php foreach ($result['data'] as $key => $value): ?>
+				<div class="text-center">
+					<div class="border"></div>
+					<p class="title">
+						<?=$value['name']?>
+					</p>
+				</div>
+				<div >
+					<?php foreach ($value['data'] as $k => $v): ?>
+					<div class="parent_index">
+						<p class="color999">
+							<?=$v['name']?>
+						</p>
+						<div class="of">
+								<?php foreach ($v['data'] as $ek => $ev): ?>
+									<li class="w20 left">
+										<a href="javascript:" class="qbtn">{$ek+1}</a>
+									</li>
+								<?php endforeach; ?>
+						</div>
+					</div>
+					<?php endforeach; ?>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	</body>
+	<script src="__PUBLIC__/js/external/jquery.js" type="text/javascript"></script>
+	<script>
+		var userId = "{$userId}";
+		var role = "{$role}";
+		var homeworkId = "{$homeworkId}";
+		var classId = "{$classId}";
+		var dataList={'userId':userId,'role':role,'homeworkId':homeworkId,'classId':classId};
+		var submitId = "{$submitId}";
+		$.ajax({
+			type: 'POST',
+			url: '/ApiInterface/Version1_2/HomeworkParent/getHomeworkAbstract',
+			cache: false,
+			data:dataList,
+			dataType:'json',
+			success: function(msg){
+				$('.buzhi').html(msg.data.releaseTime);
+				$('.jiezhi').html(msg.data.endTime);
+				$('.status').html(msg.data.status);
+				$('.yaoqiu').html(msg.data.requirement);
+				$('.totalCount').html(msg.data.totalCount);
+				$('.totalScore').html(msg.data.totalScore);
+				$('title').html(msg.data.name);
+			}
+		})
+
+		$.ajax({
+			type: 'POST',
+			url: '/ApiInterface/Version1_2/HomeworkParent/getSubmitHomeworkList',
+			cache: false,
+			data:dataList,
+			dataType:'json',
+			success: function(msg){
+				if (msg.data.data.length == 0) {
+					$('.youjian').hide();
+				} else {
+					$('.setStudentNum').html(msg.data.data.length+"名学生已提交");
+				}
+				$('.yiwancheng').html(msg.data.data.length);
+				$('.zongshu').html(msg.data.totalStudentCount);
+			}
+		})
+		$(document).on('click','.qbtn',function(){
+
+			var i =0;
+			var a = 0;
+			var c = 0;
+			if($(this).parents('.parent_index').index() == 0){
+				var i = $(this).parent().index();
+			}else{
+				var a = $(this).parents('.parent_index').index();
+				for(var b = 0;b<a;b++){
+					c += $('.parent_index').eq(b).find('.w20').length;
+					i = c
+				}
+				i = i + $(this).parent().index()
+			}
+			var name = $('title').html();
+			window.location.href = "__URL__/exerciseDetails?submitId={$submitId}&userId={$userId}&role={$role}&id={$homeworkId}&type=1&flag="+i+"&name="+name;
+			a =0;
+		})
+
+	</script>
+</html>

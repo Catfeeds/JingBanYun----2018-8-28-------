@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/> 
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>消息详情</title> 
+    <link rel="stylesheet" type="text/css" href="__PUBLIC_THEME__/stylesheets/app.css?v=2"/>
+    <link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+    <style>
+		* {
+			box-sizing: border-box
+		}
+		
+		html, body {
+            color: #333;
+			width: 100%;
+			overflow: auto;
+			padding: 5px
+        }
+		
+		.wrapper {
+			padding: 0;
+		}
+		
+		h3 {
+			font-size: 20px
+		}
+		
+		.brief {
+			font-size: 18px;
+			padding: 0 !important;
+			color: #999;
+			text-align: center;
+		}
+		
+		.content {
+			font-size: 18px;
+			text-align: left;
+			line-height: 30px;
+			text-indent: 2em;
+			word-break: break-all;
+			padding: 10px 0;
+		}
+
+		.content p {
+			margin: 0 !important;
+		}
+
+		.content video, .content audio, .content img{
+			width: 100% !important;
+			height: auto !important;
+			margin: 10px auto !important;
+		}
+		
+	</style>
+	
+</head>
+<body>
+	<div class="wrapper"> 
+		<div class="content" style="">
+            <if condition="$data['status'] eq 4">
+                该消息已被撤回！
+            <elseif condition="$data['status'] eq 2 || $data['status'] eq 3"/>
+			    {$data.message_content}
+            </if>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		(function (doc, win) {
+			var docEl = doc.documentElement,
+				resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+				recalc = function () {
+					var clientWidth = docEl.clientWidth;
+					if (!clientWidth) return;
+					docEl.style.fontSize = 10 * (clientWidth / 320) + 'px';
+				};
+
+			if (!doc.addEventListener) return;
+			win.addEventListener(resizeEvt, recalc, false);
+			doc.addEventListener('DOMContentLoaded', recalc, false);
+		})(document, window);
+	</script>
+</body>
+</html>

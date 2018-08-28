@@ -1,0 +1,65 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet"> 
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<!--<div><a href="{:U('admin/courseCreate')}">创建学科</a></div>-->
+
+<div style="margin-bottom: 12px;float:left;">
+    <a href="{:U('admin/courseCreate')}" title="创建学科" class="button {:session('btntheme')}">创建学科</a>
+</div>
+    
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">学科</th>
+        <th class="text-center">代码</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="">
+        <tr id="l_{$data.id}">
+            <td class="text-center">
+                {$data.course_name}
+            </td>
+            <td class="text-center">
+                {$data.code}
+            </td>
+            
+            <td class="text-center">
+                <a href="{:U('admin/courseUpdView?id=')}{$data.id}" class="button info">修改</a>
+                <a onclick="delete_data(this,{$data.id})" class="button info">删除</a>
+            </td> 
+        </tr>
+    </volist>
+    </tbody>
+</table>
+
+<script>
+    function delete_data(obj,id){
+        if(confirm('您确定删除吗')){ 
+            $.ajax({
+                type:"post",
+                data:{'id':id},
+                url:"{:U('admin/courseDelete?id=')}"+id,
+                success: function(msg){
+                    if(msg==1){
+                        //这里删除这一条记录
+                        $(obj).parent().parent().remove();
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false
+        });
+    });
+</script>

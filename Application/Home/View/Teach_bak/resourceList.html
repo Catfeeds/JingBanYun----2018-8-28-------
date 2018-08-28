@@ -1,0 +1,121 @@
+<layout name="teacher_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/publishResource')}" title="发布资源" class="btn btn-primary">发布资源</a>
+    &nbsp;
+    <a href="{:U('Teach/myPublishResource')}" title="我发布的资源" class="btn btn-primary">我发布的资源</a>
+    &nbsp;
+    <a href="{:U('Teach/myFavorResource')}" title="我收藏的资源" class="btn btn-primary">我收藏的资源</a>
+</div>
+<form action="{:U('Teach/resourceList')}" method="post">
+    <div class="row">
+        <div class="col-md-3">
+            <label>学科：</label>
+            <select id="course_id" name="course_id" onchange="getTextbooks()" class="form-control">
+                <option value="">-请选择-</option>
+                <volist name="courses" id="dataCourse">
+                    <option value="{$dataCourse.id}" {$dataCourse[
+                    'id']==$course_id?'selected':''}>
+                    {$dataCourse.code} : {$dataCourse.course_name}
+                    </option>
+                </volist>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>年级：</label>
+            <select id="grade_id" name="grade_id" onchange="getTextbooks()" class="form-control">
+                <option value="">-请选择-</option>
+                <volist name="grades" id="dataGrade">
+                    <option value="{$dataGrade.id}" {$dataGrade[
+                    'id']==$grade_id?'selected':''}>{$dataGrade.grade}</option>
+                </volist>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>教材：</label>
+            <select id="textbook_id" name="textbook_id" class="form-control">
+                <option value="">-请选择-</option>
+                <volist name="textbooks" id="dataTextbook">
+                    <option value="{$dataTextbook.id}" {$dataTextbook[
+                    'id']==$textbook_id?'selected':''}>{$dataTextbook.name}</option>
+                </volist>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>类型：</label>
+            <select id="type" name="type" class="form-control">
+                <option value="">-请选择-</option>
+                <option value="HTML" {$type=='HTML'?'selected':''}>图文</option>
+                <option value="Word" {$type=='Word'?'selected':''}>Word</option>
+                <option value="PDF" {$type=='PDF'?'selected':''}>PDF</option>
+                <option value="MP4" {$type=='MP4'?'selected':''}>视频</option>
+                <option value="PPT" {$type=='PPT'?'selected':''}>PPT</option>
+            </select>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 10px;">
+        <div class="col-md-3">
+            <label>关键词：</label>
+            <input class="form-control" type="text" name="keyword" value="{$keyword}">
+        </div>
+        <div class="col-md-3">
+            <label>排序：</label>
+            <select id="sort_column" name="sort_column" class="form-control">
+                <option value="create_at" {$sort_column=='create_at'?'selected':''}>发布时间</option>
+                <option value="zan_count" {$sort_column=='zan_count'?'selected':''}>获赞数</option>
+                <option value="favorite_count" {$sort_column=='favorite_count'?'selected':''}>收藏数</option>
+                <option value="follow_count" {$sort_column=='follow_count'?'selected':''}>观看数</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-default" style="display: block;">搜索</button>
+        </div>
+    </div>
+</form>
+<empty name="list">
+    <div class="emptyResult">对不起，您想要搜索的内容不存在</div>
+</empty>
+<table class="table striped hovered border" style="margin-top: 20px;">
+    <thead>
+    <tr>
+        <th>发布单位/人</th>
+        <th>资源名称</th>
+        <th class="text-center">发布时间</th>
+        <th class="text-center">获赞数</th>
+        <th class="text-center">收藏数</th>
+        <th class="text-center">观看数</th>
+        <th class="text-center">关联教材</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data">
+        <tr id="l_{$data.id}">
+            <td>
+                <img class="list_avatar" src="__ROOT__/Uploads/Avatars/{$data.teacher_id}_t.jpg">
+                {$data.teacher_name}
+            </td>
+            <td>
+                <h3 class="list_title">
+                    <a href="{:U('Teach/resourceDetails?id=')}{$data.id}">{$data.name}</a>
+                </h3>
+
+                <div class="list_sub_title">{$data.description}</div>
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                {$data.zan_count}
+            </td>
+            <td class="text-center">
+                {$data.favorite_count}
+            </td>
+            <td class="text-center">
+                {$data.follow_count}
+            </td>
+            <td class="text-center">
+                {$data.textbook}
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>

@@ -1,0 +1,37 @@
+<div class="main_opr">
+    <?php if($_GET['mycat'] ==1 ) :?>
+    <a href="javascript:;" title="我参加的活动" id="myJoinActivity" class="btn btn-main-opr">我参加的活动</a>
+    <?php else :?>
+    <a href="javascript:;" title="我收藏的资源" id="myFavorRes" class="btn btn-main-opr">我收藏的资源</a>
+    <?php if($_SESSION['teacher']['id'] != 0) :?>
+    <a href="javascript:;" title="我收藏的习题" id="myFavorExercise" class="btn btn-main-opr">我收藏的习题</a>
+    <?php endif; ?>
+    <a href="javascript:;" title="我收藏的活动" id="myFavorActivity" class="btn btn-main-opr">我收藏的活动</a>
+    <a href="javascript:;" title="我收藏的活动作品" id="myFavorWork" class="btn btn-main-opr">我收藏的活动作品</a>
+    <?php endif; ?>
+</div>
+<script>
+
+    $(function()
+    {
+        var currentController = "<?php if($_SESSION['teacher']['id'] != 0) : ?>Teach<?php elseif($_SESSION['student']['id'] != 0) :?>Student<?php elseif($_SESSION['parent']['id'] != 0) :?>Parent<?php endif; ?>";
+        var idLocationJson = {
+            'myFavorRes' : ["index.php?m=Home&c=Myresources&a=redbjResourceList"],
+            'myFavorExercise' : ["index.php?m=Home&c=" + currentController + "&a=myExercises"],
+            'myFavorActivity' : ["index.php?m=Home&c=Activity&a=my","index.php?m=Home&c=Activity&a=get_more_my"],
+            'myJoinActivity'  : ["index.php?m=Home&c=Activity&a=my&mycat=1","index.php?m=Home&c=Activity&a=get_more_my"],
+            'myFavorWork'     : ["index.php?m=Home&c=Activity&a=myWorks"]
+        }
+        for(var i in idLocationJson)
+        {
+            if(location.href.indexOf(idLocationJson[i][0]) != -1 || location.href.indexOf(idLocationJson[i][1]) != -1)
+            {
+                $('#'+i).addClass('btn-main-opr-active').siblings().removeClass('btn-main-opr-active');
+            }
+            $('#'+i).click(function(){
+                location.href = idLocationJson[$(this).attr('id')][0];
+            });
+        }
+    });
+
+</script>

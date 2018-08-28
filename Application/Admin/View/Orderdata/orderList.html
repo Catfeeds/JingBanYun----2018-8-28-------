@@ -1,0 +1,270 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<style>
+	.cellNew .cell1 {
+		width: 33.33% !important;
+	}
+
+	.cellNew .cell2 {
+		width: 66% !important;
+	}
+
+	.cellNew .cell2 .input-control {
+		width: 37.7% !important;
+	}
+
+	.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+		box-sizing: content-box;
+	}
+
+	.qq-uploader {
+		max-height: 540px
+	}
+
+	#laydate_hms {
+		display: none !important;
+	}
+</style>
+
+<!--
+<div class="titleBox">
+	<p class="blueText fs18 underline1">班级管理</p>
+	<div class="underline2"></div>
+</div>
+-->
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		订单管理
+		<span class="blueSpan">
+			<a href="javascript:;">订单管理</a>>>
+			<a href="javascript:;">订单列表</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php?m=Admin&c=Orderdata&a=orderList" method="get">
+	<input type="hidden" name="m" value="Admin">
+	<input type="hidden" name="c" value="Orderdata">
+	<input type="hidden" name="a" value="orderList">
+	<p class="blueText fs16">订单查询</p>
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+
+			<div class="cell">
+				<label>商品名称：</label>
+				<input type="text" class="input-control school_name" name="name" value="{$parameter.name}" placeholder="请输入商品名称">
+			</div>
+
+			<div class="cell">
+				<label>订单编号：</label>
+				<input type="text" class="input-control school_name" name="order_sn" value="{$parameter.order_sn}" placeholder="请输入订单编号">
+			</div>
+
+			<div class="cell">
+				<label>订单状态：</label>
+				<select id="school_status" class="input-control" name="order_status">
+					<option value="">-请选择-</option>
+					<option value="2" <if condition="$parameter.order_status eq 2"> selected="true"</if> >已完成</option>
+					<option value="1" <if condition="$parameter.order_status eq 1"> selected="true"</if> >待付款</option>
+					<option value="3" <if condition="$parameter.order_status eq 3"> selected="true"</if> >已取消</option>
+				</select>
+			</div>
+
+			<div class="cell">
+				<label>用户手机号：</label>
+				<input type="text" class="input-control school_name" name="telephone" value="{$parameter.telephone}" placeholder="请输入用户手机号">
+			</div>
+
+			<div class="cell">
+				<label>用户角色：</label>
+				<select class="input-control" name="user_role">
+					<option value="">-请选择-</option>
+					<option value="2" <if condition="$parameter.user_role eq 2"> selected="true"</if> >教师</option>
+					<option value="3" <if condition="$parameter.user_role eq 3"> selected="true"</if> >学生</option>
+					<option value="4" <if condition="$parameter.user_role eq 4"> selected="true"</if> >家长</option>
+				</select>
+			</div>
+
+			<div class="cell">
+				<label>支付方式：</label>
+				<select  class="input-control" name="pay_type">
+					<option value="">-请选择-</option>
+					<option value="2" <if condition="$parameter.pay_type eq 2"> selected="true"</if> >微信</option>
+					<option value="1" <if condition="$parameter.pay_type eq 1"> selected="true"</if> >支付宝</option>
+				</select>
+			</div>
+		</div>
+		<div class="row cells2 cellNew">
+			<div class="cell cell1">
+				<label>下单来源：</label>
+				<select class="input-control" name="pay_source">
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$parameter.pay_source eq 1"> selected="true"</if> >PC</option>
+					<option value="2" <if condition="$parameter.pay_source eq 2"> selected="true"</if> >安卓</option>
+					<option value="3" <if condition="$parameter.pay_source eq 3"> selected="true"</if> >苹果</option>
+				</select>
+			</div>
+
+
+			<div class="cell cell2">
+				<label>下单时间：</label>
+				<input type="text" value="{$parameter.start}" class="input-control" id="startTime" name="start" placeholder="开始时间">
+				&nbsp;至&nbsp;
+				<input type="text" value="{$parameter.end}" class="input-control" id="endTime" name="end" placeholder="结束时间">
+			</div>
+
+
+		</div>
+	</div>
+
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>-->
+		<input type='submit' value='查询' class='blueBtn' />
+		<input type='button' value='重置' class='blueBtn resetButton' />
+	</div>
+</form>
+
+
+
+<p class="blueText fs16">订单列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center">序号</th>
+			<th class="text-center">订单编号</th>
+			<th class="text-center">商品名称</th>
+			<th class="text-center">用户手机号</th>
+			<th class="text-center">用户角色</th>
+			<th class="text-center">订单状态</th>
+			<th class="text-center">支付价格</th>
+			<th class="text-center">支付方式</th>
+			<th class="text-center">下单来源</th>
+			<th class="text-center">下单时间</th>
+			<!--<th class="text-center">操作</th>-->
+		</tr>
+	</thead>
+	<tbody id="body">
+		<volist name="list" id="item" key="key">
+			<tr>
+				<td class="text-center">
+					<?=(($p-1)*25)+$key?>
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$item.order_sn}
+				</td>
+				<td class="text-center" title="{$item.school_code}">
+					{$item.name}
+				</td>
+				<td class="text-center">
+					{$item.telephone}
+				</td>
+
+				<td class="text-center">
+					<if condition="$item['user_role'] eq 2">老师
+						<elseif condition="$item['user_role'] eq 3"/>学生
+						<else />家长
+					</if>
+				</td>
+
+				<td class="text-center">
+					<if condition="$item['order_status'] eq 1">待付款
+						<elseif condition="$item['order_status'] eq 2"/>已完成
+						<else />已取消
+					</if>
+				</td>
+
+				<td class="text-center">
+					{$item.pay_fee}
+				</td>
+
+				<td class="text-center">
+					<if condition="$item['pay_type'] eq 1">支付宝
+						<else />微信
+					</if>
+				</td>
+				<td class="text-center">
+					<if condition="$item['pay_source'] eq 1">PC
+						<elseif condition="$item['pay_source'] eq 2"/>android
+						<else />IOS
+					</if>
+				</td>
+				<td class="text-center">
+					{$item.create_at|date="Y-m-d",###}
+				</td>
+
+				<!--<td class="text-center">
+					<a href="javascript:;" class="operBtn" id="delete_click" attr="{$item.id}">详情</a>
+				</td>-->
+
+			</tr>
+		</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	$(document).ready(function () {
+		$('#listWrapper').DataTable({
+			"scrollCollapse": true,
+			"paging": false,
+			"bSort": false,
+			"aoColumns": [
+				{"width": "7%"},
+				{"width": "10%"},
+				{"width": "15%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "10%"},
+				{"width": "10%"}
+            ]
+		});
+	});
+</script>
+
+<script>
+   !function(){
+		laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD ',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD ',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+
+	$('.resetButton').click(function() {
+		window.location.href="{:U('Orderdata/orderList')}";
+	})
+</script>

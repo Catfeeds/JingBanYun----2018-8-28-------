@@ -1,0 +1,221 @@
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript">
+	window.UEDITOR_HOME_URL = "/Public/new_ueditor/ueditor/";
+</script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+</style>
+<div class="boxOutter" id="app" v-cloak>
+
+	<div class="">
+        <include file="CreateExercise:header" />
+				<div class="ml62">
+					<span >选项数量</span>
+					<select class="exerciseNums selectSize" name="" onchange="optionShow(this)" v-model="exerciseNums">
+                         <option>2</option>
+                         <option>3</option>
+                         <option selected>4</option>
+                         <option>5</option>
+                         <option>6</option>
+                         <option>7</option>
+                         <option>8</option>
+					</select>
+				    <div class="mt10 editors db">
+						<span class="textSpan optionSpan left">A</span>
+						 <div style="width: 580px;" class="dib left mr10">
+									<script type="text/plain" id="messageA" name="message" style="width:100%;height:50px;"></script>
+						 </div>
+						 <button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('A')">设为答案</button>
+						 <button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('A','cancel')">取消设置</button>
+						 <br>
+						 <div class="dib left mt10 red classred" v-if="answerA">
+							 *该项不可为空或格式错误
+						 </div>
+						<div class="dib left mt10 red classred" v-if="isAnswer">
+							*请选择答案
+						</div>
+					</div>
+					<div class="mt10 editors db">
+						 <span class="textSpan optionSpan left">B</span>
+							<div style="width: 580px;" class="dib left mr10">
+									 <script type="text/plain" id="messageB" name="message" style="width:100%;height:50px;"></script>
+							</div>
+							<button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('B')" >设为答案</button>
+							<button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('B','cancel')" >取消设置</button>
+							<br>
+							<div class="dib left mt10 red classred" v-if="answerB">
+								*该项不可为空或格式错误
+							</div>
+                    </div>
+					 <div class="mt10 editors db">
+                        <span class="textSpan optionSpan left">C</span>
+                             <div style="width: 580px;" class="dib left mr10">
+                                        <script type="text/plain" id="messageC" name="message" style="width:100%;height:50px;"></script>
+                             </div>
+                             <button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('C')">设为答案</button>
+                             <button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('C','cancel')">取消设置</button>
+                             <br>
+                             <div class="dib left mt10 red classred" v-if="answerC">
+                                 *该项不可为空或格式错误
+                             </div>
+                        </div>
+						    <div class="mt10 editors db">
+							 <span class="textSpan optionSpan left">D</span>
+								<div style="width: 580px;" class="dib left mr10">
+										 <script type="text/plain" id="messageD" name="message" style="width:100%;height:50px;"></script>
+								</div>
+								<button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('D')">设为答案</button>
+								<button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('D','cancel')">取消设置</button>
+								<br>
+								<div class="dib left mt10 red classred" v-if="answerD">
+									*该项不可为空或格式错误
+								</div>
+						    </div>
+						    <div class="mt10 editors dn">
+								<span class="textSpan optionSpan left">E</span>
+								 <div style="width: 580px;" class="dib left mr10">
+											<script type="text/plain" id="messageE" name="message" style="width:100%;height:50px;"></script>
+								 </div>
+								 <button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('E')">设为答案</button>
+								 <button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('E','cancel')">取消设置</button>
+								 <br>
+								 <div class="dib left mt10 red classred" v-if="answerE">
+									 *该项不可为空或格式错误
+								 </div>
+							</div>
+							<div class="mt10 editors dn">
+								 <span class="textSpan optionSpan left">F</span>
+									<div style="width: 580px;" class="dib left mr10">
+						 					<script type="text/plain" id="messageF" name="message" style="width:100%;height:50px;"></script>
+						 		 </div>
+									<button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('F')">设为答案</button>
+									<button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('F','cancel')">取消设置</button>
+									<br>
+									<div class="dib left mt10 red classred" v-if="answerF">
+										*该项不可为空或格式错误
+									</div>
+							 </div>
+							 <div class="mt10 editors dn">
+									<span class="textSpan optionSpan left">G</span>
+									 <div style="width: 580px;" class="dib left mr10">
+												<script type="text/plain" id="messageG" name="message" style="width:100%;height:50px;"></script>
+									 </div>
+									 <button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('G')">设为答案</button>
+									 <button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('G','cancel')">取消设置</button>
+									 <br>
+									 <div class="dib left mt10 red classred" v-if="answerG">
+										 *该项不可为空或格式错误
+									 </div>
+								</div>
+								<div class="mt10 editors dn">
+									 <span class="textSpan optionSpan left">H</span>
+										<div style="width: 580px;" class="dib left mr10">
+							 					<script type="text/plain" id="messageH" name="message" style="width:100%;height:50px;"></script>
+							 		 </div>
+										<button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('H')">设为答案</button>
+										<button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('H','cancel')">取消设置</button>
+										<br>
+										<div class="dib left mt10 red classred" v-if="answerH">
+											*该项不可为空或格式错误
+										</div>
+								 </div>
+				</div>
+
+				<div class="text-center mtb10">
+					<button type="button" name="button" class="btn pl20 pr20 preview" onclick="preview(this)">预览</button>
+				</div>
+
+				<div class="mtb10">
+					<span class="color3baeabFixed w64 mr0">分数</span>
+                    <input type="number" v-model="Fractiondata" class="inputCommon"/>
+						<span class="red classred" v-if="Fraction">*格式不正确请重新输入</span>
+
+				</div>
+				<div class="mtb10">
+					<div class="borderBottom">
+							<p  class="tabBtn pl20 pr20 text-center">
+								解析
+								<div class="dib mt10 red classred" v-if="messageJxshow">
+									*该项不可为空
+								</div>
+							</p>
+					</div>
+					<div class="mt10 mb10">
+						<script type="text/plain" id="messageJx" name="message" style="width:100%;height:150px;"></script>
+
+					</div>
+					<button type="button" name="button" class="btn textSpan" onclick="preview(this)">整体预览</button>
+					<button type="button" name="button" class="btn textSpan" v-on:click='inputExercises()'>录入习题</button>
+					<button type="button" name="button" class="btn textSpan Canceloperation">取消操作</button>
+				</div>
+			</li>
+			</ul>
+	</div>
+</div>
+<div class="exercise_choice dn">
+	<div class="exerciseTitle">
+		<p class="box1000 mt20">
+			<button type="button" name="button" class="btn right mr0 answer4">所有选项一行</button>
+			<button type="button" name="button" class="btn right answer2">每行两个选项</button>
+			<button type="button" name="button" class="btn right answer1">每行一个选项</button>
+		</p>
+		<div class="exerciseTemplate">
+			<div class="p15 pb0">
+				<span class="score"></span>
+				<span class="caption"></span>
+			</div>
+			<ul class="borderBottomEEE exerciseContent ">
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+			</ul>
+			<div class="exerciseAnswer">
+				<span class="color3baeab">【答案】</span>
+				<span class="solution"></span>
+			</div>
+			<div class="exerciseJx">
+				<span class="color3baeab">【解析】</span>
+				<span class="analysisSpan"></span>
+			</div>
+			<div class="difficulty">
+				<span >难度：</span>
+				<span class="">
+
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" class="big_paper_id" value="{$big_paper_id}">
+<input type="hidden" class="paper_id" value="{$paper_id}">
+<input type="hidden" name="repeat_commit" class="repeat_commit" value="{:session('TOKEN')}">
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+
+<script>
+		var ueMessage = UE.getEditor('message');
+		var messageA = UE.getEditor('messageA');
+		var messageB = UE.getEditor('messageB');
+		var messageC = UE.getEditor('messageC');
+		var messageD = UE.getEditor('messageD');
+		var messageE = UE.getEditor('messageE');
+		var messageF = UE.getEditor('messageF');
+		var messageG = UE.getEditor('messageG');
+		var messageH = UE.getEditor('messageH');
+		var messageJx = UE.getEditor('messageJx');
+		var answerWidth = 1;
+</script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/input.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/newRender.js"></script>

@@ -1,0 +1,124 @@
+<layout name="parent_layout"/>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/ueditor/lang/zh-cn/zh-cn.js"></script>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 教案列表" class="button danger">&lt; 返回 教案列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/modifyLessonPlanning" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput" data-show-error-hint="true">
+        <input type="hidden" name="id" value="{$id}">
+        <div class="example" data-text="基本信息">
+            <div class="form_section">
+                <label for="name">教案名称</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="name" id="name" value="{$data.name}" data-validate-func="required" data-validate-hint="教案名称不能为空">
+                </div>
+            </div>
+
+            <div class="form_section" style="height: 126px">
+                <label for="description">教案描述</label>
+
+                <div class="input-control text full-size">
+                    <textarea id="description" name="description" rows="3">{$data.description}</textarea>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="example" data-text="关联数据">
+            <div class="form_section">
+                <label for="course_id">关联学科</label>
+
+                <div class="input-control text full-size">
+                    <select id="course_id" name="course_id" onchange="getTextbooks()" data-validate-func="required" data-validate-hint="关联学科不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="courses" id="dataCourse" empty="暂时没有信息">
+                            <option value="{$dataCourse.id}" {($data['course_id']==dataCourse['id'])?'selected':''}>{$dataCourse.code} : {$dataCourse.course_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="grade_id">关联年级</label>
+
+                <div class="input-control text full-size">
+                    <select id="grade_id" name="grade_id" onchange="getTextbooks()" data-validate-func="required" data-validate-hint="关联年级不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                            <option value="{$dataGrade.id}" {($data['grade_id']==dataGrade['id'])?'selected':''}>{$dataGrade.grade}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="textbook_id">教材分册</label>
+
+                <div class="input-control text full-size">
+                    <select id="textbook_id" name="textbook_id" data-validate-func="required" data-validate-hint="教材分册不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="textbooks" id="dataTextbook" empty="暂时没有信息">
+                            <option value="{$dataTextbook.id}" {($data['textbook_id']==dataTextbook['id'])?'selected':''}>{$dataTextbook.name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="example" data-text="教案内容">
+            <div>
+                <script type="text/plain" id="content" name="content" style="width:100%;height:340px;">
+                {$data.content}
+                </script>
+            </div>
+        </div>
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button info block-shadow-info text-shadow">保存</button>
+        </div>
+    </form>
+</div>
+<script>
+    function getTextbooks() {
+
+        var courseId = $('#course_id').val();
+        var gradeId = $('#grade_id').val();
+        if (courseId == '' || gradeId == '') {
+            $('#textbook_id').html('<option value="">-请选择-</option>');
+        }
+        $.get('index.php?m=Home&c=DictRest&a=get_textbooks_by_courseAndGrade', {
+            'course_id': courseId,
+            'grade_id': gradeId
+        }, function (res) {
+            var options = [];
+            $.each(res, function (index, item) {
+                options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+            });
+            if (options.length > 0) {
+                $('#textbook_id').html(options.join(''));
+            } else {
+                $('#textbook_id').html('<option value="">-请选择-</option>');
+            }
+
+        })
+    }
+</script>
+<script>
+    var ue = UE.getEditor('content');
+</script>
+<script>
+    function notifyOnErrorInput(input){
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+</script>

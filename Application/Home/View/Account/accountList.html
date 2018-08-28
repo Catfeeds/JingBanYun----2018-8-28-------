@@ -1,0 +1,134 @@
+<layout name="admin_layout" />
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<style>
+    td {
+        line-height: 56px
+    }
+</style>
+<div style="text-align: right;">
+    <div>
+        <div style="float:left;display:inline-block"><a href="{:U('Account/addAccount')}" class="button info">创建账户</a></div>
+    </div>
+    <div class="input-control text" data-role="input" style="width: 320px;">
+        <input type="text" id="keyword" name="keyword" placeholder="搜索..." value="{$keyword|default=''}">
+        <button onclick="search()" class="button"><span class="mif-search"></span></button>
+    </div>
+</div>
+<empty name="list">
+    <div class="emptyResult">暂时没有资源</div>
+</empty>
+
+<notempty name="list">
+
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+        <tr>
+            <th class="text-center" style="width:10%">权限类型</th>
+            <th class="text-center" style="width:20%">用户角色</th>
+            <th class="text-center" style="width:15%">创建时间</th>
+            <th class="text-center" style="width:15%">可使用模块</th>
+            <th class="text-center" style="width:10%">状态</th>
+            <th class="text-center" style="width:30%">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <volist name="list" id="data" empty="暂时没有账户数据">
+            <tr>
+                <td class="text-center">
+                    {$data.auth_name}
+                </td>
+                <td class="text-center">{$data.type_name}</td>
+
+                <td class="text-center">
+                    {$data.create_at|date="Y-m-d H:i",###}
+                </td>
+                <td class="text-center">
+                    <select name="" id="" style="width:70%">
+                        <volist name="data.users_type_name" id="node">
+                            <option value="">{$node}</option>
+                        </volist>
+                    </select>
+                </td>
+                <td class="text-center">
+                    <if condition="$data.status eq 1 "> 正常
+                        <else /> 已停用
+                    </if>
+                </td>
+                <td class="text-center">
+
+                    <if condition="$data.status eq 1 "> <a href="javascript:" class="button danger" onclick="approve({$data.id},this)">停用</a>
+                        <else /> <a href="javascript:" class="button danger" onclick="recovery({$data.id},this)" >恢复使用</a>
+                    </if>
+
+                    <a href="{:U('Account/editNodeView?id=')}{$data.id}" class="button info">修改</a>
+                    <a href="javascript:" attr="{$data.id}" class="button delete_button">删除</a>
+                </td>
+
+            </tr>
+        </volist>
+    </tbody>
+</table>
+</notempty>
+<div class="Pagination">{$page}</div>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 305) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns": []
+        });
+    });
+    //搜索
+    function search() {
+        var keyword = $('#keyword').val();
+
+        var url = 'index.php?m=Home&c=Account&a=accountList&keyword=' + keyword;
+        window.location.href = url;
+    }
+
+    //点击恢复使用
+    function recovery(id,obj) {
+        
+        $.get('index.php?m=Home&c=Account&a=recovery', {id: id}, function (res) {
+            if (res == 'success') { 
+                //$(obj).html('恢复使用');
+                //$(obj).prev('td').text('已停用');
+                window.location.reload();
+            } else {
+                alert('通过失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+
+    //点击停用
+    function approve(id,obj) {
+        
+        $.get('index.php?m=Home&c=Account&a=approve', {id: id}, function (res) {
+            if (res == 'success') { 
+                //$(obj).html('恢复使用');
+                //$(obj).prev('td').text('已停用');
+                window.location.reload();
+            } else {
+                alert('通过失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+    //点击删除
+    $('.delete_button').click(function(){
+        if(confirm('您确认删除么')){
+            var id=$(this).attr('attr'); 
+            var obj=this;
+            $.get("index.php?m=Home&c=Account&a=deleteAccount",{'id':id},function(msg){
+                if(msg=='success'){
+                    $(obj).parent().parent().remove();
+                }else{
+                    alert('删除时候,请刷新页面后重试');
+                }
+            });
+        }
+    });
+</script>

@@ -1,0 +1,700 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<!--<link href="__PUBLIC__/dataTable/css/jquery.dataTables.min.css"/>-->
+<link href="__PUBLIC__/dataTable/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/js/Base64.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+
+<style>
+	.tables {
+		position: relative;
+	}
+
+	.tables .rightCheckBox {
+		position: absolute;
+		top: -50px;
+		right: 0
+	}
+</style>
+
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter').css('min-height',boxHeight)
+	})
+</script>
+
+<div class="boxOutter">
+	<div id="form" >
+		<div class="filterOutter">
+			<div class="filterInner">
+				<div class="filterBox">
+					<label for="">试&nbsp;卷&nbsp;ID</label>
+					<input type="text" id="paperId" name="paperId" class="inputCommon"  placeholder="请输入试卷ID">
+				</div>
+				<div class="filterBox">
+					<label for="">试&nbsp;题&nbsp;ID</label>
+					<input type="text" name="questionId" class="inputCommon" id="questionId" placeholder="请输入试题ID" >
+				</div>
+				<div id="course_category">
+					<div class="filterBox">
+						<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+						<select name="courseId" id="courseId" class="inputCommon" >
+							<option value="0">请选择</option>
+							<volist name="courseList" id="courseList">
+								<option value="{$courseList.id}">{$courseList.name}</option>
+							</volist>
+						</select>
+					</div>
+					<div class="filterBox">
+						<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label>
+						<select name="gradeId" id="" class="inputCommon" >
+							<option value="0">请选择</option>
+							<volist name="gradeList" id="gradeList">
+								<option value="{$gradeList.id}">{$gradeList.name}</option>
+							</volist>
+						</select>
+					</div>
+				</div>
+				<div class="filterBox">
+					<label for="">关&nbsp;键&nbsp;词</label>
+					<input name="keyword" type="text" class="inputCommon" id="" placeholder="请输入试题关键词" >
+				</div>
+				<div class="filterBox">
+					<label for="">题&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型</label>
+					<select name="exerciseCategory" id="exerciseCategory" class="inputCommon">
+						<option value="0">请选择</option>
+
+					</select>
+				</div>
+
+				<div class="filterBox">
+					<label for="">试卷名称</label>
+					<input type="text" name="paperName" class="inputCommon" id="" placeholder="请输入试卷名称关键词">
+				</div>
+			</div>
+			<div class="filterBtn">
+				<button class="btn" id="" onclick="getQueryParameter('form');query();">查询</button>
+				<button class="btn" id="" onclick="$('#form input,select').val('');$('#exerciseCategory').html('<option value=\'0\'>请选择</option>')">重置</button>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="tableTop mb20">
+		<div class="tableTitle">试题/试卷列表</div>
+		<button onclick="" class="btn" id="batchPubThirdParty">批量发布</button>
+
+
+	</div>
+	<div class="borderBottom of mb15">
+		<input type="hidden" name="cat" id="cat" value="1"/>
+		<button type="button" onclick="$('#cat').val(1);$(this).siblings('button').removeClass('active');$(this).addClass('active');changeDisplayTable('table1')" name="button" class="tabBtn left active" id="enterBtn">试题</button>
+		<button type="button" onclick="$('#cat').val(2);$(this).siblings('button').removeClass('active');$(this).addClass('active');changeDisplayTable('table2')" name="button" class="tabBtn left" id="proofBtn">试卷</button>
+	</div>
+	<div id="table1" class="tables">
+		<div class="right rightCheckBox">
+			<input type="checkbox" class="checkBox checkAll" id="table1PageSelect">当前页面全选
+			<input type="checkbox" class="checkBox checkAllResult ml20" id="table1AllSelect">检索结果全选
+			<span class="ml20">已选中：<span class="color3baeab" id="table1SelectCount">0</span> 道</span>
+		</div>
+		<table class="tableCommon" id="table">
+			<thead>
+			<tr>
+				<th width=7%>序号</th>
+				<th width=9%>试题ID</th>
+				<th width=9%>学科</th>
+				<th width=9%>年级</th>
+				<th width=9%>题型</th>
+				<th width=24%>题目信息</th>
+				<th width=16%>操作</th>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+	</div>
+	<div id="table2" class="tables" style="display:none">
+		<div class="right rightCheckBox">
+			<input type="checkbox" class="checkBox checkAll" id="table2PageSelect">当前页面全选
+			<input type="checkbox" class="checkBox ml20 checkAllResult" id="table2AllSelect">检索结果全选
+			<span class="ml20">已选中：<span class="color3baeab" id="table2SelectCount">0</span> 套</span>
+		</div>
+		<table class="tableCommon"  id="paperTable">
+			<thead>
+			<tr>
+				<th width=7%>序号</th>
+				<th width=8%>试卷ID</th>
+				<th width=8%>学科</th>
+				<th width=8%>年级</th>
+				<th width=20%>试卷名称</th>
+				<th width=8%>试卷类型</th>
+				<th width=12%>操作</th>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- 弹窗：分派教师知识标引 -->
+<div class="fullBack"></div>
+<div class="adminNotifyBox" id="thirdPublish">
+	<div class="adminNotifyTitle">
+		发布第三方平台
+	</div>
+	<div class="adminNotifyContent">
+		<div class="thirdMain">
+			<div class="mb15">
+				<label for="">平&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;台</label>
+				<select name="" id="platformId" class="inputCommon" disabled ss="{$platformId}">
+					<volist name="platform" id="platform">
+						<option value="{$platform.id}" {$platformId == $platform['id']?'selected':''}>{$platform.name}</option>
+					</volist>
+
+				</select>
+			</div>
+			<div>
+				<label for="">发布时间</label>
+				<input type="text" class="inputCommon inputTime" id="startTime" placeholder="开始时间" readonly>
+				至
+				<input type="text" class="inputCommon inputTime" id="endTime" placeholder="结束时间" readonly>
+			</div>
+		</div>
+	</div>
+	<p class="adminNotifyButton">
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="thirdPublishSure">完成</a>
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="thirdPublishCancel">取消</a>
+	</p>
+</div>
+<input name="formCondition" type="hidden" id="formCondition" value="">
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+
+<script>
+
+	!function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+		// min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actend.min = datas; //开始日选好后，重置结束日的最小日期
+			actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+		// min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+
+	laydate(actstart);
+	laydate(actend);
+
+	var startMin = actstart.min;
+	var startMax = actstart.max;
+	var endMin = actend.min;
+	var endMax = actend.max;
+	function resetDate() {
+		actstart.min = startMin;
+		actstart.max = startMax;
+		actend.min = endMin;
+		actend.max = endMax;
+	}
+
+	$(document).on('click','#laydate_clear',function(){
+		if($('#startTime').val() == '' && $('#endTime').val() != '') {
+			actend.min = endMin;
+		} else if($('#startTime').val() != '' && $('#endTime').val() == '') {
+			actstart.max = startMax;
+		} else {
+			resetDate()
+		}
+	})
+	
+</script>
+<script src="__PUBLIC__/dataTable/js/jquery.dataTables.min.js"></script>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+	function loading(name) {
+		$('body').loading({
+			loadingWidth:240,
+			title:'正在查询...',
+			name:name,
+			discription:'这是一个描述...',
+			direction:'row',
+			type:'origin',
+			originBg:'#71EA71',
+			originDivWidth:30,
+			originDivHeight:30,
+			originWidth:4,
+			originHeight:4,
+			smallLoading:false,
+			titleColor:'#388E7A',
+			loadingBg:'#312923',
+			loadingMaskBg:'rgba(22,22,22,0.2)'
+		});
+	}
+
+	function removeLoad(name) {
+		removeLoading(name);
+	}
+</script>
+<script>
+	function changeDisplayTable(id)
+	{
+		$('.tables').hide();
+		$('#' + id).show();
+	}
+
+	function getQueryParameter(divId)
+	{
+		parameters = {platformId:{$platformId}};
+
+		$('#'+divId+' select').each(function(i,n){
+			if($(n).val() != '' && $(n).val() != 0)
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		$('#'+divId+' input').each(function(i,n){
+			if($(n).val().trim() !== '')
+			{
+				var value = $(n).val();
+				if($(n).attr('id') == 'questionId' || $(n).attr('id') == 'paperId')
+					value = value.replace(' ',',').replace('\t',',');
+				parameters[$(n).attr('name')] = value;
+			}
+		})
+		parameters.cat = $('#cat').val();
+	}
+	var parameters = {platformId:{$platformId}};
+	parameters.cat = $('#cat').val();
+
+	var ignoreQuery = false;
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		ignoreQuery = true;
+	}
+	var oPaperTable = $('#paperTable').dataTable({
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=PublishPlatform&a=testPublishPage",//这个是请求的地址
+		"fnServerData": retrieveData1 ,
+		"fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+			if(aData[6] == 0)
+				$(nRow).addClass('blueTr')
+			else if(aData[6] == 2)
+				$(nRow).addClass('suspended')
+		 },
+		aoColumnDefs : [
+			{
+				"aTargets" :[0],
+				"mRender" : function(data, type, full){
+					return '<input type="checkbox" name="" class="checkBox checkOne" attr-id='+full[1]+'>'+data;
+				}
+
+			},
+			{
+				"aTargets" :　[1],
+				"mRender" : function(data, type, full){
+                    return "<a target='_blank' href='{:U('createExercise/examinePaper')}&paperid="+full[1]+"'>"+data+"</a>";
+                }
+			},
+			{
+				"aTargets" :　[4],
+				"mRender" : function(data, type, full){
+					return "<a target='_blank' href='{:U('createExercise/examinePaper')}&paperid="+full[1]+"'>"+data+"</a>";
+				}
+			},
+			{
+				"aTargets" :　[6],
+				"mRender" : function(data, type, full){
+
+					var buttonStr = '';
+					buttonStr += "<a href='javascript:void(0)' class='tableABtn' onclick='publishThirdParty(2,"+full[1]+")'>发布</a>";
+					buttonStr += "<a href='{:U('createExercise/examinePaper')}&paperid="+full[1]+"' class='tableABtn'>预览</a>";
+
+					return buttonStr;
+				}
+			}],
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		},
+
+	});
+
+	var oTable = $("#table").dataTable({
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=PublishPlatform&a=exercisePublishPage",//这个是请求的地址
+		"fnServerData": retrieveData ,
+		"fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+			if(aData[6] == 0)
+				$(nRow).addClass('blueTr')
+			else if(aData[6] == 2)
+				$(nRow).addClass('suspended')
+		 },
+		aoColumnDefs : [
+			{
+				"aTargets" :[0],
+				"mRender" : function(data, type, full){
+					return '<input type="checkbox" name="" class="checkBox checkOne" attr-id='+full[1]+'>'+data;
+				}
+
+			},
+			{
+				"aTargets" :　[1],
+				"mRender" : function(data, type, full){
+                    return "<a target='_blank' href='{:U('createExercise/examinationQuestions')}&id="+full[1]+"'>"+data+"</a>";
+                }
+			},
+			{
+				"aTargets" :　[5],
+				"mRender" : function(data, type, full){
+					return "<a target='_blank' href='{:U('createExercise/examinationQuestions')}&id="+full[1]+"' class='tdcolor'>"+data+"</a>";
+				}
+			},
+			{
+				"aTargets" :　[6],
+				"mRender" : function(data, type, full){
+
+					var buttonStr = '';
+					buttonStr += "<a href='javascript:void(0)' class='tableABtn' onclick='publishThirdParty(1,"+full[1]+")'>发布</a>";
+					buttonStr += "<a href='{:U('createExercise/editChoiceExercise')}&id="+full[1]+"' class='tableABtn'>预览</a>";
+
+					return buttonStr;
+				}
+			}],
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		},
+
+	});
+	<?php if(empty($_GET['cat']) || 1 == $_GET['cat'])  : ?>
+	changeDisplayTable('table1');
+	<?php else : ?>
+	changeDisplayTable('table2');
+	<?php endif; ?>
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		parameters = JSON.parse(base64decode(window.location.href.split('#')[1]));
+		oTable.fnPageChange(parameters.startIndex/parameters.pageSize);
+		delete parameters['startIndex'];
+		delete parameters['pageSize'];
+		//oPaperTable.fnPageChange(1);
+		//oTable.api().draw(false);
+	}
+	function query()
+	{
+		//table reset;
+		oPaperTable.fnUpdate();
+		oTable.fnUpdate();
+	}
+
+	function retrieveData( sSource,aoData, fnCallback) {
+		if(window.location.href.indexOf('#')!=-1)
+		{
+			if(ignoreQuery)
+			{
+				ignoreQuery =false;
+				return;
+			}
+		}
+		var queryData =  $.extend(true,{},parameters); //深度拷贝
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+		// queryData.sEcho = qq.sEcho;
+		if(!isBrowser)
+			window.location.hash = lastHash =  base64encode(JSON.stringify(queryData));
+		loading('loadData');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				oTable.allCount = result.iTotalRecords;
+				if(typeof(result.aaData) == "undefined") $.NotifyBox.NotifyOne('提示',result.message || result.msg,'确定');if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+				$('#table1 .checkAll,#table1 .checkOne').attr('checked',$('#table1 .checkAllResult')[0].checked);
+				refreshCount('table1');
+			},
+			error : function(msg) { 				 			}
+		});
+	}
+	function retrieveData1( sSource,aoData, fnCallback) {
+
+		var queryData =  $.extend(true,{},parameters); //深度拷贝
+		$('#formCondition').val(JSON.stringify(parameters));
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+		// queryData.sEcho = qq.sEcho;
+
+		loading('loadData1');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				oPaperTable.allCount = result.iTotalRecords;
+				if(typeof(result.aaData) == "undefined") $.NotifyBox.NotifyOne('提示',result.message || result.msg,'确定');if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData1');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+				$('#table2 .checkAll,#table2 .checkOne').attr('checked',$('#table2 .checkAllResult')[0].checked);
+				refreshCount('table2');
+			},
+			error : function(msg) {
+			}
+		});
+	}
+
+	$('#courseId').change(function()
+	{
+		var orgOption = '<option value="0">请选择</option>';
+		var newCourseId = $(this).val();
+		if(newCourseId == 0)
+		{
+			$('#exerciseCategory').html(orgOption);
+			return;
+		}
+		$.ajax({
+			url : 'index.php?m=Exercise&c=CreateExercise&a=getCourseChild',//这个就是请求地址对应sAjaxSource
+			data : {id:newCourseId},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : false,
+			success : function(result) {
+				result = eval(result);
+				var html = orgOption;
+				$(result).each(function(i,n){
+					html += '<option value="'+ n.id + '">'+n.name+'</option>'
+				})
+				$('#exerciseCategory').html(html)
+			},
+			error : function(msg) {
+			}
+		});
+	})
+
+
+</script>
+<script>
+    $('#table1PageSelect,#table2PageSelect').click(function(){
+		var tableId = $(this).parent().parent().attr('id')
+		$('#'+tableId+' .checkOne').attr('checked',$(this)[0].checked);
+		refreshCount(tableId)
+	})
+	$('.checkAllResult').click(function(){
+		var tableId = $(this).parent().parent().attr('id')
+		switch(tableId)
+		{
+			case 'table1':$('#table1 .checkOne').attr('checked',$(this)[0].checked);
+				           break;
+			case 'table2':$('#table2 .checkOne').attr('checked',$(this)[0].checked);
+				           break;
+			default:break;
+		}
+			$('#table1 .checkAll')[0].checked = $(this)[0].checked;
+		refreshCount(tableId);
+	})
+	function refreshCount(tableId)
+	{
+		var tableObj;
+		var checkedLength = 0;
+		$('#'+ tableId+ ' .checkOne').each(function(i,n){
+			if($(n)[0].checked)
+				checkedLength++
+		})
+		switch(tableId)
+		{
+			case 'table1':tableObj = oTable;	break;
+			case 'table2':tableObj = oPaperTable;	break;
+			default:break;
+		}
+		if($('#'+ tableId+ ' .checkAllResult')[0].checked)
+		$('#'+ tableId+ 'SelectCount').text(tableObj.allCount);
+		else
+			$('#'+ tableId+ 'SelectCount').text(checkedLength);
+		$('#'+ tableId+ ' .checkAll')[0].checked = checkedLength == $('#'+ tableId+ ' .checkOne').length;
+	}
+
+	$('.checkOne').live('click',function(){
+		var tableId = $(this).parents('table').parent().parent().attr('id');
+		if(!$(this)[0].checked)
+			$('#'+ tableId+ ' .checkAllResult')[0].checked = false;
+		refreshCount(tableId);
+	})
+	$('#batchPubThirdParty').click(function(){
+		var idArray = Array();
+		var category = $('#cat').val();
+		var tableId = 'table'+ category;
+		$('#'+tableId+' .checkOne').each(function(i,n){
+			if(n.checked == true)
+			{
+				idArray.push($(n).attr('attr-id'))
+			}
+		})
+		if(idArray.length == 0 && !$('#'+tableId+' .checkAllResult')[0].checked )
+			$.NotifyBox.NotifyOne('提示','请勾选习题','确定');
+		else {
+			var idStr = '';
+			if(idArray.length!=0)
+               idStr = idArray.join(',');
+			switch($(this).attr('id'))
+			{
+				case 'batchPubThirdParty'  :publishThirdParty(category,idStr);break;
+			}
+		}
+	});
+	function publishThirdParty(category,id)
+	{
+		$('.fullBack,#thirdPublish').show();
+		$('#startTime,#endTime').val('');
+		$('#thirdPublishSure').unbind().click(function(){
+			var platformId = $('#platformId').val();
+			if(platformId == 0)
+			{
+				$.NotifyBox.NotifyOne('提示','请选择发布平台','确定');
+				return;
+			}
+			var startTime = $('#startTime').val();
+			var endTime = $('#endTime').val();
+			if(startTime == '')
+			{
+				$.NotifyBox.NotifyOne('提示','请输入开始时间','确定');
+				return;
+			}
+			if(endTime == '')
+			{
+				$.NotifyBox.NotifyOne('提示','请输入结束时间','确定');
+				return;
+			}
+			if(startTime > endTime)
+			{
+				$.NotifyBox.NotifyOne('错误','开始时间大于结束时间','确定');
+				return;
+			}
+			else {
+				$('.fullBack,#thirdPublish').hide();
+				publishThirdPartyRequest(category,platformId,id,startTime,endTime);
+			}
+
+		})
+	}
+	function publishThirdPartyRequest(category,platformId,id,startTime,endTime)
+	{
+		var pubExercise = "{:U('ExerciseState/publishExercise')}";
+		var pubPaper = "{:U('ExerciseState/publishPaper')}";
+		var pubAllExercise = "{:U('PublishPlatform/publishExercise')}";
+		var pubAllPaper = "{:U('PublishPlatform/publishPaper')}";
+		var url;
+		if(category == 1) //exercise
+		 url = id == ''? pubAllExercise : pubExercise;
+		else
+		 url = id == ''? pubAllPaper : pubPaper;
+		loading('loadData');
+		$.ajax({
+			url : url,
+			data : {'platformId':platformId,'ids':id,startTime:startTime,endTime:endTime,formCondition:$('#formCondition').val()},
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				removeLoad('loadData');
+				if(result.status == 200)
+					$.NotifyBox.NotifyOneCall('成功','发布成功','确定',function(){oTable.api().draw(false);oPaperTable.api().draw(false);});
+				else
+					$.NotifyBox.NotifyOne('错误',result.message,'确定');
+			},
+			error : function(msg) {
+				removeLoad('loadData');
+				$.NotifyBox.NotifyOneCall('错误','发布失败','确定');
+			}
+		});
+	}
+	$('#thirdPublishCancel').click(function(){
+		resetDate();
+		$('.fullBack,#thirdPublish').hide();
+	})
+</script>

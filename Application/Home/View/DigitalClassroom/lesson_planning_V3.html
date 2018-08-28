@@ -1,0 +1,354 @@
+<link href="__PUBLIC__/createLesson/css/prod.designer.css" rel="stylesheet" type="text/css">
+<link href="__PUBLIC__/createLesson/css/exercise.css?v=2" rel="stylesheet" type="text/css" />
+
+<meta name="viewport" content="width=device-width, initial-scale=0.9,  user-scalable=no" id="bzd"/>
+<style>
+    .slide{
+        display: none;
+    }
+    .active{
+        display: block;
+    !important;
+    }
+	body{
+		background: #fff
+	}
+	.lessonPlanningBox {
+		overflow:hidden;
+		width: 940px;
+		height: 610px;
+/*		border: 1px dotted #ccc;*/
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		left: 0 !important;
+		margin: auto;
+		word-break: break-all
+	}
+    .lessonPlanningBox .active .design-element .design-content .abc{
+        display:block !important;
+    }
+	.design-content {
+		/*height: auto !important*/
+	}
+	.lkj{display: none;}
+	.exerciseQuestion p{top: 0 !important;}
+	.matchQuestionShowItem{height: 50px !important ;}
+	.note{
+	position: absolute;
+    right: 75px;
+    top: 60px;
+	}
+	#noteContent{
+		position: absolute;
+		bottom: 20px;
+	   display: none;
+		height: 230px;
+
+
+		width: 95%;
+		margin: 0 auto;
+	}
+	#noteContent textarea{
+		width: 100%;
+		height: 100%;
+	}
+	#noteContent button{
+		position: absolute;
+		right: 20px;
+		bottom: 10px;
+		padding: 5px 15px;
+		border: none;
+		outline: none;
+		background:#eeca33;
+		border-radius: 8px;
+		z-index: 10
+	}
+	#btnparent{
+	text-align:right;padding-top:10px;width:940px;position: absolute;left: 0;right: 0;bottom: 1px;margin: 0 auto;
+	}
+	#pre_page,#next_page{
+		display: none;
+	}
+    video::-internal-media-controls-download-button {
+        display:none;
+    }
+
+    video::-webkit-media-controls-enclosure {
+        overflow:hidden;
+    }
+
+    video::-webkit-media-controls-panel {
+        width: calc(100% + 30px);
+    }
+    .slide.active .design-element{
+        height: 200px
+    }
+    audio::-internal-media-controls-download-button {
+        display:none;
+    }
+    audio::-webkit-media-controls {
+        overflow: hidden !important
+    }
+    audio::-webkit-media-controls-enclosure {
+        width: calc(100% + 32px);
+          margin-left: auto;
+    }
+</style>
+<script >
+	if (isTeacher=='false') {
+		$('.notebutton').css('display','block');
+	}
+</script>
+<img src="__PUBLIC__/DigitalClassroom/images/tuya/biji1.png" class="note notebutton" style="display: none;">
+<div class="layout">
+	<div class="layout-left">
+		<div class="ui-accordion ui-widget ui-helper-reset">
+			<div class="design-slides-wrap ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom ui-accordion-content-active" style="width:80px;top:100px">
+				<div class="design-slides">
+				<volist name="lessonPlanningDetails" id="pager" key="i">
+					<if condition="$i eq 1">
+					<div class="design-slide active" data-idx="{$i-1}" onclick="onTurnPageV3({$i-1})">{$i}</div>
+					<else/>
+					<div class="design-slide" data-idx="{$i-1}" onclick="onTurnPageV3({$i-1})">{$i}</div>
+					</if>
+				</volist>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="lessonPlanningBox" style="display:block">
+ <volist name="lessonPlanningDetails" id="lessonPlanningData" key="i">
+	 <if condition="$i eq 1">
+	   <div class="myLessonV3 slide active">
+	 <else/>
+	   <div class="myLessonV3 slide">
+	 </if>
+	 {$lessonPlanningData.content}
+	 </div>
+ </volist>
+
+</div>
+	<div id="btnparent">
+	<button id="pre_page" title="上一页"  onclick="pre_page()" >上一页</button>
+	<button id="next_page" title="下一页" onclick="next_page()" style="margin-left:20px">下一页</button>
+						</div>
+<input type="hidden" class="course_id_note" value="{$lessonPlanningDetailsInfo.course_id}">
+<input type="hidden" class="grade_id_note" value="{$lessonPlanningDetailsInfo.grade_id}">
+<input type="hidden" class="textbook_id_note" value="{$lessonPlanningDetailsInfo.textbook_id}">
+<div id="noteContent">
+	<textarea name="" id="con_note" cols="30" rows="10" maxlength="500"></textarea>
+	<button class="saveNote">保存笔记</button>
+</div>
+
+<script src="__PUBLIC__/js/external/jquery.js" type="text/javascript"></script>
+<script>
+	var h = $(window).height();
+	var meta = document.getElementById('bzd');
+	if(h<600){
+//		 meta.setAttribute('content',"width=device-width, initial-scale=0.75,  user-scalable=no");
+	}
+	var w = $(window).width();
+	if(w<1100){
+		$('.lessonPlanningBox').css('left','80px')
+	}
+	var nt = 0;
+	if($('.design-slide').length>1){
+		$('#next_page').show()
+	}
+    $('.note').click(function(){
+		$('#con_note').val('');
+		nt++;
+		if(nt%2!=0){
+		$('#noteContent').show()
+		$(this).attr('src','/Public/DigitalClassroom/images/tuya/biji2.png');
+		}else{
+		$(this).attr('src','/Public/DigitalClassroom/images/tuya/biji1.png');
+		$('#noteContent').hide()
+		}
+	})
+    	//下一页
+	function next_page(){
+		var index_a = $('.design-slides').find('.active').index();
+		var length_a = $('.lessonPlanningBox').find('.slide').length;
+		console.log(index_a);
+		console.log(length_a);
+	    $('.design-slides').children('.design-slide').eq(index_a+1).addClass('active').siblings().removeClass('active');
+		$('.lessonPlanningBox').children('.slide').eq(index_a+1).addClass('active').siblings().removeClass('active');
+		if(length_a == 1){
+		  $('#pre_page,#next_page').hide()
+		}
+		else if(index_a == length_a-2){
+			$('#next_page').hide();
+			$('#pre_page').show();
+		}else{
+		$('#pre_page,#next_page').show()
+		}
+	}
+	//上一页
+	function pre_page(){
+		var index_b = $('.design-slides').find('.active').index();
+		var length_b = $('.lessonPlanningBox').find('.slide').length;
+		console.log(index_b);
+		console.log(length_b);
+	    $('.design-slides').children('.design-slide').eq(index_b-1).addClass('active').siblings().removeClass('active');
+		$('.lessonPlanningBox').children('.slide').eq(index_b-1).addClass('active').siblings().removeClass('active');
+	    if(index_b == 1){
+			$('#pre_page').hide();
+			$('#next_page').show()
+		}else{
+		$('#pre_page,#next_page').show()
+		}
+	}
+	$('.design-slides').click(function(){
+		var g = $(this).find('.active').index();
+		console.log(g)
+		var x = $('.design-slides').find('.design-slide').length;
+		if( g+1 == x){
+			$('#next_page').hide();
+			$('#pre_page').show();
+		}else if(g+1<x && g !== 0){
+			$('#pre_page,#next_page').show();
+
+		}else if( g+1<x && g ==0){
+			$('#pre_page').hide();
+			$('#next_page').show()
+		}
+	})
+
+	$('.saveNote').click(function(){
+		$('#noteContent').hide();
+		var s_id = studentId;
+		var c_id = $('.course_id_note').val();
+		var g_id = $('.grade_id_note').val();
+		var t_id = $('.textbook_id_note').val(); //分册
+		var con = $('#con_note').val();
+		if (con.length > 500) {
+			alert('笔记内容过多');
+			return false;
+		}
+
+		$.ajax({
+			type: "POST",
+			url: "__URL__/addNote",
+			data : {
+				"s_id" : s_id,
+				"c_id" : c_id,
+				"g_id" : g_id,
+				"t_id" : t_id,
+				"con" : con,
+			},
+			success: function(msg){
+				if (msg == 'success') {
+					$('#noteContent').hide();
+				} else {
+					alert('笔记提交失败');
+				}
+			}
+		});
+
+	})
+</script>
+<script>
+    var mediaArray = [];
+    var videoState ={
+        'playState':'stop',
+        'currentTime':0,
+        'currentIndex':0
+    };
+    var socketSendFlag = true;
+    function sendVideoState(state)
+    {
+        if(true == socketSendFlag)
+            sendSocket("lesson|customCmd|" + 'videoState='+JSON.stringify(state)+';socketSendFlag=false;refreshVideoState(videoState);socketSendFlag=true;');
+    }
+
+    function refreshListener()
+    {
+        mediaArray = $('.myLessonV3').find('video,audio');
+        $.each($('.myLessonV3').find('video,audio'),function(i,n){
+            n.addEventListener("play", function() {
+                var tempVideoState = {};
+                tempVideoState.playState = 'play';
+                tempVideoState.currentTime = n.currentTime;
+                tempVideoState.currentResourceId = $.inArray(n,mediaArray);
+                if(typeof(isTeacher) != "undefined") {
+                    if (isTeacher && (tempVideoState.playState != videoState.playState || tempVideoState.currentTime != videoState.currentTime || tempVideoState.currentResourceId != videoState.currentResourceId)) {
+                        sendVideoState(tempVideoState);
+                        videoState = tempVideoState
+                    }
+                }
+            }, false);
+            n.addEventListener("pause", function() {
+                var tempVideoState = {};
+                tempVideoState.playState = 'pause';
+                tempVideoState.currentTime = n.currentTime;
+                tempVideoState.currentResourceId = $.inArray(n,mediaArray);
+                if(typeof(isTeacher) != "undefined") {
+                    if (isTeacher && (tempVideoState.playState != videoState.playState || tempVideoState.currentTime != videoState.currentTime || tempVideoState.currentResourceId != videoState.currentResourceId)) {
+                        sendVideoState(tempVideoState);
+                        videoState = tempVideoState
+                    }
+                }
+            }, false);
+            n.addEventListener("seeked", function() {
+                var tempVideoState = {};
+                //tempVideoState.playState = 'pause';
+                tempVideoState.currentTime = n.currentTime;
+                tempVideoState.currentResourceId = $.inArray(n,mediaArray);
+                if(typeof(isTeacher) != "undefined") {
+                    if (isTeacher && (tempVideoState.playState != videoState.playState || tempVideoState.currentTime != videoState.currentTime || tempVideoState.currentResourceId != videoState.currentResourceId)) {
+                        sendVideoState(tempVideoState);
+                        videoState = tempVideoState
+                    }
+                }
+            }, false);
+        });
+
+
+    }
+    refreshListener();
+    function refreshVideoState(state) {
+        try {
+            var currentVideoPlayer = mediaArray[parseInt(state.currentResourceId)];
+            currentVideoPlayer.currentTime = parseFloat(state.currentTime);
+
+            if (state.playState == 'pause'){
+
+				currentVideoPlayer.pause();
+			} else if (state.playState == 'play') {
+
+				currentVideoPlayer.play();
+			}
+
+        }catch(e){;}
+    }
+    function turnPageV3(pageIndex)
+    {
+        $('.design-slide').removeClass('active');
+        $($('.design-slide')[pageIndex]).addClass('active');
+        $('.slide').removeClass('active');
+        $($('.slide')[pageIndex]).addClass('active');
+    }
+    function onTurnPageV3(pageIndex)
+    {
+		if(typeof (isTeacher) != "undefined") {
+			if (isTeacher == 'false')
+				return;
+		}
+        try {
+            sendSocket("lesson|turnPageV3|" + pageIndex);
+        }catch(e){;}
+        turnPageV3(pageIndex);
+		pauseAllVideo();
+    }
+    function pauseAllVideo()
+    {
+
+        $.each(mediaArray,function(i,n){
+            n.pause();
+        });
+    }
+</script>

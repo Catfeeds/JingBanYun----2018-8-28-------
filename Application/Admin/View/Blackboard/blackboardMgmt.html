@@ -1,0 +1,375 @@
+<layout name="admin_layout_back"/> 
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/pikaday.min.js"></script>
+<link href="__PUBLIC__/css/pikaday.css" type="text/css" rel="stylesheet">
+
+<style>
+    select{
+        border: 1px #d9d9d9 solid;
+        width: 165px;
+        height: 100%;
+/*        padding: .5125rem;*/
+    }
+	.searchbar input{
+		line-height: 20px;
+	}
+</style>
+
+<form id="myForm" action="{:U('Blackboard/blackboardMgmt')}" method="get">
+
+<input type="hidden" name="school_id" id="school_id" data-validate-func="required" data-validate-hint="学校不能为空">
+
+<in name="Think.session.admin.role" value="1,2">
+	<div id="show" style="margin: 20px 0;">
+		<div class="grid condensed searchbar">
+            <div class="row cells4 cellBox">
+				<div id="province_div" class="class_class cell">
+					<label for="">省份：</label>
+					<select id="province" class="input-control input-control-before" time="">
+						<option value="0">-所属省份-</option>
+						<volist name="province_result" id="province_item" empty="暂时没有省份">
+							<option value={$province_item.id} <if condition="$province_item['id']==$province"> selected="true"</if>  >{$province_item.name}</option>
+						</volist>
+					</select> 
+				</div>
+				<div id="city_div" class="class_class cell">
+					<label for="">市区：</label>
+					<select id="city" class="input-control input-control-before">
+						<option value="0">-所属城市-</option> 
+						<volist name="city_result" id="city_item" empty="暂时没有城市">
+							<option value={$city_item.id}  <if condition="$city_item['id']==$city"> selected="true"</if> >{$city_item.name}</option> 
+						</volist>
+					</select>
+				</div>
+				<div id="district_div" class="class_class cell">
+					<label for="">区县：</label>
+					<select id="district" class="input-control input-control-before">
+						<option value="0">-所属区域-</option>
+						<volist name="district_result" id="district_item" empty="暂时没有区域">
+							<option value={$district_item.id} <if condition="$district_item['id']==$district"> selected="true"</if>  >{$district_item.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div id="school_div" class="class_class cell">
+					<label for="">学校：</label>
+					<select id="school" class="input-control input-control-before">
+						<option value="0">-所属学校-</option>
+						<volist name="school_result" id="school_item" empty="暂时没有学校">
+							<option  value={$school_item.id} <if condition="$school_item['id']==$school"> selected="true"</if>  >{$school_item.school_name}</option>
+						</volist>
+					</select>
+				</div> 
+				<div id="school_div" class="class_class cell">
+					<label for="">发布时间：</label>
+					<input type="text" name="birth_date" class='input-control input-control-before' id="datepicker"  data-validate-func="required"  value="{$default_date}" style="margin-right: 10px" placeholder="-发布时间-">
+				</div>
+				
+				<div class="cell">
+					<label>关键词：</label>
+					<input type="text" value="{$keyword}" id="keyword" class='input-control input-control-before' name="keyword" placeholder="发布人/标题/内容关键字">
+				</div>
+
+				<div class="cell" data-role="input">
+					<label for="">&nbsp;</label>
+					<button type="button" class="button queding" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</in>
+
+</form>
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">发布教师</th>
+        <th class="text-center">班级</th>
+        <th class="text-center">消息主题</th>
+        <th class="text-center">发布时间</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data">
+        <tr id="l_{$data.id}">
+            <td class="text-center">
+                {$data.publisher}
+            </td>
+            <td class="text-center">
+                {$data.grade}&nbsp; {$data.class_name}
+            </td>
+            <td title="{$data.message_title}">
+                {$data.message_title}
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                <a href="{:U('Blackboard/blackboardDetails?id=')}{$data.id}" class="button info">查看</a>
+                <a href="{:U('Blackboard/modifyBlackboard?id=')}{$data.id}" class="button info">修改</a>
+                <button onclick="deleteItem({$data.id})" class="button danger">删除</button>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+ 
+
+
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+
+<script>
+    var activity_id="{$activity_id}";
+
+        $("#province").change(function(){
+            var request_url;
+            var provice_id=$("#province").val();    
+            request_url="{:U('Common/getCityByProvince')}"; 
+            $('#city').children('option:not(:eq(0))').remove();
+            $('#district').children('option:not(:eq(0))').remove(); 
+            $('#school').children('option:not(:eq(0))').remove(); 
+            if(provice_id==0){
+                return false;
+            }
+            $.ajax({
+                type: 'get', 
+                url: request_url, 
+                data: {province_id:provice_id},
+                cache: false,
+                dataType:'json',
+                success: function(msg){ 
+                    var clone_obj=$("#city").find('option').eq(0).clone(true);     
+                    for(var i=0;i<msg.data.length;i++){
+                        var temp_option=$(clone_obj).clone(true);
+                        $(temp_option).val(msg.data[i].id);
+                        $(temp_option).text(msg.data[i].name);
+                        $("#city").append(temp_option);
+                    }
+                }
+            });
+        });
+        
+        $("#city").change(function(){
+            var city_id=$("#city").val(); 
+            request_url="{:U('Common/getDistrictByCity')}"; 
+            $('#district').children('option:not(:eq(0))').remove(); 
+            $('#school').children('option:not(:eq(0))').remove(); 
+            if(city_id==0){
+                return false;
+            }
+            $.ajax({
+                type: 'get', 
+                url: request_url, 
+                data: {city_id:city_id},
+                cache: false,
+                dataType:'json',
+                success: function(msg){ 
+                    var clone_obj=$("#district").find('option').eq(0).clone(true); 
+                    for(var i=0;i<msg.data.length;i++){
+                        var temp_option=$(clone_obj).clone(true);
+                        $(temp_option).val(msg.data[i].id);
+                        $(temp_option).text(msg.data[i].name);
+                        $("#district").append(temp_option);
+                    }
+                }
+            });
+        });
+        
+        $("#district").change(function(){
+            var district_id=$("#district").val(); 
+            request_url="{:U('Common/getSchoolByDistrict')}";  
+            $('#school').children('option:not(:eq(0))').remove(); 
+            if(district_id==0){
+                return false;
+            }
+            $.ajax({
+                type: 'get', 
+                url: request_url, 
+                data: {district_id:district_id},
+                cache: false,
+                dataType:'json',
+                success: function(msg){ 
+                    var clone_obj=$("#school").find('option').eq(0).clone(true); 
+                    for(var i=0;i<msg.data.length;i++){
+                        var temp_option=$(clone_obj).clone(true);
+                        $(temp_option).val(msg.data[i].id);
+                        $(temp_option).text(msg.data[i].name);
+                        $("#school").append(temp_option);
+                    }
+                }
+            });
+        });
+    
+    
+    $('.queding').on('click', function () {
+        //$('#school_input').val($('#sch_select option:selected').text());
+        //$('#school_id').val($('#sch_select option:selected').attr('data-id'));
+        
+        var province_val=$("#province").val();
+        var city_val=$("#city").val();
+        var district_val=$("#district").val();
+        var school_val=$("#school").val();
+        var keyword_val=$("#keyword").val();
+        var date=$("#datepicker").val();
+        
+        var condition_string='';
+
+        if(province_val!=0){
+            condition_string="&province="+province_val;
+        }
+        if(city_val!=0){ 
+            condition_string+="&city="+city_val; 
+        }
+        if(district_val!=0){ 
+            condition_string+="&district="+district_val; 
+        }
+        if(school_val!=0){ 
+            condition_string+="&school="+school_val; 
+        }
+        if(keyword_val!=''){
+            condition_string+="&keyword="+keyword_val; 
+        }
+        if(date!=''){
+            condition_string+="&date="+date; 
+        }
+        location.href="{:U('Blackboard/blackboardMgmt')}"+condition_string;
+    })
+    
+    $('.close_img').on('click', function () {
+        $('#bg').css('display', 'none');
+        $('#show').css('display', 'none');
+        $('#show_course').css('display', 'none');
+    })
+
+    function showChooseSchoolDlg() {
+        document.getElementById("bg").style.display = "block";
+        document.getElementById("show").style.display = "block";
+        $('#schoolWrapper').height($('#show').height() - 130);
+
+    }
+
+    //bindQueryDistrictEvent("/index.php/Home/Teach", 'pro_select', 'city_select', 'coun_select', 'sch_select');
+
+</script>
+
+<script>
+    function deleteItem(id) {
+        if (confirm('确定要删除吗？')) {
+            $.get('index.php?m=Admin&c=Blackboard&a=deleteBlackboardMessage', {id: id}, function (res) {
+                if (res == 'success') {
+                    alert('删除成功')
+                    window.location.reload();
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 245) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+			"aoColumns": [
+                {"width": "16%"},
+                {"width": "17%"},
+                {"width": "20%"},
+                {"width": "17%"},
+                {"width": "30%"}    
+
+            ]
+        });
+    });
+    
+//    Date.prototype.Format = function (fmt) { //author: meizz 
+//        var o = {
+//            "M+": this.getMonth() + 1, //月份 
+//            "d+": this.getDate(), //日 
+//            "h+": this.getHours(), //小时 
+//            "m+": this.getMinutes(), //分 
+//            "s+": this.getSeconds(), //秒 
+//            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+//            "S": this.getMilliseconds() //毫秒 
+//        };
+//        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+//        for (var k in o)
+//        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+//        return fmt;
+//    }
+//     
+//    var year=new Date().Format("yyyy"); 
+//     var picker = new Pikaday(
+//    {
+//        field: document.getElementById('datepicker'),
+//        firstDay: 1,
+//        minDate: new Date('1990-01-01'),
+//        maxDate: new Date('2020-12-31'),
+//        yearRange: [1990,year]
+//    });
+//    
+//    $("#datepicker").change(function () {
+//        var time1 = new Date().Format("yyyy-MM-dd");
+//        var time2 = $("#datepicker").val();
+//        if (time2 > time1) {
+//            $("#datepicker").val('');
+//            return false;
+//        }
+//    });
+</script>
+
+<!--------------日历----------------->
+<script>
+	$(function () {
+		$("#datepicker").datepicker({
+			showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+			maxDate: '0',
+			yearRange: "1950:2050"
+		});
+	});
+</script>
+<script>
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+</script>

@@ -1,0 +1,59 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;float:left;">
+    <a href="{:U('Admin/createEditGrade')}" title="创建年级" class="button {:session('btntheme')}">创建年级</a>
+</div>
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th width="33%" class="text-center">年级</th>
+        <th width="33%" class="text-center">简称</th>
+        <th width="33%" class="text-center">功能</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="">
+        <tr id="l_{$data.id}" gradeId="{$data.id}">
+            <td class="text-center">
+                <a href = "{:U('Admin/createEditGrade')}&id={$data.id}" >{$data.grade}</a>
+            </td>
+            <td class="text-center">
+                {$data.short_name}
+            </td>
+            <td class="text-center">
+                <a href="{:U('Admin/createEditGrade')}&id={$data.id}" class="button btn primary">修改</a>
+                <button class="button deleteButton btn danger">删除</button>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 305) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false
+        });
+    });
+    $('.deleteButton').click(function(){
+     if(confirm('确定删除？'))
+     {
+         var gradeId = $(this).parent().parent().attr('gradeId');
+         $.post('index.php?m=Home&c=Admin&a=falseDeleteGrade', {"id": gradeId}, function (res) {
+             res = eval('(' + res + ')');
+             if (res.status == 200) {
+                 alert(res.message);
+                 location.reload();
+             } else {
+                 alert(res.message);
+                 //location.reload();
+             }
+         })
+
+     }
+
+    });
+</script>

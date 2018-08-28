@@ -1,0 +1,56 @@
+<layout name="teacher_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/resourceList')}" title="返回教师资源分享">返回教师资源分享</a>
+</div>
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/publishResource')}" title="发布资源" class="btn btn-primary">发布资源</a>
+</div>
+
+<empty name="list">
+    <div class="emptyResult">您还没有发布任何资源</div>
+</empty>
+
+<table class="table striped hovered border">
+    <thead>
+    <tr>
+        <th>发布单位/人</th>
+        <th>资源名称</th>
+        <th class="text-center">发布时间</th>
+        <th class="text-center">获赞数</th>
+        <th class="text-center">收藏数</th>
+        <th class="text-center">观看数</th>
+        <th class="text-center">关联教材</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="">
+        <tr id="l_{$data.id}">
+            <td>
+                <img class="list_avatar" src="__ROOT__/Uploads/Avatars/{$data.teacher_id}_t.jpg">
+                {$data.teacher_name}
+            </td>
+            <td>
+                <h3 class="list_title">
+                    <a href="{:U('Teach/resourceDetails?id=')}{$data.id}">{$data.name}</a>
+                </h3>
+
+                <div class="list_sub_title">{$data.description}</div>
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                {$data.zan_count}
+            </td>
+            <td class="text-center">
+                {$data.favorite_count}
+            </td>
+            <td class="text-center">
+                {$data.follow_count}
+            </td>
+            <td class="text-center">
+                {$data.textbook}
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>

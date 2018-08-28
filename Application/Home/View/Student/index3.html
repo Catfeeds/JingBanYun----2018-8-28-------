@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>学生云桌面 :: 精通云教育生态平台</title>
+    <link href="__PUBLIC_METRO__/css/metro.css" rel="stylesheet">
+    <link href="__PUBLIC_METRO__/css/metro-icons.css" rel="stylesheet">
+    <link href="__PUBLIC_METRO__/css/app/desktop3.css" rel="stylesheet">
+    <script src="__PUBLIC__/js/external/jquery.min.js"></script>
+    <script src="__PUBLIC_METRO__/js/metro.js"></script>
+    <style>
+        .tile-area-controls {
+            position: fixed;
+            right: 40px;
+            top: 40px;
+        }
+
+        .tile-group {
+            left: 100px;
+        }
+
+        .tile, .tile-small, .tile-sqaure, .tile-wide, .tile-large, .tile-big, .tile-super {
+            opacity: 0;
+            -webkit-transform: scale(.8);
+            transform: scale(.8);
+        }
+
+        #charmSettings .button {
+            margin: 5px;
+        }
+
+        .schemeButtons {
+            /*width: 300px;*/
+        }
+
+        @media screen and (max-width: 640px) {
+            .tile-area {
+                overflow-y: scroll;
+            }
+
+            .tile-area-controls {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+            .tile-area {
+                overflow-y: scroll;
+            }
+
+            .tile-area-controls {
+                display: none;
+            }
+
+        }
+    </style>
+    <script>
+        (function ($) {
+            $.StartScreen = function () {
+                var plugin = this;
+                var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+
+                plugin.init = function () {
+                    setTilesAreaSize();
+                    if (width > 640) addMouseWheel();
+                };
+
+                var setTilesAreaSize = function () {
+                    var groups = $(".tile-group");
+                    var tileAreaWidth = 80;
+                    $.each(groups, function (i, t) {
+                        if (width <= 640) {
+                            tileAreaWidth = width;
+                        } else {
+                            tileAreaWidth += $(t).outerWidth() + 80;
+                        }
+                    });
+                    $(".tile-area").css({
+                        width: tileAreaWidth
+                    });
+                };
+
+                var addMouseWheel = function () {
+                    $("body").mousewheel(function (event, delta, deltaX, deltaY) {
+                        var page = $(document);
+                        var scroll_value = delta * 50;
+                        page.scrollLeft(page.scrollLeft() - scroll_value);
+                        return false;
+                    });
+                };
+
+                plugin.init();
+            }
+        })(jQuery);
+
+        $(function () {
+            $.StartScreen();
+
+            var tiles = $(".tile, .tile-small, .tile-sqaure, .tile-wide, .tile-large, .tile-big, .tile-super");
+
+            $.each(tiles, function () {
+                var tile = $(this);
+                setTimeout(function () {
+                    tile.css({
+                        opacity: 1,
+                        "-webkit-transform": "scale(1)",
+                        "transform": "scale(1)",
+                        "-webkit-transition": ".3s",
+                        "transition": ".3s"
+                    });
+                }, Math.floor(Math.random() * 500));
+            });
+
+            $(".tile-group").animate({
+                left: 0
+            });
+        });
+
+        function showCharms(id) {
+            var charm = $(id).data("charm");
+            if (charm.element.data("opened") === true) {
+                charm.close();
+            } else {
+                charm.open();
+            }
+        }
+
+        function setSearchPlace(el) {
+            var a = $(el);
+            var text = a.text();
+            var toggle = a.parents('label').children('.dropdown-toggle');
+
+            toggle.text(text);
+        }
+
+        var weather_icons = {
+            'clear-day': 'mif-sun',
+            'clear-night': 'mif-moon2',
+            'rain': 'mif-rainy',
+            'snow': 'mif-snowy3',
+            'sleet': 'mif-weather4',
+            'wind': 'mif-wind',
+            'fog': 'mif-cloudy2',
+            'cloudy': 'mif-cloudy',
+            'partly-cloudy-day': 'mif-cloudy3',
+            'partly-cloudy-night': 'mif-cloud5'
+        };
+
+        var api_key = 'AIzaSyDPfgE0qhVmCcy-FNRLBjO27NbVrFM2abg';
+
+    </script>
+</head>
+<body style="overflow-y: hidden;">
+<div data-role="charm" id="charmSearch">
+    <h1 class="text-light">搜索</h1>
+    <hr class="thin"/>
+    <br/>
+
+    <div class="input-control text full-size">
+        <label>
+            <span class="dropdown-toggle drop-marker-light">所有</span>
+            <ul class="d-menu" data-role="dropdown">
+                <li><a onclick="setSearchPlace(this)">所有</a></li>
+                <li><a onclick="setSearchPlace(this)">课程</a></li>
+                <li><a onclick="setSearchPlace(this)">资源</a></li>
+                <li><a onclick="setSearchPlace(this)">帖子</a></li>
+            </ul>
+        </label>
+        <input type="text">
+        <button class="button"><span class="mif-search"></span></button>
+    </div>
+</div>
+
+<div data-role="charm" id="charmSettings" data-position="top" style="display: none;">
+    <h1 class="text-light">设置</h1>
+    <hr class="thin"/>
+    <br/>
+
+    <div class="schemeButtons">
+        <div class="button square-button tile-area-scheme-dark" data-scheme="dark"></div>
+        <div class="button square-button tile-area-scheme-darkBrown" data-scheme="darkBrown"></div>
+        <div class="button square-button tile-area-scheme-darkCrimson" data-scheme="darkCrimson"></div>
+        <div class="button square-button tile-area-scheme-darkViolet" data-scheme="darkViolet"></div>
+        <div class="button square-button tile-area-scheme-darkMagenta" data-scheme="darkMagenta"></div>
+        <div class="button square-button tile-area-scheme-darkCyan" data-scheme="darkCyan"></div>
+        <div class="button square-button tile-area-scheme-darkCobalt" data-scheme="darkCobalt"></div>
+        <div class="button square-button tile-area-scheme-darkTeal" data-scheme="darkTeal"></div>
+        <div class="button square-button tile-area-scheme-darkEmerald" data-scheme="darkEmerald"></div>
+        <div class="button square-button tile-area-scheme-darkGreen" data-scheme="darkGreen"></div>
+        <div class="button square-button tile-area-scheme-darkOrange" data-scheme="darkOrange"></div>
+        <div class="button square-button tile-area-scheme-darkRed" data-scheme="darkRed"></div>
+        <div class="button square-button tile-area-scheme-darkPink" data-scheme="darkPink"></div>
+        <div class="button square-button tile-area-scheme-darkIndigo" data-scheme="darkIndigo"></div>
+        <div class="button square-button tile-area-scheme-darkBlue" data-scheme="darkBlue"></div>
+        <div class="button square-button tile-area-scheme-lightBlue" data-scheme="lightBlue"></div>
+        <div class="button square-button tile-area-scheme-lightTeal" data-scheme="lightTeal"></div>
+        <div class="button square-button tile-area-scheme-lightOlive" data-scheme="lightOlive"></div>
+        <div class="button square-button tile-area-scheme-lightOrange" data-scheme="lightOrange"></div>
+        <div class="button square-button tile-area-scheme-lightPink" data-scheme="lightPink"></div>
+        <div class="button square-button tile-area-scheme-grayed" data-scheme="grayed"></div>
+    </div>
+</div>
+
+<div id="mainWrapper" class="tile-area tile-area-scheme-darkCyan fg-white"
+     style="height: 100%; max-height: 100% !important;">
+    <img class="logo" src="__PUBLIC__/metro/img/bjlogo.png">
+
+    <div class="tile-area-controls">
+        <a href="{:U('Student/me')}">
+            <button class="image-button icon-right bg-transparent fg-white no-border bg-hover-gray"><span
+                    class="sub-header no-margin text-light">{:session('student.student_name')}同学，您好！</span> <span
+                    class="icon mif-user" style="background-color: transparent !important;"></span>
+            </button>
+        </a>
+
+        <button style="display: none;" class="square-button bg-transparent fg-white bg-hover-red no-border"
+                onclick="showCharms('#charmSearch')"><span class="mif-search"></span></button>
+        <button style="display: none;" class="square-button bg-transparent fg-white bg-hover-red no-border"
+                onclick="showCharms('#charmSettings')"><span class="mif-cog"></span></button>
+        <a href="{:U('Student/login')}" class="square-button bg-transparent fg-white bg-hover-dark no-border"><span
+                class="mif-switch"></span></a>
+    </div>
+
+    <div class="tile-group double">
+        <span class="tile-group-title">精通圈</span>
+
+        <div class="tile-container">
+
+            <a href="{:U('Student/jboverview')}">
+                <div class="tile-wide bg-jingtongquan fg-white" data-role="tile">
+
+                    <div class="tile-content iconic">
+                        <span class="icon mif-tree"></span>
+                    </div>
+                    <span class="tile-label">京版概览</span>
+                </div>
+            </a>
+
+
+            <a href="{:U('Student/expertInformationList')}">
+                <div class="tile bg-jingtongquan fg-white" data-role="tile">
+                    <div class="tile-content iconic">
+                        <span class="icon mif-contacts-mail"></span>
+                    </div>
+                    <span class="tile-label">专家资讯</span>
+                </div>
+            </a>
+            <a href="{:U('Student/activities')}">
+                <div class="tile bg-jingtongquan fg-white" data-role="tile">
+                    <div class="tile-content iconic">
+                        <span class="icon mif-feed3"></span>
+                    </div>
+                    <div class="tile-label">京版活动</div>
+                </div>
+            </a>
+            <a href="{:U('Student/teacherStyle')}">
+                <div class="tile-wide bg-jingtongquan fg-white" data-role="tile">
+                    <div class="tile-content image-set">
+                        <img src="__ROOT__/Uploads/Avatars/1.jpg">
+                        <img src="__ROOT__/Uploads/Avatars/2_t.jpg">
+                        <img src="__ROOT__/Uploads/Avatars/3_t.jpg">
+                        <img src="__ROOT__/Uploads/Avatars/4_t.jpg">
+                        <img src="__ROOT__/Uploads/Avatars/5_t.jpg">
+                    </div>
+                    <div class="tile-label">教师风采</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="tile-group double">
+        <span class="tile-group-title">教学+</span>
+
+        <div class="tile-container">
+            <a href="{:U('Student/resourceList')}">
+                <div class="tile-wide bg-jiaoxuejia fg-white" data-role="tile">
+                    <div class="tile-content iconic">
+                        <span class="icon mif-stack"></span>
+                    </div>
+                    <span class="tile-label">京版资源</span>
+                </div>
+            </a>
+
+            <a href="{:U('Student/textbookList')}" class="tile-wide bg-jiaoxuejia fg-white" data-role="tile">
+                <div class="tile-content iconic">
+                    <span class="icon mif-file-zip"></span>
+                </div>
+                <span class="tile-label">京版教材</span>
+            </a>
+        </div>
+    </div>
+
+
+    <div class="tile-group double">
+        <span class="tile-group-title">班级行</span>
+
+        <div class="tile-container">
+            <a href="{:U('Student/blackboard')}" class=" bg-banjixing fg-white"
+               data-role="tile">
+                <div class="tile-wide bg-teal bg-banjixing" data-role="tile">
+                    <div class="tile-content iconic">
+                        <span class="icon mif-tablet"></span>
+                    </div>
+                    <span class="tile-label">小黑板</span>
+                </div>
+            </a>
+            <a href="{:U('Student/homework')}" class=" bg-banjixing fg-white"
+               data-role="tile">
+                <div class="tile-wide bg-teal bg-banjixing" data-role="tile">
+                    <div class="tile-content iconic">
+                        <span class="icon mif-books"></span>
+                    </div>
+                    <span class="tile-label">作业系统</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/jquery-2.1.1.min.js"></script>
+<script src="__PUBLIC__/bootstrap/js/bootstrap.js"></script>
+<style media="screen">
+.mr15p{
+  margin-right: 15%
+}
+.dib{
+  display: inline-block;
+}
+.w80{
+  width: 80px
+}
+.lh50{
+  line-height: 50px
+}
+.red{
+  color:red
+}
+</style>
+<div class="listview set-border padding20 tabContent">
+  <ul id="myTab" class="nav nav-tabs" >
+    <volist name="tabList" id="tabList" key="i">
+        <li class="{$i == $activePage ?'active':''}">
+        <a href="/index.php?m={$moduleName}&c={$controllerName}&a={$actionName}&cat={$i}" >
+            {$tabList.name}
+        </a>
+        </li>
+    </volist>
+  </ul>
+  <div id="myTabContent" class="tab-content padding10">
+    <!--教师教师教师-->
+      <volist name="tabList1" id="tabList12" key="j">
+          <div class="tab-pane fade in {$j==$activePage?'active':''}" id="tab{$j}">
+              <div style="margin-bottom: 12px;">
+                  <a href="__URL__/{$addEditUrl}?cat={$j}" title="添加" class="button primary ">添加</a>
+                  <div class="dib right cell mr15p">
+                      <label>状态：</label>
+                      <select attr_id={$j} class="input-control input-control-before mt2 filterSelect">
+                          <option value="0" {$tabList12['filterOption']==0?'selected':''} >请选择</option>
+                          <option value="<?= PROPAGANDA_STATUS_WAITFORVERIFY ?>" {$tabList12['filterOption']==PROPAGANDA_STATUS_WAITFORVERIFY?'selected':''} >审核中</option>
+                          <option value="<?=PROPAGANDA_STATUS_VERIFIED ?>" {$tabList12['filterOption']==PROPAGANDA_STATUS_VERIFIED?'selected':''} >审核通过</option>
+                          <option value="<?=PROPAGANDA_STATUS_DECLINED ?>" {$tabList12['filterOption']==PROPAGANDA_STATUS_DECLINED?'selected':''} >拒绝通过</option>
+                          <option value="<?=PROPAGANDA_STATUS_PUBLISHED ?>" {$tabList12['filterOption']==PROPAGANDA_STATUS_PUBLISHED?'selected':''} >已发布</option>
+                          <option value="<?=PROPAGANDA_STATUS_OFFSHELF ?>" {$tabList12['filterOption']==PROPAGANDA_STATUS_OFFSHELF?'selected':''} >已下架</option>
+                      </select>
+
+                  </div>
+              </div>
+
+              <volist name="tabList12.additionalParas" id="addParas">
+              <div class="cell">
+                  <label>{$addParas['name']}：</label>
+                  <input url="{$addParas['url']}" min="{$addParas['min']}" max="{$addParas['max']}" oldValue="{$addParas['value']}" value="{$addParas['value']}" name="{$addParas['formName']}" type="{$addParas['inputType']}"  class="input-control stu_time_id input-control-before addProp"  placeholder="{$addParas['name']}" autocomplete="off">  {$addParas['unit']}
+              </div>
+              </volist>
+              <div class="cell">
+
+                  <div class="right lh50">
+                      {$tabList12.additionalHint}
+                  </div>
+              </div>
+              <div class="padding10">
+                  <table id="listWrapper" class="table striped hovered border">
+                      <thead>
+                      <tr>
+                          <volist name="tabList12.header" id="header">
+                          <th class="text-center">{$header.name}</th>
+                          </volist>
+                          <th class="text-center">状态</th>
+                          <th class="text-center">操作</th>
+                      </tr>
+                      </thead>
+                      <tbody class="teacherhtml">
+                      <tr>
+
+                          <volist name="tabList12.data" id="data1">
+                              <tr attr_id ={$data1.id}>
+                              <volist name="data1.data" id="subData" key="hIndex">
+
+                                  <td class="text-center">
+                                 <if condition="$tabList12['header'][$hIndex-1]['category'] eq  TD_CATEGORY_IMG">
+                                     <img src="{$subData}" alt="" />
+                                 <elseif condition="$tabList12['header'][$hIndex-1]['category'] eq TD_CATEGORY_STR"/>
+                                     {$subData}
+                                 </if>
+
+                                  </td>
+                              </volist>
+                                 <td class="text-center" >
+
+                                     <?php switch($data1["status"]): case PROPAGANDA_STATUS_WAITFORVERIFY: ?>待审核<?php break;?>
+                                     <?php case PROPAGANDA_STATUS_VERIFIED: ?>已审核<?php break;?>
+                                     <?php case PROPAGANDA_STATUS_DECLINED: ?>已拒绝<?php break;?>
+                                     <?php case PROPAGANDA_STATUS_PUBLISHED: ?>已发布<?php break;?>
+                                     <?php case PROPAGANDA_STATUS_OFFSHELF: ?>已下架<?php break;?>
+                                     <?php case PROPAGANDA_STATUS_OVER: ?>已结束<?php break;?>
+                                     <?php case PROPAGANDA_STATUS_PUBLISHING: ?>发布中<?php break; endswitch;?>
+                                 </td>
+                          <td class="text-center" >
+                              <?php switch($data1["status"]): case PROPAGANDA_STATUS_WAITFORVERIFY: ?><a href="#" class="operBtn" onclick="resourceAction(<?php echo ($data1["id"]); ?>,<?= PROPAGANDA_STATUS_VERIFIED ?>)">审核通过</a>
+                              <a href="#" class="operBtn" onclick="resourceAction(<?php echo ($data1["id"]); ?>,<?= PROPAGANDA_STATUS_DECLINED ?>)">拒绝审核</a>
+                              <a href="__URL__/<?php echo ($addEditUrl); ?>?id=<?php echo ($data1["id"]); ?>" class="operBtn">修改</a>
+                              <a href="#" class="operBtn" onclick="deleteAction(<?php echo ($data1["id"]); ?>)">删除</a><?php break;?>
+                              <?php case PROPAGANDA_STATUS_VERIFIED: ?><a href="#" class="operBtn" onclick="resourceAction(<?php echo ($data1["id"]); ?>,<?= PROPAGANDA_STATUS_DECLINED ?>)">拒绝审核</a>
+                              <a href="#" class="operBtn" onclick="resourceAction(<?php echo ($data1["id"]); ?>,<?= PROPAGANDA_STATUS_PUBLISHED ?>)">上架</a>
+                              <a href="__URL__/<?php echo ($addEditUrl); ?>?id=<?php echo ($data1["id"]); ?>" class="operBtn">修改</a>
+                              <a href="#" class="operBtn" onclick="deleteAction(<?php echo ($data1["id"]); ?>)">删除</a><?php break;?>
+                              <?php case PROPAGANDA_STATUS_DECLINED: ?><a href="#" class="operBtn" onclick="resourceAction(<?php echo ($data1["id"]); ?>,<?= PROPAGANDA_STATUS_VERIFIED ?>)">通过审核</a>
+                              <a href="__URL__/<?php echo ($addEditUrl); ?>?id=<?php echo ($data1["id"]); ?>" class="operBtn">修改</a>
+                              <a href="#" class="operBtn" onclick="deleteAction(<?php echo ($data1["id"]); ?>)">删除</a><?php break;?>
+                              <?php case PROPAGANDA_STATUS_OFFSHELF: ?><a href="#" class="operBtn" onclick="resourceAction(<?php echo ($data1["id"]); ?>,<?= PROPAGANDA_STATUS_PUBLISHED ?>)">上架</a>
+                              <a href="__URL__/<?php echo ($addEditUrl); ?>?id=<?php echo ($data1["id"]); ?>" class="operBtn">修改</a>
+                              <a href="#" class="operBtn" onclick="deleteAction(<?php echo ($data1["id"]); ?>)">删除</a><?php break;?>
+                              <?php case PROPAGANDA_STATUS_PUBLISHED: ?><a href="#" class="operBtn" onclick="resourceAction(<?php echo ($data1["id"]); ?>,<?= PROPAGANDA_STATUS_OFFSHELF ?>)">下架</a>
+                              <a href="/index.php/Admin/PropagandaManagement/<?php echo ($addEditUrl); ?>?id=<?php echo ($data1["id"]); ?>" class="operBtn">修改</a>
+                              <a href="#" class="operBtn" onclick="deleteAction(<?php echo ($data1["id"]); ?>)">删除</a><?php break;?>
+                              <?php case PROPAGANDA_STATUS_OVER: ?><a href="/index.php/Admin/PropagandaManagement/<?php echo ($addEditUrl); ?>?id=<?php echo ($data1["id"]); ?>" class="operBtn">修改</a>
+                              <a href="#" class="operBtn" onclick="deleteAction(<?php echo ($data1["id"]); ?>)">删除</a><?php break;?>
+                              <?php case PROPAGANDA_STATUS_PUBLISHING: ?><a href="#" class="operBtn" onclick="resourceAction(<?php echo ($data1["id"]); ?>,<?= PROPAGANDA_STATUS_OFFSHELF ?>)">下架</a>
+                              <a href="__URL__/<?php echo ($addEditUrl); ?>?id=<?php echo ($data1["id"]); ?>" class="operBtn">修改</a>
+                              <a href="#" class="operBtn" onclick="deleteAction(<?php echo ($data1["id"]); ?>)">删除</a><?php break; endswitch;?>
+                          </td>
+                              </tr>
+                          </volist>
+
+                      </tr>
+
+                      </tbody>
+                  </table>
+
+                  <div class="Pagination teacherPage">{$tabList12.page}</div>
+              </div>
+          </div>
+
+      </volist>
+
+</div>
+    </div>
+<script>
+    function publicAjaxProcess(res)
+    {
+        res = JSON.parse(res);
+        if(res.status != undefined) {
+            switch (res.status) {
+                case 200:
+                    alert(res.message);
+                    location.reload();
+                    break;
+                case 500:
+                    alert(res.message);
+                    break;
+                default:
+                    alert("服务器繁忙，请稍候再试");
+                    break;
+            }
+        }
+        else
+        {
+            alert("服务器繁忙，请稍候再试");
+        }
+    }
+    function resourceAction(id,status) {
+        $.get('__URL__/{$changeStatusURL}', {"id": id,"status":status}, function (res) {
+            publicAjaxProcess(res)
+        });
+    }
+    function deleteAction(id)
+    {
+        if(confirm('确定要删除吗？'))
+        $.get('__URL__/{$deleteURL}', {"id": id}, function (res) {
+            publicAjaxProcess(res)
+        });
+    }
+
+    $('.addProp').blur(function(){
+        propChanged(this);
+    })
+    function propChanged(obj)
+    {
+        //TODO:reg fail
+        //var reg = $(this).attr('reg');
+        var field = $(obj).attr('name');
+        var value = $(obj).val();
+        var url = $(obj).attr('url');
+        var oldValue = $(obj).attr('oldValue');
+        if( value == '') {
+            alert('请输入正确的参数值');
+            $(obj).focus();
+            return;
+        }
+        if(value != oldValue)
+        {
+            $.get('__URL__/'+url,{'field':field,'value':value},function(res){
+                publicAjaxProcess(res);
+            })
+            $(obj).attr('oldValue',value);
+        }
+
+    }
+    $('.filterSelect').change(function(){
+        var cat = $(this).attr('attr_id');
+        location.href = '__URL__/{$actionName}' + '?cat=' + cat + '&filterOption=' + $(this).val();
+    })
+</script>

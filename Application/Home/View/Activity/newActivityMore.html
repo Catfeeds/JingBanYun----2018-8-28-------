@@ -1,0 +1,113 @@
+
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=3.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/newActivity.css" type="text/css" rel="stylesheet">
+
+<div><a href="{:U('Activity/activities')}" title="返回" class="btn btnReturn1">返回</a></div>
+<div class="activitySearch_main">
+	<div class="activitySearch_top">
+		<div class="hisText left"><?php echo $title?></div>
+		<div class="search me_search">
+			<form method="post" action="{:U('Activity/activity_history_more')}" id="myForms">
+				<input type="hidden" name="type" value="<?php echo $type?>">
+			<!--<select name="time_status" id="">
+				<option value="">&#45;&#45;请选择&#45;&#45;</option>
+			</select>-->
+			<button class="search_btn">搜索</button>
+			<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="关键字搜索" maxlength="28">
+			</form>
+		</div>
+		<div class="searchMoreText">共有{$count}条结果</div>
+	</div>
+	<div class="activitySearch_con">
+		<empty name="list">
+			<div class="emptyDiv mt20">
+				<img src="{$oss_path}public/web_img/Empty/sorry.png" alt="" class="sorry">
+				<p>抱歉，没有搜索到相关的活动！</p>
+			</div>
+		</empty>
+		<notempty>
+		<ul class="searchUl">
+			<?php foreach($list as $value){?>
+				<?php if($value['content_type'] == 1){?>
+					<li class="searchLi">
+				<div class="left imgBox" style="background: url(Resources/socialactivity/<?php echo $value['img']?>) no-repeat center; background-size: 100%"></div>
+				<div class="textBox left">
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>" class="textA" title="<?php echo $value['title']?>"><?php echo $value['title']?></a>
+					<div class="textObject">参与对象：<?php echo $value['content']?></div>
+					<div class="textTime">活动时间：<?php echo $value['time']?></div>
+				</div>
+				<div class="rightBox">
+					<?php if($value['endtime'] > time() && $value['startime'] < time() && in_array($role,explode(',',$list[$j]['role_ids']))) {?>
+						<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>">我要<br>报名</a>
+					<?php }else{?>
+						<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>">查看<br>详情</a>
+					<?php }?>
+				</div>
+			</li>
+				<?php }elseif($value['content_type'] == 3){?>
+					<li class="searchLi">
+				<div class="left imgBox" style="background: url(<?php echo $oss.$value['img']?>) no-repeat center; background-size: 100%"></div>
+				<div class="textBox left">
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=vote_details&id='.$value['id']?>" class="textA" title="<?php echo $value['title']?>"><?php echo $value['title']?></a>
+					<div class="textObject">投票时间：<?php echo $value['time']?></div>
+					<div class="textTime">投票规则：<?php echo $value['content']?></div>
+				</div>
+				<div class="rightBox">
+					<?php if($value['endtime'] > time() && $value['startime'] < time()) { ?>
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=vote_details&id='.$value['id']?>">我要<br>投票</a>
+					<?php }else{?>
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=vote_details&id='.$value['id']?>">查看<br>详情</a>
+					<?php }?>
+				</div>
+			</li>
+				<?php }elseif($value['content_type'] == 2){?>
+					<li class="searchLi">
+				<div class="left imgBox" style="background: url(<?php echo $oss.$value['img']?>) no-repeat center; background-size: 100%"></div>
+				<div class="textBox left">
+					<a href="<?php echo 'index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id='.$value['id']?>" class="textA" title="<?php echo $value['title']?>"><?php echo $value['title']?></a>
+					<div class="textTime"><?php echo mb_substr(strip_tags(html_entity_decode($value['content'])),0,20,'utf-8')?></div>
+				</div>
+				<div class="rightBox">
+					<a href="<?php echo 'index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id='.$value['id']?>">查看<br>详情</a>
+				</div>
+			</li>
+				<?php }else{?>
+					<!--赛事-->
+					<li class="searchLi">
+				<div class="left imgBox" style="background: url(Resources/socialactivity/<?php echo $value['short_content']?>) no-repeat center; background-size: 100%"></div>
+				<div class="textBox left">
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>" class="textA" title="<?php echo $value['title']?>"><?php echo $value['title']?></a>
+					<div class="textObject">参与对象：<?php echo $value['stakeholder']?></div>
+					<div class="textTime">活动时间：<?php echo $value['display_activity_startendtime']?></div>
+				</div>
+				<div class="rightBox">
+					<?php if($value['works_show_status'] == 1){?>
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityWorks&id='.$value['id']?>">查看<br>获奖作品</a>
+					<?php }else{?>
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>">查看<br>活动详情</a>
+					<?php }?>
+				</div>
+			</li>
+				<?php }?>
+			<?php }?>
+		</ul>
+		<div class="Pagination">{$page}</div>
+		</notempty>
+	</div>
+</div>
+<script>
+    function submits() {
+        var str = '';
+        var keyword = $('.search_text').val();
+        if(keyword != ''){
+            str += '&keyword='+keyword;
+        }
+        str = "index.php?m=Home&c=Activity&a=activity_history_more" + str;
+        location.href = str;
+    }
+
+    $('.search_btn').click(function () {
+        submits();
+        return false;
+    })
+</script>

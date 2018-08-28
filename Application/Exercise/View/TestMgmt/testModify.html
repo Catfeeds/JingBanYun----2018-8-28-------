@@ -1,0 +1,450 @@
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.all.js"></script>
+<style>
+	.blockImg {
+		background: url({$oss_path}public/web_img/adminExercise/blockImg1.png) no-repeat center;
+	}
+
+	.blockImg.active {
+		background: url({$oss_path}public/web_img/adminExercise/blockImg2.png) no-repeat center;
+	}
+
+	.tableImg {
+		background: url({$oss_path}public/web_img/adminExercise/tableImg1.png) no-repeat center;
+	}
+
+	.tableImg.active {
+		background: url({$oss_path}public/web_img/adminExercise/tableImg2.png) no-repeat center;
+	}
+
+	.tableShow {
+		display: none;
+	}
+</style>
+
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter').css('min-height',boxHeight)
+	})
+</script>
+
+<div class="boxOutter">
+	<div class="borderBottom  mb30 pb10 of">
+	    <span class="color3baeab left spanTitle">试题详情</span>
+	    <button type="button" name="button" class="btn right">保存</button>
+  	</div>
+	<div class="filterOutter borderNone pb0">
+		<div class="filterInner">
+			<div class="filterBox">
+				<label for="">试&nbsp;卷&nbsp;ID</label>
+				<input type="text" class="inputCommon" id="" placeholder="请输入试卷ID">
+			</div>
+			<div class="filterBox filterBoxTwo">
+				<label for="">试卷名称</label>
+				<input type="text" class="inputCommon" id="" placeholder="请输入试卷名称">
+			</div>
+			<div class="filterBox">
+				<label for="">试卷类型</label>
+				<select name="" id="" class="inputCommon">
+					<option value="0">请选择</option>
+					<?php foreach(C('paperCategory') as $catKey=>$catVal) { ?>
+					<option value="{$catVal['id']}">{$catVal['name']}</option>
+					<?php } ?>
+				</select>
+			</div>
+			<div class="filterBox">
+				<label for="">省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份</label>
+				<select name="" id="" class="inputCommon">
+					<option value="0">请选择</option>
+					<option value="1">北京市</option>
+					<option value="2">河北省</option>
+				</select>
+			</div>
+			<div class="filterBox">
+				<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+				<select name="" id="" class="inputCommon">
+					<option value="0">请选择</option>
+					<option value="1">语文</option>
+					<option value="2">数学</option>
+				</select>
+			</div>
+			<div class="filterBox">
+				<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label>
+				<select name="" id="" class="inputCommon">
+					<option value="0">请选择</option>
+					<option value="1">一年级</option>
+					<option value="2">二年级</option>
+				</select>
+			</div>
+			<div class="filterBox filterBoxText">
+				<label for="">试题状态</label> - 待校审
+			</div>
+			<div class="filterBox filterBoxText">
+				<label for="">习题来源</label> - 录入
+			</div>
+			<div class="filterBox filterBoxUnit">
+				<label for="">试卷模块</label>
+				<select name="" id="" class="inputCommon">
+					<option value="0">请选择</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+				</select>
+				<span class="spanUnit">个</span>
+			</div>
+			<div class="filterBox filterBoxUnit">
+				<label for="">试卷总分</label>
+				<input type="text" class="inputCommon" id="" placeholder="请输入试卷总分">
+				<span class="spanUnit">分</span>
+			</div>
+			<div class="filterBox filterBoxUnit">
+				<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份</label>
+				<select name="" id="" class="inputCommon">
+					<option value="0">请选择</option>
+					<option value="1">2017</option>
+					<option value="2">2016</option>
+					<option value="3">2015</option>
+				</select>
+				<span class="spanUnit">年</span>
+			</div>
+		</div>
+	</div>
+
+	<table class="tableCommon">
+		<thead>
+			<tr>
+				<th width=10%>大题题号</th>
+				<th width=15%>选择模板</th>
+				<th width=20%>大题名称</th>
+				<th width=45%>题目要求</th>
+				<th width=10%>包含题数</th>
+		</thead>
+		<tbody>
+			<tr>
+				<td>一</td>
+				<td>
+					<select name="" id="" class="inputCommon">
+						<option value="0">请选择</option>
+						<option value="1">选择题</option>
+						<option value="2">填空题</option>
+					</select>
+				</td>
+				<td>
+					<input type="text" class="inputCommon" placeholder="请输入大题名称" value="单选题">
+				</td>
+				<td>
+					<input type="text" class="inputCommon" placeholder="请输入题目要求" value="这里是题目要求">
+				</td>
+				<td>10</td>
+			</tr>
+			<tr>
+				<td>二</td>
+				<td>
+					<select name="" id="" class="inputCommon">
+						<option value="0">请选择</option>
+						<option value="1">选择题</option>
+						<option value="2">填空题</option>
+					</select>
+				</td>
+				<td>
+					<input type="text" class="inputCommon" placeholder="请输入大题名称" value="填空题">
+				</td>
+				<td>
+					<input type="text" class="inputCommon" placeholder="请输入题目要求" value="这里是题目要求">
+				</td>
+				<td>10</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="tableTop mb10 mt20 of">
+		<div class="tableTitle left">切换展示方式</div>
+		<div class="blockImg active" title="预览模式"></div>
+		<div class="tableImg" title="列表模式"></div>
+	</div>
+	<div class="blockShow">
+		<ul>
+				<li class="bordereee  pt5">
+					<div class="borderBottom">
+							<b>一 .单选题(共<span class="color3baeab">10</span>小题)</b>
+							<div class="ml20 m10">
+								题目要求此处不可修改
+							</div>
+					</div>
+					<div class="pl30 pr30 border-dashed">
+
+					<div class="of pr30">
+						<div class="dib left mtb10 ">
+							试题ID：4396
+						</div>
+						<div class="mtb10 dib right ">
+							<span class="color3baeabFixed w64 mr0">分数</span>
+							<select class="w64 " name="">
+									<option>1</option>
+									<option>2</option>
+									<option>3</option>
+							</select>
+						</div>
+						<div class="mtb10 right mr30">
+								<input type="radio" name="name" value=""><label for="">单题</label>
+								<input type="radio" name="name" value=""><label for="">含多小题</label>
+						</div>
+					</div>
+					<div class="mb10 mt10">
+						<span class="color3baeabFixed textSpan">题目</span>
+						<span class="textSpan">题干</span>
+						<div style="width: 580px;" class="dib">
+							<script type="text/plain" id="message" name="message" style="width:100%;height:50px;"></script>
+						</div>
+					</div>
+
+					<div class="ml62">
+						<span >选项数量</span>
+						<select class="exerciseNums selectSize" name="" onchange="optionShow(this)" >
+									<option>2</option>
+									<option>3</option>
+									<option selected = "selected">4</option>
+									<option>5</option>
+									<option>6</option>
+									<option>7</option>
+									<option>8</option>
+						</select>
+					<div class="mt10 editors db">
+							<span class="textSpan optionSpan">A</span>
+							<div style="width: 580px;" class="dib">
+										<script type="text/plain" id="messageA" name="message" style="width:100%;height:50px;"></script>
+							</div>
+							<button type="button" name="button" class="btn textSpan setAnswer">设为答案</button>
+							<button type="button" name="button" class="btn textSpan Deselect">取消设置</button>
+						</div>
+						<div class="mt10 editors db">
+							<span class="textSpan optionSpan">B</span>
+								<div style="width: 580px;" class="dib">
+										<script type="text/plain" id="messageB" name="message" style="width:100%;height:50px;"></script>
+								</div>
+								<button type="button" name="button" class="btn textSpan setAnswer">设为答案</button>
+								<button type="button" name="button" class="btn textSpan Deselect">取消设置</button>
+						</div>
+						<div class="mt10 editors db">
+								<span class="textSpan optionSpan">C</span>
+								<div style="width: 580px;" class="dib">
+											<script type="text/plain" id="messageC" name="message" style="width:100%;height:50px;"></script>
+								</div>
+								<button type="button" name="button" class="btn textSpan setAnswer">设为答案</button>
+								<button type="button" name="button" class="btn textSpan Deselect">取消设置</button>
+							</div>
+							<div class="mt10 editors db">
+								<span class="textSpan optionSpan">D</span>
+									<div style="width: 580px;" class="dib">
+											<script type="text/plain" id="messageD" name="message" style="width:100%;height:50px;"></script>
+									</div>
+									<button type="button" name="button" class="btn textSpan setAnswer">设为答案</button>
+									<button type="button" name="button" class="btn textSpan Deselect">取消设置</button>
+							</div>
+							<div class="mt10 editors">
+								<span class="textSpan optionSpan">E</span>
+									<div style="width: 580px;" class="dib">
+											<script type="text/plain" id="messageE" name="message" style="width:100%;height:50px;"></script>
+									</div>
+									<button type="button" name="button" class="btn textSpan setAnswer">设为答案</button>
+									<button type="button" name="button" class="btn textSpan Deselect">取消设置</button>
+							</div>
+							<div class="mt10 editors">
+								<span class="textSpan optionSpan">F</span>
+									<div style="width: 580px;" class="dib">
+											<script type="text/plain" id="messageF" name="message" style="width:100%;height:50px;"></script>
+									</div>
+									<button type="button" name="button" class="btn textSpan setAnswer">设为答案</button>
+									<button type="button" name="button" class="btn textSpan Deselect">取消设置</button>
+							</div>
+							<div class="mt10 editors">
+								<span class="textSpan optionSpan">G</span>
+									<div style="width: 580px;" class="dib">
+											<script type="text/plain" id="messageG" name="message" style="width:100%;height:50px;"></script>
+									</div>
+									<button type="button" name="button" class="btn textSpan setAnswer">设为答案</button>
+									<button type="button" name="button" class="btn textSpan Deselect">取消设置</button>
+							</div>
+							<div class="mt10 editors">
+								<span class="textSpan optionSpan">H</span>
+									<div style="width: 580px;" class="dib">
+											<script type="text/plain" id="messageH" name="message" style="width:100%;height:50px;"></script>
+									</div>
+									<button type="button" name="button" class="btn textSpan setAnswer">设为答案</button>
+									<button type="button" name="button" class="btn textSpan Deselect">取消设置</button>
+							</div>
+					</div>
+
+					<div class="text-center mtb10">
+						<button type="button" name="button" class="btn pl20 pr20 preview">预览</button>
+					</div>
+					<div class="mtb10">
+						<span class="color3baeabFixed mr0">题型展示</span>
+						<select class="selectSize" name="">
+								<option>选择题</option>
+								<option>2</option>
+								<option>3</option>
+						</select>
+					</div>
+
+					<div class="mtb10">
+						<div class="borderBottom">
+								<button type="button" name="button" class="tabBtn pl20 pr20">解析</button>
+						</div>
+						<div class="mt10 mb10">
+								<script type="text/plain" id="messageJx" name="message" style="width:100%;height:150px;"></script>
+						</div>
+						<button type="button" name="button" class="btn textSpan">实时预览</button>
+					</div>
+				</div>
+				<div class="p30">
+					<table class="tableCommon">
+						<thead>
+							<tr>
+								<th width=8%>序号</th>
+								<th width=8%>知识点</th>
+
+						</thead>
+						<tbody>
+							<tr>
+								<td><a href="javascript:;" class="tableAName">101</a></td>
+								<td>创建</td>
+
+							</tr>
+							<tr>
+								<td><a href="javascript:;" class="tableAName">101</a></td>
+								<td>知识点</td>
+
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				</li>
+				</ul>
+	</div>
+	<!-- 列表展示 -->
+	<div class="tableShow">
+		<table class="tableCommon">
+			<thead>
+				<tr>
+					<th width=8%>题号</th>
+					<th width=10%>试题ID</th>
+					<th width=10%>年级</th>
+					<th width=10%>试卷类型</th>
+					<th width=42%>试卷名称</th>
+					<th width=20%>操作</th>
+			</thead>
+			<tbody>
+				<tr>
+					<td>1</td>
+					<td><a href="javascript:;" class="tableAName">156</a></td>
+					<td>一年级</td>
+					<td>真题</td>
+					<td class="text-left" title="这是试卷名称啊啊啊啊啊啊啊">这是试卷名称啊啊啊啊啊啊啊</td>
+					<td>
+						<a href="javascript:;" class="tableABtn">查看详情</a>
+					</td>
+				</tr>
+				<tr>
+					<td>2</td>
+					<td><a href="javascript:;" class="tableAName">156</a></td>
+					<td>一年级</td>
+					<td>真题</td>
+					<td class="text-left" title="这是试卷名称啊啊啊啊啊啊啊">这是试卷名称啊啊啊啊啊啊啊</td>
+					<td>
+						<a href="javascript:;" class="tableABtn">查看详情</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="Pagination">{$page}</div>
+	</div>
+
+	<div class="borderBottom  mb30 pb10 of">
+	    <span class="color3baeab left spanTitle">试题追踪</span>
+  	</div>
+  	<table class="tableCommon">
+		<thead>
+			<tr>
+				<th width=10%>序号</th>
+				<th width=20%>操作</th>
+				<th width=20%>操作人</th>
+				<th width=20%>时间</th>
+				<th width=30%>备注</th>
+		</thead>
+		<tbody>
+			<tr>
+				<td>1</td>
+				<td>创建</td>
+				<td>李楠</td>
+				<td>2017-08-05</td>
+				<td>这是我创建的</td>
+			</tr>
+			<tr>
+				<td>2</td>
+				<td>创建</td>
+				<td>李楠</td>
+				<td>2017-08-05</td>
+				<td>这是我创建的</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<script>
+var ue = UE.getEditor('message');
+var ue = UE.getEditor('messageA');
+var ue = UE.getEditor('messageB');
+var ue = UE.getEditor('messageC');
+var ue = UE.getEditor('messageD');
+var ue = UE.getEditor('messageE');
+var ue = UE.getEditor('messageF');
+var ue = UE.getEditor('messageG');
+var ue = UE.getEditor('messageH');
+var ue = UE.getEditor('messageJx');
+function optionShow(optionClass){
+	var optionVal = $(optionClass).children('option:selected').val();
+	$('.editors').hide();
+	for(var i=0;i<optionVal;i++){
+		$('.editors').eq(i).show()
+	}
+}
+	$('.blockImg').click(function(){
+		if(!$(this).hasClass('active')){
+			$(this).addClass('active').siblings('.tableImg').removeClass('active');
+			$('.blockShow').show().siblings('.tableShow').hide()
+		}
+	})
+
+	$('.tableImg').click(function(){
+		if(!$(this).hasClass('active')){
+			$(this).addClass('active').siblings('.blockImg').removeClass('active');
+			$('.tableShow').show().siblings('.blockShow').hide()
+		}
+	})
+	$('.setAnswer').click(function(){
+		$(this).addClass('active').siblings('button').removeClass('active').parent().siblings().find('.btn').removeClass('active')
+	})
+	$('.Deselect').click(function(){
+		$(this).siblings('.btn').removeClass('active')
+	})
+	function copyContent(num){
+		var itemsVal = parseInt($(num).children('option:selected').val());
+		var cloneContent = $('.createCompletionLicontent').eq(0).html()
+		if(itemsVal == $('.createCompletionLicontent').length){
+			for(var i=0;i<itemsVal;i++){
+					$('.createCompletionLicontent').eq(i).show()
+			}
+		}else if( $('.createCompletionLicontent').length >itemsVal){
+			$('.createCompletionLicontent').hide()
+			for(var a=0;a<itemsVal;a++){
+				$('.createCompletionLicontent').eq(a).show()
+			}
+		}else if($('.createCompletionLicontent').length < itemsVal){
+			for(var b=0;b<=itemsVal-$('.createCompletionLicontent').length;b++){
+				$('.subjectUl').append('<li class="createCompletionLicontent">'+cloneContent+'</li>')
+			}
+		}
+	}
+</script>

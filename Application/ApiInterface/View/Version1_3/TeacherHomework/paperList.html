@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<title></title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				color: #333;
+			}
+			ul li{
+				list-style: none
+			}
+			.left{
+				float: left;
+			}
+			.of{
+				overflow: hidden;
+			}
+			.paperHeader{
+				position: fixed;
+				top:45px;
+				width: 100%;
+				z-index: 2
+			}
+			.paperHeader ul{
+				height: 40px;
+
+			}
+			.paperHeader li {
+				width: 25%;
+				text-align: center;
+				line-height:40px;
+				border-bottom: 1px solid #eee;
+				color:#333;
+				font-size: 16px;
+				background: #fff;
+				position: relative;
+				z-index: 3;
+			}
+			.paperHeader li img{
+				width: 10px
+			}
+			.paperList{
+				padding:0px 20px;
+				font-size: 16px;
+				margin-top: 100px
+			}
+			.paperList p{
+				line-height: 28px
+			}
+			.paperList  li{
+				padding: 5px 0;
+				border-bottom: 1px solid #eee
+			}
+			.paperName{
+				font-size: 18px
+			}
+			.paperNum{
+				color: #999
+			}
+			.paperType span{
+				display: inline-block;
+				border: 1px solid #eaa800  ;
+				background:#fff8da;
+				color: #eaa800;
+				padding: 0 8px;
+				line-height: 20px;
+				border-radius: 5px
+			}
+			.paperHeader li .paperHeaderSeach {
+				position: absolute;
+    			background: #fff;
+				text-align: left;
+				display: none;
+				top:43px;
+				left: 0
+			}
+			.paperHeader li .paperHeaderSeach p{
+				margin: 0 30px;
+				border-bottom: 1px solid #eee
+			}
+			.mask{
+				width: 100%;
+				background: #000;
+				opacity: 0.3;
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: 2;
+				display: none
+			}
+			.appTop {
+				height: 44px;
+				width: 100%;
+				border-bottom: 1px solid #eee;
+				position: fixed;
+				top: 0;
+				background: #fff;
+				z-index: 100;
+				box-sizing: content-box;
+			}
+			.appTop .returnBox {
+				width: 44px;
+				height: 100%;
+				background: url(__PUBLIC__/img/Apphomework/fanhui.png) no-repeat center;
+				background-size: 10px 16px;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			.appTop .appTopTitle {
+				height: 44px;
+				line-height: 44px;
+				font-size: 20px;
+				margin: 0 60px;
+				text-align: center;
+			}
+			.paperHeaderSeach{
+				height: 215px;
+				overflow: hidden;
+
+			}
+			.paperHeaderName{
+				height: 42px;
+				overflow: hidden;
+			}
+		</style>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div class="app">
+			<div class="appTop">
+				<div class="returnBox" @click="returnApp"></div>
+				<div class="appTopTitle">
+					<p class="title">试卷列表</p>
+				</div>
+			</div>
+			<div class="paperHeader">
+				<ul >
+					<li class="left">
+						<p class="paperHeaderName cityName" @click="search('.cityName')">
+							<span>学科</span> <img src="__PUBLIC__/img/Apphomework/xuanze.png" alt="" />
+						</p>
+						<div class="paperHeaderSeach">
+							<p @click="all('city')">
+								全部
+							</p>
+							<p v-for="list in cityData" :id="list.id" @click="getCityId">
+								{{list.name}}
+							</p>
+						</div>
+					</li>
+					<li class="left">
+						<p class="paperHeaderName yearName" @click="search('.yearName')">
+							<span>年份</span> <img src="__PUBLIC__/img/Apphomework/xuanze.png" alt="" />
+						</p>
+						<div class="paperHeaderSeach">
+							<p @click="all('year')">
+								全部
+							</p>
+							<p v-for="list in yearData" @click="getYearId">
+								{{list.year}}
+							</p>
+						</div>
+					</li>
+					<li class="left">
+						<p class="paperHeaderName paperTypeName" @click="search('.paperTypeName')">
+							<span>类型</span> <img src="__PUBLIC__/img/Apphomework/xuanze.png" alt="" />
+						</p>
+						<div class="paperHeaderSeach">
+							<p @click="all('type')">
+								全部
+							</p>
+							<p v-for="list in papertypeData" :id="list.id" @click="getPaperTypeId">
+								{{list.name}}
+							</p>
+						</div>
+					</li>
+					<li class="left">
+						<p class="paperHeaderName greadName" @click="search('.greadName')">
+							<span>年级</span> <img src="__PUBLIC__/img/Apphomework/xuanze.png" alt="" />
+						</p>
+						<div class="paperHeaderSeach">
+							<p @click="all('gread')">
+								全部
+							</p>
+							<p v-for="list in gradeData" :id="list.id" @click="getGreadId">
+								{{list.name}}
+							</p>
+						</div>
+					</li>
+					<div class="mask" @click="none">
+
+					</div>
+				</ul>
+
+			</div>
+			<div class="paperList">
+				<ul>
+					<li v-for="list in listData" :id="list.id" >
+						<div class="" @click="goDetails">
+							<p class="paperName"  >
+								<b>{{list.paper_name}}</b>
+							</p>
+							<p class="paperNum"  >
+								共{{list.exercises_count}}道试题
+							</p>
+							<p class="paperType" >
+								<span >{{list.city_id}}</span>
+								<span>{{list.year}}</span>
+								<span >{{list.paper_type}}</span>
+								<span>{{list.period}}</span>
+							</p>
+						</div>
+
+					</li>
+				</ul>
+			</div>
+	</div>
+		<script type="text/javascript">
+		var role = "{$role}";
+		var userId = "{$userId}";
+		var paperType = "{$paper_type}"
+		var app = new Vue({
+			el:'.app',
+			data:{
+				listUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/ExercisesPaperList',
+				listData:[],
+				searchUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/paperWhereSearch',
+				searchData:[],
+				cityData:[],
+				gradeData:[],
+				papertypeData:[],
+				yearData:[],
+				cityId:'',
+				paperId:'',
+				yearId:'',
+				greadId:'',
+				paperId:paperType,
+			},
+			created:function(){
+				this.getList();
+				this.getSearchList()
+
+			},
+			methods:{
+				returnApp:function(){
+					var data4 = {
+							"page":"backClick"
+						}
+					postApp(data4)
+
+				},
+				goDetails:function($event){
+					var id = $($event.target).parents('li').attr('id')
+
+					window.location.href = '/index.php/ApiInterface/Version1_3/TeacherHomework/paperDetails?userId='+userId+'&id='+id
+				},
+				getList:function(){
+					this.$http.post(this.listUrl, {
+						grade: this.greadId,
+						course_id:  this.cityId,
+						year:this.yearId,
+						paper_type: this.paperId,
+						// city_id:this.cityId,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.listData = response.data.data;
+							// console.log(response.data.data);
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				},
+				getSearchList:function(){
+					this.$http.post(this.searchUrl, {
+
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.searchData = response.data.data;
+							console.log(response.data.data);
+							this.yearData = response.data.data.year,
+							this.cityData = response.data.data.course_list,
+							this.gradeData = response.data.data.grade,
+							this.papertypeData = response.data.data.papertype,
+							console.log(this.cityData);
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				},
+				search:function(e){
+						if(	$(e).siblings('.paperHeaderSeach').css('display') == 'none'){
+
+							var index = '-'+$(e).parent().index()*100 +'%';
+							$(e).siblings('.paperHeaderSeach').show().parent().siblings('li').find('.paperHeaderSeach').hide();
+							$(e).siblings('.paperHeaderSeach').css('left',index)
+							$('.paperHeaderSeach').css({
+
+									'overflow':'scroll'
+							})
+							$('.app').css({
+								'height':$(window).height(),
+								'overflow':'hidden'
+							})
+							$('.mask').height($('.app').height()).show()
+
+						}else {
+							$(e).siblings('.paperHeaderSeach').hide().parent().siblings('li').find('.paperHeaderSeach').hide();
+							$('.app').css({
+								'height':'auto',
+								'overflow':'auto'
+							})
+							$('.mask').hide();
+						}
+				},
+				none:function(){
+					$('.app').css({
+						'height':'auto',
+						'overflow':'auto'
+					})
+					$('.paperHeaderSeach,.mask').hide()
+				},
+				getCityId:function($event){
+					this.cityId = $event.target.id;
+					// this.page = 1;
+					$('.cityName').children('span').html($event.target.innerText);
+					this.none();
+					this.getList()
+				},
+				getYearId:function($event){
+					this.yearId = $event.target.innerText;
+					// this.page = 1;
+					$('.yearName').children('span').html($event.target.innerText);
+					this.none();
+					this.getList()
+				},
+				getPaperTypeId:function($event){
+					this.paperId = $event.target.id;
+					// this.page = 1;
+					$('.paperTypeName').children('span').html($event.target.innerText);
+					this.none();
+					this.getList()
+				},
+				getGreadId:function($event){
+					this.greadId = $event.target.id;
+					// this.page = 1;
+					$('.greadName').children('span').html($event.target.innerText);
+					this.none();
+					this.getList()
+				},
+				all:function(name){
+					switch (name) {
+						case 'city':
+							this.cityId = '';
+							$('.cityName').children('span').html('全部')
+							break;
+						case 'year':
+							this.yearId = '';
+							$('.yearName').children('span').html('全部')
+							break;
+						case 'type':
+							this.paperId = '';
+							$('.paperTypeName').children('span').html('全部')
+							break;
+						case 'gread':
+							this.greadId = '';
+							$('.greadName').children('span').html('全部')
+							break;
+					}
+					this.none();
+					this.getList()
+				}
+			},
+
+		})
+			var windowWidth = $(window).width();
+			var windowHeight = $(window).height();
+			$('.paperHeaderSeach').width(windowWidth);
+			$('.mask').height(windowHeight)
+			// $('.paperHeaderName').click(function(){
+			// 	if(	$(this).siblings('.paperHeaderSeach').css('display') == 'none'){
+			// 		var index = '-'+$(this).parent().index()*100 +'%';
+			// 		$(this).siblings('.paperHeaderSeach').show().parent().siblings('li').find('.paperHeaderSeach').hide();
+			// 		$(this).siblings('.paperHeaderSeach').css('left',index)
+			// 		$('.mask').show()
+			// 	}else {
+			// 		$(this).siblings('.paperHeaderSeach').hide().parent().siblings('li').find('.paperHeaderSeach').hide();
+			// 		$('.mask').hide()
+			// 	}
+			// })
+			var data = {
+				"page":"hideNativeNavBar",
+				"flag":"1",
+			}
+				postApp(data)
+					function showWebNav(){}//显示web导航
+
+			$('.mask').bind('touchmove', function(e) {
+			e.preventDefault();
+			});
+		</script>
+	</body>
+</html>

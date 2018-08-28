@@ -1,0 +1,280 @@
+
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<div class="boxOutter">
+	<div class="">
+		<div class="borderBottom of">
+		    <button type="button" name="button" class="tabBtn left duli">独立题录入</button>
+		    <button type="button" name="button" class="tabBtn active left fuhe">复合题录入</button><span class="color3baeab ml20 lh32">*复合题：一题含多个小题</span>
+		</div>
+	</div>
+
+	<ul class="subjectUl">
+
+		<li class="subjectLi Studysection pt10">
+			<span class="color3baeabFixed lh32" >小题数量</span>
+			<select class="selectSize questionsNum" name="" onchange="addQuestion()">
+				<option>--请选择--</option>
+			</select>
+
+		</li>
+		<?php if ( $Counttype >= 1 ): ?>
+		<li class="subjectLi Studysection ">
+	        <span class="color3baeabFixed">学段</span>
+
+	        <?php foreach (C('Studysection') as $studyK => $studyV): ?>
+	                <span class="color333 study_id" study_id="<?=$studyV['id']?>"><?=$studyV['name']?></span>
+	        <?php endforeach ?>
+			<span class="red classred " style="display:none">*该项为必选项</span>
+	    </li>
+		<?php endif ?>
+		<?php if ( $Counttype >= 1 ): ?>
+		<li class="subjectLi getCourse ">
+	        <div class="subjectDiv color3baeabFixed">科目</div>
+	        <?php foreach ($getCourse as $CourseK => $CourseV): ?>
+	                <span class="color333 CourseVdata" Courseid="<?=$CourseV['id']?>"  onclick="courseClick(<?=$CourseV['id']?>)"  ><?=$CourseV['name']?></span>
+	        <?php endforeach; ?>
+			<span class="red classred " style="display:none">*该项为必选项</span>
+	    </li>
+		<?php endif ?>
+		<?php if ( $Counttype >= 1 ): ?>
+	    <li class="subjectLi exercisesType ">
+	        <span class="color3baeabFixed">题型</span>
+	        <?php foreach ($exercisesType as $exercisesK => $exercisesV): ?>
+				<span class="color333 exercisesTypeid" exercisesTypeid="<?=$exercisesV['id']?>"><?=$exercisesV['name']?></span>
+	        <?php endforeach ?>
+			<span class="red classred " style="display:none">*该项为必选项</span>
+	    </li>
+		<?php endif ?>
+		<li >
+
+			<?php if ( $Counttype >= 1 ): ?>
+			<div class="mtb10 ">
+				<span class="vertical-top">一级题干</span>
+				<div style="width: 580px;" class="dib  mr10">
+					<script type="text/plain" id="firstQuestions" name="message" style="width:100%;height:50px;"></script>
+				</div>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</div>
+			<?php endif ?>
+			<div class="questionsDiv">
+
+			</div>
+
+		</li>
+		<div id="iframeDiv">
+			<?php foreach ($type as $typek => $typev): ?>
+				<div class="iframeContent">
+					<div class="choiceSelect of borderTop pt10">
+						<input type="text" name="name" value="{$typek+1}" class="topicNum mr">
+						<select class="selectSize quesType left mr10" name="">
+							<option value="1" <?= $typev==1?'selected':'' ?> >选择题</option>
+							<option value="2" <?= $typev==2?'selected':'' ?> >文字填空</option>
+							<option value="3" <?= $typev==3?'selected':'' ?> >选择填空</option>
+							<option value="4" <?= $typev==4?'selected':'' ?> >连线题</option>
+							<option value="5" <?= $typev==5?'selected':'' ?> >作图题</option>
+							<option value="6" <?= $typev==6?'selected':'' ?> >解答题</option>
+						</select>
+					</div>
+					<iframe src="/index.php?m=Exercise&c=CreateExercise&a=compositecreateChoiceExercise&type={$typev}" type="{$typev}" width="100%" height="auto" id="ExerciseId{$typek}" scrolling="no" allowfullscreen="allowfullscreen"></iframe>
+				</div>
+			<?php endforeach ?>
+		</div>
+		<div class="">
+			<button type="button" name="button" class="btn templateBtn dn">生成全部模板</button>
+
+			<?php if ( $Counttype >= 1 ): ?>
+				<button type="button" name="button" class="btn textSpan preview" onclick="morePreview()">整体预览</button>
+				<button type="button" name="button" class="btn addExercise dn">录入习题</button>
+				<button type="button" name="button" class="btn textSpan Canceloperation">取消操作</button>
+			<?php endif ?>
+
+
+		</div>
+</div>
+<div class="layerHtml exerciseTemplate dn">
+	<div class="oneTitle p15 pb0">
+	</div>
+	<div class="layerHtmlContent ">
+	</div>
+	<div class="difficulty">
+		<span>难度:</span>
+		<span class="">
+
+		</span>
+	</div>
+</div>
+<input type="hidden" class="big_paper_id" value="{$big_paper_id}">
+<input type="hidden" class="paper_id" value="{$paper_id}">
+<input type="hidden" name="repeat_commit" class="repeat_commit" value="{:session('TOKEN')}">
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var url = window.location.href;
+		if(url.indexOf('type') == '-1'){
+		}else{
+			$('.questionsNum').attr('disabled','disabled').css('background','#eee')
+			$('.addExercise').show()
+		}
+	})
+	var firstQuestionInfo;
+	firstQuestionInfo	= UE.getEditor('firstQuestions');
+	for (var i = 2; i < 21; i++) {
+		$('.questionsNum').append('<option>'+i+'</option>')
+	}
+	for(var w=0;w<20;w++){
+		$('.questionsDiv').append('<div class="stem'+w+' stemDiv mtb10"></div>')
+	}
+	function addQuestion(){
+		var questionsNum = $('.questionsNum').children('option:selected').val();
+		$('.stemDiv').hide()
+		for (var i = 0; i < questionsNum; i++) {
+			if($('.stem'+i+'').children('.choiceSelect').length == 0){
+				$('.stem'+i+'').append('<div class="choiceSelect of"><input type="text" name="name" value="('+(i+1)+')" class="topicNum mr"><select class="selectSize quesType left mr10" name=""><option value="1">选择题</option><option value="2">文字填空</option><option value="3">选择填空</option><option value="4">连线题</option><option value="5">作图题</option><option value="6">解答题</option></select></div>')
+				$('.questionsDiv').children('div').eq(i).show()
+			}else {
+				$('.questionsDiv').children('div').eq(i).show()
+			}
+		}
+		$('.templateBtn').show()
+	}
+	var showLength = 0 ;
+	var questionHeight = new Array()
+	$('.templateBtn').click(function(){
+		showLength = 0
+		for(var a=0;a<$('.stemDiv').length;a++){
+			if($('.questionsDiv').children('.stemDiv').eq(a).is(':visible')){
+				showLength++
+			}
+		}
+		var ExerciseType='';
+		for(var b = 0;b<showLength;b++){
+			ExerciseType+=$('.questionsDiv').children('div').eq(b).find('.quesType').children('option:selected').val()+',';
+		}
+
+		var big_paper_id = $('.big_paper_id').val();
+		var paper_id = $('.paper_id').val();
+
+		window.location.href="index.php?m=Exercise&c=CreateExercise&a=moreQuestions&type="+ExerciseType+'&big_paper_id='+big_paper_id+'&paper_id='+paper_id;
+
+	})
+
+	$(window).load(function() {
+		iframeHeightTimer()
+
+		window.setInterval("iframeHeightTimer()",2)
+	});
+	function iframeHeightTimer(){
+		window.clearInterval("iframeHeightTimer()");
+		for(var h = 0;h<$('.iframeContent').length; h++){
+			$(eval("ExerciseId"+h)).height($(eval("ExerciseId"+h)).contents().find("body").height()+50)
+			// questionHeight.push($(eval("ExerciseId"+h)).contents().find("body").height()+26)
+		}
+		// var Fheight = eval(questionHeight.join('+'));
+	}
+
+</script>
+
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/composite.js"></script>
+<script>
+	var Counttype = "{$Counttype}";
+	if (Counttype>0) {
+		Counttype = Counttype-1;
+		$('.questionsNum').find('option').eq(Counttype).attr('selected','selected');
+	}
+	var valArr = new Array()
+	$('.addExercise').click(function(){
+		if( $('.questionsNum').children('option:selected').val() == '--请选择--'){
+			return false
+		};
+		valArr = [];
+		var iframeContentlength = $('.iframeContent').length
+		for (var i = 0; i < iframeContentlength; i++) {
+			$('#ExerciseId'+i)[0].contentWindow.resShow();
+			valArr.push($('#ExerciseId'+i)[0].contentWindow.resShow());
+
+		}
+		if(subTop()>0){
+			return false
+		}
+		for(var h = 0;h<valArr.length;h++){
+			if(valArr[h]>0){
+				return false
+			}
+		}
+	})
+	function subTop(){
+		var b = 0;
+		if($('.subjectLi').eq(1).find('.color3baeab').length == 0){
+			$('.subjectLi').eq(1).children('.red').show();
+			b++
+		}else {
+			$('.subjectLi').eq(1).children('.red').hide();
+		}
+		if($('.subjectLi').eq(2).find('.color3baeab').length == 0){
+			$('.subjectLi').eq(2).children('.red').show();
+			b++
+		}else {
+			$('.subjectLi').eq(2).children('.red').hide();
+		}
+		if($('.subjectLi').eq(3).find('.color3baeab').length == 0){
+			$('.subjectLi').eq(3).children('.red').show();
+			b++
+		}else {
+			$('.subjectLi').eq(3).children('.red').hide();
+		}
+		if(UE.getEditor('firstQuestions').getContentLength() == 0){
+			$('#firstQuestions').parent().siblings('.red').show();
+			b++
+		}else{
+			$('#firstQuestions').parent().siblings('.red').hide();
+		}
+		return b
+	}
+
+	var answerArr = new Array();
+	for(var u=0;u<$('.iframeContent').length;u++){
+		answerArr.push(1)
+	}
+	$(document).on('click','.answer1',function(){
+		var index = $(this).parents('.exerciseTitle').index();
+		answerArr[index] = 1;
+		$(this).parent().siblings().find('li').removeAttr('class')
+	})
+	$(document).on('click','.answer2',function(){
+		var index = $(this).parents('.exerciseTitle').index();
+		answerArr[index] = 2;
+		$(this).parent().siblings().find('li').removeAttr('class').addClass('w50')
+	})
+	$(document).on('click','.answer4',function(){
+		var index = $(this).parents('.exerciseTitle').index();
+		var exerciseNum = 0;
+		for(var i=0;i< $(this).parent().siblings('div').find('li').length;i++){
+			if($(this).parent().siblings('div').find('li').eq(i).css('display')!='none'){
+				exerciseNum++
+			}
+		}
+		if(exerciseNum ==2){
+			$(this).parent().siblings().find('li').removeAttr('class').addClass('w50');
+		}else if (exerciseNum ==3) {
+			$(this).parent().siblings().find('li').removeAttr('class').addClass('w33')
+		}else if (exerciseNum ==4) {
+			$(this).parent().siblings().find('li').removeAttr('class').addClass('w25')
+		}else if (exerciseNum ==5) {
+			$(this).parent().siblings().find('li').removeAttr('class').addClass('w20')
+		}else if (exerciseNum ==6) {
+			$(this).parent().siblings().find('li').removeAttr('class').addClass('w16')
+		}else if (exerciseNum ==7) {
+			$(this).parent().siblings().find('li').removeAttr('class').addClass('w14')
+		}else if (exerciseNum ==8) {
+			$(this).parent().siblings().find('li').removeAttr('class').addClass('w12')
+		}else {
+			$(this).parent().siblings().find('li').removeAttr('class')
+		}
+		answerArr[index] =  exerciseNum ;
+	})
+</script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/newRender.js"></script>

@@ -1,0 +1,157 @@
+<layout name="student_layout_3" />
+<script src="__PUBLIC__/js/exercise/sha1.js?" type="text/javascript"></script>
+<link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css" />
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css" />
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<!--<script type="text/javascript" src="__PUBLIC__/js/external/MicrosoftAjax.js"></script>-->
+<script type="text/javascript" src="__PUBLIC__/js/MicrosoftAjax.js"></script>
+<script src="__PUBLIC__/js/exercise/render_1.js?" type="text/javascript"></script>
+
+<style>
+    .main_head {
+        padding: 17px;
+    }
+	.homework_bg{
+		background: #eee;
+		padding-left: 17px;font-size:16px;
+		padding: 5px 10px;
+			margin: 10px 0;
+    }
+	.homework_bg p{
+	display: inline-block;
+		margin: 0;
+    }
+</style>
+<div class="main_opr">
+    <a href="{:U('StudentmulHomework/mulHomework')}" title="语音作业" class="btn btn-main-opr">语音作业</a>
+    <a href="javascript:;" title="习题作业" target="_blank" class="btn btn-main-opr btn-main-opr-active" >习题作业</a>
+    <a href="{:U('Student/wrongHomeworkList')}" title="错题集" target="_blank" class="btn btn-main-opr">错题集</a>
+</div>
+
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Student/homework')}" title="返回" class="btn btnReturn3">返回</a>
+</div>
+<div style="width:80%;margin:0 auto">
+<div  class="homework_bg">
+    <p>作业名称：<span class="homework_name">{$currentHomework.homework_name}</span></p>
+    <p style="float:right">习题数量：<span>{$currentHomework.exercises_number}</span></p>
+</div>
+ <div class="homework_bg">
+    	 <p>作业要求：<span class="homework_claim">{$currentHomework.claim}</span></p>
+ </div>
+ <div class="homework_bg">
+    	作业涉及章节：
+        <volist name="chapter_data" id="item_data">
+            <span>{$item_data.chapter},{$item_data.festival}</span>&nbsp;
+        </volist> 
+ </div>
+<div style="margin-top: 30px">
+    <form id="info-list" action="__URL__/submitHomework" method="post">
+        <input type="hidden" name="homework_id" id="homework_id" value="{$homeworkId}">
+        <input type="hidden" name="answers" id="answers" value="">
+        <input type="hidden" name="duration" id="duration" value="">
+
+
+        <div id="exerciseWrapper">
+        </div>
+    </form>
+
+</div>
+<div style="padding-left:17px;text-align:center">
+    <?php if ($is_flag!=0): ?>
+        <input id="submitHomework" type="button" class="btn btn-primary" value="提交" onclick="submitHomework()" />
+    <?php endif ?>
+</div>
+</div>
+<script>
+    var homeworkId = '{$homeworkId}';
+    var chapterId = '{$currentHomework.exercise_chapter_id}';
+    var exercises = [];
+
+    var startTime = 1;
+    var isShowCorrectAnswer = false;
+
+    $(function () {
+        loadHomework();
+        window.setTimeout(function () {
+            setInterval(function () {
+                startTime = startTime + 1;
+            }, 60000);
+        }, 5000); //5秒后开始计时
+        setCanvasZIndex();
+    });
+
+    function setCanvasZIndex() {
+        if ($('.match_canvas')[0] == undefined || $('.match_backcanvas')[0] == undefined) {
+            setTimeout("setCanvasZIndex()", 100);
+            return;
+        }
+
+        try {
+            $('.match_canvas').css('z-index', 2000);
+            $('.match_backcanvas').css('z-index', 1999);
+        } catch (e) {
+            setTimeout("setCanvasZIndex()", 100);
+        }
+    }
+
+    function loadHomework() {
+        //renderExerciseLibraryChapter(chapterId, exercises, null);
+        createExerciseLibraryChapter(homeworkId, exercises, null);
+    }
+</script>
+
+<script type="text/javascript">
+    function submitHomework() {
+        var d = getStructuredData();   
+        $('#answers').val(d);
+        $('#duration').val(startTime);
+        $('form').submit();
+    }
+
+    function getStructuredData() {
+        var data = {};
+        var fields = $('#exerciseWrapper input,#exerciseWrapper select,#exerciseWrapper textarea');     
+        $.each(fields, function (i, n) {   
+            if (n.type == 'radio' && !n.checked) return true;
+            if (n.type == 'checkbox' && !n.checked) return true;
+            var name = $(n).attr('name');
+            var fieldId = $(n).attr('id');
+            var val = $(n).val();
+            if (val != 'undefined' && val != null && val.length > 1000) {
+                val = val.substring(0, 999);
+            }
+            //data[name] = $(n).val();
+            data[fieldId] = $(n).val();
+        });
+        //return JSON.stringify(data);
+        //连线题 学生写的答案在右侧
+        var linx_box_fields,temp_arr,q_id,temp_key;
+        var line_fields=$('.matchQuestion');
+        $.each(line_fields,function(index,par){ 
+            temp_arr=$(par).attr('id').split('_'); 
+            q_id=temp_arr[1]; 
+            
+            linx_box_fields=$(par).find('.matchQuestionRightWrapper').find('.matchQuestionShowItem');
+            
+            var key;
+            $.each(linx_box_fields,function(index_,par_){
+                key=parseInt(index_)+1;
+                temp_key= q_id+'_'+key; 
+                if(typeof($(this).attr('attr_index'))=='undefined'){
+                    data[temp_key]='';
+                }else{
+                    data[temp_key]=$(this).attr('attr_index');
+                }
+            });
+        });
+        
+        return Sys.Serialization.JavaScriptSerializer.serialize(data);
+    }
+</script>
+<script>
+   var contentheight = '申明一个变量，在有些获取不到contwrapper高度的页面执行一个函数'
+
+
+</script>

@@ -1,0 +1,347 @@
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<div class="boxOutter">
+
+	<div class="borderBottom pt10 pb10">
+		<ul class="subjectUl subjectUl1">
+			<li class="subjectLi xueduan">
+				<span class="color3baeabFixed">分类</span>
+				<?php foreach (C('questionCategory') as $CategoryK => $CategoryV): ?>
+					<?php if ($paperinfo['period'] == $CategoryV['id']): ?>
+						<span class="color333 questionCategory color3baeab" questionCategory="<?=$CategoryV['id']?>"><?=$CategoryV['name']?></span>
+					<?php else: ?>
+						<span class="color333 questionCategory " questionCategory="<?=$CategoryV['id']?>"><?=$CategoryV['name']?></span>
+					<?php endif ?>
+				<?php endforeach ?>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</li>
+			<li class='subjectLi subjectLiGrade <if condition="($paperinfo.grade eq '') OR( $paperinfo.grade eq 0 ) ">dn</if>'>
+				<span class="color3baeabFixed">年级</span>
+				<?php foreach (C('PAPERGRADE') as $GradeK => $GradeV): ?>
+					<?php if ($paperinfo['grade'] == $GradeV['id']): ?>
+						<span class="color333 Gradeid color3baeab" Gradeid="<?=$GradeV['id']?>" ><?=$GradeV['name']?></span>
+					<?php else: ?>
+						<span class="color333 Gradeid " Gradeid="<?=$GradeV['id']?>" ><?=$GradeV['name']?></span>
+					<?php endif ?>
+				<?php endforeach ?>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</li>
+			<li class='subjectLi fence <if condition="($paperinfo.section eq '')  OR( $paperinfo.section eq 0 ) ">dn</if>'>
+				<span class="color3baeabFixed">分册</span>
+				<?php foreach (C('schoolTerm') as $TermK => $TermV): ?>
+					<?php if ($paperinfo['section'] == $TermV['id']): ?>
+						<span class="color333 Termid color3baeab" Termid="<?=$TermV['id']?>" ><?=$TermV['name']?></span>
+					<?php else: ?>
+						<span class="color333 Termid " Termid="<?=$TermV['id']?>" ><?=$TermV['name']?></span>
+					<?php endif ?>
+				<?php endforeach ?>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</li>
+		</ul>
+	</div>
+	<div class="pb10 borderBottom pt10">
+		<label for="">年份 </label><input type="number" name="name" value="{$paperinfo.year}" class="inputCommon yearinfo" placeholder="年份"><span class="red classred dn">*该项为必选项或填写错误</span>
+		<label for="" class="ml30">地区 </label><input type="text" name="name" value="{$paperinfo.region}" class="inputCommon regioninfo" placeholder="地区"><span class="red classred dn">*该项为必选项</span>
+	</div>
+	<div class="borderBottom pt10 pb10">
+		<ul class="subjectUl subjectUl2">
+			<li class="subjectLi">
+				<div class="subjectDiv color3baeabFixed">科目</div>
+				<?php foreach ($getCourse as $CourseK => $CourseV): ?>
+					<?php if ($paperinfo['subject'] == $CourseV['id']): ?>
+						<span class="color333 Courseid color3baeab" Courseid="<?=$CourseV['id']?>" ><?=$CourseV['name']?></span>
+					<?php else: ?>
+						<span class="color333 Courseid" Courseid="<?=$CourseV['id']?>" ><?=$CourseV['name']?></span>
+					<?php endif ?>
+				<?php endforeach; ?>
+				<span class="red classred " style="display:none">*该项为必选项</span>
+			</li>
+			<li class="subjectLi">
+				<span class="color3baeabFixed vertical-top lh32">省份</span>
+				<div class="dib cityDiv" style="width: 1075px;">
+				<?php foreach ($city as $CityK => $CityV): ?>
+					<?php if ($paperinfo['city_id'] == $CityV['id']): ?>
+						<span class="color333 lh32 Cityid color3baeab" Cityid="<?=$CityV['id']?>"><?=$CityV['name']?></span>
+					<?php else: ?>
+						<span class="color333 lh32 Cityid" Cityid="<?=$CityV['id']?>"><?=$CityV['name']?></span>
+					<?php endif ?>
+				<?php endforeach; ?>
+				<span class="red classred "style="display:none">*该项为必选项</span>
+				</div>
+
+			</li>
+			<li>
+				<span class="mr0">试卷类型</span>
+				<select  name="" class="mr30 inputCommon paperType"  style="width:auto">
+					<?php foreach (C('paperCategory') as $paperK => $paperV): ?>
+						<?php if ($paperinfo['paper_type'] == $paperV['id']): ?>
+							<option value="<?=$paperV['id']?>" selected><?=$paperV['name']?></option>
+						<?php else: ?>
+							<option value="<?=$paperV['id']?>"><?=$paperV['name']?></option>
+						<?php endif ?>
+					<?php endforeach; ?>
+				</select>
+				<span class="mr0">试卷名称</span>
+				<input type="text" class="inputCommon  paper_name" name="name" value="{$paperinfo.paper_name}" placeholder="必填">
+				<span class="red classred " style="display:none">*该项为必选项</span>
+				<span class="mr0 ">试卷模块数目</span>
+				<select name="" class="inputCommon paper_model_num" style="width:auto" id="moduleNum" disabled>
+					<option value="1" <if condition="($paperinfo['paper_num'] eq 1)">selected</if> >1</option>
+					<option value="2" <if condition="($paperinfo['paper_num'] eq 2)">selected</if> >2</option>
+					<option value="3" <if condition="($paperinfo['paper_num'] eq 3)">selected</if> >3</option>
+					<option value="4" <if condition="($paperinfo['paper_num'] eq 4)">selected</if> >4</option>
+					<option value="5" <if condition="($paperinfo['paper_num'] eq 5)">selected</if> >5</option>
+					<option value="6" <if condition="($paperinfo['paper_num'] eq 6)">selected</if> >6</option>
+					<option value="7" <if condition="($paperinfo['paper_num'] eq 7)">selected</if> >7</option>
+					<option value="8" <if condition="($paperinfo['paper_num'] eq 8)">selected</if> >8</option>
+					<option value="9" <if condition="($paperinfo['paper_num'] eq 9)">selected</if> >9</option>
+					<option  value="10" <if condition="($paperinfo['paper_num'] eq 10)">selected</if> >10</option>
+				</select>
+			</li>
+			<li class="tableLi mt10">
+				<?php if (!empty($bigList)): ?>
+					<table style="width: 100%;" class="tableCommon dataTable no-footer">
+						<tbody>
+						<?php for($i=0;$i<5;$i++): ?>
+
+							<switch name="i">
+								<case value="0">
+									<tr>
+										<td>大题题号</td>
+
+										<?php foreach ($bigList as $bigK => $bigV): ?>
+											<td><?=$bigV['big_topic_asnumber']?></td>
+
+											<input type="hidden" name="big_topic_asnumber[]" class="inputCommon big_topic_asnumber" value="<?=$bigV['big_topic_asnumber']?>">
+
+											<input type="hidden" name="big_question_id[]" class="inputCommon big_question_id" value="<?=$bigV['id']?>">
+										<?php endforeach; ?>
+
+									</tr>
+								</case>
+								<case value="1">
+									<tr>
+										<td>大题名称</td>
+										<?php foreach ($bigList as $bigK => $bigV): ?>
+											<td>
+												<input type="text" name="big_topic_name[]" class="inputCommon big_topic_name" value="<?=$bigV['big_topic_name']?>" placeholder="请输入大题名称">
+											</td>
+										<?php endforeach; ?>
+									</tr>
+								</case>
+								<case value="2">
+									<tr>
+										<td>包含题数</td>
+										<?php foreach ($bigList as $bigK => $bigV): ?>
+										<td><?=$bigV['big_topic_num']?></td>
+										<?php endforeach; ?>
+									</tr>
+								</case>
+								<case value="3">
+									<tr>
+										<td>大题说明</td>
+										<?php foreach ($bigList as $bigK => $bigV): ?>
+										<td>
+											<input type="text" name="big_topic_describe[]" class="inputCommon big_topic_describe" value="<?=$bigV['big_topic_describe']?>" placeholder="输入大题说明">
+										</td>
+										<?php endforeach; ?>
+									</tr>
+								</case>
+
+								<case value="4">
+									<tr>
+										<?php if(in_array('CreateExercise/createChoiceExercise',session('exercises_permissions'))){ ?>
+										<td>操作</td>
+										<?php foreach ($bigList as $bigK => $bigV): ?>
+											<td><button type="button" name="button" class="btn mb10 addExercise" big_paper_id="<?=$bigV['id']?>">录入习题</button></td>
+										<?php endforeach; ?>
+										<?php }?>
+									</tr>
+								</case>
+
+							</switch>
+
+						<?php endfor; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
+			</li>
+		</ul>
+
+		<div class="exerciseDetails">
+			<!-- 注释：以后用预览替换
+
+			<?php foreach ($bigList as $bigK => $bigV): ?>
+				<dt style="color: red;"><?=$bigV['big_topic_asnumber']?>  <?=$bigV['big_topic_name']?></dt>
+
+				<?php if (!empty($bigV['childquestions'])): ?>
+					<?php foreach ($bigV['childquestions'] as $qK => $qV): ?>
+						<dd><?=html_entity_decode($qV['subject_name'])?></dd>
+						<dd>-----
+							<?php if(in_array('CreateExercise/editChoiceExercise',session('exercises_permissions'))){ ?>
+							<span class="editParperInfo cursor" onclick="editQuestion(<?=$qV['exercise_id']?>,<?=$qV['paper_id']?>)" >修改</span>
+							<?php }?>
+							<?php if(in_array('CreateExercise/deleteExercise',session('exercises_permissions'))){ ?>
+							| <a href="javascript:" class="delExercise" onclick="deleteQuestion(<?=$qV['exercise_id']?>,<?=$qV['big_question_id']?>)" >删除</a>
+							<?php }?>
+						</dd>
+					<br/>
+					<?php endforeach; ?>
+				<?php endif ?>
+
+			<br/>
+			<?php endforeach; ?> -->
+		</div>
+
+	</div>
+	<div class="mtb10">
+		<?php if(in_array('CreateExercise/EditPaperInfo',session('exercises_permissions'))){ ?>
+
+			<?php if ($isUrl == 1): ?>
+				<button type="button" name="button" class="btn editsureBtn">保存试卷</button>
+			<?php else: ?>
+				<button type="button" name="button" class="btn editsureBtn">存为草稿</button>
+			<?php endif ?>
+
+		<?php }?>
+		<?php if(in_array('CreateExercise/submitPaper',session('exercises_permissions'))){ ?>
+		<button type="button" name="button" class="btn submitPaper" paper_id="{$paperinfo.id}">提交试卷</button>
+		<?php }?>
+		<input type="hidden" class="paper_id" value="{$paperinfo.id}">
+	</div>
+
+	<div class="borderBottom ">
+		<span class="text-center tabBtn">试卷追踪</span>
+	</div>
+	<table class="tableCommon borderNone mt20">
+		<thead>
+		<tr>
+			<th width="20%">序号</th>
+			<th width="20%">操作</th>
+			<th width="20%">操作人</th>
+			<th width="20%">时间</th>
+			<th width="20%">备注</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php foreach ($paperinfo['track'] as $trackK => $trackV): ?>
+		<tr>
+			<td><?=$trackK+1?></td>
+			<td><?=$trackV['oper_name']?></td>
+			<td><?=$trackV['operator_name']?></td>
+			<td><?=$trackV['oper_time']?></td>
+			<td class="showDetails"><a href="javascript:"><?=$trackV['comment']?></a></td>
+		</tr>
+		<?php endforeach ?>
+		</tbody>
+	</table>
+</div>
+<input type="hidden" name="repeat_commit" class="repeat_commit" value="{:session('TOKEN')}">
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/paper.js"></script>
+<script type="text/javascript">
+$(function(){
+	var grand = "{$paperinfo.period}";
+	if (grand <= 3) {
+		$('.xueduan>.color3baeab').click()
+	}
+})
+
+	$('.editsureBtn').click(function(){
+		if(reshow()>0){
+			return false
+		}
+	})
+	$('.xueduan>span').click(function(){
+		if($(this).text() == '中考' || $(this).text() == '高考'||$(this).text() == '小升初'){
+			$('.subjectLiGrade').find('.Gradeid,.red').hide();
+			$('.subjectLiGrade').find('.Gradeid').eq(0).addClass('color3baeab');
+			$('.fence').find('.Termid,.red').hide();
+			$('.fence').find('.Termid').eq(0).addClass('color3baeab')
+		}else{
+			$('.subjectLiGrade').find('.Gradeid').show();
+			$('.subjectLiGrade').find('.Gradeid').eq(0).removeClass('color3baeab');
+			$('.fence').find('.Termid').show()
+			$('.fence').find('.Termid').eq(0).removeClass('color3baeab')
+		}
+	})
+	function reshow(){
+		var a = 0;
+		for (var i = 0; i < 3; i++) {
+			if($('.subjectUl1').children().eq(i).find('.color3baeab').length == 0){
+				$('.subjectUl1').children().eq(i).find('.red').show();
+				a++
+			}else {
+				$('.subjectUl1').children().eq(i).find('.red').hide();
+			}
+		}
+		for (var j = 0; j < 2; j++) {
+			if($('.subjectUl2').children().eq(j).find('.color3baeab').length == 0){
+				$('.subjectUl2').children().eq(j).find('.red').show();
+				a++
+			}else {
+				$('.subjectUl2').children().eq(j).find('.red').hide();
+			}
+		}
+		var inputName = ['.regioninfo','.paper_name']
+		for(var b=0;b<inputName.length;b++){
+			if($(inputName[b]).val() == ''){
+				$(inputName[b]).next('.red').show();
+				a++
+			}else {
+				$(inputName[b]).next('.red').hide();
+			}
+		}
+		var nian = $('.yearinfo').val()
+		var date1=new Date;
+		var year1=date1.getFullYear();
+		if(nian.indexOf('.') == 1 || nian >year1|| $('.yearinfo').val() == ''|| $('.yearinfo').val() =='0'){
+			$('.yearinfo').next('.red').show();
+			a++
+		}else {
+			$('.yearinfo').next('.red').hide();
+		}
+		if($('.paper_model_num').children('option:selected').val() == '请选择'){
+				$('.paper_model_num').next('.red').show();
+				a++
+		}else{
+			$('.paper_model_num').next('.red').hide();
+
+		}
+		var nm = 0
+		for (var u= 0; u< $('.big_topic_name').length; u++) {
+			if($('.big_topic_name').eq(u).val() == ''){
+				nm++
+			}
+		}
+		for (var t= 0; t< $('.big_topic_describe').length; t++) {
+			if($('.big_topic_describe').eq(t).val() == ''){
+				nm++
+			}
+		}
+		if(nm >0){
+			$('.tableLi').find('.red').show();
+			a++
+		}else{
+			$('.tableLi').find('.red').hide();
+		}
+		return a
+	}
+	var exercise_id = '{$paperinfo.id}';
+var difficultyArray = <?= json_encode(C('difficulty')) ?>;
+	$.ajax({
+		type:'GET',
+		url:'/index.php?m=Exercise&c=CreateExercise&a=getPaperExList&paperid='+exercise_id,
+		dataType:'json',
+		success:function(msg){
+			console.log(msg);
+			for(var i=0;i<msg.msg.length;i++){
+				$('.exerciseDetails').append('<div class="paperDiv"><p class="mb10">'+msg.msg[i].big_topic_asnumber+' '+msg.msg[i].big_topic_name+'</p></div>')
+				for(var j=0;j<msg.msg[i].childquestions.length;j++){
+					$('.paperDiv').eq(i).append(msg.msg[i].childquestions[j].json_html)
+				}
+			}
+		}
+	})
+</script>

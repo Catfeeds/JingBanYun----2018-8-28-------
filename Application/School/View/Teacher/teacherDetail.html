@@ -1,0 +1,84 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+	<div class="standardMain hrefContent">
+		<a href="{:U('Teacher/teacherList')}" class="returnBack">教师列表</a>
+		>
+		<span class="thePage">查看教师信息</span>
+	</div>
+
+	<div class="standardMain classContent tableContent mt0">
+		<div class="blueBox">
+			<span class="left blueTitle">查看教师信息</span>
+			<a href="{:U('Teacher/updateTeacher')}&id={$data.id}" class="blackText right" id="">
+				<img src="__PUBLIC__/img/admin/xiugai.png" alt="" class="mr10">
+				修改信息
+			</a>
+		</div>
+
+		<div class="grid condensed infoOutter">
+			<div class="row cells3 infoBox">
+				<div class="cell">教师姓名：{$data.teacher_name}</div>
+				<div class="cell">教师手机号：{$data.telephone}</div>
+				<div class="cell">性别：{$data.sex}</div>
+				<div class="cell">邮箱：{$data.email}</div>
+				<div class="cell">加入学校审核状态：
+                    <if condition="$data['apply_school_status'] eq 1">
+                        已审核
+                    <else />
+                        待审核
+                    </if>
+                </div>
+				<div class="cell">账号状态：
+                    <if condition="$data['flag'] eq 1">
+                        正常
+                    <else />
+                        禁用
+                    </if> 
+                </div>
+			</div>
+			<div class="row cells1 infoBox">
+				<div class="cell">简介：{$data.brief_intro}</div>
+			</div>
+		</div>
+
+		<div class="tabBox">
+			<ul class="left tabUl" id="tabUl">
+				<li class="tabLi tabActive">任教年级学科</li>
+				<li class="tabLi">教师任教的班级</li>
+			</ul>
+			<div class="tabCon" id="tabCon">
+				<iframe class="tabConActive" id="courseFrame" style="width: 100%;" frameborder="0" src="{:U('Teacher/teacherCourseList')}&id={$data.id}"></iframe>
+				<iframe id="classFrame" style="width: 100%;" frameborder="0" src="{:U('Teacher/teacherClassList')}&id={$data.id}"></iframe>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="";
+				}
+			}
+		} 
+	}
+	
+</script>
+

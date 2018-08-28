@@ -1,0 +1,369 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+	.numInput {
+		height: 2.125rem
+	}
+	
+	.saveImg {
+		width: 18px;
+	}
+	
+	.topDiv {
+		width: 135px;
+		text-align: right
+	}
+	
+	.topDiv .topCheck {
+		width: 18px;
+		height: 18px;
+	}
+	
+	.numInput {
+		max-width: 100%
+	}
+</style>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		栏目管理
+		<span class="blueSpan">
+			<a href="javascript:;">数据字典管理</a>>>
+			<a href="{:U('Column/get_column_list')}">栏目管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<!--
+<div class="blueBox">
+	<span class="blueText left fs16">查看栏目信息</span>
+</div>
+-->
+
+
+<div class="grid condensed">
+	<div class="row cells3 infoBox">
+		<div class="cell">栏目名称：{$data.column_name}</div>
+		<div class="cell">所属板块：{$data.module_name}</div>
+		<div class="cell">&nbsp;</div>
+	</div>
+	<div class="row cells1 infoBox">
+		<div class="cell">
+			所属端口：
+			<empty name="data1">
+<!--				<input type="checkbox" class="cellCheck" disabled>-->
+				<span class="cellSpan">{$data.port_name}</span>
+			<else />
+<!--				<input type="checkbox" class="cellCheck" disabled>-->
+				<span class="cellSpan">{$data1}</span>
+<!--				<input type="checkbox" class="cellCheck" disabled>-->
+				<span class="cellSpan">{$data2}</span>
+<!--				<input type="checkbox" class="cellCheck" disabled>-->
+				<span class="cellSpan">{$data3}</span>
+			</empty>
+		</div>
+	</div>
+</div>
+<hr class="thin bg-grayLighter"> 
+<form action="{:U('Column/column_save')}" method="post">
+	<div class="grayBox">
+		<div class="left">
+			<span class="btns" id="addBtn">
+				<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt=""> 
+				<a href="javascript:;">新增内容</a> 
+			</span>
+		</div>
+		
+		<div class="right">
+			<label for="submitSave"><img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="saveImg"></label>
+			<input type='submit' class="submitInput submitInputSpecial" id="" onclick="return check()" value='保存排序'/>
+		</div>
+	</div>
+	
+	<p class="blueText fs16">首页内容资源列表</p>
+	<table id="listWrapper" class="table striped hovered border">
+		<thead>
+			<tr>
+				<th class="text-center">序号</th>
+				<th class="text-center">资源编号</th>
+				<th class="text-center">资源名称</th>
+				<th class="text-center">上架状态</th>
+				<th class="text-center">上架时间</th>
+				<th class="text-center">所在位置</th>
+				<th class="text-center">操作</th>
+			</tr>
+		</thead>
+		<tbody id="body">
+		<volist name="list" id="item">
+			<tr>
+				<td class="text-center">
+					{$i}
+				</td>
+				<td class="text-center">
+					{$item.resource_id}
+				</td>
+				<td class="text-center">
+					{$item.name}
+				</td>
+				<td class="text-center">
+					<if condition="($item.status eq 1)">
+						已上架
+						<else/>
+						未上架
+					</if>
+				</td>
+				<td class="text-center">
+					{$item.putaway_time|date="Y-m-d",###}
+				</td>
+				<td class="text-center">
+					<input type="hidden" value="{$item.id}" name="ids[]">
+					<input type="text" value="{$item.sort}" name="values[]" class="input-control numInput maxnum">
+				</td>
+				<td class="text-center">
+					<a href="javascript:;" class="operBtn" id="delete_click" attr="{$item.id}">删除</a>
+					<if condition="$item.status eq 1">
+						<a href="javascript:;" class="operBtn down" attr="{$item.id}">下架</a>
+					<else/>
+						<a href="javascript:;" class="operBtn up" attr="{$item.id}">上架</a>
+					</if>
+				</td>
+			</tr>
+		</volist>
+		</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+</form>
+
+<!--新增内容弹窗-->
+<div class="fullscr1" id="addCon">
+	<div class="adminNotifyBox1 aBoxHeight">
+		<div class="adminNotifyTitle">新增内容</div>
+		<div class="adminNotifyContent aConHeight">
+			<div class="adminSelect pt20"> 
+				<div class="selectBox mb10">
+					<label for="">资源编号：</label>
+					<input type="text" class="input-control" id="num" name="resource_id" value="" placeholder="请输入资源编号">
+				</div>
+				<div class="selectBox mb10">
+					<label for="">资源名称：</label>
+					<input type="text" class="input-control" name="" id="names" value="" placeholder="请输入资源名称">
+				</div>
+				<div class="selectBox mb10">
+					<div class="topDiv">
+						<input type="checkbox" class="topCheck">
+						置顶
+					</div>
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureCon">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelCon">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"}
+            ]
+        });
+    });
+</script>
+
+<script>
+    //删除
+    $('#delete_click').live('click',function(){
+        var id=$(this).attr('attr');
+        var column_id = "<?php echo $_GET['id']?>";
+        //alert(column_id);
+        deleteJBResource(id,column_id,this);
+    });
+
+    function deleteJBResource(id,column_id,obj) {
+        if (confirm('确定要删除吗？删除后，该资源将不能被查看，请务必谨慎处理，不要误删！！！')) {
+            $.get('index.php?m=Admin&c=Column&a=column_delete', {id: id,column_id:column_id}, function (res) {
+                if (res == 'success') {
+                    history.go();
+                } else {
+//                    alert('删除失败，请刷新页面后重新尝试');
+					$.NotifyBox.NotifyOne('注意','删除失败，请刷新页面后重新尝试','确定');
+                }
+            })
+        }
+    }
+
+    //上下架
+    $('.up,.down').live('click',function() {
+        if($(this).hasClass('up')){
+            var status=1;
+        }else{
+            var status=0;
+        }
+        var id=$(this).attr('attr');
+        var column_id = "<?php echo $_GET['id']?>";
+
+        updownJBResource(id,column_id,status,this);
+    })
+    function updownJBResource(id,column_id,status,obj) {
+        if (confirm('确定要执行此操作吗？请务必谨慎处理')) {
+            $.get('index.php?m=Admin&c=Column&a=column_updown', {id: id,column_id:column_id,status:status}, function (res) {
+                if (res == 'success') {
+                    //history.go();
+                    location.reload();
+                }else if (res == 'full') {
+//                    alert('已上架的资源数已不足前台显示');
+					$.NotifyBox.NotifyOne('注意','已上架的资源数已不足前台显示','确定');
+                }else{
+//                    alert('操作失败，请刷新页面后重新尝试');
+					$.NotifyBox.NotifyOne('注意','操作失败，请刷新页面后重新尝试','确定');
+				}
+            })
+        }
+    }
+    //排序
+	/*function sorts(as) {
+        var btns = new Array();
+        $('.numInput').each(function (k,v) {
+            btns[k] = $(this).val();
+        });
+        $.each(btns,function (k,v) {
+			if(v == as){
+			    alert('有重复的值');
+			    return false;
+			}
+        })
+    }*/
+	function check() {
+	    var arr = new Array();
+        $('.numInput').each(function (k,v) {
+            arr[k] = $(this).val();
+        });
+	   //console.log(arr);return false;
+        var nary=arr.sort();
+
+        for(var i=0;i<arr.length;i++){
+
+            if (nary[i]==nary[i+1]){
+
+//                alert("数组重复内容："+nary[i]);
+				$.NotifyBox.NotifyOne('注意','排序标号重复：'+nary[i],'确定');
+                return false;
+
+            }
+
+        }
+
+    }
+    //新增
+    $('#sureCon').click(function () {
+        var statu = false;
+        var num = $('#num').val();
+        var idarr = new Array();
+        $('.maxnum').each(function () {
+            idarr.push($(this).val());
+        });
+		var max = idarr.sort();
+		max = max.pop();
+        var column_id = "<?php echo $_GET['id']?>";
+        if(num == ''){
+//            alert('输入不能为空');
+			$.NotifyBox.NotifyOne('注意','输入不能为空','确定');
+        }else if(checks(num) == false){
+//			alert('请输入正确格式的资源编号');
+			$.NotifyBox.NotifyOne('注意','请输入正确格式的资源编号','确定');
+		}
+        else{
+            $.ajax({
+				url:"{:U('Column/column_check')}",
+				data:{'resource_id':num,'column_id':column_id},
+				type:"post",
+                async: false,
+				success:function (msg) {
+					if(msg == 'type_error'){
+					    //alert('1');return false;
+					    statu = false;
+					}else if(msg == 'success'){
+					    statu = true;
+					}
+                }
+			})
+            if(!statu){
+//				alert('此资源不属无此栏目下，无法关联');
+				$.NotifyBox.NotifyOne('注意','此资源不属于此栏目下或者此资源不存在，无法关联','确定');
+				return false;
+			}else{
+                
+                $.ajax({
+                    data: {'resource_id': num,column_id:column_id,max:max},
+                    url:"{:U('Column/column_add')}",
+                    dataType:'json',
+                    type:'post',
+                    success:function (data) {
+                        if(data == 'failed'){
+//                            alert('cuowu');
+							$.NotifyBox.NotifyOne('注意','错误','确定');
+							return false;
+                        }else if(data == 'error'){
+//							alert('在此栏目中已存在此资源');
+							$.NotifyBox.NotifyOne('注意','在此栏目中已存在此资源','确定');
+							return false;
+						}
+                        else{
+                            history.go();
+                        }
+                    }
+                })
+			}
+        }
+    });
+
+	//验证所输值是否为正整数
+	function checks(num) {
+        var r = /^[0-9]*[1-9][0-9]*$/;　　//正整数
+		return r.test(num);
+    }
+	//添加内容显示资源名称
+    $('#num').change(shows);
+    function shows() {
+        var resource_id = $('#num').val();
+		if(checks(resource_id) == false){
+			$.NotifyBox.NotifyOne('注意','请输入正确格式的资源编号','确定');
+			return false;
+		}else{
+			$.ajax({
+				data: {'resource_id': resource_id},
+				url:"{:U('Column/resource_name')}",
+				dataType:'json',
+				type:'post',
+				success:function (data) {
+					$('#names').val(data.name);
+
+				}
+			})
+		}
+    }
+	$('#addBtn').click(function(){
+		$('#addCon').show()
+	})
+	
+	$('#cancelCon').click(function(){
+		$('#addCon').hide();
+		$('#num').val('');
+	})
+</script>

@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/studentHomeworkElse.css?v=3">
+
+		<link rel="stylesheet" href="__PUBLIC__/swiper/swiper-3.4.2.min.css" media="screen" title="no title" charset="utf-8">
+		<script type="text/javascript" src="__PUBLIC__/js/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/swiper/swiper-3.4.2.jquery.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<link rel="stylesheet" href="__PUBLIC__/css/app/homeworkDetails.css?v=1">
+		<title></title>
+		<style media="screen">
+			.exerciseContent{
+				margin-top: 10px
+			}
+		</style>
+	</head>
+	<body>
+	<div class="content">
+
+		<div class="swiper-container" id="detailsDiv" >
+			<div class="appTop">
+				<div class="returnBox"  @click="tuichu"></div>
+				<div class="appTopTitle zuoyemc">
+					{{workName}}
+				</div>
+				<p class="right timeP" v-if="statue!='2'">
+					<img src="__PUBLIC__/img/Apphomework/shijian.png" alt="" />
+					<span class="workTime" id="showtime" >00:00</span>
+				</p>
+			</div>
+			<div class="text-center" v-if='exerciseData == undefined' style="margin-top:55px">
+				<img src="__PUBLIC__/img/Apphomework/res_empty_bg.png" alt="" class="emptyImg centerEmpty">
+			</div>
+
+		    <div class="swiper-wrapper" id="exerciseDiv" >
+
+		        <div class="swiper-slide swiper-no-swiping"   v-for="(todo,index) in exerciseData" v-cloak :id='todo.id'>
+						<div class="p20 of">
+							<p class="left lh26">
+								<img src="__PUBLIC__/img/Apphomework/cuoti.png" alt="" class="cuoti" v-if="statue =='2'"/><span class="yellow" style="font-size:22px"> {{index+1}}</span>/{{exerlength}}
+							</p>
+							<p class="right answeCard" v-if="todo.score" id="answerCard">
+								<a href="javascript:;" class="">答题卡</a>
+							</p>
+							<p class="right caogao" v-if="statue!='2'&&todo.main_type =='1'" @click="caogaozhi">
+								<img src="__PUBLIC__/img/Apphomework/caogaozhi.png" alt="" />
+								<span class="">草稿纸</span>
+							</p>
+							<p class="right shoucang" v-if="statue=='2'">
+								<img src="__PUBLIC__/img/Apphomework/weishoucang.png" alt="" / @click="shoucang" v-if="todo.eid ==''&&todo.main_type =='1'">
+								<img src="__PUBLIC__/img/Apphomework/yishoucang.png" alt="" / @click="shoucang" v-if="todo.eid !=''&&todo.main_type =='1'">
+							</p>
+						</div>
+					    <!-- 单词 -->
+						<div  v-if="todo.main_type =='2'&&todo.sub_type == '1' " class="danci neirong">
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+								</div>
+								<div class="" v-if="todo.point">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+								</div>
+								<div class="loding" v-if="todo.score">
+									<!-- 倒计时：<span>3</span> -->
+								</div>
+								<div class="audiotext">
+									<div class="textName">{{todo.name}}</div>
+								</div>
+								<div class="audioDiv">
+									<div class="auidobtn left" onclick="play2(this,'.audio1btn')" v-if="todo.score">
+										<audio v-bind:src="todo.url" v-bind:id="todo.id" >
+										</audio>
+									</div>
+									<div class="auidobtn left" onclick="play2(this,'.audio1btn')" v-if="todo.point">
+										<audio v-bind:src="todo.org_answer_url" v-bind:id="todo.id" >
+										</audio>
+									</div>
+									<div class="voice left" ontouchstart="gtouchstart()" ontouchmove="gtouchmove(this)" ontouchend="gtouchend()" v-if="todo.score">
+
+									</div>
+									<div class="audio1btn right" onclick="play2(this,'.auidobtn')"  v-bind:class="{'dn':isShow}" v-if="todo.point">
+										<audio v-bind:src="todo.url" v-bind:id="'student'+(index)" preload>
+										</audio>
+									</div>
+									<div class="audio1btn right" onclick="play2(this,'.auidobtn')"  v-bind:class="{'dn':isShow}" v-if="todo.score">
+										<audio  v-bind:id="'student'+(index)" preload>
+										</audio>
+									</div>
+									<br>
+									<div class="text-center color999" v-if="todo.score" style="display: inline-block;margin-left: 50px;">
+										点击话筒 开始录音
+									</div>
+								</div>
+								<div class="answerUrl" style="display:none">
+
+								</div>
+								<div class="studentPoint" style="display:none">
+
+								</div>
+								<div class="fanyi" v-if='todo.exerciseName != "跟读-课文"'>
+									<span class="fanyiIcon" onclick="toggle(this)">英文释义</span>
+								</div>
+								<div class="text" v-if='todo.exerciseName != "跟读-课文"'>
+									<p>
+										{{todo.translation}}
+									</p>
+								</div>
+							</div>
+						</div>
+						<!-- 句子 -->
+						<div  v-if="todo.main_type=='2'&&todo.sub_type=='2'" class="juzi neirong">
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+								</div>
+								<div class="" v-if="todo.point">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+								</div>
+								<div class="loding" v-if="todo.score">
+									<!-- 倒计时：<span>3</span> -->
+								</div>
+								<div class="audiotext">
+									<div class="textName">{{todo.name}}</div>
+								</div>
+								<div class="audioDiv">
+									<div class="auidobtn left" onclick="play2(this,'.audio1btn')" v-if="todo.score">
+										<audio v-bind:src="todo.url" v-bind:id="todo.id" >
+										</audio>
+									</div>
+									<div class="auidobtn left" onclick="play2(this,'.audio1btn')" v-if="todo.point">
+										<audio v-bind:src="todo.org_answer_url" v-bind:id="todo.id" >
+										</audio>
+									</div>
+									<div class="voice left" ontouchstart="gtouchstart()" ontouchmove="gtouchmove(this)" ontouchend="gtouchend()" v-if="todo.score">
+
+									</div>
+									<div class="audio1btn right" onclick="play2(this,'.auidobtn')"  v-bind:class="{'dn':isShow}" v-if="todo.point">
+										<audio v-bind:src="todo.url" v-bind:id="'student'+(index)" preload>
+										</audio>
+									</div>
+									<div class="audio1btn right" onclick="play2(this,'.auidobtn')"  v-bind:class="{'dn':isShow}" v-if="todo.score">
+										<audio  v-bind:id="'student'+(index)" preload>
+										</audio>
+									</div>
+									<br>
+									<div class="text-center color999" v-if="todo.score" style="display: inline-block;margin-left: 50px;">
+										点击话筒 开始录音
+									</div>
+								</div>
+								<div class="answerUrl" style="display:none">
+
+								</div>
+								<div class="studentPoint" style="display:none">
+
+								</div>
+								<!-- <div class="fanyi" v-if='todo.exerciseName != "跟读-课文"'>
+									<span class="fanyiIcon" onclick="toggle(this)">英文释义</span>
+								</div>
+								<div class="text" v-if='todo.exerciseName != "跟读-课文"'>
+									<p>
+										{{todo.translation}}
+									</p>
+								</div> -->
+							</div>
+						</div>
+						<!-- 微课视频 -->
+						<div  v-if="todo.main_type=='2'&&todo.sub_type=='3'" class="weike neirong">
+
+
+
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+								</div>
+								<div class="" v-if="todo.point">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+								</div>
+								<div class="loding" v-if="todo.score">
+									<!-- 倒计时：<span>3</span> -->
+								</div>
+								<div class="videotext">
+									<div class="textName">{{todo.name}}</div>
+								</div>
+								<div class="">
+									<video :src="todo.subject_name" controls>
+
+									</video>
+									<p class="text-center" v-if="statue=='1'">
+										<button type="button" name="button" class="guankan" @click="guankan">我已观看</button>
+									</p>
+
+								</div>
+							</div>
+						</div>
+						<!-- 看课本-->
+						<div v-if="todo.main_type=='2'&&todo.sub_type=='4'" v-cloak class="keben neirong">
+
+
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+								</div>
+								<div class="" v-if="todo.point">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+								</div>
+								<div class="loding" v-if="todo.score">
+									<!-- 倒计时：<span>3</span> -->
+								</div>
+								<!-- <div class="videotext">
+									<div class="textName">{{todo.name}}</div>
+								</div> -->
+								<div class=" keben" >
+									<img :src="todo.subject_name"></img>
+									<p class="text-center" v-if="statue=='1'">
+										<button type="button" name="button" class="guankan" @click="guankan">我已观看</button>
+									</p>
+								</div>
+							</div>
+						</div>
+						<!-- 选择-->
+						<div v-if="todo.main_type=='1'" class="xiti neirong ">
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score" style="margin-bottom:10px">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+									<span class="right" @click="pingyu" v-if="status =='2'"><img src="__PUBLIC__/img/Apphomework/laoshipingyu.png" alt="" style="width:20px;margin-right:5px"/>老师评语</span>
+								</div>
+								<div class="" v-if="todo.point" style="margin-bottom:10px">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+									<span class="right" @click="pingyu" v-if="todo.comment != ''"><img src="__PUBLIC__/img/Apphomework/laoshipingyu.png"  alt="" style="width:20px;margin-right:5px"/>老师评语</span>
+								</div>
+								<div class="loding" v-if="todo.score" >
+									<!-- 倒计时：<span>3</span> -->
+								</div>
+								<div class="wodeanswer"  >
+									<div class="wodeanswer1">
+										【我的答案】:<span v-if="todo.topic_type=='1'||todo.topic_type =='3'">{{todo.student_answer}}</span>
+										<img :src="todo.student_answer" alt="" v-else/>
+
+									</div>
+								</div>
+								<div v-html="todo.json_html" :class="{xuanze:todo.topic_type =='1',duoxuan:todo.topic_type =='3'}" >
+								</div>
+								<div class="text-center" v-if="todo.topic_type!='1'&&todo.topic_type!='3'&&statue!='2'" >
+									<p @click="paizhao">
+										请在纸上作答，拍照上传 <img src="__PUBLIC__/img/Apphomework/paizhaoshangchuan.png" alt="" class="paizhao"/>
+									</p>
+									<div class="daanDiv">
+										<img src="" alt="" /class="imageSrc">
+										<img src="__PUBLIC__/img/Apphomework/shantu.png" alt="" class="shantu" @click="shantu"/>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+
+						<div class="p20 next">
+							<div class="swiper-button-prev left">上一题</div>
+							<div class="right" style="position:relative;display:inline-block;overflow:hidden">
+								<div class="nextCard" style="display:none;width:100%;height:100%;position:absolute;top:0;left:0;z-index:5" onclick="nextDatika(this)">
+								</div>
+								<div class="swiper-button-next">下一题
+								</div>
+							</div>
+							<p style="display:none" class="text-center">
+								拍照上传中，请稍后
+							</p>
+						</div>
+						<div class="pingyu" v-cloak style="display:none">
+							<div class="cardTop" style="margin:0">
+								<p>
+									查看老师对本道题的评语(1)
+									<img src="__PUBLIC__/img/Apphomework/guanbipingyu.png" alt="" class="right" style="width:20px" @click="guanbi"/>
+								</p>
+							</div>
+							<div class="" v-html="todo.comment" style="padding:10px">
+
+							</div>
+						</div>
+					</div>
+			</div>
+	</div>
+
+
+	<!-- 答题卡 -->
+	<div id="app" v-cloak>
+		<div class="appTop">
+			<div class="returnBox"  @click="hide"></div>
+			<div class="appTopTitle">
+					答题卡
+			</div>
+		</div>
+		<div class="cardTop">
+			<div class="cardTitle">{{workName}}</div>
+			<div class="cardNumBox">已作答&nbsp;&nbsp;<span class="cardNum">0</span>/<span class="totalNum">{{exerlength}}</span></div>
+		</div>
+
+		<div class="homeworkListTabContent">
+			<div class="homeListCon homeListCon1">
+				<div class="homeListConTitle" >
+					<img src="{$oss_path}public/web_img/APPHomework/huangseditu.png" alt="">
+					<span>答题卡</span>
+				</div>
+
+				<div class="dimBox">
+					<span class="dimCircle circleYes"></span>
+					<span class="dimAnswer answerYes">已作答</span>
+					<span class="dimCircle circleNo"></span>
+					<span class="dimAnswer answerNo">未作答</span>
+				</div>
+
+				<div>
+					<div class="parent_index homeCircleList" v-for="(list,index) in datikaArr">
+						<p class="homeCircleName" >
+							{{list.name}}({{ list.count }}道题)
+						</p>
+						<ul class="homeCircleUl" >
+							<li class="homeCircleLi" v-for="(todo,index) in list.count">
+								<a href="javascript:" class="qbtn" @click="swindex">{{index+1}}</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="homeworkStart">
+					<a href="javascript:;" class="btnTwo answerBtn" id="answerContinue">继续答题</a>
+					<button type="button" class="btnTwo submitBtn" id="homeworkSubmit">提交作业</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+	<div class="fullBack"></div>
+	<!-- 提交作业成功 -->
+	<div class="successBox" id="successNotify">
+		<div class="sucTitle">提交作业成功！</div>
+		<div class="sucMain">您是本班第<span class="ren"></span>个完成作业的同学</div>
+		<a href="javascript:;" class="sucBtn" id="successSure">确定</a>
+	</div>
+	<!-- 提交作业提示 -->
+	<div class="hintBox" id="submitNotify">
+		<div class="hintMain">本次作业还有试题未作答，<br>确认交卷？</div>
+		<button type="submit" class="hintBtn sureBtn" id="submitSure">确定</button>
+		<div class="hintBtn" id="conSubBtn">继续答题</div>
+	</div>
+	<!-- 返回页面提示 -->
+	<div class="hintBox" id="backNotify">
+		<div class="hintMain">退出后您的答题结果将会被删除，<br>确认退出？</div>
+		<a href="javascript:;" class="hintBtn sureBtn" id="backSure">确定</a>
+		<div class="hintBtn" id="conBackBtn">继续答题</div>
+	</div>
+
+
+	<div class="mark">
+		<img src="__PUBLIC__/img/Apphomework/yinpin.gif" alt="" />
+	</div>
+	<div class="" id="datika" >
+
+	</div>
+
+	<input type="hidden" id="subId" value="">
+	<script>
+
+	</script>
+	<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+	<script type="text/javascript">
+	var flag = "{$flag}";
+	var userId = getQueryString('userId');
+	var role = getQueryString('role');
+	var homeworkId = getQueryString('id');
+	var classId = getQueryString('classId');
+	var submitId = getQueryString('submitId');
+	var type = getQueryString('type');
+	var statue = getQueryString('statue');
+	var dataurl;
+	var answerList = new Array();
+	var answerObj;
+	var titleName;
+		if(getQueryString('statue') == '1'){
+			//已截止和未做
+			var dataurl='/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkDetail';
+		}
+		else if(getQueryString('statue') == '2'){
+			//错题
+			var dataurl = '/index.php/ApiInterface/Version1_3/HomeworkStudent/viewAnalysis'
+
+		}else if(getQueryString('statue') == '3'){
+			//已完成
+			var dataurl='/index.php/ApiInterface/Version1_3/HomeworkStudent/getSubmitHomeworkDetail';
+		}else {
+			var dataurl='/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkDetail';
+		}
+		// if(getQueryString('type') == '2'){
+		// var dataurl='/ApiInterface/Version1_2/HomeworkParent/getSubmitHomeworkDetail?userId={$userId}&role={$role}&id={$submitId}&isFlatten=2';
+		//
+		// 	 var show = false  //已完成
+		// }else{
+
+		  var show = true //未完成
+		// }
+
+		var flag = "{$flag}"
+		var exercise = new Vue({
+			el : '.content',
+			 data:{
+				 userId: userId,
+				role:role,
+				homeworkId:homeworkId,
+				classId:classId,
+				submitId:submitId,
+				 exerciseData:[],
+				 exurl:dataurl,
+				 isShow:show,
+				 dataurl:dataurl,
+				 exerlength:0,
+				cihuiname:'',
+				workName:'',
+				datikaArr:[],
+				type:type,
+				statue:statue,
+				shoucangUrl:'/index.php/ApiInterface/Version1_3/HomeworkStudent/favorExercise',
+			},
+
+			created :function(){
+				this.getExerciseDetails();
+				var winHeight = $(window).height();//屏幕的高度
+				var topHeight = 80;//“答题卡顶部”的高度
+				var minusHeight = winHeight*1 - topHeight*1 - 10;//相减的高度
+				$('.homeListCon').css('minHeight',minusHeight);//标签页的最小高度
+				if(this.statue =='2'){
+					this.isShow = false
+				}
+			},
+			methods:{
+				hide:function(){
+					$('#app').hide();
+					$('#detailsDiv').show()
+				},
+				guanbi:function($event){
+					$($event.target).parents('.pingyu').hide().siblings('div').show()
+				},
+				pingyu:function($event){
+					$($event.target).parents('.xiti').hide().siblings('div').hide().siblings('.pingyu').show();
+
+				},
+				caogaozhi:function(){
+					var data = {
+	                   "page":"drawingBoard",
+	               }
+				postApp(data)
+				},
+				getExerciseDetails: function(){
+					this.$http.post(this.dataurl, {
+						userId:this.userId,
+						role:this.role,
+						homeworkId:this.homeworkId,
+						submitId:this.submitId,
+						type:this.type
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.exerlength = response.data.message;
+							this.exerciseData = response.data.data['1dData']
+							this.datikaArr =  response.data.data['2dData']
+							console.log(this.exerciseData);
+							if(response.data.message != '错题列表为空'){
+								this.workName = response.data.additionalData.workName
+							}
+
+
+							this.$nextTick(function(){
+								if(getQueryString('isEnd') =='1'){
+									$('#answerCard,.voice,.loding,.text-center').addClass('dn');
+									$('.loding').html('')
+								}
+
+								var mySwiper = new Swiper ('.swiper-container',{
+									initialSlide:0,
+									prevButton:'.swiper-button-prev',
+									nextButton:'.swiper-button-next',
+									onSlideChangeStart: function(swiper){
+										$('.swiper-slide').find('.active').removeClass('active').find('audio').trigger('pause');
+										$('.text').hide();
+										clearInterval(timer123);
+											$('video').trigger('pause');
+									},
+									onSlideChangeEnd: function(swiper){
+										$('.swiper-slide').find('.active').removeClass('active').find('audio').trigger('pause');
+										$('.text').hide();
+										clearInterval(timer123);
+											$('video').trigger('pause');
+
+									}
+								});
+								if(getQueryString('type') == '2' ||getQueryString('isEnd') == '1'){
+									$('.swiper-button-next').eq($('.swiper-slide').length-1).css('opacity','0.3')
+									$('.swiper-button-next').eq($('.swiper-slide').length-1).text('整体报告').css('width','126px')
+								}else {
+									$('.swiper-button-next').eq($('.swiper-slide').length-1).siblings('.nextCard').show();
+									$('.swiper-button-next').eq($('.swiper-slide').length-1).text('完  成').css('width','126px')
+								}
+								if(getQueryString('statue')=='2'||getQueryString('statue')=='3'){
+									$('.exerciseJx,.exerciseAnswer,.exerciseMinor').show()
+									console.log($('.swiper-slide').length);
+									for(var a=0;a<$('.swiper-slide').length;a++){
+										$('.exerciseAnswer,.exerciseMinor').eq(a).before($('.wodeanswer').eq(a).html())
+									}
+
+								}
+								$('#exerciseDiv').height($(document).height()-45)
+								$('.neirong').css({
+									'height':$(document).height()-150,
+									'overflow-y':'scroll'
+								})
+								daojishi()
+							})
+						} else {
+							console.log('错误1')
+						}
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				paizhao:function(){
+					var data2 = {
+						"page":"getOssImage",
+						'func':'getImgUrl'
+					}
+					postApp(data2)
+					$('.swiper-slide-active').find('.next').children('div').hide()
+					$('.swiper-slide-active').find('.next').children('p').show()
+					$('.swiper-slide-active').find('.imageSrc').show()
+				},
+				tuichu:function(){
+					if(this.statue =='1'){
+							$('#backNotify,.fullBack').show()
+					}else{
+						window.history.go(-1)
+					}
+
+				},
+				swindex:function($event){
+					var allindex = 0
+					var index = $($event.target).parents('.homeCircleLi').index();
+					var pindex =  $($event.target).parents('.parent_index').index();
+
+					for(var h=0;h<pindex;h++){
+						allindex = $('.parent_index').eq(h).find('li').length+allindex
+					}
+					this.$nextTick(function(){
+						$('#detailsDiv').show();
+						$('#app').hide()
+						var index1 = allindex+index
+						var mySwiper = new Swiper ('.swiper-container',{
+							initialSlide:index1,
+							prevButton:'.swiper-button-prev',
+							nextButton:'.swiper-button-next'
+						});
+					})
+				},
+				shantu:function($event){
+					$('.swiper-slide-active').find('.imageSrc').attr('src','').hide();
+					var index = $('.swiper-slide-active').index();
+					$('.homeCircleLi').eq(index).children('.qbtn').removeClass('finishBtn');
+					$($event.target).hide()
+				},
+				guankan:function($event){
+					if($($event.target).hasClass('active1')){
+					}else {
+						$($event.target).addClass('active1').text('已观看')
+						var index = $('.swiper-slide-active').index();
+						$('.homeCircleLi').eq(index).children('.qbtn').addClass('finishBtn')
+					}
+				},
+				shoucang:function($event){
+					var isCancel
+					if($($event.target).attr('src') =='/Public/img/Apphomework/weishoucang.png'){
+						var isCancel = 0
+					}else{
+						var isCancel = 1
+					}
+					var exerciseId = ''
+					this.$http.post(this.shoucangUrl, {
+						userId : this.userId,
+						role: this.role,
+						exerciseId:$($event.target).parents('.swiper-slide').attr('id'),
+						isCancel:isCancel
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							if($($event.target).attr('src') =='/Public/img/Apphomework/weishoucang.png'){
+								$($event.target).attr('src','/Public/img/Apphomework/yishoucang.png')
+							}else{
+								$($event.target).attr('src','/Public/img/Apphomework/weishoucang.png')
+							}
+						} else {
+							console.log('错误1')
+						}
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+			},
+		})
+
+
+		function toggle(obj){
+			if($(obj).parent().siblings('.text').is(":hidden")){
+				$(obj).parent().siblings('.text').show();
+				$(obj).addClass('active')
+			}else {
+				$(obj).parent().siblings('.text').hide();
+				$(obj).removeClass('active')
+			}
+		}
+		function play2(obj,parentSibling){
+			var player = $(obj).find('audio')[0];
+			if($(player).attr('src') == ''){
+				alert('此题未提交语音作业')
+				return false
+			}
+			if (player.paused){
+				player.play();
+					$(player).parent('div').addClass('active').siblings(parentSibling).removeClass('active').find('audio').trigger('pause').parents('.swiper-slide').siblings('div').find('.active').removeClass('active').find('audio').trigger('pause');
+				player.loop = false;
+				player.addEventListener('ended', function () {
+					$(player).parent('div').removeClass('active')
+				}, false);
+			}else {
+				player.pause();
+				$(player).parent('div').removeClass('active')
+			}
+		}
+		if(CheckIsAndroid()){
+			window.alert = function(name){
+				var iframe = document.createElement("IFRAME");
+				iframe.style.display="none";
+				iframe.setAttribute("src", 'data:text/plain,');
+				document.documentElement.appendChild(iframe);
+				window.frames[0].window.alert(name);
+				iframe.parentNode.removeChild(iframe);
+			};
+		}
+		var timeOutEvent=0;//定时器
+		var timeOutEvent1 = 0;
+		var t=0;
+		//开始按
+		function gtouchstart(){
+			timeOutEvent1 = setInterval(function(){
+				t++
+			},100)
+			timeOutEvent = setTimeout(function longPress(){
+				timeOutEvent = 0;
+				goUrl();
+				$('body').find('.active').removeClass('active').find('audio').trigger('pause');
+				$('.swiper-slide-active').find('.voice').addClass('active');
+
+
+			},500);//这里设置定时器，定义长按500毫秒触发长按事件，时间可以自己改，个人感觉500毫秒非常合适
+			return false;
+		};
+		//手释放，如果在500毫秒内就释放，则取消长按事件，此时可以执行onclick应该执行的事件
+		function removeActive(){
+			$('.swiper-slide-active').find('.voice').removeClass('active');
+		}
+		function gtouchend(){
+			clearInterval(timeOutEvent1);
+			clearTimeout(timeOutEvent);//清除定时器
+			if(t<5){
+				// alert('长按时间过短');
+
+				var data = {
+                   "page":"alert",
+                   "message":'按键时间太短'
+                }
+
+                if (CheckIsIOS()){
+					window.webkit.messageHandlers.iosModel.postMessage(data);
+				}
+
+                if (CheckIsAndroid()){
+						AppFunction.showMessage(JSON.stringify(data))
+				}
+					t=0;
+
+
+			}else {
+				t =0
+				endUrl();
+				$('.swiper-slide-active').find('.voice').removeClass('active');
+
+
+			}
+
+			if(timeOutEvent!=0){
+				//这里写要执行的内容（尤如onclick事件）
+			}
+		return false;
+		};
+		//如果手指有移动，则取消所有事件，此时说明用户只是要移动而不是长按
+		function gtouchmove(obj){
+			// cancleUrl()
+			// clearTimeout(timeOutEvent);//清除定时器
+			// timeOutEvent = 0;
+			// $(obj).removeClass('active');
+		};
+
+		//真正长按后应该执行的内容
+		function longPress(obj){
+			timeOutEvent = 0;
+			//执行长按要执行的内容，如弹出菜单
+
+		}
+		var timer123
+		function daojishi(){
+
+			var timer123 = setInterval(function(){
+				var stime = parseInt($('.swiper-slide-active').find(".loding>span").html());
+				if($('#app').css('display') == 'none') {
+					stime--;
+					$('.swiper-slide-active').find(".loding>span").html(stime);
+					if(stime == 0){
+						if($('.swiper-slide-active').find('.voice').hasClass('active')){
+							$('.swiper-slide-active').find(".loding").html('');
+						}else{
+							$('.swiper-slide-active').find(".loding").html('');
+							$('.swiper-slide-active').find('.auidobtn').click()
+						}
+
+					}
+				} else {
+					$('.swiper-slide-active').find(".loding").html('');
+				}
+
+			},1000);
+		}
+		function getQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]); return null;
+		}
+		function receiveData(data){
+			var dataUrl = data.url;
+			var dataScore = data.score;
+			var studentPoint = data.score;
+			var studentIndex = data.index;
+			var index = $('.swiper-slide-active').index();
+			if(dataUrl == '' || studentPoint == '') {
+				alert('存储失败，请重新回答此题。')
+			} else {
+				if(studentIndex == undefined){
+					$('.swiper-slide-active').find('.audio1btn').removeClass('dn').find('audio').attr('src',dataUrl);
+					$('.swiper-slide-active').find('.answerUrl').text(dataUrl);
+					$('.swiper-slide-active').find('.studentPoint').text(studentPoint);
+					$('.homeCircleLi').eq(index).children('.qbtn').addClass('finishBtn')
+				}else{
+					$('.swiper-slide').eq(studentIndex).find('.audio1btn').removeClass('dn').find('audio').attr('src',dataUrl);
+					$('.swiper-slide').eq(studentIndex).find('.answerUrl').text(dataUrl);
+					$('.swiper-slide').eq(studentIndex).find('.studentPoint').text(studentPoint);
+					$('.homeCircleLi').eq(studentIndex).children('.qbtn').addClass('finishBtn')
+				}
+
+			}
+		}
+    	function goUrl() {
+			var htmlText = $('.swiper-slide-active').find('.textName').text();
+			var htmlNumber = $('.swiper-slide-active').find('.fen').text();
+			var index = $('.swiper-slide-active').index();
+	        var data = {
+				'text':htmlText,
+				'number' :htmlNumber,
+				'index':index
+	        };
+	        if (CheckIsIOS())
+	            window.webkit.messageHandlers.iosStart.postMessage(data);
+	        if (CheckIsAndroid())
+            	AppFunction.androidStart(JSON.stringify(data));
+    	}
+		function endUrl() {
+			var htmlText = $('.swiper-slide-active').find('.textName').text()
+			var data = {
+				'text':htmlText
+			};
+			if (CheckIsIOS())
+				window.webkit.messageHandlers.iosFinish.postMessage(data);
+			if (CheckIsAndroid())
+
+				AppFunction.androidEnd();
+		}
+		function cancleUrl() {
+			if (CheckIsIOS())
+				window.webkit.messageHandlers.iosCancle.postMessage();
+			if (CheckIsAndroid())
+				AppFunction.androidCancle();
+		}
+		document.addEventListener('contextmenu', function(e){
+			e.preventDefault();
+		});
+</script>
+
+	<!--  答题卡-->
+	<script>
+		$('.submitBtn').click(function(){
+			$('.fullBack,.successBox').show();
+			$('body').css('overflow-y','hidden')
+		})
+		$('.sucBtn').click(function(){
+			$('.fullBack,.successBox').hide();
+			$('body').css('overflow-y','auto')
+		})
+	</script>
+
+	<script>
+			var app = new Vue({
+				el: '',
+				data: {
+					userId:0,
+					role:0,
+					homeworkId:0,
+					classId:0,
+					homeworkName:'',
+					exlist:'',//习题列表
+					total_e:0,
+				},
+				created: function () { //应用初始化完毕加载
+					this.userId = userId;
+					this.role = role;
+					this.homeworkId = homeworkId;
+					this.classId = classId;
+
+					// this.$http.post('/ApiInterface/Version1_2/HomeworkStudent/getHomeworkAbstract',{userId:userId,role:role,homeworkId:homeworkId},{emulateJSON:'application/x-www-form-urlencoded'}).then(function(response){ //发送http请求
+					// 	this.homeworkName = response.data.data.name;
+					// 	document.title = this.homeworkName;
+					// 	titleName = this.homeworkName;
+					// }, function(response){
+					// 	// 响应错误回调
+					// 	console.log('初始化作业信息错误');
+					// });
+
+					// this.$http.post('/ApiInterface/Version1_2/HomeworkStudent/getHomeworkDetail',{userId:userId,role:role,homeworkId:homeworkId,classId:classId,isFlatten:1},{emulateJSON:'application/x-www-form-urlencoded'}).then(function(response){ //发送http请求
+					// 	this.exlist = response.data.data.data;
+					// 	this.total_e = response.data.data.total;
+					// 	this.$nextTick(function(){
+					// 		$('.qbtn').click(function(){
+					// 			var ii =0;
+					// 			var a = 0;
+					// 			var c = 0;
+					// 			if($(this).parents('.parent_index').index() == 0){
+					// 				var ii = $(this).parent().index();
+					// 			}else{
+					// 				var a = $(this).parents('.parent_index').index();
+					// 				for(var b = 0;b<a;b++){
+					// 					c += $('.parent_index').eq(b).find('.homeCircleLi').length;
+					// 					ii = c
+					// 				}
+					// 				ii = ii + $(this).parent().index()
+					// 			}
+					// 			console.log(ii)
+					// 			$('#detailsDiv').show();//详情页面出现
+					// 			$('#app').hide();//答题卡页面隐藏
+					// 			var mySwiper = new Swiper ('.swiper-container',{
+					// 				initialSlide:ii,
+					// 				prevButton:'.swiper-button-prev',
+					// 				nextButton:'.swiper-button-next'
+					// 			});
+					// 			if(ii == 0) {
+					// 	            $('#exerciseDiv').css({
+					// 	            	'transform': 'translate3d(0px, 0px, 0px)',
+					// 	            	'-webkit-transform': 'translate3d(0px, 0px, 0px)',
+					// 	            	'-ms-transform': 'translate3d(0px, 0px, 0px)',
+					// 	            	'-o-transform': 'translate3d(0px, 0px, 0px)',
+					// 	            	'-moz-transform': 'translate3d(0px, 0px, 0px)'
+					//             	});//左移到0
+					// 			}
+					// 		})
+					// 		var winHeight = $(window).height();//屏幕的高度
+					// 	    var topHeight = 80;//“答题卡顶部”的高度
+					// 	    var minusHeight = winHeight*1 - topHeight*1 - 10;//相减的高度
+					// 	    $('.homeListCon').css('minHeight',minusHeight);//标签页的最小高度
+					// 	})
+					// }, function(response){
+					// 	// 响应错误回调
+					// 	console.log('初始化作业详情错误');
+					// });
+
+				},
+			})
+
+		//点击答题卡
+		$(document).on('click','#answerCard',function(){
+			$('video').trigger('pause');
+			$('#detailsDiv').hide();//详情页面隐藏
+			$('#app').show();//答题卡页面出现
+			var finishLength = $('.finishBtn').length;
+			$('.cardNum').text(finishLength);
+			if(finishLength == $('.qbtn').length) {
+				$('#answerContinue').text('重新答题')
+			}
+			$('body').find('.active').removeClass('active').find('audio').trigger('pause');//音频暂停
+
+		})
+
+		//点击答题卡中的“提交作业”
+		$('#answerContinue').click(function(){
+			$('#detailsDiv').show();//详情页面出现
+			$('#app').hide();//答题卡页面隐藏
+			var finishLength = $('.finishBtn').length;
+			if(finishLength == $('.qbtn').length) {
+				var mySwiper = new Swiper ('.swiper-container',{
+					initialSlide:0,
+					prevButton:'.swiper-button-prev',
+					nextButton:'.swiper-button-next'
+				});
+				$('#exerciseDiv').css({
+					'transform': 'translate3d(0px, 0px, 0px)',
+	            	'-webkit-transform': 'translate3d(0px, 0px, 0px)',
+	            	'-ms-transform': 'translate3d(0px, 0px, 0px)',
+	            	'-o-transform': 'translate3d(0px, 0px, 0px)',
+	            	'-moz-transform': 'translate3d(0px, 0px, 0px)'
+				});//左移到0
+			}
+		})
+
+		// 给APP一个方法，监听返回
+		function backNotify(){
+			$('.hintBox').hide();
+			$('.fullBack,#backNotify').show();
+			$('body').css('overflow-y','hidden')
+		}
+
+		$('#backSure').click(function(){
+			// 给APP一个方法，监听返回弹窗中的“确定”
+			window.history.go(-1)
+		})
+
+		//点击返回弹窗中的“继续答题”，弹窗隐藏
+		$('#conBackBtn').click(function(){
+			$('.fullBack,#backNotify').hide();
+			$('body').css('overflow-y','auto');
+			$('#detailsDiv').show();//详情页面出现
+			$('#app').hide();//答题卡页面隐藏
+		})
+
+		//点击提交弹窗中的“继续答题”，弹窗隐藏
+		$('#conSubBtn').click(function(){
+			$('.fullBack,#submitNotify').hide();
+			$('body').css('overflow-y','auto');
+			$('#detailsDiv').show();//详情页面出现
+			$('#app').hide();//答题卡页面隐藏
+			$('#successNotify').hide()
+		})
+
+		//点击成功弹窗中的“确定”，跳转
+
+
+
+
+
+		$('#homeworkSubmit').click(function(event){
+			event.stopPropagation();
+			if(parseInt($('.cardNum').text()) < parseInt($('.totalNum').text())) {
+				$('.fullBack,#submitNotify').show();
+				$('body').css('overflow-y','hidden')
+			} else {
+				subHomework()
+			}
+		})
+
+		$('#submitSure').click(function(){
+			 subHomework()
+		})
+		if(getQueryString('isEnd') =='0'){
+			$(document).on('click','.exerciseContent>li',function(){
+				if($(this).hasClass('active2')){
+					$(this).removeClass('active2')
+					$(this).find('.choiceAnswer').removeClass('active3')
+				}else{
+					var index = $(this).parents('.swiper-slide').index();
+					$('.homeCircleLi').eq(index).find('.qbtn').addClass('finishBtn')
+					$(this).addClass('active2')
+					$(this).find('.choiceAnswer').addClass('active3')
+				}
+
+			})
+		}
+
+
+
+		function nextDatika(obj){
+				$('video').trigger('pause');
+			if(statue=='2'||statue=='4'){
+				window.location.replace('/index.php/ApiInterface/Version1_3/HomeworkStudent/homeworkResult?userId='+userId+'&role='+role+'&id='+homeworkId+'&classId='+classId+'&submitId='+submitId+'&name='+$('.zuoyemc').text())
+			}else{
+				var alllength = $(obj).parents('.swiper-slide').index();
+				if(alllength == $('.swiper-slide').length-1){
+					$('#detailsDiv').hide();//详情页面隐藏
+					$('#app').show();//答题卡页面出现
+					var finishLength = $('.finishBtn').length;
+					$('.cardNum').text(finishLength);
+					if(finishLength == $('.qbtn').length) {
+						$('#answerContinue').text('重新答题')
+					}
+					$('body').find('.active').removeClass('active').find('audio').trigger('pause');//音频暂停
+				}
+			}
+
+		}
+
+		///计时
+		var h = 0;
+		var m = 0;
+		var s = 0;
+		var timeS = -1;
+		function settime(a){
+			if(a<10)
+				a = "0"+a;
+			return a;
+		}
+		function starttime(){
+			var showh = settime(h);
+			var showm = settime(m);
+			var shows = settime(s);
+			document.getElementById("showtime").innerHTML=showm+":"+shows;
+				timeS++;
+			s++;
+			if(s == 60)
+			{
+				s = 0;
+				m++;
+			}
+			if(m == 60){
+				m = 0;
+				h++;
+			}
+			t = setTimeout("starttime()",1000);
+		}
+		if(statue !='2'){
+			starttime()
+		}
+
+		// 提交
+		function subHomework() {
+			var answerList = [];
+			for(var g=0;g<$('.swiper-slide').length;g++){
+				var answerId = $('.swiper-slide').eq(g).attr("id");//本题的id
+				var answerResult;//本题的answer
+				var answerTotalScore = $('.swiper-slide').eq(g).find('.fen').text();//本题的总分
+				var answerScore='' ;//本题的score
+				var duoxuan = [];
+				if($('.swiper-slide').eq(g).find('.xuanze').length >0){
+					var answerResult = $('.swiper-slide').eq(g).find('.choiceAnswer.active3').text();
+				}else if($('.swiper-slide').eq(g).find('.duoxuan').length >0){
+					// console.log($('.swiper-slide').eq(g).find('.choiceAnswer.active3').length);
+					for(var f=0;f<$('.swiper-slide').eq(g).find('.claimChoice').length;f++){
+						duoxuan.push($('.swiper-slide').eq(g).find('.claimChoice').eq(f).find('.active3').text())
+
+					}
+					var answerResult  = duoxuan.join(',')
+				}else if($('.swiper-slide').eq(g).find('.danci,.juzi').length >0){
+					var answerResult = $('.swiper-slide').eq(g).find('.answerUrl').text();//语音作业
+					var answerScore = $('.swiper-slide').eq(g).find('.studentPoint').text();//本题的score
+				}else if($('.swiper-slide').eq(g).find('.weike,.keben').length>0){
+					var answerResult = 5;//课本，微课
+					if($('.swiper-slide').eq(g).find('.weike,.keben').find('.guankan').hasClass('active1')){
+						var answerScore =5
+					}else {
+						var answerScore =0
+					}
+				}else{
+					var answerResult = $('.swiper-slide').eq(g).find('.imageSrc').attr('src')
+				}
+				answerObj = {"id": answerId, "answer": answerResult, "score": answerScore, "totalscore": answerTotalScore };
+				answerList.push(answerObj)
+
+
+			}
+
+			$('.swiper-slide').each(function(){
+				var answerId = $(this).attr("id");//本题的id
+				var answerResult = $(this).find('.answerUrl').text();//本题的answer
+				var answerScore = $(this).find('.studentPoint').text();//本题的score
+				var answerTotalScore = $(this).find('.fen').text();//本题的总分
+				// var answerNum = $('.totalNum').text();//题目的总数量
+				// var answerScoreEnd = Math.round(answerScore/answerNum);//题目的最终得分
+
+
+			})
+
+			console.log( JSON.stringify(answerList));
+			$.ajax({
+				url:'/index.php/ApiInterface/Version1_3/HomeworkStudent/submitHomework',
+				type:'post',
+				data:{
+					'role': role,
+					'userId': userId,
+					'homeworkId': homeworkId,
+					'classId': classId,
+					'duration':timeS,
+					'answerList': JSON.stringify(answerList)
+				},
+				dataType:'json',
+				success:function (response) {
+					if(response.status == 200){
+						var submitId = response.data.id;
+						$('.hintBox').hide();
+						$('.fullBack,#successNotify').show();
+						$('body').css('overflow-y','hidden')
+						$('#subId').val(response.data.id);
+						$('.ren').text(response.data.count)
+						$('#successSure').click(function(){
+							$('.fullBack,#successNotify').hide();
+							$('body').css('overflow-y','auto')
+							window.location.replace('/index.php/ApiInterface/Version1_3/HomeworkStudent/homeworkResult?userId='+userId+'&role='+role+'&id='+homeworkId+'&classId='+classId+'&submitId='+submitId+'&name='+$('.zuoyemc').text())
+
+						})
+					} else {
+						alert(response.message);
+						window.location.href ='/index.php/ApiInterface/Version1_3/HomeworkStudent/doHomework?userId='+userId+'&role='+role
+					}
+				}
+			})
+		}
+		var data = {
+               "page":"hideNativeNavBar",
+               "flag":"1",
+        }
+		postApp(data)
+		function getImgUrl(s,u){
+			var index = $('.swiper-slide-active').index()
+			if(s == '1'){
+				$('.swiper-slide-active').find('.imageSrc').attr('src',u);
+				$('.swiper-slide-active').find('.shantu').show();
+				$('.swiper-slide-active').find('.next').children('div').show()
+				$('.swiper-slide-active').find('.next').children('p').hide()
+				$('.homeCircleLi').eq(index).children('.qbtn').addClass('finishBtn')
+			}else{
+
+			}
+		}
+		function showWebNav(){}//显示web导航
+		function cancelChoosePhoto(){
+			$('.swiper-slide-active').find('.next').children('div').show()
+			$('.swiper-slide-active').find('.next').children('p').hide()
+		}
+	</script>
+
+	</body>
+</html>

@@ -1,0 +1,225 @@
+<layout name="teacher_layout_3"/>
+<link href="__PUBLIC__/css/blackboard.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.all.js"></script>
+<style>
+	#contentWrapper {
+		background: #fffbf2;
+		height: auto !important;
+	}
+	
+	.welcome {
+		z-index: 10;
+	}
+	
+	.edui-colorpicker-nocolor, .edui-default {
+		box-sizing: content-box !important;
+	}
+</style>
+
+<div class="main_opr">
+	<a href="{:U('Teach/blackboard')}" title="" class="btn btn-main-opr" title="我发布的消息">我发布的消息</a>
+	<a href="{:U('Teach/publishBlackboardMessage')}" title="发布消息" class="btn btn-main-opr btn-main-opr-active">发布消息</a>
+<!--	<a href="{:U('help/blackBoardVideo')}" class="inf_video" target="_blank">操作视频</a>-->
+</div>
+
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/blackboard')}" title="返回" class="btn btnReturn3">返回</a>
+</div>
+
+<div class="messageMain pl20 pr20">
+<form action="{:U('Teach/publishBlackboardMessage')}" method="post" onsubmit="$('#saveButton').attr('disabled',true);">
+	<div class="messageTitle mb5">
+		班级
+	</div>
+	<div class="tabBox">
+		<ul class="tabUl" id="tabUl">
+			<?php foreach ($grade_list as $key => $value): ?>
+				<?php if ($key==0): ?>
+					<li class="tabLi tabActive"><?=$value['grade']?></li>
+					<?php else: ?>
+					<li class="tabLi"><?=$value['grade']?></li>
+				<?php endif ?>
+			<?php endforeach ?>
+
+		</ul>
+		<div class="tabCon" id="tabCon">
+			<?php foreach ($grade_list as $gkey => $gvalue): ?>
+				<?php if ($gkey==0): ?>
+					<div class="tabCon tabConActive" >
+						<ul class="classUl">
+							<?php foreach ($gvalue['classlist'] as $ckey => $cvalue): ?>
+								<li class="classLi">
+									<input type="checkbox" class="classCheck" name="class_id[]" value= <?=$cvalue['id']?> ><?=$cvalue['name']?>
+								</li>
+							<?php endforeach ?>
+						</ul>
+					</div>
+				<?php else: ?>
+
+					<div class="tabCon">
+						<ul class="classUl">
+							<?php foreach ($gvalue['classlist'] as $ckey => $cvalue): ?>
+								<li class="classLi">
+									<input type="checkbox" class="classCheck" name="class_id[]" value= <?=$cvalue['id']?>  ><?=$cvalue['name']?>
+								</li>
+							<?php endforeach ?>
+						</ul>
+					</div>
+
+				<?php endif ?>
+			<?php endforeach ?>
+		</div>
+	</div> 
+	
+	<div class="messageTitle mt10 mb5">
+		消息标题
+	</div>
+	<textarea id="message_title" name="message_title" class="message_title" placeholder="请输入消息标题，不超过40个字" maxlength="40" rows="3" required></textarea>
+	
+<!--	<script type="text/plain" id="message" name="message" class="messageScript"></script>-->
+	<div style="width: 100%; margin: 20px 0">
+		<script type="text/plain" id="message" name="message" style="width:100%;height:340px;"></script>
+	</div>
+	
+	<button type="submit" class="btnYellow" id="saveButton" style="margin: 0 auto; margin-top: 20px;">保存</button>
+</form>
+</div>
+
+<script src="__PUBLIC__/js/notify/notifyRegister.js" type="text/javascript"></script>
+<script>
+	window.onload = function () {
+		var tabs = document.getElementById("tabUl").getElementsByTagName("li");
+		var divs = document.getElementById("tabCon").getElementsByTagName("div");
+
+		for (var i = 0; i < tabs.length; i++) {
+			tabs[i].onclick = function () {
+				change(this);
+			}
+		}
+
+		function change(obj) {
+			for (var i = 0; i < tabs.length; i++) {
+				if (tabs[i] == obj) {
+					tabs[i].className = "tabLi tabActive";
+					divs[i].className = "tabCon tabConActive";
+				} else {
+					tabs[i].className = "tabLi";
+					divs[i].className = "tabCon";
+				}
+			}
+		}
+	}
+</script>
+<script>
+    function notifyOnErrorInput(input){
+        var message = input.data('validateHint');
+        $.notify({
+            title: '提示',
+            message: message
+        },{
+            type: 'warning',
+            placement: {
+                from: "top",
+                align: "center"
+            }
+        });
+    }
+</script>
+<script>
+	var ue = UE.getEditor('message');
+</script>
+<script>
+	//111
+	function notifyOnErrorInput(input){
+		var message = input.data('validateHint');
+		$.notify({
+			title: '提示',
+			message: message
+		},{
+			type: 'warning',
+			placement: {
+				from: "top",
+				align: "center"
+			}
+		});
+	}
+
+	var option = "<option value='0'>-请选择-</option>  ";
+	//年级发生变化
+	$("#grade_id").change(function(){
+		var val = $("#grade_id").val();
+		$("#class_id option:not(:eq(0))").remove();  
+		if (val == 0) {
+			return false;
+		}
+		$.getJSON("index.php?m=Home&c=Teach&a=getGradeClass", {'id': val}, function (msg) {
+			var length = msg.length;
+			for (var i = 0; i < length; i++) {
+					var temp = $(option).clone(true); 
+					$(temp).text(msg[i].name);
+					$(temp).val(msg[i].id); 
+					$("#class_id").append(temp);
+			}
+		}); 
+		$('#gradeWarning').hide()
+	});
+        $('#class_id').change(function(){
+           $('#classWarning').hide()
+		})
+		$('#message_title').change(function(){
+         $('#titleWarning').hide()
+		})
+        $("#saveButton").click(function(){
+			if($('.message_title').val() == '') {
+				$.NotifyBox.NotifyPromptOne("提示",'消息标题不能为空','确定');
+                return false;
+			}
+			
+            var text=$('#ueditor_0').contents().find('.view').find('p').text();  
+            if(text==''){
+//                alert('小黑板内容不能为空');
+				$.NotifyBox.NotifyPromptOne("提示",'小黑板内容不能为空','确定');
+                return false;
+            }
+            var child_length=$("#edui1_wordcount").find('span').length; 
+            if(child_length>0){
+//                alert('字数超出最大允许值，服务器拒绝保存！');
+				$.NotifyBox.NotifyPromptOne("提示",'字数超出最大允许值，服务器拒绝保存！','确定');
+                return false;
+            }
+			if($('#grade_id').val()==''){
+				$('#gradeWarning').show();
+				return false;
+			} else {
+				$('#gradeWarning').hide()
+			}
+			if($('#class_id').val()==''){
+				$('#classWarning').show();
+				return false;
+			} else {
+				$('#classWarning').hide()
+			}
+			if($('#message_title').val()==''){
+				$('#titleWarning').show();
+				return false;
+			} else {
+				$('#titleWarning').hide()
+			}
+			var text=$('#ueditor_0').contents().find('.view').find('p').text();  
+            if(text==''){
+//                alert('小黑板内容不能为空');
+				$.NotifyBox.NotifyPromptOne("提示",'小黑板内容不能为空','确定');
+                return false;
+            }
+
+			if( !$('.tabCon').find('input').is(':checked')) {
+//				alert('请选择班级');
+				$.NotifyBox.NotifyPromptOne("提示",'请选择班级','确定');
+			}
+
+
+        });
+</script>

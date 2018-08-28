@@ -1,0 +1,820 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/external/highcharts.js"></script>
+<script src="__PUBLIC__/js/highcharts-exporting.js"></script>
+<script src="__PUBLIC__/js/external/grid-light.js"></script>
+<style>
+	#contentWrapper {
+		overflow-x: hidden !important;
+	}
+	
+	#grid_wrapper {
+		padding-bottom: 20px
+	}
+	
+    .item {
+        position: relative;
+        display: inline-block;
+        width: 300px;
+        height: 300px;
+        float: left;
+        margin: 0px 40px;
+    }
+    
+    .item .avatar {
+        position: absolute;
+        left: 0;
+        top: 50px;
+        width: 70px;
+        height: 70px;
+        z-index: 10;
+        border: 1px solid transparent;
+        border-radius: 8px;
+    }
+    
+    .item .square_bg {
+        position: absolute;
+        left: 55px;
+        top: 20px;
+        width: 260px;
+        height: 290px;
+    }
+    
+    .item .info {
+        position: absolute;
+        left: 82px;
+        top: 55px;
+        width: 202px;
+        height: 202px;
+        z-index: 11;
+        background: transparent;
+        line-height: 26px;
+    }
+    
+    .big_item {
+        position: relative;
+        display: inline-block;
+        width: 420px;
+        height: 420px;
+        float: left;
+        margin: 0px 40px;
+    }
+    
+    .big_item .avatar {
+        position: absolute;
+        left: 0;
+        top: 50px;
+        width: 100px;
+        height: 100px;
+        z-index: 10;
+        border: 1px solid transparent;
+        border-radius: 8px;
+    }
+    
+    .big_item .square_bg {
+        position: absolute;
+        left: 88px;
+        top: 20px;
+        width: 382px;
+        height: 382px;
+    }
+    
+    .big_item .info {
+        position: absolute;
+        left: 120px;
+        top: 55px;
+        width: 271px;
+        height: 285px;
+        z-index: 11;
+        background: transparent;
+        line-height: 26px;
+    }
+    
+    .info_link,
+    .info span {
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+    }
+    
+    .info_link,
+    .info .title_content {
+        width: 100px;
+    }
+</style>
+<style>
+    .filterTable {
+        width: 100%;
+        border: 1px solid #000;
+        border-radius: 10px;
+    }
+    
+    .filterTable td {
+        text-align: center;
+        width: 20%;
+        padding: 0px;
+    }
+    
+    .filterTable_item.selected {
+        background-color: #41C7DB;
+        ;
+    }
+    
+    .filterTable_item {
+        position: relative;
+        cursor: pointer;
+        height: 30px;
+    }
+    
+    .filter_unit {
+        line-height: 30px;
+        font-size: 18px;
+    }
+    
+    .filter_show {
+        position: absolute;
+        z-index: 200;
+        left: 0;
+        top: 30px;
+        border: 1px solid #000;
+        width: 200px;
+        background-color: #fff;
+        display: none;
+        padding: 4px;
+    }
+    
+    .filter_show input {
+        width: 100%;
+    }
+    
+    .filter_show_section {
+        margin: 12px 0;
+    }
+    
+    .filterTable_item img {
+        height: 26px;
+        position: absolute;
+        z-index: 200;
+        right: 3px;
+        top: 3px;
+    }
+    
+    .item .info_section {
+        margin: 0;
+        padding: 2px 0;
+        height: 22px;
+    }
+    
+    .big_item .info_section {
+        margin: 0;
+        padding: 8px 0;
+        height: 32px;
+    }
+    
+    #filter_day,
+    #filter_month {
+        height: 26px;
+    }
+    #grid_wrapper{
+        overflow: hidden;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 学习轨迹" class="btn btnReturn3">返回</a>
+</div>
+<empty name="list">
+    <div class="emptyResult">该班级尚未有学生加入</div>
+</empty>
+<notempty name="list">
+    <div style="width: 600px;text-align: center;margin: 0 auto;">
+        <table class="filterTable" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <div class="filterTable_item selected" data-id="day">
+                        <div class="filter_unit">日</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_day">
+                            <div class="filter_show_section" style="text-align: left;">请选择时间</div>
+                            <div class="filter_show_section">
+                                <input type="date" value="" id="filter_day">
+                            </div>
+                            <div class="filter_show_section" style="text-align: center;">
+                                <button class="btn btn-primary" onclick="filterTongji('day')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="filterTable_item" data-id="week">
+                        <div class="filter_unit">周</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_week">
+                            <div class="filter_show_section" style="text-align: left;">请选择周</div>
+                            <div class="filter_show_section">
+                                <input type="week" value="" id="filter_week">
+                            </div>
+                            <div class="filter_show_section" style="text-align: center;">
+                                <button class="btn btn-primary" onclick="filterTongji('week')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="filterTable_item" data-id="month">
+                        <div class="filter_unit">月</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_month">
+                            <div class="filter_show_section" style="text-align: left;">请选择月</div>
+                            <div class="filter_show_section">
+                                <input type="month" value="" id="filter_month">
+                            </div>
+                            <div class="filter_show_section" style="text-align: center;">
+                                <button class="btn btn-primary" onclick="filterTongji('month')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="filterTable_item" data-id="term">
+                        <div class="filter_unit">学期</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_term">
+                            <div class="filter_show_section" style="text-align: left;">请选择学期</div>
+                            <div class="filter_show_section">
+                                <select id="filter_term">
+                                    <option value="2015-09~2016-01">2015年9月~2016年1月</option>
+                                    <option value="2016-03~2016-07">2016年3月~2016年7月</option>
+                                    <option value="2016-09~2017-01">2016年9月~2017年1月</option>
+                                    <option value="2017-03~2017-07">2017年3月~2017年7月</option>
+                                    <option value="2017-09~2018-01">2017年9月~2018年1月</option>
+                                </select>
+                            </div>
+                            <div class="filter_show_section" style="text-align: center;">
+                                <button class="btn btn-primary" onclick="filterTongji('term')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="filterTable_item" data-id="year">
+                        <div class="filter_unit">学年</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_year">
+                            <div class="filter_show_section" style="text-align: left;">请选择学年</div>
+                            <div class="filter_show_section">
+                                <select id="filter_year">
+                                    <option value="2015-09~2016-06">2015年9月~2016年6月</option>
+                                    <option value="2016-09~2017-06">2016年9月~2017年6月</option>
+                                    <option value="2017-09~2018-06">2017年9月~2018年6月</option>
+                                </select>
+                            </div>
+                            <div class="filter_show_section" style="text-align: center;">
+                                <button class="btn btn-primary" onclick="filterTongji('year')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="chart">
+
+    </div>
+    <div style="height: 50px;">
+        <div style="margin-left: 40px;border: 1px solid #46b8da;padding: 6px 20px;text-align: center;float: left;display: inline-block;border-radius: 5px;">
+            学生总数：<strong>{$student_count}</strong>人
+        </div>
+        <div style="width: 200px;float: right;">
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-info showtype" title="大图标显示" onclick="switchShowType('big_image',this)">
+                    大图标
+                </button>
+                <button type="button" class="btn btn-default showtype" title="小图标显示" onclick="switchShowType('small_image',this)">
+                    小图标
+                </button>
+                <button type="button" class="btn btn-default showtype" title="列表显示" onclick="switchShowType('list',this)">列表
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="grid_wrapper" class="showtype_wrapper">
+        <volist name="list" id="data" empty="">
+            <div class="big_item student_grid">
+                <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+                <img class="avatar" src="<?php echo C('oss_path').$data['avatar'] ?>">
+                <?php else: ?>
+                    <?php if ( $data['sex']=='男' ): ?>
+                    <img class="avatar" src="__PUBLIC__/img/classManage/student_m.png">
+                    <?php else: ?>
+                    <img class="avatar" src="__PUBLIC__/img/classManage/student_w.png">
+                    <?php endif; ?>
+                <?php endif; ?>
+
+                <img class="square_bg" src="__PUBLIC__/img/square_bg.png">
+
+                <div class="info">
+                    <div class="info_section">
+                        <span class="info_title">学生姓名：</span><a class="info_link" target="_blank" href="{:U('Teach/studentDetails?id=')}{$data.id}" title="{$data.student_name}" class="button">{$data.student_name}</a>
+                    </div>
+                    <div class="info_section">
+                        <span class="info_title">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span><span class="title_content" title="{$data.id_card}">{$data.sex}</span>
+                    </div>
+                    <div class="info_section">
+                        <span class="info_title">出生年月：</span><span class="title_content" title="  {$data.birth_date|date='Y-m-d',###}">  {$data.birth_date|date="Y-m-d",###}</span>
+                    </div>
+                    <div class="info_section">
+                        <span class="info_title">身份证号：</span><span class="title_content" title="{$data.id_card}">{$data.id_card}</span>
+                    </div>
+                    <div class="info_section">
+                        <span class="info_title">学生编号：</span><span class="title_content" title="{$data.student_id}">{$data.student_id}</span>
+                    </div>
+                    <div class="info_section">
+                        <span class="info_title">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</span><span class="title_content" title="{$data.user_name}">{$data.email}</span>
+                    </div>
+                    <div class="info_section">
+                        <span class="info_title">家长手机号：</span><span class="title_content" title="{$data.parent_tel}">{$data.parent_tel}</span>
+                    </div>
+                    <div class="info_section">
+                        <span class="info_title">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：</span><span class="title_content" title="">&nbsp;</span>
+                    </div>
+                    <div style="text-align: center;margin-top: 20px;" class="info_ctrl">
+                        <a target="_blank" href="{:U('Teach/learningPath?id=')}{$data.id}&class_id={$data.class_id}" title="活动表现" class="btn btn-primary" style="margin-right:20px">活动表现</a>
+                        <a target="_blank" href="{:U('Teach/wrongHomeworkDetail?student_id=')}{$data.id}" title="错题集" class="btn btn-primary" >错题集</a>
+                    </div>
+
+                </div>
+            </div>
+        </volist>
+    </div>
+    <div id="list_wrapper" class="showtype_wrapper" style="display: none;padding: 0px 43px;">
+        <div class="row" style="margin-bottom: 6px;">
+            <div class="col-md-2">
+                <label>姓名：</label>
+                <input type="text" class="form-control" id="filter_name">
+            </div>
+            <div class="col-md-2">
+                <label>性别：</label>
+                <select id="filter_sex" class="form-control">
+                    <option value="">所有</option>
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>学生编号：</label>
+                <input type="text" class="form-control" id="filter_student_id">
+            </div>
+            <div class="col-md-2">
+                <label>家长手机号：</label>
+                <input type="text" class="form-control" id="filter_parent_tel">
+            </div>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <button type="button" class="btn btn-primary search_homework" style="display: block;" onclick="searchStudents()">搜索
+                </button>
+            </div>
+        </div>
+
+        <table class="table striped hovered border">
+            <thead>
+                <tr>
+                    <th class="text-center">学生姓名</th>
+                    <th class="text-center">性别</th>
+                    <th class="text-center">出生年月</th>
+                    <th class="text-center">学生编号</th>
+                    <th class="text-center">家长手机号</th>
+                    <th class="text-center">邮箱</th>
+                    <th class="text-center">操作</th>
+                    <th class="text-center">备注</th>
+                </tr>
+            </thead>
+            <tbody id="list_student_tbody">
+                <volist name="list" id="data" empty="">
+                    <tr id="l_{$data.id}">
+                        <td class="text-center">
+                            {$data.student_name}
+                        </td>
+                        <td class="text-center">
+                            {$data.sex}
+                        </td>
+                        <td class="text-center">
+                            {$data.birth_date|date="Y-m-d",###}
+                        </td>
+                        <td class="text-center">
+                            {$data.student_id}
+                        </td>
+                        <td class="text-center">
+                            {$data.parent_tel}
+                        </td>
+                        <td class="text-center">
+                            {$data.email}
+                        </td>
+                        <td class="text-center">
+                            <a target="_blank" href="{:U('Teach/learningPath?id=')}{$data.id}&class_id={$data.class_id}" title="活动表现" class="button mb5">活动表现</a>
+                            <a  href="{:U('Teach/wrongHomeworkDetail?student_id=')}{$data.id}" title="错题集" class="button">错题集</a>
+                            <br/>
+                        </td>
+                        <td class="text-center">
+
+                        </td>
+                    </tr>
+                </volist>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        Date.prototype.Format = function (fmt) { //author: meizz 
+        var o = {
+            "M+": this.getMonth() + 1, //月份 
+            "d+": this.getDate(), //日 
+            "h+": this.getHours(), //小时 
+            "m+": this.getMinutes(), //分 
+            "s+": this.getSeconds(), //秒 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+            "S": this.getMilliseconds() //毫秒 
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    
+        var classId = '{$classId}';
+        var scoresDetails = [];
+        var startDate = '',
+            endDate = '';
+        var startDateStr = '',
+            endDateStr = '';
+
+        var xAxisArr = [];
+        var yAxisArr = [];
+        var homeworkIdArr = [];
+
+        getHomeworkScoreByClassId();
+
+        function getHomeworkScoreByClassId() {
+            xAxisArr = [];
+            yAxisArr = [];
+            homeworkIdArr = [];
+            $.get('index.php?m=Home&c=Teach&a=getHomeworkScoreByClassId', {
+                    class_id: classId,
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                function (res) {
+                    scoresDetails = res;
+                    do_tj();
+                });
+        }
+
+        function do_tj() {
+            var studentNameArr = [];
+            $(scoresDetails).each(function (i, n) {
+                if ($.inArray(n.homework_id, homeworkIdArr) == -1) {
+                    xAxisArr.push(n.homework_name);
+                    homeworkIdArr.push(n.homework_id);
+                }
+                var studentName = n.student_name;
+                if ($.inArray(studentName, studentNameArr) == -1) {
+                    studentNameArr.push(studentName);
+                }
+            });
+
+            function series(name, length) {
+                this.name = name;
+                this.data = new Array(length);
+
+            }
+
+            var seriesArray = new Array(studentNameArr.length);
+            $(seriesArray).each(function (i, n) {
+                seriesArray[i] = new series(studentNameArr[i], homeworkIdArr.length);
+                $(seriesArray[i].data).each(function (index, nouse) {
+                    seriesArray[i].data[index] = null;
+                });
+            });
+            $(scoresDetails).each(function (i, n) {
+                var studentName = n.student_name;
+                $(studentNameArr).each(function (iName, SName) {
+                    if (SName == studentName)
+                        seriesArray[iName].data[$.inArray(n.homework_id, homeworkIdArr)] = parseInt(n.points);
+                });
+            });
+            $(seriesArray).each(function (i, n) {
+                yAxisArr.push(n);
+            });
+
+            $('#chart').highcharts({
+                credits: {
+                    text: '',
+                    href: 'http://www.jtypt.com'
+                },
+                title: {
+                    text: startDateStr + '~' + endDateStr + '学生成绩轨迹横向对比分析' + (scoresDetails.length == 0 ? '（没有数据）' : ''),
+                    x: -20 //center
+                },
+                xAxis: {
+                    title: {
+                        text: '作业名称',
+						style: {
+							color: '#333',
+							fontWeight: 'bold'
+						},
+						margin: 20
+                    },
+                    categories: xAxisArr,	
+					labels: {
+						style: {
+							color: '#333'
+						}
+					}
+                },
+                yAxis: {
+                    title: {
+                        text: '绩成',
+						style: {
+							color: '#333',
+							fontWeight: 'bold'
+						},
+						margin: 20
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }],
+					labels: {
+						style: {
+							color: '#333'
+						}
+					}
+                },
+                tooltip: {
+                    valueSuffix: '分'
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'top',
+                    borderWidth: 0,
+                    y: 20,
+                    itemMarginTop: 5,
+                    itemMarginBottom: 5,
+                    maxHeight: 300
+                },
+                lang: {
+                    noData: "无数据"
+                },
+                noData: {
+                    style: {
+                        fontWeight: 'bold',
+                        fontSize: '15px',
+                        color: '#303030'
+                    }
+                },
+                series: yAxisArr
+            });
+            $(window).resize();
+        }
+    </script>
+    <script>
+        $(function () {
+            $('.filterTable_item').click(function () {
+                $('.filterTable_item').removeClass('selected');
+                var target = $(this).attr('data-id');
+                $('.filter_show').hide();
+                $('#filter_show_' + target).show();
+                $(this).addClass('selected');
+                event.stopPropagation();
+            });
+            $('#contentWrapper').bind('click', function () {
+                $('.filter_show').hide();
+            })
+			$('#fullscreen_ctrl,#escfullscreen_ctrl').click(function(){
+			getHomeworkScoreByClassId();
+			});
+        });
+
+        function filterTongji(type) {
+            window.setTimeout(function () {
+                $('.filter_show').hide();
+            }, 200);
+
+            switch (type) {
+            case 'day':
+                var day = $('#filter_day').val();
+                if (day == '') {
+                    break;
+                }
+                startDate = day + ' 00:00:00';
+                endDate = day + ' 23:59:59';
+                break;
+            case 'week':
+                var getDaysByWeek = function (year, index) {
+                    var d = new Date(year, 0, 1);
+                    while (d.getDay() != 1) {
+                        d.setDate(d.getDate() + 1);
+                    }
+                    var to = new Date(year + 1, 0, 1);
+                    var i = 1;
+                    var arr = [];
+                    for (var from = d; from < to;) {
+                        if (i == index) {
+                            arr.push(from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+                        }
+                        var j = 6;
+                        while (j > 0) {
+                            from.setDate(from.getDate() + 1);
+                            if (i == index) {
+                                arr.push(from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+                            }
+                            j--;
+                        }
+                        if (i == index) {
+                            return arr;
+                        }
+                        from.setDate(from.getDate() + 1);
+                        i++;
+                    }
+                }
+                var week = $('#filter_week').val();
+                var year = parseInt(week.split('-')[0]);
+                var week = parseInt(week.split('-')[1].replace('W', ''));
+                var arr = getDaysByWeek(year, week);
+                startDate = arr[0] + ' 00:00:00';
+                endDate = arr[6] + ' 23:59:59';
+                break;
+            case 'month':
+                var filter_month = $('#filter_month').val();
+                var year = parseInt(filter_month.split('-')[0]);
+                var month = parseInt(filter_month.split('-')[1]);
+                var lastDay = getLastDayInMonth(year, month);
+                startDate = filter_month + '-01 00:00:00';
+                endDate = filter_month + '-' + lastDay + ' 23:59:59';
+                break;
+            case 'term':
+                var filter_term = $('#filter_term').val();
+                startDate = filter_term.split('~')[0] + '-01 00:00:00';
+                var filter_term_2 = filter_term.split('~')[0]
+                var year = parseInt(filter_term_2.split('-')[0]);
+                var month = parseInt(filter_term_2.split('-')[1]);
+                var lastDay = getLastDayInMonth(year, month);
+                endDate = filter_term.split('~')[1] + '-' + lastDay + ' 23:59:59';
+                break;
+            case 'year':
+                var filter_term = $('#filter_year').val();
+                startDate = filter_term.split('~')[0] + '-01 00:00:00';
+                var filter_term_2 = filter_term.split('~')[0]
+                var year = parseInt(filter_term_2.split('-')[0]);
+                var month = parseInt(filter_term_2.split('-')[1]);
+                var lastDay = getLastDayInMonth(year, month);
+                endDate = filter_term.split('~')[1] + '-' + lastDay + ' 23:59:59';
+                break;
+            }
+
+            if (startDate == '' || endDate == '') {
+                return;
+            }
+            startDateStr = startDate.substring(0, startDate.indexOf(' '));
+            endDateStr = endDate.substring(0, endDate.indexOf(' '));
+            startDate = new Date(startDate).getTime().toString();
+            endDate = new Date(endDate).getTime().toString();
+            startDate = startDate.substring(0, startDate.length - 3);
+            endDate = endDate.substring(0, endDate.length - 3);
+
+            getHomeworkScoreByClassId();
+        }
+
+        //月份里的最后一天
+        function getLastDayInMonth(year, month) {
+            var new_year = year;
+            var new_month = month++;
+            if (month > 12) {
+                new_month -= 12;
+                new_year++;
+            }
+            var new_date = new Date(new_year, new_month, 1);
+            return (new Date(new_date.getTime() - 1000 * 60 * 60 * 24)).getDate();
+        }
+        
+        
+        var before_val=$("#filter_year").val();
+        var before_text=$("#filter_year").find('option:selected').text();
+        
+        //filter_year
+        var date1 = new Date().Format("yyyy-MM"); 
+        $("#filter_year").change(function(){        
+            var before_date=$("#filter_year").val(); 
+            var before_date_text=$("#filter_year").find('option:selected').text();
+            
+            var temp_start_date=before_date.split('~');
+            temp_start_date=temp_start_date[0];             
+            if(date1<temp_start_date){   
+                $("#filter_year").val(before_val); 
+                $("#filter_year").find('option:selected').text(before_text);
+            }else{ 
+                before_val=before_date;
+                before_text=before_date_text;
+            }  
+        });
+        
+        
+        var before_term_val=$("#filter_term").val();
+        var before_term_text=$("#filter_term").find('option:selected').text();
+        $("#filter_term").change(function(){
+            var before_term_date=$("#filter_term").val();
+            var before_term_date_text=$("#filter_term").find('option:selected').text();
+            
+            var temp_start_date=before_term_date.split('~');
+            temp_start_date=temp_start_date[0];     
+            if(date1<temp_start_date){   
+                $("#filter_term").val(before_term_val); 
+                $("#filter_term").find('option:selected').text(before_term_text);
+            }else{ 
+                before_term_val=before_term_date;
+                before_term_text=before_term_date_text;
+            } 
+        });
+        
+    </script>
+    <script>
+        var list_student_tpl = ['<tr id="l_{0}">',
+            '	<td class="text-center">',
+            '		{1}',
+            '	</td>',
+            '	<td>',
+            '		{2}',
+            '	</td>',
+            '	<td class="text-center">',
+            '		{3}',
+            '	</td>',
+            '	<td class="text-center">',
+            '		{4}',
+            '	</td>',
+            '	<td class="text-center">',
+            '		{5}',
+            '	</td>',
+            '	<td class="text-center">',
+            '		{6}',
+            '	</td>',
+            '	<td class="text-center">',
+            '		<a target="_blank" href="{:U(\'Teach/learningPath?id=\')}{0}&class_id={7}"',
+            '		   title="活动表现" class="button mb5">活动表现</a>',
+            '		<a target="_blank" href="{:U(\'Teach/wrongHomeworkDetail?student_id=\')}{0}" title="错题集" class="button">错题集</a><br/>',
+            '	</td>',
+            '	<td class="text-center">',
+            '	</td>',
+            '</tr>'].join("");
+
+        function switchShowType(type, obj) {
+            $('.showtype').attr('class', 'btn btn-default showtype');
+            $(obj).attr('class', 'btn btn-info showtype');
+            $('.showtype_wrapper').hide();
+            if (type == 'list') {
+                $('#' + type + '_wrapper').show();
+            } else {
+                $('#grid_wrapper').show();
+                if (type == 'big_image') {
+                    $('#grid_wrapper .student_grid').attr('class', 'big_item student_grid');
+                } else {
+                    $('#grid_wrapper .student_grid').attr('class', 'item student_grid');
+                }
+            }
+
+        }
+
+        function searchStudents() {
+            var parms = {
+                'name': $('#filter_name').val(),
+                'sex': $('#filter_sex').val(),
+                'student_id': $('#filter_student_id').val(),
+                'parent_tel': $('#filter_parent_tel').val(),
+                'classId': '{$classId}'
+            };
+
+            $.post('__URL__/ajax_classStudentList', parms, function (res) {
+                var html = [];
+                $.each(res, function (i, n) {
+                    var email = n.email == null ? '' : n.email;
+                    var birthday = '';
+                    if (n.birth_date != null && n.birth_date != '') {
+                        birthday = new Date(parseInt(n.birth_date) * 1000);
+                        birthday = birthday.getFullYear() + '-' + (birthday.getMonth() + 1) + '-' + birthday.getDate();
+                    }
+
+                    html.push(list_student_tpl.format(n.id, n.student_name, n.sex, birthday, n.student_id, n.parent_tel, email, n.class_id));
+                });
+                $('#list_student_tbody').html(html.join(''));
+            });
+        }
+		var contentheight = '申明一个变量，在有些获取不到contwrapper高度的页面执行一个函数'
+    </script>
+</notempty>

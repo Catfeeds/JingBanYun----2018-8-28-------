@@ -1,0 +1,187 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<style media="screen">
+.input_margin {
+	margin: .325rem 0;
+	margin-bottom: 10px;
+}
+.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+    box-sizing: content-box;
+}
+</style>
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		教师学生数量统计管理
+		<span class="blueSpan">
+			<a href="javascript:;">教师学生数量统计管理</a>>>
+			<a href="javascript:;">统计列表</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php/Admin/Monitor/getTeacherStuCount" method="get">
+	<p class="blueText fs16">统计查询</p>
+
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+
+			<div class="cell">
+				<label>搜索框：</label>
+				<input type="text" class="input-control input-control-before " name="keyword" value="{$keyword}" id="key" placeholder="请输入教师名称或者手机号码">
+			</div>
+
+			<div class="cell">
+				<label>查询时间：</label>
+				<input type="text" value="{$start}" class="input_control_short input-control-before input_margin " id="startTime" name="start" placeholder="开始时间">
+				&nbsp;至&nbsp;
+				<input type="text" value="{$end}" class="input_control_short input-control-before input_margin" id="endTime" name="end" placeholder="结束时间">
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+                    <button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+                -->
+		<input type='submit' value='查询' class='blueBtn'/>
+		<input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+
+
+<p class="blueText fs16">搜索列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center">教师名称</th>
+			<th class="text-center">教师手机号</th>
+			<th class="text-center">学生总数</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+	<volist name="list" id="data" empty="暂时没有账户数据">
+		<tr>
+			<td class="text-center" title="{$item.school_name}">
+				{$data.name}
+			</td>
+			<td class="text-center" title="{$item.school_name}">
+				{$data.telephone}
+			</td>
+			<td class="text-center" title="{$item.school_name}">
+				{$data.sid}
+			</td>
+	</volist>
+
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	$(document).ready(function () {
+
+		var temp_option="<option value='0'>-请选择-</option>";
+		//省份发生变化
+		$('#province_list').change(function(){
+			$("#city_list option:not(:eq(0))").remove();
+			$("#district_list option:not(:eq(0))").remove();
+			$("#school_list option:not(:eq(0))").remove();
+			var id=$("#province_list").val();
+			$.ajax({
+				type:"post",
+				url:"{:U('Common/getCityByProvince')}",
+				dataType:"json",
+				data:{'province_id':id},
+				success: function(msg){
+					for(var i=0;i<msg.data.length;i++){
+						var clone_option=$(temp_option).clone(true);
+						$(clone_option).val(msg['data'][i].id);
+						$(clone_option).text(msg['data'][i].name);
+						$("#city_list").append(clone_option);
+					}
+				}
+			})
+		});
+		//城市发生变化
+		$('#city_list').change(function(){
+			$("#district_list option:not(:eq(0))").remove();
+			$("#school_list option:not(:eq(0))").remove();
+			var id=$("#city_list").val();
+			$.ajax({
+				type:"post",
+				url:"{:U('Common/getDistrictByCity')}",
+				dataType:"json",
+				data:{'city_id':id},
+				success: function(msg){
+					for(var i=0;i<msg.data.length;i++){
+						var clone_option=$(temp_option).clone(true);
+						$(clone_option).val(msg['data'][i].id);
+						$(clone_option).text(msg['data'][i].name);
+						$("#district_list").append(clone_option);
+					}
+				}
+			})
+		});
+		//区县发生变化
+		$('#district_list').change(function(){
+			$("#school_list option:not(:eq(0))").remove();
+			var id=$("#district_list").val();
+			$.ajax({
+				type:"post",
+				url:"{:U('Common/getSchoolByDistrict')}",
+				dataType:"json",
+				data:{'district_id':id},
+				success: function(msg){
+					for(var i=0;i<msg.data.length;i++){
+						var clone_option=$(temp_option).clone(true);
+						$(clone_option).val(msg['data'][i].id);
+						$(clone_option).text(msg['data'][i].name);
+						$("#school_list").append(clone_option);
+					}
+				}
+			})
+		});
+
+		$('.resetButton').click(function(){
+			window.location.href="{:U('Monitor/getTeacherStuCount')}";
+		});
+
+
+
+
+	});
+
+	!function(){
+		laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD ',
+		// min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actend.min = datas; //开始日选好后，重置结束日的最小日期
+			actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD ',
+		// min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+</script>

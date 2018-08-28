@@ -1,0 +1,305 @@
+<layout name="admin_layout_exercise"/>
+<div class="boxOutter">
+	<div class="borderBottom">
+		<span class="tabBtn text-center">添加/修改用户</span>
+	</div>
+	<div class="filterOutter of border-none">
+		<form action="" method="post" onsubmit="return resRedColor()">
+        <div class="">
+            <div class="m10  lh32">
+                  <label for="">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</label>
+                  <input type="text" class="inputCommon name" id="" name="name" value="<?php echo $info['user_name']?>" placeholder="请输入姓名">
+				  <span class="red dn">*此项为必填项</span>
+            </div>
+            <div class="m10  lh32">
+                  <label for="">账&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+                  <input type="text" class="inputCommon account" id="" name="account" value="<?php echo $info['account']?>" placeholder="请输入账号">
+				  <span class="red dn">*此项为必填项</span>
+            </div>
+            <div class="m10  lh32">
+                  <label for="">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码</label>
+                <input type="hidden" name="oldPassword" value="<?php echo $info['password']?>">
+                  <input type="password" class="inputCommon password" id="" name="password" value="<?php echo $info['password']?>" placeholder="请输入密码" maxlength="16" >
+				  <span class="red dn">*此项为必填项</span>
+            </div>
+            <div class="m10  lh32">
+                  <label for="">角&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;色</label>
+                <input type="hidden" name="oldRole" value="<?php echo $info['role'] ;?>">
+				  <select name="role" id="role" class="inputCommon ">
+                      <option value="0">请选择</option>
+				  <?php foreach($roleList as $item){?>
+			          <option value="<?php echo $item['id']?>" <?php if($info['role'] == $item['id']){ echo 'selected';}?>><?php echo $item['name']?></option>
+			         <?php }?>
+        		  </select>
+				  <span class="red dn">*此项为必填项</span>
+            </div>
+            <div class="m10  lh32">
+                    <label for="">手 机 号</label>
+                    <input type="text" class="inputCommon phone" id="" name="phone" maxlength="11" value="<?php echo $info['mobile_phone']?>" placeholder="请输入手机号">
+					<span class="red dn">*此项为必填项</span>
+            </div>
+            <div class="m10  lh32" id="Learning_period">
+                <label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;段</label>
+                <select name="Learning_period" id="" class="inputCommon Learning_period">
+                    <option value="0">请选择</option>
+                    <option value="1" <?php if($info['learning_period_id'] == '1'){ echo 'selected';}?>>小学</option>
+                    <option value="2" <?php if($info['learning_period_id'] == '2'){ echo 'selected';}?>>初中</option>
+                    <option value="3" <?php if($info['learning_period_id'] == '3'){ echo 'selected';}?>>高中</option>
+                </select>
+				<span class="red dn">*此项为必填项</span>
+            </div>
+
+            <div class="m10  lh32" id="course">
+                <label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+                <input type="hidden" name="oldCourse" value="<?php echo $info['course_id'] ;?>">
+                <select name="course" id="course_id" class="inputCommon course">
+                    <option value="0">请选择</option>
+                    <?php foreach($courseList as $item){?>
+                    <option value="<?php echo $item['id']?>" <?php if($info['course_id'] == $item['id']){ echo 'selected';}?>><?php echo $item['name']?></option>
+                    <?php }?>
+                </select>
+				<span class="red dn">*此项为必填项</span>
+            </div>
+			<div class="m10  lh32 of" id="version">
+					<label for="" class="left">版&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本</label>
+					<div class="left ml5" style="width:1050px">
+					<?php foreach($versionList as $item){?>
+						<input type="checkBox" name="version_id[]" value="<?php echo $item['id']?>" <?php if($info['version_id'] == $item['id']){ echo 'checked';}?> class="checkBox checkOne"><span><?php echo $item['version_name']?></span>
+					<?php }?><span class="red dn">*此项为必填项</span>
+					</div>
+
+			</div>
+
+           <!--  <div class="m10  lh32">
+                  <label for="">单IP登录</label>
+
+            </div> -->
+            <div class="m10  lh32">
+                  <label for="">I P 限 制</label>
+                 <input type="text" class="inputCommon ip" id="" name="ip" value="<?php echo $info['login_ip']?>" placeholder="不填则无">
+				<span class="red dn">*IP格式错误</span>
+            </div>
+            <div class="m10  lh32" id="superior">
+                <label for="">上&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label>
+                <select name="superior" id="" class="inputCommon superior">
+                    <option value="0">请选择</option>
+                    <?php foreach($superior as $k=>$item){?>
+                    <option value="<?php echo $k.'-'.$item?>" <?php if($info['superior'] == $k){ echo 'selected';}?>><?php echo $item?></option>
+                    <?php }?>
+                </select>
+				<span class="red dn">*此项为必填项</span>
+            </div>
+
+			<div class="">
+				<button type="submit" name="button" class="btn mt20 queding" style="margin-left:130px">确定</button>
+			</div>
+        </div>
+		</form>
+    </div>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script>
+    var isSaveId = "<?php echo $info['id']?>";
+    /************************************页面一加载就判断当前role是否存在，如果存在根据role加载不同的input框*********************************/
+    $(function () {
+        var role = "<?php echo $info['role']; ?>";
+        if(role){
+            if(role == 2){
+                $('#superior').hide();
+            }else if(role !=1 && role !=2){
+                $('#Learning_period').hide();
+                $('#course').hide();
+                $('#version').hide();
+                $('#superior').hide();
+            }
+        }
+    });
+    function inputChange() {
+        if($('#role').val() != 1 && $('#role').val() != 2){
+            $('#Learning_period').hide();
+            $('#course').hide();
+            $('#version').hide();
+            $('#superior').hide();
+        }else if($('#role').val() == 2){
+            $('#Learning_period').show();
+            $('#course').show();
+            $('#version').show();
+            $('#superior').hide();
+        }else if($('#role').val() == 1){
+            $('#Learning_period').show();
+            $('#course').show();
+            $('#version').show();
+            $('#superior').show();
+        }
+    }
+  	function resRedColor(){
+        var role = $('#role').children('option:selected').val();
+        var a = 0;
+		if($('.name').val() == ''){
+			$('.name').siblings('.red').show();
+			a++
+		}else{
+			$('.name').siblings('.red').hide();
+		}
+		if($('.account').val() == ''){
+			$('.account').siblings('.red').show();
+			a++
+		}else{
+			$('.account').siblings('.red').hide();
+		}
+		if($('.password').val() == ''){
+			$('.password').siblings('.red').text('*此项为必填项').show();
+			a++
+		}else{
+			$('.password').siblings('.red').hide();
+		}
+		if($('.password').val().length < 6){
+			$('.password').siblings('.red').text('*密码长度不能小于6位').show();
+			a++
+		}else{
+			$('.password').siblings('.red').hide();
+		}
+		if($('#role').children('option:selected').val() == '0'){
+			$('#role').siblings('.red').show();
+			a++
+		}else{
+			$('#role').siblings('.red').hide();
+		}
+		if($('.phone').val() == ''){
+			$('.phone').siblings('.red').text('*该项为必填项').show();
+			a++
+		}else{
+			var regTel= /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+			if(regTel.test($('.phone').val()) == false){
+				$('.phone').siblings('.red').text('*电话格式错误').show();
+				a++
+			}else{
+				$('.phone').siblings('.red').hide();
+			}
+
+		}
+		    if(role == 1 || role == 2) {
+                var c = 0;
+                for (var i = 0; i < $('#version').find('.checkBox').length; i++) {
+                    if ($('.checkBox').eq(i).is(':checked')) {
+                        c++
+                    }
+                }
+                if (c == 0) {
+                    if ($('#role').children('option:selected').val() == '1' || $('#role').children('option:selected').val() == '2') {
+                        $('#version').find('.red').show();
+                        a++
+                    }
+                } else {
+                    $('#version').find('.red').hide();
+                }
+            }
+            var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+            var ip = $('.ip').val()
+            if (ip != '') {
+                if (reg.test(ip) == false) {
+                    $('.ip').siblings('.red').show();
+                    a++
+                } else {
+                    $('.ip').siblings('.red').hide();
+                }
+            }
+            /***************************学段学科上级的判断***********************************************/
+            if(role == 1 || role == 2) {
+                if ($('.Learning_period').val() == 0) {
+                    a++;
+                    $('.Learning_period').siblings('.red').show();
+                } else {
+                    $('.Learning_period').siblings('.red').hide();
+                }
+                if ($('.course').val() == 0) {
+                    a++;
+                    $('.course').siblings('.red').show();
+                } else {
+                    $('.course').siblings('.red').hide();
+                }
+            }
+            if(role == 1){
+            if ($('.superior').val() == 0) {
+                a++;
+                $('.superior').siblings('.red').show();
+            } else {
+                $('.superior').siblings('.red').hide();
+            }
+        }
+        if(a>0){
+            return false
+        }
+        /***********************************************判断账号是否存在************************************************/
+        var account = $('.account').val();
+        var  id = "<?php echo $_GET['id'] ? $_GET['id'] : '-1' ;?>";
+        var tip = true;
+        $.ajax({
+           url:'/index.php?m=Exercise&c=UserManagement&a=accountIsHaveByAjax',
+            data:{'account':account,'id':id},
+            dataType:"json",
+            type:"post",
+            async: false,
+            success:function (data) {
+                if(data.status == 400){
+                    tip = false;
+                    $.NotifyBox.NotifyOne('提示',data.msg,'确定');
+                }
+            }
+        });
+
+		if(tip == false){
+			return false
+		}
+	}
+
+	if(isSaveId){
+        $('#course_id').change(function () {
+            var  id = "<?php echo $_GET['id'] ? $_GET['id'] : '-1' ;?>";
+            var role_value = "<?php echo $info['role']?>";
+            var course_value = "<?php echo $info['course_id']?>";
+            $.ajax({
+                url:"/index.php?m=Exercise&c=UserManagement&a=getWaitingForIndexingByAccount",
+                data:{'id':id},
+                dataType:"json",
+                type:"post",
+                async: false,
+                success:function (data) {
+                    if(data.status == 404){
+                        $.NotifyBox.NotifyOne('提示',data.msg,'确定');
+                        $('#course_id').val(course_value);
+                    }
+                }
+            })
+        })
+        $('#role').change(function () {
+            var  id = "<?php echo $_GET['id'] ? $_GET['id'] : '-1' ;?>";
+            var role_value = "<?php echo $info['role']?>";
+            var course_value = "<?php echo $info['course_id']?>";
+            $.ajax({
+                url:"/index.php?m=Exercise&c=UserManagement&a=getWaitingForIndexingByAccount",
+                data:{'id':id},
+                dataType:"json",
+                type:"post",
+                async: false,
+                success:function (data) {
+                    if(data.status == 404){
+                        $.NotifyBox.NotifyOne('提示',data.msg,'确定');
+                        $('#role').val(role_value);
+                    }else if(data.status == 403 || data.status == 402){
+                        $.NotifyBox.NotifyOne('提示',data.msg,'确定');
+                        $('#role').val(role_value);
+                    }else{
+                        inputChange();
+                    }
+                }
+            })
+        })
+    }else{
+        $('#role').change(function () {
+            inputChange();
+        })
+    }
+
+</script>

@@ -1,0 +1,579 @@
+<link rel="stylesheet" href="__PUBLIC__/css/resourceList.css?v=6">
+<link rel="stylesheet" href="__PUBLIC__/css/resourceBj.css?v=2">
+<link rel="stylesheet" href="__PUBLIC__/css/rotate.css">
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=3.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<style>
+    .searchTopUl_search .wEmpty {
+        width: 224px;
+    }
+
+    .mainbody {
+        width: 90%;
+    }
+
+    .nav {
+        width: auto
+    }
+
+    #fullscreen_ctrl {
+        right: -4px
+    }
+
+    @media(max-width:1400px) and (min-width:1250px){
+        .mainbody {
+            width: 100%;
+        }
+
+        .nav {
+            width: 99%;
+        }
+
+        #fullscreen_ctrl {
+            right: 0.5%
+        }
+    }
+    .searchDiv{
+        top: 32px;
+        left:0;
+        background: none;
+    }
+    .searchBox{
+        background: rgb(245,252,246)
+    }
+    @media(max-width:1249px) and (min-width:0){
+        body {
+            width: 1250px;
+            overflow-x: auto
+        }
+
+        .mainbody {
+            width: 100%;
+        }
+
+        .nav {
+            width: 99%;
+        }
+
+        #fullscreen_ctrl {
+            right: 0.5%
+        }
+    }
+</style>
+
+
+<if condition="$role eq 2">
+    <div class="main_opr">
+        <a href="{:U('ResourceList/resourceIndex')}" title="发布资源" class="btn btn-main-opr btn-main-opr-active">教师分享</a> &nbsp;
+        <a href="{:U('Teach/publishResource')}" title="发布资源" class="btn btn-main-opr">发布资源</a> &nbsp;
+        <a href="{:U('Teach/myPublishResource')}" title="我发布的资源" class="btn btn-main-opr">我发布的资源</a> &nbsp;
+        <!--    <a href="{:U('Teach/myFavorResource')}" title="我收藏的资源" class="btn btn-main-opr">我收藏的资源</a>-->
+    </div>
+</if>
+
+<div class="resource_box bothBorder"  style="min-height: 650px">
+    <div class="resource_top" style="position: relative; overflow: initial">
+        <!-- <div class="left more_left">
+            <img src="__PUBLIC__/img/resource/anzhangjiezhishidianliulan.png" alt="">
+            <a href="javascript:;">按章节知识点浏览</a>
+        </div> -->
+        <div class="left return_a">
+            <a href="{:U('ResourceList/resourceIndex')}"><img src="__PUBLIC__/img/resource/return_img.png" alt="" />返回教师分享首页</a>
+        </div>
+        <div class="search">
+            <div class="search_left">
+
+                <button class="search_btn">搜索</button>
+                <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资源名称" autocomplete="off" style="width:400px">
+            </div>
+            <div class="search_right">
+                <a href="javascript:;" class="filter_a">高级检索</a>
+            </div>
+        </div>
+        <div class="text-center" id="count" style="width: 70%; position: absolute; bottom: -30px; left: 0; right: 0; margin: auto; font-size: 14px;">
+            <?php if($keyword!=''){
+                echo '京版云为您找到“'.$keyword.'”'.'相关结果约'.$count.'个';
+            };?>
+        </div>
+    </div>
+    <div class="mt30 relative">
+        <ul class="searchTopUl m0 searchTopUl_search">
+            <li class="left searchLi searchLiClick">
+                <p class="searchTop m0 searchTopLeft text-center backPosition">
+                    地区
+                </p>
+                    <div class="searchDiv searchDiv_search">
+                        <div class="searchBox dn">
+                            <div class="dib mr20">
+                                <label for="diqu">
+                                        <img src="__PUBLIC__/img/resource/checked1.png"  alt="" class="checkedBoxImg" id="xuekeImg">
+                                </label>
+                                <input type="checkbox" name="name" value="" class="dn" id="diqu">
+                                <span class="fz16">全选</span>
+                            </div>
+                            <volist name="district_con" id="district_con_item">
+                                <div class="dib mr20">
+                                    <label for="{$key}">
+                                        <if condition="($district_con_item.id eq $district)">
+                                            <img src="__PUBLIC__/img/resource/checked2.png" attr-data="district_{$district_con_item.id}" alt=""  class="checkedBoxImg choose">
+                                            <else/>
+                                            <img src="__PUBLIC__/img/resource/checked1.png" attr-data="district_{$district_con_item.id}" alt=""  class="checkedBoxImg">
+                                        </if>
+                                    </label>
+                                    <input type="checkbox" name="name" value="{$district_con_item.id}" class="dn" id="{$key}">
+                                    <span class="fz16">{$district_con_item.name}</span>
+                                </div>
+                            </volist>
+                        </div>
+                    </div>
+            </li>
+            <li class="left searchLi searchLiClick">
+                <p class="searchTop m0 searchTopLeft text-center backPosition">
+                    学科
+                </p>
+                <div class="searchDiv searchDiv_search">
+                    <div class="searchBox dn">
+                        <div class="dib mr20">
+                            <label for="xueke">
+                                    <img src="__PUBLIC__/img/resource/checked1.png"  alt="" class="checkedBoxImg" id="xuekeImg">
+                            </label>
+                            <input type="checkbox" name="name" value="" class="dn" id="xueke">
+                            <span class="fz16">全选</span>
+                        </div>
+                        <volist name="course_con" id="course_con_item">
+                            <div class="dib mr20">
+                                <label for="{$key}">
+                                    <if condition="($course_con_item.id eq $course)">
+                                        <img src="__PUBLIC__/img/resource/checked2.png" attr-data="course_{$course_con_item.id}" alt=""  class="checkedBoxImg choose">
+                                        <else/>
+                                        <img src="__PUBLIC__/img/resource/checked1.png" attr-data="course_{$course_con_item.id}" alt=""  class="checkedBoxImg">
+                                    </if>
+                                </label>
+                                <input type="checkbox" name="name" value="{$course_item.id}" class="dn" id="{$key}">
+                                <span class="fz16">{$course_con_item.name}</span>
+                            </div>
+                        </volist>
+                    </div>
+                </div>
+            </li>
+            <li class="left searchLi searchLiClick">
+                <p class="searchTop m0 searchTopLeft text-center backPosition">
+                    年级
+                </p>
+                <div class="searchDiv searchDiv_search">
+                    <div class="searchBox dn">
+                        <div class="dib mr20">
+                                <label for="nianji">
+                                        <img src="__PUBLIC__/img/resource/checked1.png"  alt="" class="checkedBoxImg" id="nianjiImg">
+                                </label>
+                                <input type="checkbox" name="name" value="" class="dn" id="nianji">
+                                <span class="fz16">全选</span>
+                        </div>
+                        <volist name="grade_list" id="grade_item">
+                            <div class="dib mr20">
+                                <label for="{$grade_item.id}">
+                                    <if condition="($grade_item['id'] eq $grade)">
+                                    <img src="__PUBLIC__/img/resource/checked2.png" attr-data="grade_{$grade_item.id}" alt=""  class="checkedBoxImg choose">
+                                    <else/>
+                                        <img src="__PUBLIC__/img/resource/checked1.png" attr-data="grade_{$grade_item.id}" alt=""  class="checkedBoxImg">
+                                    </if>
+                                </label>
+                                <input type="checkbox" name="name" value="" class="dn" id="{$grade_item.id}">
+                                <span class="fz16">{$grade_item.name}</span>
+                            </div>
+                        </volist>
+                    </div>
+                </div>
+            </li>
+            <li class="left searchLi searchLiClick">
+                <p class="searchTop m0 searchTopLeft text-center">
+                    教材分册
+                </p>
+                <div class="searchDiv searchDiv_search">
+                    <div class="searchBox dn">
+                        <div class="dib mr20">
+                            <label for="fence">
+                                    <img src="__PUBLIC__/img/resource/checked1.png"  alt="" class="checkedBoxImg" id="fenceImg">
+                            </label>
+                            <input type="checkbox" name="name" value="" class="dn" id="fence">
+                            <span class="fz16">全选</span>
+                        </div>
+                        <div class="dib mr20">
+                            <label for="a">
+                                <if condition="($school_term eq 1)">
+                                <img src="__PUBLIC__/img/resource/checked2.png" attr-data="textbook_1" alt="" class="checkedBoxImg choose">
+                                <else/>
+                                    <img src="__PUBLIC__/img/resource/checked1.png" attr-data="textbook_1" alt="" class="checkedBoxImg">
+                                </if>
+                            </label>
+                            <input type="checkbox" name="name" value="1" class="dn" id="a">
+                            <span class="fz16">上册</span>
+                        </div>
+                        <div class="dib mr20">
+                            <label for="b">
+                                <if condition="($school_term eq 2)">
+                                <img src="__PUBLIC__/img/resource/checked2.png" attr-data="textbook_2" alt=""  class="checkedBoxImg choose">
+                                <else/>
+                                    <img src="__PUBLIC__/img/resource/checked1.png" attr-data="textbook_2" alt=""  class="checkedBoxImg">
+                                </if>
+                            </label>
+                            <input type="checkbox" name="name" value="2" class="dn" id="b">
+                            <span class="fz16">下册</span>
+                        </div>
+                        <div class="dib mr20">
+                            <label for="c">
+                                <if condition="($school_term eq 3)">
+                                <img src="__PUBLIC__/img/resource/checked2.png" attr-data="textbook_3" alt=""  class="checkedBoxImg choose">
+                                    <else/>
+                                    <img src="__PUBLIC__/img/resource/checked1.png" attr-data="textbook_3" alt=""  class="checkedBoxImg">
+                                </if>
+                            </label>
+                            <input type="checkbox" name="name" value="3" class="dn" id="c">
+                            <span class="fz16">全一册</span>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+            <li class="left searchLi searchLiClick">
+                <p class="searchTop m0 searchTopLeft text-center">
+                    资源格式
+                </p>
+                <div class="searchDiv searchDiv_search">
+                    <div class="searchBox dn">
+                        <div class="dib mr20">
+                            <label for="geshi">
+                                    <img src="__PUBLIC__/img/resource/checked1.png"  alt="" class="checkedBoxImg" id="ziyuangeshi">
+                            </label>
+                            <input type="checkbox" name="name" value="" class="dn" id="geshi">
+                            <span class="fz16">全选</span>
+                        </div>
+                        <volist name="bj_resource_file_type" id="item_file">
+                            <div class="dib mr20">
+                                <label for="{$item_file.value}">
+                                    <if condition="($item_file['value'] == $type)">
+                                    <img src="__PUBLIC__/img/resource/checked2.png" attr-data="file_{$item_file.value}" alt="" class="checkedBoxImg choose">
+                                    <else/>
+                                        <img src="__PUBLIC__/img/resource/checked1.png" attr-data="file_{$item_file.value}" alt="" class="checkedBoxImg">
+                                    </if>
+                                </label>
+                                <input type="checkbox" name="name" value="{$item_file.value}" class="dn" id="{$item_file.value}">
+                                <span class="fz16">{$key}</span>
+                            </div>
+                        </volist>
+                    </div>
+                </div>
+            </li>
+            <li class="wEmpty left searchLi"></li>
+            <li class="left searchLi">
+                <p class="searchTop m0 text-center choose_search radioImgBox">
+                    <!-- <img src="__PUBLIC__/img/resource/radio1.png" alt="" id="a" attr-data="desc_default" class="radioImg mr3"> 默认排序 -->
+                </p>
+            </li>
+            <li class="left searchLi">
+                <p class="searchTop m0 text-center choose_search radioImgBox">
+                    <!-- <img src="__PUBLIC__/img/resource/radio2.png" alt="" id="b" attr-data="desc_desc" class="radioImg mr3"> 最新优先 -->
+                </p>
+            </li>
+        </ul>
+        <!-- <div class="searchDiv searchDiv_search"> -->
+            <!-- 地区 -->
+
+            <!-- 學科 -->
+
+            <!-- 年級 -->
+
+            <!-- 分冊 -->
+
+
+            <!-- 資源格式 -->
+
+        <!-- </div> -->
+    </div>
+    <div class="filter_right m0 block" style="width: 100%">
+        <include file="./Application/Home/View/ResourceList/resourceListIframe.html" />
+    </div>
+
+</div>
+<!--<div class="Pagination">{$page}</div>-->
+<div class="filtepopups">
+    <img src="__PUBLIC__/img/classManage/icon_delete.png" alt="" class="delete">
+    <p class="fp1">选择检索控制条件</p>
+    <p class="fp2">高级检索是利用多条件组合的方式，指定检索范围以达到检索的精准度要求，以下检索条件均为选填，您可以任意自由组合条件进行检索。</p>
+    <form action="{:U('BjResource/bjResourceSearch')}" method='get'>
+                <input type='hidden' name='m' value='Home'/>
+                <input type='hidden' name='c' value='ResourceList'/>
+                <input type='hidden' name='a' value='resourceList'/>
+
+        <div class="formdiv">
+            <label for="">关&nbsp; 键&nbsp; 字：</label>
+            <div class="rightdiv">
+                <input type="text" name='keyword' placeholder="请输入资源包含的关键字">
+            </div>
+        </div>
+        <div class="formdiv">
+            <label for="">资源格式：</label>
+            <div class="rightdiv">
+                            <select name="file_type">
+                                <option value="">--选择--</option>
+                                <volist name="bj_resource_file_type" id="item_file">
+                                    <option value="{$item_file.value}">{$key}</option>
+                                </volist>
+                            </select>
+            </div>
+        </div>
+        <div class="formdiv">
+            <label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：</label>
+            <div class="rightdiv">
+                <select name="course" id="t_course">
+                                    <option value="">--选择--</option>
+                                    <volist name="course_list" id="course_item">
+                                        <option value="{$course_item.id}">{$course_item.name}</option>
+                                    </volist>
+                                </select>
+            </div>
+        </div>
+        <div class="formdiv">
+            <label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</label>
+            <div class="rightdiv">
+                <select name="grade" id="t_grade">
+                                    <option value="">--选择--</option>
+                                    <volist name="grade_list" id="grade_item">
+                                        <option value="{$grade_item.id}">{$grade_item.name}</option>
+                                    </volist>
+                                </select>
+            </div>
+        </div>
+        <div class="formdiv">
+            <label for="">教材分册：</label>
+            <div class="rightdiv">
+                <select name="school_term" id="t_textbook">
+                                    <option value="">--选择--</option>
+                                    <option value="1">上册</option>
+                                    <option value="2">下册</option>
+                                    <option value="3">全一册</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="formdiv">
+            <label for="">上架时间：</label>
+            <div class="rightdiv">
+                <input type="text" class="select220" name='s_time' id="startTime" readonly>
+                &nbsp;至
+                <input type="text" class="select220 right" name='e_time'  id="endTime" readonly>
+            </div>
+        </div>
+        <div class="formdiv">
+            <label for="">作&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;者：</label>
+            <div class="rightdiv">
+                <input type="text" name='author' placeholder="请输入作者姓名">
+            </div>
+        </div>
+        <div class="formdiv text-center">
+            <button class="filterbtn">开始检索</button>
+        </div>
+    </form>
+</div>
+<div id="bg">
+    <?php if(!empty($keyword)){?>
+    <input type="hidden" attr-data="keyword_<?php echo $keyword?>" class="hidden">
+    <?php
+    }
+    if(!empty($chapter)){?>
+    <input type="hidden" attr-data="chapter_<?php echo $chapter?>" class="hidden">
+    <?php }
+    if(!empty($festival)){?>
+    <input type="hidden"  attr-data="festival_<?php echo $festival?>" class="hidden">
+    <?php }
+    if(!empty($s_time)){?>
+    <input type="hidden"  attr-data="stime_<?php echo $s_time?>" class="hidden">
+    <?php }
+    if(!empty($e_time)){?>
+    <input type="hidden" attr-data="etime_<?php echo $e_time?>" class="hidden">
+    <?php }
+    if(!empty($author)){?>
+    <input type="hidden"  attr-data="author_<?php echo $author?>" class="hidden">
+    <?php }?>
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/bjBesourceIf.js"></script>
+
+<script type="text/javascript">
+/****************高级检索**********************/
+        //点击搜索
+        $('.search_btn').click(function(){
+            var keyword=$('.search_text').val();
+            var string='';
+            if(keyword!=''){
+                string+='&keyword='+keyword;
+            }
+            var url="/index.php?m=Home&c=ResourceList&a=resourceList"+string;
+            location.href=url;
+        });
+        $(".search_text").keydown(function (evt) {
+            if (event.keyCode == "13") { //keyCode=13是回车键
+                var evt = (evt) ? evt : ((window.event) ? window.event : "")
+                var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+                $('.search_btn').click();
+            }
+        })
+
+        var query_con="{$condition_str}";
+        //点击排序
+        $('#sort_order').change(function(){
+            var order_val=$('#sort_order').val();
+            var url="{:U('ResourceList/resourceList')}&"+query_con+'&order='+order_val;
+            location.href=url;
+        });
+
+        var option='<option value=""></option>';
+
+	!function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+</script>
+
+<script>
+	$('.filter_a').on('click', function () {
+		$('#bg,.filtepopups').show();
+		$('body').css('overflow-y','hidden')
+	})
+	$('.more_left').on('click', function () {
+		$('#bg,.filtepopups_left').show();
+	})
+	$('.delete').click(function () {
+		$('#bg,.filtepopups,.filtepopups_left').hide();
+		$('body').css('overflow-y','auto')
+	})
+    $('.more').click(function(){
+		$(this).hide().parent().parent().find('.none').show()
+	})
+
+/*
+try{
+    if($.perfectBox.StudentPerfect()=='undefined'){
+
+    }
+}catch(err){
+    console.log('错误');
+};*/
+
+for(var i = 0;i<$('.ieSwfImg').length;i++){
+    $('.ieSwfImg').eq(i).parentsUntil('li').parent().addClass('ieSwfLi')
+}
+
+$('.ieSwfLi').click(function(){
+    var userAgent = navigator.userAgent;
+    var isOpera = userAgent.indexOf("Opera") > -1;
+    if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+        if(userAgent.indexOf("MSIE 9.0")>0||userAgent.indexOf("MSIE 10.0")){
+            $.NotifyBox.NotifyPromptOne('提示','暂不支持IE浏览器查看哦，<br>请选择其他浏览器！','确定');
+            return false;
+        }
+    }
+})
+</script>
+
+<script>
+    function return_ajax($page) {
+        if($page){
+            var page = $page;
+        }
+        var temp_arr = new Array();
+        $('.choose').each(function (i,val) {
+            temp_arr.push($('.choose').eq(i).attr('attr-data'))
+        });
+        var temp_arr_temp = new Array();
+        $('.hidden').each(function (i,val) {
+            temp_arr_temp.push($('.hidden').eq(i).attr('attr-data'))
+        });
+        var keyword = "<?php echo $keyword ;?>"
+        //console.log(temp_arr);return false;
+        $.ajax({
+            url: '/index.php?m=Home&c=ResourceList&a=ajaxScreening',
+            type: 'GET',
+            //dataType: 'json',
+            data:{'temp_arr':temp_arr,'p':page,'temp_arr_temp':temp_arr_temp,'keyword':keyword},
+            success: function (data) {
+                $('.block').html(data);
+                $("html,body").animate({scrollTop:0}, 300);
+            },
+            error: function () {
+                // alert('cuo');
+                $.NotifyBox.NotifyPromptOne('提示','错误，请刷新重试！','确定')
+            }
+        });
+    }
+
+    $('.checkedBoxImg').click(function () {
+             if($(this).attr('attr-data') == undefined){
+                return false
+            }else {
+                if($(this).hasClass('choose') == true){
+            $(this).removeClass("choose");
+        }else{
+            $(this).addClass("choose");
+        }
+        return_ajax();
+            }
+
+    });
+
+    $('#a').click(function () {
+        $(this).addClass("choose");
+        $('#b').removeClass("choose");
+        return_ajax();
+    });
+    $('#b').click(function () {
+        $(this).addClass("choose");
+        $('#a').removeClass("choose");
+        return_ajax();
+    });
+
+    function callback(data) {
+        var arr = data.split("&p=");
+        //console.log(arr);return false;
+        return_ajax(arr[1]);
+    }
+        $('#nianjiImg,#fenceImg,#xuekeImg,#lanmushuxing,#ziyuanleixing,#ziyuangeshi').click(function(){
+            if($(this).attr('src') == "/Public/img/resource/checked1.png"){
+                $(this).parent().parent().siblings().find('img').addClass('choose').attr('src','/Public/img/resource/checked2.png');
+                return_ajax();
+            }else{
+                $(this).parent().parent().siblings().find('img').removeClass('choose').attr('src','/Public/img/resource/checked1.png');
+                return_ajax();
+            }
+        })
+
+</script>

@@ -1,0 +1,271 @@
+<layout name="admin_layout"/>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<link href="__PUBLIC__/css/adminActivity.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+
+<style>
+	.left {
+		float: left;
+	}
+	
+	.right {
+		float: right;
+	}
+	
+    .list_avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+	
+	.left_child {
+		margin-bottom: 10px;
+	}
+	
+	.conLeft {
+		width: 10%;
+	}
+	
+	.conMiddle {
+		width: 20%;
+	}
+	
+	.conRight {
+		width: 70%;
+	}
+	
+	.download {
+		display: inline-block;
+		margin-left: 10px;
+	}
+	
+	.hideInput {
+		border: none;
+		background: none;
+		outline: none;
+	}
+	
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button {:session('btntheme')}">&lt; 返回</a>
+</div>
+
+<div class="example">
+    <span class="exampl">报名信息表</span>
+    
+    <div class="listview set-border padding10">
+        <div class="padding10">
+            邀请码：777777
+        </div>
+        <div class="padding10">
+        	教师姓名：{$data.teacher_name}
+        </div>
+        <div class="padding10">
+        	学科：英语
+        </div>
+        <div class="padding10">
+        	参评课题：田小胖田小胖
+        </div>
+        <div class="padding10">
+        	所属区县：河北&nbsp;省&nbsp;&nbsp;保定&nbsp;市&nbsp;&nbsp;清苑&nbsp;县/区
+        </div>
+        <div class="padding10">
+        	学校：田小胖学校
+        </div>
+        <div class="padding10">
+        	教师性别：女
+        </div>
+        <div class="padding10">
+        	年龄：18
+        </div>
+        <div class="padding10">
+        	学历：本科
+        </div>
+        <div class="padding10">
+        	职称：一级教师
+        </div>
+        <div class="padding10">
+        	电子邮箱：twl8063@163.com
+        </div>
+        <div class="padding10">
+        	学校地址：河北&nbsp;省&nbsp;&nbsp;保定&nbsp;市&nbsp;&nbsp;清苑&nbsp;县/区&nbsp;&nbsp;望京南湖南路88号
+        </div>
+        <div class="padding10">
+        	学校邮编：071100
+        </div>
+        <div class="padding10">
+        	办公电话：7777777
+        </div>
+        <div class="padding10">
+        	移动电话：17777777777
+        </div>
+        <div class="padding10">
+        	地方课程：数学
+        </div>
+        <div class="padding10">
+        	校本课程：数学一年级下册
+        </div>
+    </div>
+</div>
+
+<div class="example">
+	<span class="exampl">作品信息</span>
+    
+    <div class="listview set-border padding10">
+        <div class="padding10" style="border-bottom: 1px solid #ccc;">
+            标题：我是标题，我是田小胖
+        </div>
+        <div class="padding10">
+            学科：{$data.course_name}
+        </div>
+        <div class="padding10">
+            年级：{$data.grade}
+        </div>
+        <div class="padding10">
+            作品描述：
+        </div>
+        <div class="padding10">
+            作者寄语：
+			<input class="hideInput" placeholder="作者没有写寄语哦!" value="" readonly="readonly">
+        </div>
+    </div>
+    
+    <br />
+    
+    <div class="listview set-border padding10">
+        <div class="padding10">
+            <div class="content">
+                <div class="left conLeft">附件：</div>
+                <div class="left conMiddle"> 
+					<!-- 下边两行只是为了展示-->
+                    <a href="javascript:;"><span>查看第{$i}个资源</span></a>
+                    <a href="javascript:;" id="" class="download"><span>下载</span></a>
+                    
+                    <volist name="resource_list" id="resource_item" key="i" >
+                        <div class="left_child">
+                            <input type="hidden" value="{$oss_path}{$resource_item.resource_path}" attr_id="{$resource_item.vvid}" />
+                            <a href="javascript:;"><span>查看第{$i}个资源</span></a>
+                            <a href="javascript:;" id="" class="download"><span>下载</span></a>
+                        </div>
+                    </volist>
+                </div> 
+                <div class="left conRight">  
+                    <!-- 下边一行只是为了展示-->
+                    <img src="/Public/img/book/1/1.jpg" alt="">
+                    
+                    <switch name="data.type">
+                        <case value="image">
+                            <div style="width:100%;" class="resource_image">
+                                <img src="{$oss_path}{$data.file_path}" />
+                            </div>
+                        </case>
+                        <case value="pdf"> 
+                            <div style="width:100%;" class="resource_pdf">
+                                <a target="_blank" href="{$oss_path}{$data.file_path}">{$oss_path}{$data.file_path}</a>
+                            </div>
+                        </case>
+                        <case value="word"> 
+                            <div style="width:100%;" class="resource_word">
+                                <a target="_blank" href="{:U('Teach/downloadResource')}&url={$oss_path}{$data.file_path}">{$oss_path}{$data.file_path}</a>
+                            </div>
+                        </case>
+                        <case value="swf">
+                            <div style="width:100%;" class="resource_swf">
+                                <a target="_blank" href="{$oss_path}{$data.file_path}">{$oss_path}{$data.file_path}</a>
+                            </div> 
+                        </case> 
+                        <case value="ppt"> 
+                            <div style="width:100%;" class="resource_ppt">
+                                <a target="_blank" href="{:U('Teach/downloadResource')}&url={$oss_path}{$data.file_path}">{$oss_path}{$data.file_path}</a>
+                            </div>
+                        </case> 
+                        <case value="video"> 
+                            <div id='plv'></div>
+                            <script>
+                                var player = polyvObject('#plv').videoPlayer({
+                                    'vid' : '{$data.vid}'
+                                });
+                            </script>
+                        </case>
+                        <case value="audio">
+                            <!--<div id='plv'></div>-->
+                            <div id='plv'></div>
+                            <script>
+                                var player = polyvObject('#plv').videoPlayer({
+                                    'vid' : '{$data.vid}'
+                                });
+                            </script>
+                        </case>
+                        <default/>
+
+                        <div>
+                        </div>
+                    </switch>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-actions" style="text-align: center; ">
+	<button type="submit" class="button info">审核通过</button>
+	<button type="submit" class="button danger" id="refuseBtn">拒绝通过</button>
+</div>
+
+<br />
+
+<div class="example" id="refuseBox">
+	<div class="form_section" style="min-height: 130px">
+		<label for="title">拒绝理由</label>
+		<div class="input-control text full-size">
+			<textarea id="refuseReason" name="refuseReason" rows="2"> </textarea>
+		</div>
+	</div>
+	<br>
+	<div class="form-actions" style="text-align: left; ">
+		<button type="submit" class="button info">提交</button>
+	</div>
+</div>
+
+<script>
+    function img_teacher(obj) { 
+        obj.src = './Public/img/teacher.jpg';
+    } 
+    
+    resource_ytpe="{$data.type}";
+     var resource_path='';
+    //点击切换
+    $(".left_child").find('a').live('click',function(){  
+        switch(resource_ytpe){
+            case 'image':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_image").children('img').attr('src',resource_path);
+                break;
+            case 'video':
+            case 'audio':
+                resource_path=$(this).siblings('input').attr('attr_id');
+                var player = polyvObject('#plv').videoPlayer({
+                                'vid' : resource_path
+                            });
+                break;
+            case 'swf':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_swf").children('a').attr('href',resource_path).text(resource_path);
+                break;
+            case 'pdf':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_pdf").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                break;
+            case 'word':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_word").children('a').attr('href',"{:U('Teach/downloadResource')}"+"&url="+resource_path).text('点击查看'+resource_path);
+                break;
+            case 'ppt':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_ppt").children('a').attr('href',"{:U('Teach/downloadResource')}"+"&url="+resource_path).text('点击查看'+resource_path);
+                break; 
+        } 
+    });
+</script>
+

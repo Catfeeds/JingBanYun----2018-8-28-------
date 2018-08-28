@@ -1,0 +1,89 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		站内信统计管理
+		<span class="blueSpan">
+			<a href="javascript:;">站内信统计管理</a>>>
+			<a href="javascript:;">统计列表</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php/Admin/Monitor/regionCount" method="get">
+	<p class="blueText fs16">统计查询</p>
+	<input type="hidden" class="order_class" name="order" />
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+
+			<div class="cell">
+				<label>角色：</label>
+				<select id="province_list" class="input-control" name="roleMessage">
+					<option value="2" {$roleMessage==2?'selected':''} >教师</option>
+					<option value="3" {$roleMessage==3?'selected':''} >学生</option>
+					<option value="4" {$roleMessage==4?'selected':''} >家长</option>
+				</select>
+			</div>
+
+			<input type="hidden" class="order_class" name="order">
+		</div>
+	</div>
+</form>
+
+<br/>
+
+<p class="blueText fs16">列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center">用户姓名</th>
+			<th class="text-center">用户手机号</th>
+			<th class="text-center">消息总条数</th>
+			<th class="text-center">消息未读数量</th>
+			<th class="text-center">消息未读比率</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+		<volist name="list" id="data" empty="暂时没有账户数据">
+			<tr>
+				<td class="text-center" title="{$item.school_name}">
+					{$data.name}
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$data.telephone}
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$data.messageCount}
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$data.messageNum}
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$data['messageNum']/$data['messageCount']*100|round=###,2}%
+				</td>
+			</tr>
+		</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	$(document).ready(function () {
+
+		var temp_option="<option value='0'>-请选择-</option>";
+		//省份发生变化
+		$('#province_list').change(function(){
+			var roleMessage=$("#province_list").val();
+			window.location.href="{:U('Monitor/messageCount')}&roleMessage="+roleMessage;
+
+		});
+
+		$('.resetButton').click(function(){
+			window.location.href="{:U('Monitor/messageCount')}";
+		});
+	});
+</script>
+

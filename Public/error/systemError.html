@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>系统报错::京版云</title>
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <meta content='' name='description'>
+    <meta content='' name='keywords'>
+    <link href="Public/css/layout.css?v=5" rel="stylesheet" type="text/css" />
+    <style>
+        body {
+            display: block !important;
+        }
+        
+        body,html {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .outer {
+            width: 100%;
+            height: 100%;
+            background: url(Public/img/home/register.png) no-repeat center;
+            background-size: 100% 100%;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .inner {
+            text-align: center;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            height: 430px;
+        }
+        
+        .img_logo {
+            width: 400px;
+        }
+        
+        .btn { 
+            width: 150px;
+            display: block;
+            margin: 30px auto;
+            background-color: #28D0C1;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            color: white;
+            font-size: 20px;
+            padding: 6px 18px; 
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #209994;
+            color: white;
+            text-decoration: none;
+        }
+
+         @media screen and (max-width: 1000px) {
+            .outer {
+                background: none;
+            }
+
+            .img_logo {
+                width: 300px;
+                max-width: 80%
+            }
+
+            .inner {
+                height: 250px;
+            }
+
+            .btn {
+                display: none;
+            }
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="outer">
+        <div class="inner">
+            <img class="img_logo" src="Public/img/home/systemError.png" alt="" onclick="clickTime()">
+            <a class="btn" href="javascript:window.history.go(-1)">返回上一页</a>
+        </div>
+    </div>
+    <form name = "form">
+        <input type="hidden" name = "counter" value="0">
+        <input type="hidden" name = "time" value="0">
+    </form>
+
+    <script src="Public/js/external/jquery.js" type="text/javascript"></script>
+    <!-- 判断设备 -->
+    <script>
+        function CheckIsAndroid() {
+            var browser = {
+                    versions: function () {
+                        var u = navigator.userAgent,
+                            app = navigator.appVersion;
+                        return { //移动终端浏览器版本信息
+                            ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                            android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                            iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                            iPad: u.indexOf('iPad') > -1, //是否iPad
+                        };
+                    }(),
+                }
+            if (browser.versions.android)
+                return true;
+            return false;
+        }
+
+
+        function CheckIsIOS() {
+            var browser = {
+                versions: function () {
+                    var u = navigator.userAgent,
+                        app = navigator.appVersion;
+                    return { //移动终端浏览器版本信息
+                        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                        iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                        iPad: u.indexOf('iPad') > -1, //是否iPad
+                    };
+                }(),
+            }
+            if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+                return true;
+            }
+        }
+    </script>
+    <!-- 根据设备不同，引入meta -->
+    <script>
+        $(function(){
+            if (CheckIsIOS() || CheckIsAndroid()) {
+                console.log('移动端');
+                var meta='<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">';
+                $("head").prepend(meta);
+            } else {
+                console.log('PC')
+            }
+        })
+    </script>
+    <script>
+        var counter=document.form.counter;
+        var time = document.form.time;
+        function clickTime(){
+            if( counter.value == "0") time.value = new Date().getSeconds();
+            counter.value = parseInt(counter.value)+1;
+            if( counter.value == "5") {
+                if((new Date().getSeconds() - parseInt(time.value)) > 1) {
+                    console.log("超时");
+                } else {
+                    console.log("你已经单击了五次");//连续点击三次小于1秒钟有效
+                    $('.outer').hide()
+                } 
+                counter.value="0";  
+            }
+        }
+
+        function clearValue(){ 
+            console.log("超过两秒后value置为0"); 
+            counter.value="0";  
+        } 
+        var t = window.setInterval("clearValue()",2000); 
+    </script>
+</body>
+</html>

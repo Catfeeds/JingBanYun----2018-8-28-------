@@ -1,0 +1,51 @@
+<layout name="parent_layout_3"/>
+<link href="__PUBLIC__/css/learnPathList.css" type="text/css" rel="stylesheet">
+
+<style>
+	body {
+		overflow-y: scroll
+	}
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:history.go(-1)" title="返回" class="btn btnReturn3">返回</a>
+</div>
+
+<div class="wishContent">
+
+	<div class="search">
+		<form action="{:U('ParentLearnPath/studentMessage')}" method="get" class="m0">
+			<input type="hidden" name="student_id" value="{$student_id}">
+			<input type="hidden" name="class_id" value="{$classId}">
+			<input type="hidden" name="c" value="ParentLearnPath">
+			<input type="hidden" name="a" value="studentMessage">
+			<button class="search_btn">搜索</button>
+			<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入关键字">
+		</form>
+	</div>
+	<hr>
+	<!--寄语列表-->
+	<empty name="list">
+		<div class="wishEmpty">
+			该学生暂时没有教师寄语！
+		</div>
+	</empty>
+	<notempty name="list">
+		<ul class="wishUl">
+			<volist name="list" id="data" empty="">
+				<li class="wishLi">
+					<div class="wishLiTitle">
+						<img src="__PUBLIC__/img/learningPath/wishPoint.png" alt="" class="wishPoint">
+						<span class="wishSpan">{$data.create_at|date="Y-m-d",###}  {$data.week_name}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$data.create_at|date="H:i:s",###}</span>
+						<span class="right wishName">{$data.teacher_name}老师</span>
+					</div>
+					<div class="wishLiMain">
+						{$data.content}
+					</div>
+				</li>
+			</volist>
+		</ul>
+	</notempty>
+</div>
+
+

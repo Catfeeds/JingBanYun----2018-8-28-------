@@ -1,0 +1,485 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<!--<link href="__PUBLIC__/dataTable/css/jquery.dataTables.min.css"/>-->
+<link href="__PUBLIC__/dataTable/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/js/Base64.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter').css('min-height',boxHeight)
+	})
+</script>
+
+<div class="boxOutter">
+	<div class="tableTop borderBottom pb20 orangeBox">
+		<div class="tableTitle mr0">查询类型</div>
+		<span class="color333 ml15"><a href="{:U('QueryStatistics/testQuestions')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">试题</a></span>
+		<span class="ml15"><a  href="{:U('QueryStatistics/queryQuestions')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" >试卷</a></span>
+		<span class="color333 ml15"><a href="{:U('QueryStatistics/curriculumSystemList')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">课标知识体系</a></span>
+		<span class="color333 ml15"><a href="{:U('QueryStatistics/textbookKnowledgeList')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">教材知识体系</a></span>
+		<span class="color333 ml15"><a href="{:U('QueryStatistics/userList')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">用户</a></span>
+		<span class="color333 ml15"><a href="{:U('QueryStatistics/testEntryStatistics')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">试题录入统计</a></span>
+		<span class="color333 ml15"><a href="{:U('QueryStatistics/testAssignmentStatistics')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">试题分配统计</a></span>
+		<span class="color333 ml15"><a href="{:U('QueryStatistics/itemIndexingStatistics')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">试题标引统计</a></span>
+		<span class="color333 ml15"><a class="color3baeab" href="{:U('Multimedia/homeworkQuery')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">多媒体作业查询</a></span>
+		<span class="color333 ml15"><a href="{:U('Multimedia/homeworkStatistics')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">多媒体作业录入统计</a></span>
+	</div>
+
+	<div id="form" >
+		<div class="filterOutter">
+			<div class="filterInner">
+				<div class="filterBox">
+					<label for="">状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态</label>
+					<select name="status" id="status" class="inputCommon" >
+						<option value="0">请选择</option>
+						<volist name="statusList" id="statusList">
+							<option value="{$statusList.id}">{$statusList.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">版&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本</label>
+					<select name="version" id="version" onchange="getcharp()" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+						<volist name="versionData" id="versionDataList">
+							<option value="{$versionDataList.id}">{$versionDataList.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+					<select name="courseId" id="course" onchange="getcharp()" class="inputCommon" v-model="courseId" @change="">
+						<option value="0">请选择</option>
+						<volist name="courseList" id="courseList">
+							<option value="{$courseList.id}">{$courseList.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label>
+					<select name="grade" id="grade" onchange="getcharp()" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+						<volist name="grade" id="gradeList">
+							<option value="{$gradeList.id}">{$gradeList.grade}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</label>
+					<select name="school_term" id="school_term" onchange="getcharp()" class="inputCommon" v-model="">
+						<option value="">请选择</option>
+						<option value="1">上册</option>
+						<option value="2">下册</option>
+						<option value="3">全一册</option>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">章</label>
+					<select name="chapter" id="chapter" onchange="getFestival()" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">节</label>
+					<select name="festival" id="festival" onchange="getKnowledge()" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">录入人员</label>
+					<select name="creator" id="creator" class="inputCommon" >
+						<option value="0">请选择</option>
+						<volist name="creatorList" id="creatorList">
+							<option value="{$creatorList.creator_id}">{$creatorList.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">关&nbsp;键&nbsp;词</label>
+					<input name="keyword" type="text" class="inputCommon" id="" placeholder="请输入试题关键词" >
+				</div>
+				<div class="filterBox">
+					<label for="">类&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</label>
+					<select name="type" id="" class="inputCommon" >
+						<option value="0">请选择</option>
+						<volist name="type" id="typeList">
+							<option value="{$typeList.id}">{$typeList.name}</option>
+						</volist>
+					</select>
+				</div>
+			</div>
+			<div class="filterBtn">
+				<button class="btn" id="" onclick="getQueryParameter('form');query();">查询</button>
+				<button class="btn" id="" onclick="$('#form input,select').val('')">重置</button>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="tableTop mb20">
+		<div class="tableTitle">作业列表</div>
+		<?php if(in_array('QueryStatistics/testQuestionsPage',session('exercises_permissions'))){ ?>
+		<form action="/index.php?m=Exercise&c=QueryStatistics&a=testQuestionsPage&export=1" method="post" id="exportForm" target="iframeName1" onsubmit="$('#formCondition').val(JSON.stringify(parameters))" class="inlineForm">
+			<!--<button type="submit" name="button" class="btn" style="">导出</button>-->
+			<input name="formCondition" type="hidden" id="formCondition" value="">
+		</form>
+		<?php }?>
+	</div>
+<!-- 	<div class="borderBottom of mb15">
+		<iframe name="iframeName1" id="iframeID1" src="about:blank" width="0" height="0" frameborder="0" ></iframe>
+	</div> -->
+	<table class="tableCommon" id="table">
+		<thead>
+		<tr>
+			<th width="8%">序号</th>
+			<th width="8%">ID</th>
+			<th width="15%">录入时间</th>
+			<th width="8%">录入人员</th>
+			<th width="8%">状态</th>
+			<th width="8%">类别</th>
+			<th width="30%">内容</th>
+			<th width="15%">操作</th>
+		</tr>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+
+</div>
+
+<div class="fullBack"></div>
+<!-- 弹窗：添加备注 -->
+<div class="adminNotifyBox" id="addRemarks" style="z-index:100">
+	<div class="adminNotifyTitle">
+		添加备注
+	</div>
+	<div class="adminNotifyContent">
+		<textarea name="" id="" class="remarksMain" rows="6" placeholder="请输入返工的理由，限100字" maxlength="100"></textarea>
+	</div>
+	<p class="adminNotifyButton">
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksSure">完成</a>
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksCancel">取消</a>
+	</p>
+</div>
+
+
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+
+<script>
+	//全选
+	$('.checkAll').click(function(){
+		$('.checkOne').attr('checked',$(this)[0].checked)
+	});
+	$('.checkOne').live('click',function(){
+		var checkedLength = 0;
+		$('.checkOne').each(function(i,n){
+			if($(n)[0].checked)
+				checkedLength++
+		})
+		$('.checkAll')[0].checked = checkedLength == $('.checkOne').length;
+	})
+
+
+	!function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actend.min = datas; //开始日选好后，重置结束日的最小日期
+			actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+</script>
+<script src="__PUBLIC__/dataTable/js/jquery.dataTables.min.js"></script>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+	function loading(name) {
+		$('body').loading({
+			loadingWidth:240,
+			title:'正在查询...',
+			name:name,
+			discription:'这是一个描述...',
+			direction:'row',
+			type:'origin',
+			originBg:'#71EA71',
+			originDivWidth:30,
+			originDivHeight:30,
+			originWidth:4,
+			originHeight:4,
+			smallLoading:false,
+			titleColor:'#388E7A',
+			loadingBg:'#312923',
+			loadingMaskBg:'rgba(22,22,22,0.2)'
+		});
+	}
+
+	function removeLoad(name) {
+		removeLoading(name);
+	}
+</script>
+<script>
+	function getQueryParameter(divId)
+	{
+		parameters = {"bNeedKnowledge":true};
+		$('#'+divId+' select').each(function(i,n){
+			if($(n).val() != '' && $(n).val() != 0)
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		$('#'+divId+' input').each(function(i,n){
+			if($(n).val().trim() !== '')
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		parameters.cat = $('#cat').val();
+	}
+	var parameters = {"bNeedKnowledge":true};
+	parameters.cat = $('#cat').val();
+
+	var ignoreQuery = false;
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		ignoreQuery = true;
+	}
+	var oTable = $("#table").dataTable({
+
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=Multimedia&a=screeningByWork",//这个是请求的地址
+		"fnServerData": retrieveData ,
+		aoColumnDefs : [
+			{
+				"aTargets" :[1],
+				"mRender" : function(data, type, full){
+					var buttonStr = '';
+					buttonStr += "<a class='tableABtn' onclick='viewDetail("+full[1]+")' href='javascript:void(0)' >"+data+"</a>";
+					return buttonStr;
+				}
+
+			},
+			{
+				"aTargets" :[6],
+				"mRender" : function(data, type, full){
+					var buttonStr = '';
+					buttonStr += "<a class='tableABtn tdcolor' onclick='viewDetail("+full[1]+")' href='javascript:void(0)' >"+data+"</a>";
+					return buttonStr;
+				}
+
+			},
+			{
+				"aTargets" :　[7],
+				"mRender" : function(data, type, full){
+					var buttonStr = '';
+
+					buttonStr += "<a class='tableABtn' onclick='viewDetail("+full[1]+")' href='javascript:void(0)' >查看详情</a>";
+
+					return buttonStr;
+				}
+			}],
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		},
+
+	});
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		parameters = JSON.parse(base64decode(window.location.href.split('#')[1]));
+		oTable.fnPageChange(parameters.startIndex/parameters.pageSize);
+		delete parameters['startIndex'];
+		delete parameters['pageSize'];
+		//oTable.api().draw(false);
+	}
+	function query()
+	{
+		//table reset;
+		//oTable.api().draw(false);
+        oTable.fnUpdate();
+	}
+
+	function retrieveData( sSource,aoData, fnCallback) {
+		if(window.location.href.indexOf('#')!=-1)
+		{
+			if(ignoreQuery)
+			{
+				ignoreQuery =false;
+				return;
+			}
+		}
+		var queryData =  $.extend(true,{},parameters); //深度拷贝
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+		// queryData.sEcho = qq.sEcho;
+		if(!isBrowser)
+			window.location.hash = lastHash =  base64encode(JSON.stringify(queryData));
+		loading('loadData');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				if(typeof(result.aaData) == "undefined") $.NotifyBox.NotifyOne('提示',result.message || result.msg,'确定');if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+			},
+			error : function(msg) {
+				location.reload();
+			}
+		});
+	}
+</script>
+<script>
+	function viewDetail(id)
+	{
+		window.location.href = "{:U('Multimedia/homeworkDetails')}" + "&id="+ id;
+	}
+
+
+</script>
+<script>
+    String.prototype.format = function (args) {
+        if (arguments.length > 0) {
+            var result = this;
+            if (arguments.length == 1 && typeof (args) == "object") {
+                for (var key in args) {
+                    var reg = new RegExp("({" + key + "})", "g");
+                    result = result.replace(reg, args[key]);
+                }
+            }
+            else {
+                for (var i = 0; i < arguments.length; i++) {
+                    if (arguments[i] == undefined) {
+                        return "";
+                    }
+                    else {
+                        var reg = new RegExp("({[" + i + "]})", "g");
+                        result = result.replace(reg, arguments[i]);
+                    }
+                }
+            }
+            return result;
+        } else {
+            return this;
+        }
+    }
+
+    /******************************************************获取章************************************************************************/
+    function getcharp(){
+        var version_id = $('#version').val();
+        var course_id = $('#course').val();
+        var grade_id = $('#grade').val();
+        var school_term = $('#school_term').val();
+        $("#chapter option:not(:eq(0))").remove();
+        $("#festival option:not(:eq(0))").remove();
+        $("#knowledge option:not(:eq(0))").remove();
+        $.ajax({
+            type: 'POST',
+            url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+            cache: false,
+            data:{'version':version_id,'courseId':course_id,'grade_id':grade_id,'school_term':school_term,'level':1},
+            // async: false,
+            dataType:'json',
+            success: function(msg){
+                if(msg.status == 200){
+                    if(msg.data.length){
+                        var html = '';
+                        var	option =  "<option value='{0}'>{1}</option>";
+                        html += option.format(0,'请选择');
+                        $(msg.data).each(function (i, n) {
+                            console.log(msg.data.i)
+                            html += option.format(n.id, n.tree_point_name);
+                            $('#chapter').html(html);
+                        })
+                    }
+                }
+            }
+        })
+    }
+    /********************************************************获取节*******************************************************/
+    function getFestival(){
+        var id = $('#chapter').val();
+        $("#festival option:not(:eq(0))").remove();
+        $("#knowledge option:not(:eq(0))").remove();
+        $.ajax({
+            type: 'POST',
+            url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+            cache: false,
+            data:{'id':id,'level':2},
+            // async: false,
+            dataType:'json',
+            success: function(msg){
+                if(msg.status == 200){
+                    if(msg.data.length){
+                        var html = '';
+                        var	option =  "<option value='{0}'>{1}</option>";
+                        html += option.format(0,'请选择');
+                        $(msg.data).each(function (i, n) {
+                            console.log(msg.data.i)
+                            html += option.format(n.id, n.tree_point_name);
+                            $('#festival').html(html);
+                        })
+                    }
+                }
+            }
+        })
+    }
+</script>

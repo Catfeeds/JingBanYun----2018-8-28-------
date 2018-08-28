@@ -1,0 +1,78 @@
+<layout name="parent_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/learnPathList.css" type="text/css" rel="stylesheet">
+
+<style>
+	#contentWrapper {
+		overflow-x: auto;
+		padding-bottom: 40px;
+	}
+</style>
+
+<div class="resource_box">
+    <div class="resource_top">
+        <div class="search">
+           <button class="search_btn">搜索</button>
+            <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入学生姓名">
+        </div>
+    </div>
+
+    <div class="resource_bottom">
+        <ul class="row public_ul learnPath_ul">
+            <volist name="list" id="data" empty="暂时没有学生哦" key="i">
+                <li class="col-md-4 public_li learnPath_li" id="l_{$data.id}" >
+					<div class="lea_box_parent" style="background:url({$oss_path}public/web_img/Class/classBack2.png)no-repeat center;">
+                   		<p>
+                   			<img onerror="img_teacher(this)" src="{$data.img_url}" alt="" class="left">
+                   			<span class="left">{$data.name}</span>
+                   		</p>
+                   		<p>学生编号：{$data.student_id}</p>
+                   		<p>身份证号：{$data.id_card}</p>
+                   		<p>家长电话：{$data.parent_tel}</p>
+                   		<p class="text-center">
+                   			<a href="{:U('Parent/learningPath?id=')}{$data.id}" title="活动表现" class="button">活动表现</a>&nbsp;&nbsp;&nbsp;&nbsp;
+							<a href="{:U('Parent/learningPathData?id=')}{$data.id}" title="学习轨迹" class="button">学习轨迹</a>
+                   		</p>
+                    </div>
+                </li>
+            </volist>
+        </ul>
+        <div class="Pagination">{$page}</div>
+	</div>
+</div>
+
+<script>
+	function deleteChildren(id) {
+		if (confirm('删除后，与该学生相关的数据将同时被删除，请您再次确认')) {
+			$.get('index.php?m=Home&c=Parent&a=deleteMyChildren', {
+				id: id
+			}, function (res) {
+				if (res == 'success') {
+					window.location.reload();
+				} else {
+					alert('删除失败，请刷新页面后重新尝试');
+				}
+			})
+		}
+
+	}
+        function search()
+		{
+		    var keyword=$('.search_text').val();
+            var condition='';
+            if(keyword!=''){
+                condition='&keyword='+keyword;
+            }
+            
+            location.href = "index.php?m=Home&c=Parent&a=learnPathList" + condition;
+		}
+        $(".search_btn").click(function(){
+            search();
+        });
+		//回车搜索
+                $(".search_text").keydown(function (evt) {
+                    if (event.keyCode == "13") { //keyCode=13是回车键
+                        search();
+                    }
+                })
+</script>

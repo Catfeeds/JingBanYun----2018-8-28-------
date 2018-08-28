@@ -1,0 +1,911 @@
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+<script src='//player.polyv.net/script/polyvplayer.min.js'></script>
+<link rel="stylesheet" href="__PUBLIC__/css/bjResourceDetails.css?ver=6" >
+<style>
+	.dn{
+		display:none;
+	}
+</style>
+<div id="resourceDetailsDiv">
+	<div style="margin-bottom: 12px;" id="returnDiv">
+		<if condition="$from eq 'favor'">
+			<a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn2">返回</a>
+			<else />
+
+		</if>
+
+	</div>
+	<div class="res_details">
+		<img src="__PUBLIC__/img/resource/ziyuanxiangqing.png" alt="" class="mr5">资源详情
+	</div>
+	<div class="row">
+		<div class="col-md-8" id="mediafile">
+			<div class="example" data-text="资源内容">
+				<div class="listview set-border">
+					<div class='padding50'>
+							<div class="resourceDisplayFrame document dn">
+								<!--<a style="float: right;margin-bottom: 4px;" target="_blank" href="__PUBLIC__/pdfjs/viewer/viewer.html?f={$data[0].file_path}" class="btn btn-default">在新窗口打开</a>-->
+								<if condition="$contact_data[0]['flag']==2">
+									<iframe id="resourceFrame" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={$oss_path}<?php
+				                                                        $path = explode('.',basename($contact_data[0]['resource_path']));
+	                                                                    $path=$path[0].'.pdf';
+	                                                                    $path = 'bjresource/' .$data[0]['id'].'/'.$contact_data[0]['id'] .'/' .$path;
+	                                                                    echo $path;
+	                                                                    ?>" width="100%" height="500">
+									</iframe>
+									<else />
+									<iframe id="resourceFrame" frameborder="1" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={$REMOTE_ADDR}/Resources/jb/{$contact_data[0].resource_path}" width="100%" height="500">
+									</iframe>
+								</if>
+							</div>
+						    <div class="resourceDisplayFrame image dn">
+								<div class="browse_image">
+									<if condition="$contact_data[0]['flag']==1">
+										<img src="{$oss_path}{$contact_data.0.resource_path}" />
+										<else />
+										<img src="{$REMOTE_ADDR}/Resources/jb/{$contact_data.0.resource_path}" />
+									</if>
+								</div>
+							</div>
+							<div class="resourceDisplayFrame condensed dn">
+								<!--压缩包-->
+								<img class="rarImg" src="__PUBLIC__/img/resource/rar.jpg" />
+							</div>
+							<div class="resourceDisplayFrame swf dn">
+								<div id="flash" class="browse_swf">
+									<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">
+										<embed id="sfw_src" width="500" height="500" name="plugin" src="{$oss_path}{$contact_data.0.resource_path}" type="application/x-shockwave-flash">
+										<param name="loop" value="false">
+										<param name="movie" value="">
+									</object>
+
+								</div>
+							</div>
+							<div class="resourceDisplayFrame videoAudio dn">
+								<div id='plv'></div>
+								<div id="imgs"  style="display:none"><img src="__PUBLIC__/img/sinology/paypc.png" style="width:100%"></div>
+								<!--<script>
+									var player = polyvObject('#plv').videoPlayer({
+										'vid': '{$contact_data.0.vid}'
+									});
+								</script>-->
+							</div>
+
+
+							<div>
+							</div>
+						<div class="res_share">
+							<?php if(strpos($data[0]['course_name'],'传统文化') !== false && $is_allowed_browse['is_allowed_browse'] !==1) : ?>
+							<div class="video_text">
+							您可以免费试用<span class="text_color">1</span>分钟
+							</div>
+							<?php endif; ?>
+
+						<if condition="$user_id gt 0">
+							<if condition="$data[0]['iscollect'] eq 'yes'">
+								<img id="btnFavor" src="__PUBLIC__/img/resource/shoucang.png">
+								<else/>
+								<img id="btnFavor" src="__PUBLIC__/img/resource/2shoucang.png">
+							</if>
+						</if>
+					<span class="imgText">值得收藏</span>
+
+								<if condition="$data[0]['is_allowed_share'] eq 1">
+										<div class="shareImg" title="分享">
+	                                            <img src="__PUBLIC__/img/resource/fenxiang.png" alt="" title="分享"><span class="imgText">一键分享</span>
+	                               			<div class="bdsharebuttonbox" >
+	                               				<a href="javascript:;" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">&nbsp;新浪微博</a>
+	                               				<a href="javascript:;" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友">&nbsp;QQ好友</a>
+	                                                        <a href="javascript:;" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间">&nbsp;QQ空间</a>
+	                                                        <a href="javascript:;" class="bds_weixin" data-cmd="weixin" title="分享到微信">&nbsp;微信</a>
+	                                                </div>
+	                               		</div>
+								</if>
+	                                       <!-- <if condition="$data[0]['is_allowed_download']==1">
+	                                            <a target="_blank" href="" class="download_file" >
+	                                                <img src="__PUBLIC__/img/resource/xiazai.png" alt="" title="下载">
+	                                            </a>
+											</if>-->
+					</div>
+					</div>
+
+				</div>
+			</div>
+			<div class="classname">
+				<div class="res_name">
+					<span class="nameCode">
+						<span class="content_bg mt2 resName">{$data[0].resource_name}</span>
+						<?php if(strpos($data[0]['course_name'],'传统文化') !== false) : ?>
+						<div class="dib resCode">
+							<div class="dib content_bg"><img src="__PUBLIC__/img/sinology/erweima.png" alt=""  class="erweimaimg_icon"/></div>
+							<div class="p15 erweima_div codeDiv">
+								<p class="pb0 fz14">
+									利用京版云APP扫描二维码可缓存至移动端
+								</p>
+								<div id="erweimaimg">
+
+								</div>
+							</div>
+						</div>
+		                <?php endif; ?>
+					</span>
+				</div>
+				<div class="of">
+					<div class="left res_left">
+						<!-- 普通资源左边 -->
+		                            <span class="fw">资源格式：</span>
+		                            <span class="dataType">
+		                                <volist name="bj_resource_file_type" id="item_file">
+		                                    <if condition="$item_file['value'] eq $data[0]['file_type']">
+		                                        <option value="{$item_file['value']}">{$key}</option>
+		                                    </if>
+		                                </volist>
+		                            </span>
+						<br><span class="fw">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：</span>{$data[0].course_name}
+						<?php if(strpos($data[0]['course_name'],'传统文化') === false) : ?>
+						<?php if(!empty($data[0]['author'])) : ?><br><span class="fw">作&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;者：</span>{$data[0].author}<?php endif;?>
+						<br><span class="fw">所属年级分册章节信息：</span>
+						<?php if(!empty($dataInfos)) { for($s=0;$s<count($dataInfos);$s++){ $n=$s+1?>
+						<br><?php echo $n.'.'.$dataInfos[$s]?>
+						<?php } } ?>
+
+						<!--<volist name="data" id="dataInfos">
+						<br>{$key+1} {$dataInfos.grade}-{$dataInfos.term}-{$dataInfos.chapter}-{$dataInfos.festival}
+						</volist>-->
+						<?php endif ; ?>
+						<!-- <br><span class="fw">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</span>{$data[0].grade}
+						<br> <span class="fw">教材分册：</span>{$data[0].textbook}
+
+						<br><span class="fw">所属章节：</span>{$data[0].chapter} -->
+						<!-- 国学左边 -->
+
+						<!--<br><span class="fw">学科：传统文化</span>-->
+						<br><br>
+						<?php if($vipGroup != 3) :?>
+		                        <if condition="$data[0]['charge_status'] eq 2">
+																<p class="c_gray m0">
+																			原价：{$data[0].resource_price}元/套
+																</p>
+		                            <p class="fw">
+		                                    <img src="__PUBLIC__/img/sinology/money.png" alt="" /><span>{$data[0].real_price}元/套</span>
+		                            </p>
+		                            <if condition="$is_allowed_browse.is_allowed_browse eq 0">
+		                                <a href="{:U('OrderManage/BuyNowResources?id=')}{$data[0].id}" class="gopay_btn text-center" target="_blank">马上购买</a>
+		                            <elseif condition="$is_allowed_browse.is_allowed_browse eq 2"/>
+		                                <a href="{:U('OrderManage/rightPayment',array('order_sn'=>$is_allowed_browse['noPaymentOrder_sn']))}" class="gopay_btn text-center" target="_blank">去支付</a>
+									<else />
+										<a href="javascript:;" class="gopay_btn text-center gray">已购买</a>
+									</if>
+
+		                        </if>
+						<?php endif ;?>
+					</div>
+					<div class="left res_right">
+						<span class="fw" >资源描述：</span>
+						<p class="margin10" style="text-indent:2em">{$data[0].description}</p>
+						<?php if(strpos($data[0]['course_name'],'传统文化') === false) : ?>
+						<p class="border_top fw">知识点：</p>
+						<?php
+						$num = count($data);
+						for($i = 0;$i< $num; $i++) {
+							if(!empty($data[$i]['childknowledge'])){ ?>
+						<p><?php echo $i+1 . '.' . $data[$i]['childknowledge']; ?></p>
+						<?php }elseif(!empty($data[$i]['firstknowledge'])){ ?>
+						<p><?php echo $i+1 . '.' . $data[$i]['firstknowledge']; ?></p>
+						<?php }elseif(!empty($data[$i]['festival'])){ ?>
+						<p><?php echo $i+1 . '.' . $data[$i]['festival']; ?></p>
+						<?php }else{ ?>
+						<p><?php echo $i+1 . '.' . $data[$i]['chapter']; ?></p>
+						<?php }
+						} ?>
+						<?php endif ; ?>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	<!-- </div> -->
+		<div class="col-md-4">
+			<div class="dataLi1">
+				<img src="__PUBLIC__/img/resource/jingpinziyuan.png" alt="" class="tp3">
+				<span class="fw">资源文件：</span>
+				<select name="" id="" class="resourceSelect right">
+				</select>
+				<div class="resourceNum">共<span>0</span>个资源</div>
+			</div>
+
+			<ul id="data_load" class="row">
+				<volist name="contact_data" id="contact_data_item" >
+
+					<li>
+						<if condition="$contact_data_item['flag']==2">
+							<div class="mb5 dib resNameDiv"><a subType="{$contact_data_item['type']}" href="javascript:;" title="{$contact_data_item['file_name']}" {$i==1? 'class="browse_resource current_selected"': 'class="browse_resource"'}  attr_id="{$contact_data_item.vid}" attr_path="{$oss_path}<?php
+
+	                        if($data[0]['file_type'] == 'word' || $data[0]['file_type'] == 'ppt' || $data[0]['file_type'] == 'pdf' || ( $data[0]['file_type'] == 'mixed' && ($contact_data_item['type'] ==  'ppt' || $contact_data_item['type'] ==  'pdf' || $contact_data_item['type'] ==  'word') ))
+	                        {
+	                        $path = explode('.',basename($contact_data_item['resource_path']));
+	                        $path=$path[0].'.pdf';
+	                                        $path = 'bjresource/' .$data[0]['id'].'/'.$contact_data_item['id'] .'/' .$path;
+	                        echo $path;
+	                        }
+
+
+	                        ?>"  vid_status="<?php if($contact_data_item['charge_status']==1 || $is_allowed_browse['is_allowed_browse']==1){
+	                        echo '1'; }else{ echo '2'; } ?>" trial_status = "<?php echo $contact_data_item['trial_status']?>"><?php if($data[0]['putaway_time'] < SHOW_TIME) { echo "查看第".$i."个资源" ;}else{ echo $contact_data_item['file_name'] ;} ?></a></div>
+
+								<?php if(strpos($data[0]['course_name'],'传统文化') !== false && $is_allowed_browse['is_allowed_browse'] !== 1) : ?>
+																<if condition="$contact_data_item['charge_status']==1">
+																		<span class="FreeofCharge resBtnDiv">试听</span>
+																<else />
+																		<!-- <span class="Fufee resBtnDiv">付费</span> -->
+																</if>
+								<?php endif; ?>
+							<else />
+							<div class=" mb5 dib resNameDiv"><a subType="{$contact_data_item['type']}" href="javascript:;" title="{$contact_data_item['file_name']}" {$i==1? 'class="browse_resource current_selected"': 'class="browse_resource"'} attr_id="{$contact_data_item.vid}" attr_path="<?php
+	                        if(is_file($contact_data_item['resource_path']))
+	                         echo $contact_data_item['resource_path'];
+	                        else if(is_file('Resources/jb/' . $contact_data_item['resource_path']))
+	                         echo 'Resources/jb/' . $contact_data_item['resource_path'];
+	                        else
+	                         echo $oss_path .$contact_data_item['resource_path'];
+	                        ?>" vid_status="<?php if($contact_data_item['charge_status']==1 || $is_allowed_browse['is_allowed_browse']==1){
+	                        echo '1'; }else{ echo '2'; } ?>" trial_status = "<?php echo $contact_data_item['trial_status']?>" ><?php if($data[0]['putaway_time'] < SHOW_TIME) { echo "查看第".$i."个资源"; }else{ echo $contact_data_item['file_name'] ;} ?></a></div>
+								<?php if(strpos($data[0]['course_name'],'传统文化') !== false && $is_allowed_browse['is_allowed_browse'] !== 1) : ?>
+														<if condition="$contact_data_item['charge_status']==1">
+																<span class="FreeofCharge resBtnDiv">试听</span>
+														<else />
+																<!-- <span class="Fufee resBtnDiv">付费</span> -->
+														</if>
+								<?php endif; ?>
+						</if>
+						<if condition="$vipGroup == 3 && $data[0]['is_allowed_download']==1 && strpos($data[0]['course_name'],'传统文化') === false">
+							<div class=" pl5 dib resBtnDiv" style="padding-left:0"><a target="_blank" href="{:U('BjResource/downloadBjResource')}&id={$data[0].id}&url=<?php if(false === strpos($contact_data_item['resource_path'],'http://')) echo $oss_path; ?>{$contact_data_item.resource_path}"><img src="__PUBLIC__/img/xiazai.png" alt="">下载</a></div>
+						<else/>
+							<if condition="$data[0]['is_allowed_download']==1 && strpos($data[0]['course_name'],'传统文化') === false  && ($contact_data_item['charge_status']==1 || $is_allowed_browse['is_allowed_browse']==1) && $contact_data_item['vip_status'] == 0">
+								<if condition="$data[0]['flag']==1">
+									<div class=" pl5 dib resBtnDiv" style="padding-left:0"><a target="_blank" href="{:U('BjResource/downloadBjResource')}&id={$data[0].id}&url=<?php if(false === strpos($contact_data_item['resource_path'],'http://')) echo $oss_path; ?>{$contact_data_item.resource_path}"><img src="__PUBLIC__/img/xiazai.png" alt="">下载</a></div>
+									<else />
+									<div class=" pl5 dib resBtnDiv" style="padding-left:0"><a target="_blank" href="{:U('BjResource/downloadBjResource')}&id={$data[0].id}&url=<?php if(false === strpos($contact_data_item['resource_path'],'http://')) echo $oss_path; ?>{$contact_data_item.resource_path}"><img src="__PUBLIC__/img/xiazai.png" alt="" >下载</a></div>
+								</if>
+							</if>
+						</if>
+					</li>
+				</volist>
+			</ul>
+	                <notempty name='recommend_data'>
+	                    <div class="margin_top20 res_more">
+	                            <div class="left fw resource_a"><img src="__PUBLIC__/img/resource/jingpinziyuan.png" alt="">相关推荐</div>
+	                            <div class="border_top"></div>
+	                            <volist name="recommend_data" id="recommend_item">
+	                                <div class="tea_res of">
+																		<div class="dib resourceImgDiv left">
+																			<img src="{$oss_path}{$recommend_item.mobile_cover}" alt="" / class="resourceImg">
+																		</div>
+																		<div class="dib resourceNameDiv">
+	                                        <p>
+	                                            <switch name="recommend_item.file_type">
+	                                                <case value="pdf">
+	                                                    <img src="__PUBLIC__/img/resource/pdf.png" alt="" class="resource_typeimg">
+	                                                </case>
+	                                                <case value="word">
+	                                                    <img src="__PUBLIC__/img/resource/word.png" alt="" class="resource_typeimg">
+	                                                </case>
+	                                                <case value="ppt">
+	                                                    <img src="__PUBLIC__/img/resource/ppt.png" alt="" class="resource_typeimg">
+	                                                </case>
+	                                                <case value="image">
+	                                                    <img src="__PUBLIC__/img/resource/tupian.png" alt="" class="resource_typeimg">
+	                                                </case>
+	                                                <case value="condensed">
+	                                                    <img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="resource_typeimg">
+	                                                </case>
+	                                                <case value="swf">
+	                                                    <img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="resource_typeimg ieSwfImg">
+	                                                </case>
+	                                                <case value="video">
+	                                                    <img src="__PUBLIC__/img/resource/shipin.png" alt="" class="resource_typeimg">
+	                                                </case>
+	                                                <case value="audio">
+	                                                    <img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="resource_typeimg">
+	                                                </case>
+													<case value="mixed">
+														<img src="__PUBLIC__/img/app/icon_mixed.png" alt="" class="resource_typeimg">
+													</case>
+	                                            </switch>
+	                                            <a href="{:U('BjResource/bjResourceDetails')}&id={$recommend_item.id}">{$recommend_item.name}</a>
+	                                        </p>
+
+	                                            <volist name="source_arr" id="source_item" key="ikey">
+	                                                <if condition="$recommend_item['source'] eq $ikey">
+														<p>来源：
+	                                                    {$source_item}
+														</p>
+	                                                </if>
+	                                            </volist>
+	                                        <?php if(!empty($recommend_item['author'])){ echo "<p>创作者：".$recommend_item['author'] ."</p>"; } ?>
+	                                        <p>学科：{$recommend_item.course} <b>·</b> {$recommend_item.textbook} </p>
+										<?php if(strpos($recommend_item['course'],'传统文化') === false) : ?>
+
+										<?php endif; ?>
+	                                </div>
+															</div>
+	                            </volist>
+	                    </div>
+	                </notempty>
+		</div>
+	</div>
+</div>
+<div id="storytellingDiv">
+	<div class="borderBottomeee of">
+		<span class=" fz26">评书讲国学</span>
+		<span class="fz20">(11本国学经典,365讲音频)</span>
+		<p class="right dib fw m0">
+			<if condition="$data[0]['charge_status'] eq 2">
+				<span class="Price">标价: </span><img src="__PUBLIC__/img/sinology/money.png" alt="" /><span> {$data[0].real_price}元</span>/365讲
+				<if condition="$is_allowed_browse.is_allowed_browse eq 0">
+					<a href="{:U('OrderManage/BuyNowResources?id=')}{$data[0].id}" class="gopay_btn text-center goPayBtn ml10" target="_blank">马上购买</a>
+				<elseif condition="$is_allowed_browse.is_allowed_browse eq 2"/>
+					<a href="{:U('OrderManage/rightPayment',array('order_sn'=>$is_allowed_browse['noPaymentOrder_sn']))}" class="gopay_btn text-center goPayBtn ml10" target="_blank">去支付</a>
+				<else />
+					<a href="#" class="gopay_btn text-center goPayBtn gray ml10" style="width:100px">已购买,去查看</a>
+				</if>
+			</if>
+		</p>
+	</div>
+	<div class="pt10">
+		<p class="text-indent white-space">
+			由王封臣老师主讲的“评书讲国学”系列涵盖11本国学经典书籍，总计365讲音频。运用评书的方式讲解国学，有故事、有领读、有答疑，使得孩子学习国学不再晦涩难懂，单调无味。
+		</p>
+		<p class="text-indent">
+			王封臣，著名评书家、国学教育专家、作家、著名评书表演艺术家刘兰芳的入室弟子，北京市八一、宏志等多所中小学特聘国学教师。
+		</p>
+	</div>
+	<div class="storytellinglist">
+		<ul class="of p0">
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/laozi.png" alt="" / class="m10">
+					<p>
+						<span><b>￥18.00元</b>/30讲</span><span class="color999">点击试听</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/liji.png" alt="" / class="m10">
+					<p>
+						礼记<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/mozi.png" alt="" / class="m10">
+					<p>
+						墨子<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left mr0">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/shijing.png" alt="" / class="m10">
+					<p>
+						诗经<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/xunzi.png" alt="" / class="m10">
+					<p>
+						荀子<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/zhouyi.png" alt="" / class="m10">
+					<p>
+						周易<span class="color999">30讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/lunyu.png" alt="" / class="m10">
+					<p>
+						论语<span class="color999">35讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left mr0">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/shangshu.png" alt="" / class="m10">
+					<p>
+						尚书<span class="color999">35讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/zhuangzi.png" alt="" / class="m10">
+					<p>
+						庄子<span class="color999">35讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/hanfeizi.png" alt=""/ class="m10">
+					<p>
+						韩非子 <span class="color999">40讲</span>
+					</p>
+				</a>
+			</li>
+			<li class="left mr0">
+				<a href="#">
+					<img src="__PUBLIC__/img/resource/mengzi.png" alt="" / class="m10">
+					<p>
+						孟子 <span class="color999">40讲</span>
+					</p>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/queryLimit.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/bluebird.min.js"></script>
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.qrcode.min.js"></script>
+<!-- 国学 -->
+<script type="text/javascript">
+
+	var clickVal;
+	var urlId = <?=GUOXUE_ID?>;
+	var detailsUrl = window.location.href;
+	console.log(detailsUrl)
+	if(detailsUrl.indexOf(urlId)!=-1){
+		$('#resourceDetailsDiv').hide();
+		$('#storytellingDiv').show();
+		$('#contentWrapper').addClass('active')
+	}
+	$('.btnReturn2').click(function(){
+		if( detailsUrl.indexOf(urlId)!=-1){
+			if(detailsUrl.indexOf('#') == -1){
+				window.history.go(-1)
+				return false
+			}
+		}
+	})
+	window.onhashchange=function(){
+		hashChange()
+	}
+	var arrBook = [30,30,30,30,30,30,35,35,35,40,40];
+	var arrClick = [0];//此数组存放和
+	for(var m=1;m<=arrBook.length;m++) {
+		var sum = arrBook.slice(0,m).reduce(function(a,b){return a+b});
+		arrClick.push(sum);
+	}
+
+	$('.storytellinglist').find('li').click(function(){
+		clickVal = $(this).index();
+		$('#resourceDetailsDiv').show();
+		$('#storytellingDiv').hide();
+		$('#contentWrapper').removeClass('active');
+		var lineHeight = 31;//li的高度
+		var int;//整数
+		var rem;//余数
+		var bookNum;//几本书
+		bookNum = arrClick[clickVal];//取得和数组的位置
+		int = Math.floor(bookNum/pageNum);
+		rem = bookNum - pageNum*int;
+		$(".resourceSelect").val(int);
+		resLi.hide().slice(int*pageNum,(int+1)*pageNum).show();
+		if(clickVal != 0) {
+			$('#data_load').scrollTop(rem*lineHeight+5)
+		} else {
+			$('#data_load').scrollTop(0)
+		}
+		$('.browse_resource')[bookNum].click();//相对应的第一个资源点击
+	})
+</script>
+<!-- 资源分页 -->
+<script>
+	var resLi = $('#data_load').children('li');//资源列表
+	var resLength = resLi.length;//资源条数
+	var pageNum = 50;//每页显示多少条
+	var optionNum =  Math.ceil(resLength/pageNum);//一共有几页
+	//只有一页时，隐藏select
+	if(optionNum == 1) {
+		$(".resourceSelect").hide()
+	}
+	// 共有多少资源
+	$('.resourceNum').children('span').html(resLength);
+	// 给每个资源前加序号
+	resLi.each(function(){
+		var indexNum = $(this).index()+1;
+    	$(this).find('.browse_resource').prepend('<span class="resId left">'+indexNum+'.</span>');
+  	});
+	//动态增加option
+	for(i = 0; i < optionNum; i++){
+		var startId = i*pageNum + 1;//option前边的数
+		var endId = i*pageNum + pageNum;//option后边的数
+		$(".resourceSelect").append("<option value='"+i+"'>"+startId+"-"+endId+"</option>");
+	}
+	// 最后一个option的值改变
+	var arrLast = $(".resourceSelect option:last").html().split('-');
+	arrLast.splice(1,1,resLength);
+	if(arrLast[0] == arrLast[1]) {
+		$(".resourceSelect option:last").html(arrLast[0])
+	} else {
+		$(".resourceSelect option:last").html(arrLast[0]+"-"+arrLast[1])
+	}
+
+	// 第一页的li展示
+	resLi.slice(0, pageNum).show();
+	//option对应的li展示
+	$(".resourceSelect").change(function(){
+		var optionVal = $(this).val();
+		var optionText = $(".resourceSelect option[value="+optionVal+"]").html().split('-');
+		resLi.hide().slice(optionText[0]-1,optionText[1]).show();
+		$('.browse_resource')[optionText[0]-1].click();//相对应的第一个资源点击
+	})
+</script>
+
+<script>
+	var gofrom= "{$gofrom}";
+	if (gofrom=="share") {
+		var session = "<?php if($_SESSION['teacher']['id'] && $_SESSION['teacher']['id'] !== 'y'){echo $_SESSION['teacher']['id'];}elseif($_SESSION['student']['id']){echo $_SESSION['student']['id'];}elseif($_SESSION['parent']['id']){echo $_SESSION['parent']['id'];}elseif($_SESSION['teacher'] == 'youke'){echo '';}else{echo '';}?>";
+
+		if(!session){
+			$.NotifyBox.NotifyPromptTwoCtNc("提示",'请先登录或者注册','登录','注册',function () {
+				window.location.href = "<?php echo '/index.php?url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].U().'&id='.$data['0']['id'])?>" ;return false;
+			},function () {
+				window.location.href ="<?php echo U('Index/register').'&url='.base64_encode('http://'.$_SERVER['SERVER_NAME'].U().'&id='.$data['0']['id'])?>" ;return false;
+			})
+		}
+	}
+
+
+
+    function randomWord(randomFlag, min, max){
+        var str = "",
+            range = min,
+            arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+        // 随机产生
+        if(randomFlag){
+            range = Math.round(Math.random() * (max-min)) + min;
+        }
+        for(var i=0; i<range; i++){
+            pos = Math.round(Math.random() * (arr.length-1));
+            str += arr[pos];
+        }
+        return str;
+    }
+    var id="{$data[0].id}";
+
+    $('.download_file').click(function(){
+        var url=$('.current_selected').attr('attr_path');
+        $(this).attr('href',"{:U('BjResource/downloadBjResource')}&id="+id+"&url="+url);
+
+    });
+
+
+	var zanCount = 0;
+	var favorCount = 0;
+	var swfVideoPlay = '<button id="fullScreen">全屏</button><object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">\n\
+                        <param name="allowFullScreen" value="true"/><embed id="ebd" width="{1}" height="{2}" name="plugin" src="{0}" type="application/x-shockwave-flash"><param name="loop" value="false"><param name="movie" value="images/zf03320.swf"></object>';
+
+    vid_status = '';
+    trial_status = '';
+    //TODO:添加团体VIP查看
+    vipGroup = "{$vipGroup}";
+	$(function () {
+		if(detailsUrl.indexOf(urlId)!=-1){
+			hashChange();
+		}else {
+			$('#storytellingDiv').hide()
+		}
+
+		var type = "{$data[0].file_type}";
+		$(".browse_resource").click(function () {
+		    		 vid_status = $(this).attr('vid_status');//1为免费看或者已付费2为试看1分钟
+					 trial_status = $(this).attr('trial_status');//1为允许试用2为不允许试用
+                    $('.browse_resource').removeClass('current_selected');
+                    $(this).addClass('current_selected');
+                     $(this).addClass('active').parent('.resNameDiv').parent('li').siblings('li').find('.browse_resource').removeClass('active')
+			if(vipGroup != 3){
+                if(vid_status == '1'){
+                    $('.video_text').hide();
+                }else{
+                    $('.video_text').show();
+                }
+			}else {
+                $('.video_text').hide();
+			}
+			    $('.resourceDisplayFrame').addClass('dn');
+			    var subType = type;
+			    if(type == 'mixed')
+			    	subType = $(this).attr('subType');
+                switch (subType) {
+                    case 'video':
+                    case 'audio':
+                    	$('.videoAudio').removeClass('dn');
+                        var vid = $(this).attr('attr_id');
+					if(vipGroup != 3) {
+                        if (vid_status == '2' && trial_status == '1') {
+                            $('#plv').show();
+                            $('#imgs').hide();
+                            $('.video_text').show();
+                            var player = polyvObject('#plv').previewPlayer({  //观看1分钟的JS
+                                'width': '100%',
+                                'height': '500',
+                                'vid': vid
+                            });
+                        } else if (vid_status == '2' && trial_status == '2') {
+                            $('#plv').hide();
+                            $('#imgs').show();
+                            $('.video_text').hide();
+                        } else {
+                            $('#plv').show();
+                            $('#imgs').hide();
+                            var player = polyvObject('#plv').videoPlayer({
+                                'width': '100%',
+                                'height': '500',
+                                'vid': vid
+                            });
+                        }
+                    }else{
+                        $('#plv').show();
+                        $('#imgs').hide();
+                        var player = polyvObject('#plv').videoPlayer({
+                            'width': '100%',
+                            'height': '500',
+                            'vid': vid
+                        });
+					}
+                        break;
+                    case 'image':
+						$('.image').removeClass('dn');
+                        var file_path = $(this).attr('attr_path');
+                        $(".browse_image").children('img').attr('src', file_path);
+                        break;
+					case 'condensed':
+						$('.condensed').removeClass('dn');
+						break;
+                    case 'swf':
+						$('.swf').removeClass('dn');
+                        var file_path ;
+							if($(this).attr('attr_path').indexOf('http') != -1)
+								file_path = $(this).attr('attr_path');
+							else
+						        file_path = '{$oss_path}' + $(this).attr('attr_path');
+                        var videoEle = swfVideoPlay.format(file_path, 500, 500);
+                        $('.padding50').html(videoEle);
+                        $('#fullScreen').click(function () {
+                            if ($('#fullScreen').text() == '全屏') {
+                                $('#ebd').attr('width', document.body.clientWidth);
+                                $('#ebd').attr('height', $(window).height());
+                                $('#mediafile').attr('style', 'position:fixed;left:0px;top:0px;z-index=9999');
+                                $('#fullScreen').attr('style', 'z-index:10000');
+                                $('.header,.cloud1,.cloud_left,.cloud_right,.topbar,.fullscreen_ctrl,.nav,#slide_title').hide();
+                                $('#fullScreen').text('返回');
+                                $('#data_load').parent().hide();
+                            } else {
+                                $('#ebd').attr('width', 500);
+                                $('#ebd').attr('height', 500);
+                                $('#mediafile').attr('style', '');
+                                if (!store.get('fullscreen'))
+                                    $('.header,.cloud1,.cloud_left,.cloud_right,.topbar,#fullscreen_ctrl').show();
+                                else
+                                    $('#escfullscreen_ctrl').show();
+                                $('.nav,#slide_title').show();
+                                $('#fullScreen').text('全屏');
+                                $('#data_load').parent().show();
+                            }
+                        });
+                        break;
+                    case 'pdf':
+                    case 'word':
+                    case 'ppt':
+						$('.document').removeClass('dn');
+                        var file_path = $(this).attr('attr_path');
+                        $("#resourceFrame").attr('src', '__PUBLIC__/pdfjs/viewer/viewer.html?f=' + file_path);
+                        break;
+                }
+		});
+		window.onresize = function (){
+		for(var i = 0;i<$('.resourceNameDiv').length;i++){
+			if($('.resourceNameDiv').eq(i).height() == '56' && $(document).width()> '1221' ||$('.resourceNameDiv').eq(i).height() == '56' && $(document).width()<='992'){
+				$('.resourceNameDiv').eq(i).addClass('mt22')
+			}else if($('.resourceNameDiv').eq(i).height() == '56' && $(document).width()<='1220'){
+				$('.resourceNameDiv').eq(i).removeClass('mt22')
+			}
+		}
+	}
+		/*$('#btnZan').click(function () {
+			if (!canQuery()) {
+				$.notify({
+					title: '提示',
+					message: '请求过于频繁'
+				}, {
+					type: 'success',
+					placement: {
+						from: "top",
+						align: "center"
+					}
+				});
+				return false;
+			}
+			zanCount++;
+			$.get('__URL__/zanBjResource', {
+				id: '{$data[0].id}'
+			}, function (res) {
+				if (res == 'success') {
+					$('#btnZan').attr('src', '__PUBLIC__/img/icon/2dianzan.png');
+					$.notify({
+						title: '提示',
+						message: '点赞成功'
+					}, {
+						type: 'success',
+						placement: {
+							from: "top",
+							align: "center"
+						}
+					});
+				} else {
+					$('#btnZan').attr('src', '__PUBLIC__/img/icon/dianzan.png');
+					$.notify({
+						title: '提示',
+						message: res
+					}, {
+						type: 'warning',
+						placement: {
+							from: "top",
+							align: "center"
+						}
+					});
+				}
+			});
+		});*/
+
+		$('#btnFavor').click(function () {
+			if (!canQuery()) {
+				$.NotifyBox.NotifyPromptOne('提示','请求过于频繁','确定')
+                return false;
+			}
+			favorCount++;
+			$.get('__URL__/collectResource', {
+				id: '{$data[0].id}'
+			}, function (res) {
+				if (res == 'success') {
+				 	$('#btnFavor').attr('src', '__PUBLIC__/img/resource/shoucang.png');
+					$.NotifyBox.NotifyPromptOne('提示','收藏成功','确定')
+				} else {
+				 	$('#btnFavor').attr('src', '__PUBLIC__/img/resource/2shoucang.png');
+					$.NotifyBox.NotifyPromptOne('提示',res,'确定')
+				}
+			});
+		});
+		try {
+			$('.browse_resource')[0].click();
+		} catch (e) {;
+		}
+	});
+
+	function s2j_onPlayOver(){
+        if(vid_status == '2' && trial_status == '1'){
+            $('#plv').hide();
+            $('#imgs').show();
+		}
+	}
+
+    adjustLayout();
+
+	$(window).resize(adjustLayout);
+
+	function adjustLayout() {
+		var resourceFrame = $('#resourceFrame');
+
+		if (resourceFrame.length == 1) {
+			window.setTimeout(function () {
+				$('#contentWrapper').removeAttr('style');
+			}, 500)
+
+		}
+	}
+
+	function getClientWidthHeight() {
+		return {
+			"height": $("#etextbook_actionWrapper").height(),
+			"width": $("#etextbook_actionWrapper").width()
+		};
+	}
+	$('.erweimaimg_icon').hover(function(){
+	    var host = "<?php echo 'http://'.$_SERVER['SERVER_NAME'] ;?>";
+	    var resources_id =  "<?php echo $data['0']['id'] ;?>";
+        var src = host+"/ApiInterface/Version1_1/KnowledgeResource/resourceDetails?flag=1&id="+resources_id;
+        $('#erweimaimg').empty();
+        $('#erweimaimg').qrcode({
+            render: "canvas",
+            width: 150,
+            height: 150,
+            text: src
+        });
+		//console.log($('.erweima_div').children('img').attr('src'));
+		$('.erweima_div').show()
+	},function(){
+		$('.erweima_div').hide()
+	});
+</script>
+<script>
+	var contentheight = '申明一个变量，在有些获取不到contwrapper高度的页面执行一个函数'
+</script>
+
+<script src="__PUBLIC__/js/share/share.js"></script>
+<!--分享-->
+<script type="text/javascript" charset="utf-8">
+    window._bd_share_config = {
+        "common": {
+            "bdSnsKey": {},
+            "bdText": "自定义分享内容",
+            "bdDesc" : "自定义分享摘要",
+            "bdUrl" : "http://www.jingbanyun.com",
+            "bdPic" : "http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Index/ipad.png",
+            "bdMini": "2",
+            "bdMiniList": false,
+            "bdStyle": "0",
+            "bdSize": "16"
+        },
+        "share": {}
+    };
+
+    var id="{$data[0].id}";
+    $('.shareImg').hover(function(){
+        var activityImg = $('.browse_image').attr('src');
+        window.bdUrl = "http://{$_SERVER['HTTP_HOST']}/Home/BjResource/bjResourceDetails?id="+id+'&from=share';
+        //window.bdPic = "http://{$_SERVER['HTTP_HOST']}" + activityImg;
+
+        window._bd_share_main.init(window._bd_share_config);
+        $(this).children('.bdsharebuttonbox').stop().slideDown()
+    },function(){
+        $(this).children('.bdsharebuttonbox').slideUp()
+    })
+</script>
+
+<script>
+	for(var i = 0;i<$('.ieSwfImg').length;i++){
+	    $('.ieSwfImg').eq(i).parentsUntil('.tea_res').parent().addClass('ieSwfLi')
+	}
+
+	$('.ieSwfLi').click(function(){
+	    var userAgent = navigator.userAgent;
+	    var isOpera = userAgent.indexOf("Opera") > -1;
+	    if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+	        if(userAgent.indexOf("MSIE 9.0")>0||userAgent.indexOf("MSIE 10.0")){
+	            $.NotifyBox.NotifyPromptOne('提示','暂不支持IE浏览器查看哦，<br>请选择其他浏览器！','确定');
+	            return false;
+	        }
+	    }
+	})
+	function hashChange(){
+			if(window.location.href.indexOf('#') == -1){
+				$('#resourceDetailsDiv').hide();
+				$('#storytellingDiv').show();
+				if(typeof(player) != 'undefined'){
+					player.j2s_pauseVideo();
+				}
+				$('#contentWrapper').addClass('active')
+				$('#returnDiv').html('');
+			}else {
+				$('#resourceDetailsDiv').show();
+				$('#storytellingDiv').hide();
+				$('#contentWrapper').addClass('active');
+				$('#returnDiv').html('<a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn2">返回</a>');
+			}
+	}
+	$('.return_a,#gohome,#navThumImg5,#navThumImg1,#navThumImg2,#navThumImg3,#navThumImg4').click(function () {
+		var storage=window.localStorage;storage.removeItem("a");
+	})
+</script>

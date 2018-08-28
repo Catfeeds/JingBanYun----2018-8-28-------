@@ -1,0 +1,96 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<style>
+    .cellNew .cell1 {
+        width: 33.33% !important;
+    }
+
+    .cellNew .cell2 {
+        width: 66% !important;
+    }
+
+    .cellNew .cell2 .input-control {
+        width: 37.7% !important;
+    }
+
+    .laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+        box-sizing: content-box;
+    }
+
+    .qq-uploader {
+        max-height: 540px
+    }
+
+    #laydate_hms {
+        display: none !important;
+    }
+</style>
+
+<!--
+<div class="titleBox">
+	<p class="blueText fs18 underline1">班级管理</p>
+	<div class="underline2"></div>
+</div>
+-->
+
+<input type='submit' value='导出' class='blueBtn resetButton' />
+<p class="blueText fs16">订单列表</p>
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">序号</th>
+        <th class="text-center">订单编号</th>
+        <th class="text-center">订单状态</th>
+        <th class="text-center">儿童姓名</th>
+        <th class="text-center">报名手机号</th>
+        <th class="text-center">类型</th>
+        <th class="text-center">下单时间</th>
+        <!--<th class="text-center">操作</th>-->
+    </tr>
+    </thead>
+    <tbody id="body">
+    <volist name="list" id="item" key="key">
+        <tr>
+            <td class="text-center">
+                {$key}
+            </td>
+            <td class="text-center" title="{$item.school_name}">
+                {$item.order_sn}
+            </td>
+            <td class="text-center">
+                <?php if($item['order_status'] == 1){ ?>
+                待支付
+                <?php }else{ ?>
+                已支付
+                <?php }?>
+            </td>
+            <td class="text-center" title="{$item.school_code}">
+                {$item.name}
+            </td>
+            <td class="text-center">
+                {$item.phone}
+            </td>
+
+            <td class="text-center">
+                <if condition="$item['activity_type'] eq 1">儿童一人
+                    <elseif condition="$item['activity_type'] eq 2" />
+                        亲子家庭（一大人一儿童）
+                    <else />
+                        亲子家庭（二大人一儿童）
+                </if>
+            </td>
+            <td class="text-center">
+                {$item.create_time}
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<script>
+
+    $('.resetButton').click(function() {
+        window.location.href="/index.php/Wchat/WxTravelActivity/export";
+    })
+</script>

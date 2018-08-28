@@ -1,0 +1,204 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+	<div class="standardMain hrefContent">
+		<a href="{:U('Class/classList')}" class="returnBack">班级列表</a>
+		>
+		<span class="thePage">导入班级</span>
+	</div>
+
+	<div class="standardMain classContent tableContent mt0">
+		<div class="blueBox">
+			<span class="left blueTitle">批量导入班级</span>
+			<a href="{:U('Class/downloadClssDemo')}" class="blackText right" id="">
+				<img src="__PUBLIC__/img/admin/xiazaimoban.png" alt="" class="mr10">
+				下载班级导入模板
+			</a>
+		</div>
+
+		<div class="p20 fileBox mb30">
+			<label for="">文件地址：</label>
+			<input type="text" class="input-control fileAddress" placeholder="文件地址" id='address' readonly autocomplete="off">
+			<button title="浏览" class="commonBtnBlue operateBtn btnBig browse_button">浏览</button>
+			<input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+			<?php if(session('school.parent_id')!=0){ if(in_array('Class/importClass',session('school_permissions'))){   ?>
+			<button title="上传" class="commonBtnBlue operateBtn btnBig upload_file">上传</button>
+			<?php }}else{ ?>
+			<button title="上传" class="commonBtnBlue operateBtn btnBig upload_file">上传</button>
+			<?php }?>
+		</div>
+		
+		<div class="tableOutter mb30" id="listWrapperSuccessOutter" style="display: none">
+			<p class="tableTitle">导入成功列表</p>
+			<!--导入成功-->
+			<table id="listWrapperSuccess" class="table striped hovered border newTable">
+				<thead>
+					<tr>
+						<th class="text-center" style="width: 20%;">序号</th>
+						<th class="text-center" style="width: 40%;">年级</th>
+						<th class="text-center" style="width: 40%;">班级</th>
+					</tr>
+				</thead>
+				<tbody id="body"> 
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+		</div>
+
+		<div class="tableOutter" id="listWrapperFailOutter" style="display: none">
+			<button class="blueBtn commonBtnBlue right" id="download_failed_data">下载失败数据</button>
+			<p class="tableTitle left pt20">导入失败列表</p>
+			<!--导入失败-->
+			<table id="listWrapperFail" class="table striped hovered border newTable">
+				<thead>
+					<tr>
+						<th class="text-center" style="width: 16%;">序号</th>
+						<th class="text-center" style="width: 28%;">年级</th>
+						<th class="text-center" style="width: 28%;">班级</th>
+						<th class="text-center" style="width: 28%;">失败原因</th>
+					</tr>
+				</thead>
+				<tbody id="body"> 
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+		</div>
+
+	</div>
+</div>
+
+<!-- <script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByClassName("divTable");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="divTable tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="divTable";
+				}
+			}
+		} 
+	}
+	
+</script> -->
+
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<script src="__PUBLIC__/js/importCommon.js?v=1"></script>
+
+<script>    
+    var file_upload_url="{:U('Class/importClass')}";
+    var failed_tr='<tr>'+
+                    '<td class="text-center">1</td>'+
+                    '<td class="text-center">二年级</td>'+
+                    '<td class="text-center">二班</td>'+ 
+                    '<td class="text-center">错误原因</td>'+
+                    '</tr>';
+    var success_tr='<tr>'+
+                    '<td class="text-center">1</td>'+
+                    '<td class="text-center">二年级</td>'+
+                    '<td class="text-center">二班</td>'+  
+                    '</tr>';
+    var import_complete_data='';
+    
+    $(".upload_file").click(function(){
+        upload_file();
+    });
+    
+    function upload_management(msg){ 
+        if(msg.status==200){
+            import_complete_data=msg.data;
+            var data=msg.data;
+			if(data.failed != null) {
+				if (data.failed.length) {     //notice_message
+					for (var i = 0; i < data.failed.length; i++) {
+						var failed_tr_obj = $(failed_tr).clone(true);
+						$(failed_tr_obj).find('td').eq('0').text(i + 1);
+						$(failed_tr_obj).find('td').eq('1').text(data.failed[i].grade);
+						$(failed_tr_obj).find('td').eq('2').text(data.failed[i].class);
+						$(failed_tr_obj).find('td').eq('3').text(data.failed[i].notice_message);
+						$("#listWrapperFail").find('#body').append(failed_tr_obj);
+					}
+					$("#listWrapperFailOutter, #listWrapperFail").show();
+					console.log(111)
+					if ($('.tabLi').eq(0).hasClass('tabActive')) {
+						$('.tabLi').eq(1).addClass('tabActive');
+						$('#failTable').addClass('tabConActive');
+						$('.tabLi').eq(0).removeClass('tabActive');
+						$('#successTable').removeClass('tabConActive');
+					}
+
+
+				}
+			}
+			if(data.success != null) {
+				if (data.success.length) {
+					for (var i = 0; i < data.success.length; i++) {
+						var success_tr_obj = $(success_tr).clone(true);
+						$(success_tr_obj).find('td').eq('0').text(i + 1);
+						$(success_tr_obj).find('td').eq('1').text(data.success[i].grade);
+						$(success_tr_obj).find('td').eq('2').text(data.success[i].class);
+						$("#listWrapperSuccess").find('#body').append(success_tr_obj);
+					}
+					$("#listWrapperSuccessOutter, #listWrapperSuccess").show();
+					console.log(222)
+					if ($('.tabLi').eq(0).hasClass('tabActive')) {
+
+					} else {
+						$('.tabLi').eq(0).addClass('tabActive');
+						$('#successTable').addClass('tabConActive');
+						$('.tabLi').eq(1).removeClass('tabActive');
+						$('#failTable').removeClass('tabConActive');
+					}
+
+				}
+			}
+        }else{
+            $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+            return false;
+        }
+    } 
+    
+    $("#download_failed_data").click(function(){
+        var failed_data=import_complete_data.failed;
+        if(failed_data.length==0){
+            $.Notify({
+                caption: '提示',
+                content: '没有失败数据的数据可以导出!',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('Class/downloadImportErrorData')}");
+        form.attr('method','post');
+        
+        for(var i=0;i<failed_data.length;i++){  
+            var div=$("<div></div>");
+            var grade= $("<input type='hidden' name='grade[]'/>")
+            var class_= $("<input type='hidden' name='class[]'/>")  
+
+            $(grade).attr('value',failed_data[i].grade);
+            $(class_).attr('value',failed_data[i].class); 
+ 
+            div.append(grade);
+            div.append(class_);
+            form.append(div);
+        } 
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+</script>

@@ -1,0 +1,467 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=3.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<style>
+    #listWrapper img {
+        width: 50px !important;
+        height: 50px !important;
+        margin-right: 10px;
+        margin-top: 5px;
+    }
+
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+
+    .list_title {
+        width: 120px;
+        line-height: 50px;
+    }
+
+    .list_title a {
+        color: #2086bf !important;
+    }
+
+</style>
+
+<div style="margin-bottom: 12px;float:left;">
+    <a href="{:U('Admin/publishActivity')}" title="发布活动" class="button {:session('btntheme')}">创建活动</a>
+</div>
+
+<div style="text-align: right;">
+    <label>所属板块：</label>
+    <select id="class_name" style="margin-right: 50px">
+        <option value="0">-请选择-</option>
+        <volist name="class_list" id="class_data" empty="暂时没有活动">
+            <option value={$class_data.id}
+            <if condition="$class_data['id']==$cat">selected</if>
+            >{$class_data.class}</option>
+        </volist>
+    </select>
+
+    <span class="child_data_display">
+        <label>所属类型：</label>
+        <select id="child_class_name" style="margin-right: 50px">
+            <option value="0">-请选择-</option>
+        </select>
+    </span>
+
+    <label>状态：</label>
+    <select id="lock_status" class="input-control" style="margin-right: 50px">
+        <option value='0'>-请选择-</option>
+        <option value="1"
+        <if condition="$status==1">selected</if>
+        >审核未通过</option>
+        <option value="2"
+        <if condition="$status==2">selected</if>
+        >审核已通过</option>
+        <option value="3"
+        <if condition="$status==3">selected</if>
+        >审核已拒绝</option>
+    </select>
+    <label>创建时间：</label>
+    <input type="text" name="publishTime" class="input-control sendTime_id" id="datepicker" placeholder="创建时间"
+           autocomplete="off" value="{$publishTime|default=''}">
+    <div class="input-control text" data-role="input" style="width: 320px;">
+        <input class="activity_name" type="text" value="{$search_val}" placeholder="活动名称/活动内容/发布人">
+        <button class="button search_button"><span class="mif-search"></span></button><!--onclick="search()"-->
+    </div>
+
+
+
+</div>
+
+
+<input type="hidden" value="{$role}" id="role_id"/>
+
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">发布单位/人</th>
+        <th  style="width:15%">标题</th>
+        <!--<th class="text-center">支持上传附件</th>-->
+        <th class="text-center">面向</th>
+        <th class="text-center">创建时间</th>
+        <th class="text-center">活动开始时间</th>
+        <th class="text-center">活动结束时间</th>
+        <th class="text-center">所属板块</th>
+        <th class="text-center" style="width:8%">获赞数</th>
+        <th class="text-center" style="width:8%">观看数</th>
+        <th class="text-center" style="width:8%">收藏数</th>
+        <th class="text-center">状态</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data">
+        <tr id="l_{$data.id}">
+            <td class="text-center">
+                {$data.publisher_admin}
+            </td>
+            <td style="line-height:50px" class="text-center">
+                <img src="__ROOT__/Resources/socialactivity/{$data.short_content}" onerror="imageError(this)"
+                     style="float:left">
+                <h3 class="list_title" style="float:left">
+                    <a href="{:U('Admin/activityDetails?id=')}{$data.id}" title="{$data.title}">{$data.title}</a>
+                </h3>
+            </td>
+            <!--<td class="text-center">-->
+                <!--<if condition="$data.is_upload eq 1 OR $data.parent_id eq 5">-->
+                    <!--支持-->
+                    <!--<else/>-->
+                    <!--不支持-->
+                <!--</if>-->
+            <!--</td>-->
+            <td class="text-center" title='{$data.stakeholder}'>
+                {$data.stakeholder}
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">{$data.activitystart|date="Y-m-d H:i",###}</td>
+            <td class="text-center">{$data.activityend|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                {$data.class}
+            </td>
+            <td class="text-center">
+                {$data.zan_count}
+            </td>
+            <td class="text-center">
+                {$data.browse_count}
+            </td>
+            <td class="text-center">
+                {$data.favor_count}
+            </td>
+            <td class="text-center status">
+                <?php if ($data['status'] ==1): ?>
+                    审核中
+                <?php elseif($data['status'] ==2): ?>
+                    通过审核
+                <?php elseif($data['status'] ==3): ?>
+                    拒绝通过
+                <?php elseif($data['status'] ==4): ?>
+                    已下架
+                <?php else: ?>
+                    已发布
+                <?php endif ?>
+            </td>
+            <td class="text-center">
+
+                <?php if ($data['status'] ==1): ?>
+                    <button onclick="alldeny({$data.id},this,1)" class="button info">通过审核</button>
+                    <button onclick="alldeny({$data.id},this,2)" class="button danger">拒绝通过</button>
+                <?php elseif($data['status'] ==2): ?>
+                    <button onclick="alldeny({$data.id},this,5)" class="button downR">发布</button>
+                <?php elseif($data['status'] ==3): ?>
+                    <button onclick="alldeny({$data.id},this,4)" class="button downR">通过审核</button>
+                <?php elseif($data['status'] ==4): ?>
+                    <button onclick="alldeny({$data.id},this,5)" class="button downR">发布</button>
+                <?php else: ?>
+                    <button onclick="alldeny({$data.id},this,6)" class="button downR">下架</button>
+                <?php endif ?>
+
+                <in name="Think.session.admin.role" value="1,2">
+                    <a href="{:U('Admin/modifyActivity?id=')}{$data.id}" class="button info">修改</a>
+                    <button onclick="delete_data({$data.id},this)" class="button downR">删除</button>
+                    <button onclick="send_message({$data.id},this)" class="button downR" attr-title="{$data.title}">推送消息</button>
+                </in>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+<script>
+    function send_message(id,obj) {
+        if (confirm('是否进行推送')) {
+            var title = $(obj).attr('attr-title');
+            $.get('index.php?m=Home&c=Message&a=sendJbActivity', {"id": id,"title":title}, function (res) {
+                if (res == 'success') {
+                    alert('推送成功');
+                    //location.reload();
+                } else {
+                    alert('推送失败,请重新尝试');
+                    //location.reload();
+                }
+            })
+        }
+    }
+    function imageError(obj) {
+        $(obj).remove();
+    }
+    function approve(id, obj) {
+        $.get('index.php?m=Home&c=Admin&a=approveActivity', {id: id}, function (res) {
+            if (res == 'success') {
+                var temp_downR = "<button onclick=xiajia(" + id + ",this) class='button downR'>下架</button>";
+                $(obj).before(temp_downR);
+                $(obj).parent().siblings('.status').text('审核通过');
+                $(obj).siblings('.danger').remove();
+                $(obj).remove();
+            } else {
+                alert('通过失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+    //操作所有的状态
+    function alldeny(id, obj,status) {
+
+        $.get('index.php?m=Home&c=Admin&a=alldeny', {'id': id,'status':status}, function (res) {
+            if (res == 'success') {
+
+                if (status == 1) {
+                    var temp_downR = "<button onclick=alldeny(" + id + ",this,5) class='button downR'>发布</button>";
+                    $(obj).before(temp_downR);
+                    $(obj).parent().siblings('.status').text('通过审核');
+                }
+
+                if (status == 2) {
+                    $(obj).before(temp_downR);
+                    $(obj).parent().siblings('.status').text('拒绝通过');
+                }
+
+                if (status == 3) {
+                    var temp_downR = "<button onclick=alldeny(" + id + ",this,5) class='button downR'>发布</button>";
+                    $(obj).before(temp_downR);
+                    $(obj).parent().siblings('.status').text('已下架');
+                }
+                if (status == 4) {
+                    var temp_downR = "<button onclick=alldeny(" + id + ",this,5) class='button downR'>发布</button>";
+                    $(obj).before(temp_downR);
+                    $(obj).parent().siblings('.status').text('通过审核');
+                }
+
+                if (status == 5) {
+                    var temp_downR = "<button onclick=alldeny(" + id + ",this,3) class='button downR'>下架</button>";
+                    $(obj).before(temp_downR);
+                    $(obj).parent().siblings('.status').text('已发布');
+                }
+
+                if (status == 6) {
+                    var temp_downR = "<button onclick=alldeny(" + id + ",this,5) class='button downR'>发布</button>";
+                    $(obj).before(temp_downR);
+                    $(obj).parent().siblings('.status').text('已下架');
+                }
+
+
+
+                $(obj).siblings('.danger').remove();
+                $(obj).remove();
+
+            } else {
+               // alert('执行失败，请刷新页面后重新尝试');
+               // location.reload();
+            }
+        })
+    }
+
+    function deny(id, obj) {
+        $.get('index.php?m=Home&c=Admin&a=denyActivity', {id: id}, function (res) {
+            if (res == 'success') {
+
+                $(obj).parent().siblings('.status').text('已拒绝');
+                $(obj).siblings('.info').remove();
+                $(obj).remove();
+            } else {
+                alert('拒绝失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+    //删除
+    function delete_data(id, obj) {
+        if (confirm('你确定删除么')) {
+            $.get('index.php?m=Home&c=Admin&a=deleteActivity', {id: id}, function (res) {
+                if (res == 'success') {
+                    $(obj).parent().parent().remove();
+                    if ($('.odd') < 1) {
+                        location.reload();
+                    }
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+
+    function xiajia(id, obj) {
+        $.get('index.php?m=Home&c=Admin&a=downActivity', {id: id}, function (res) {
+            if (res == 'success') {
+                var role_id = $('#role_id').val();
+                if (role_id == 1) {
+                    $(obj).parent().siblings('.status').text('未通过审核');
+                    $(obj).remove();
+                } else if (role_id == 2) {
+                    var temp_info = "<button onclick=approve(" + id + ",this) class='button info'>通过</button>&nbsp;";
+                    var temp_danger = "<button onclick=deny(" + id + ",this) class='button danger'>拒绝</button>";
+                    $(obj).parent().siblings('.status').text('未通过审核');
+                    $(obj).before(temp_info);
+                    $(obj).before(temp_danger);
+                    $(obj).remove();
+                }
+
+            } else {
+                alert('下架失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    /**/
+
+    //板块发生变化
+    /*$('#class_name').change(function(){
+     var class_id=$('#class_name').val();
+     if(class_id==0){
+     return false;
+     }
+     location.href="{:U('Admin/activitySearch')}&flag=1&val="+class_id;
+     });*/
+
+    //点击搜索按钮,只能搜索中文不能含有空格等
+    $('.search_button').click(function () {
+        var str = $('.activity_name').val();
+        var cat = $('#class_name').val();
+        var status = $("#lock_status").val();
+        var date = $("#datepicker").val();
+        var child_class_name = $('#child_class_name').val();
+
+        /*if(str.match(/[^\u4e00-\u9fa5]/g))
+         {
+         alert("只能输入中文");
+         return false;
+         }else{}*/
+        var string = '';
+        if (str != '') {
+            string = '&val=' + str;
+        }
+        if (cat != 0) {
+            if (cat==5) {
+                if (child_class_name==0) {
+                    alert('请选择类型');
+                    return false;
+                }
+                string = string + '&child_class_name=' + child_class_name;
+            }
+
+            string = string + '&cat=' + cat;
+
+        }
+
+        if (status != 0) {
+            string = string + '&status=' + status;
+        }
+        if(date != 0) {
+            string = string + '&date=' + date;
+        }
+        location.href = "{:U('Admin/activitiesMgmt')}" + string;
+
+    });
+
+    $('#class_name').change(function(){
+        var pid = $(this).val();
+
+        $.get('index.php?m=Home&c=Admin&a=childPid', {"pid": pid}, function (res) {
+            var htmltmp = res.info;
+
+            var str = '';
+            for (var i=0;i<htmltmp.length;i++) {
+                str += '<option value="'+htmltmp[i].id+'">'+htmltmp[i].class+'</option>';
+            }
+            $("#child_class_name").find("option").remove();
+            $('#child_class_name').append(str);
+
+
+        });
+    });
+
+    var child_id = "{$child_class_name}";
+    var is_cat = "{$cat}";
+
+    $.get('index.php?m=Home&c=Admin&a=childPid', {"pid": is_cat}, function (res) {
+        var htmltmp = res.info;
+        if(htmltmp.length>0) {
+            var str = '';
+            for (var i=0;i<htmltmp.length;i++) {
+                if (htmltmp[i].id == child_id) {
+                    str += '<option value="'+htmltmp[i].id+'" selected>'+htmltmp[i].class+'</option>';
+                } else {
+                    str += '<option value="'+htmltmp[i].id+'">'+htmltmp[i].class+'</option>';
+                }
+            }
+
+            $('#child_class_name').append(str);
+        }
+
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns": [
+                {"width": "8%"},
+                {"width": "7%"},
+                {"width": "8%"},
+                {"width": "8%"},   //6
+                {"width": "8%"},    //
+                {"width": "8%"},
+                {"width": "5%"},    //81
+                {"width": "3%"},
+                {"width": "3%"},
+                {"width": "3%"},    //93
+                {"width": "5%"},
+
+                {"width": "27%"}    
+
+            ]
+        });
+        $("#datepicker").datepicker({
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+//			maxDate: '0',
+            yearRange: "1950:2050"
+        });
+
+    });
+    jQuery(function ($) {
+        $.datepicker.regional['zh-CN'] = {
+            clearText: '清除',
+            clearStatus: '清除已选日期',
+            closeText: '关闭',
+            closeStatus: '不改变当前选择',
+            prevText: '<上月',
+            prevStatus: '显示上月',
+            prevBigText: '<<',
+            prevBigStatus: '显示上一年',
+            nextText: '下月>',
+            nextStatus: '显示下月',
+            nextBigText: '>>',
+            nextBigStatus: '显示下一年',
+            currentText: '今天',
+            currentStatus: '显示本月',
+            monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthStatus: '选择月份',
+            yearStatus: '选择年份',
+            weekHeader: '周',
+            weekStatus: '年内周次',
+            dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+            dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+            dayStatus: '设置 DD 为一周起始',
+            dateStatus: '选择 m月 d日, DD',
+            dateFormat: 'yy-mm-dd',
+            firstDay: 1,
+            initStatus: '请选择日期',
+            isRTL: false
+        };
+        $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+    });
+</script>

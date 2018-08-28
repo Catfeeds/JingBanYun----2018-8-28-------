@@ -1,0 +1,262 @@
+<layout name="admin_layout_back" />
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		教师管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('Teacher/teacherList')}">教师管理</a>>>
+			<a href="javascript:;">修改教师信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form action="{:U('Teacher/updateTeacher')}" method="post" onsubmit="return checkInfo()">
+	<div class="blueBox">
+		<span class="blueText left fs16">修改教师</span>
+		<a href="javascript:;" class="blackText right" id="">
+			<img src="{$oss_path}public/web_img/Admin/icon-modify.png" alt="" class="mr10">
+			<input type='submit' value='保存修改' class='submitInput' />
+		</a>
+            <if condition="$data['school_id'] neq $otehr_school_id">
+                <a href="javascript:;" class="blackText right" style='margin-right:30px;' id="">
+			<img src="{$oss_path}public/web_img/Admin/icon-modify.png" alt="" class="mr10"> 
+                        <input type='button' class="remove_school submitInput" value='从学校移除'/>
+		</a>
+            </if>
+	</div>
+	<hr class="thin bg-grayLighter mb10">
+	<p class="left fs14" style="color: #999; width: 100%">注：不能任意修改教师的任教学科和学校信息，如要修改其任教学科需先解除教师与该学科任教班级的关联关系方可操作。如要修改教师的学校信息，修改学校信息后，该教师与之前教师的校建班级会自动解除任教关系。</p>
+
+	<div class="grid condensed cellBox">
+		<input type="hidden" value="{$data.id}" name="id" />
+		<div class="row cells3">
+			<div class="cell">
+				<label>省份：</label>
+				<select id="province_list" class="input-control" name="province">
+                                    <option value="0">-请选择-</option> 
+                                    <volist name="province_list" id="province_item" key="key">
+                                        <option value="{$province_item.id}" <if condition="$province_item['id']==$data['province_id']">selected="true"</if>  >{$province_item.name}</option>
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>市区：</label>
+				<select id="city_list" class="input-control" name="city">
+                                    <option value="0">-请选择-</option>
+                                    <volist name="city_list" id="city_item" key="key">
+                                        <option value="{$city_item.id}" <if condition="$city_item['id']==$data['city_id']">selected="true"</if>  >{$city_item.name}</option>
+                                    </volist> 
+				</select>
+			</div>
+			<div class="cell">
+				<label>区县：</label>
+				<select id="district_list" class="input-control" name="district">
+                                    <option value="0">-请选择-</option>
+				    <volist name="district_list" id="district_item" key="key">
+                                        <option value="{$district_item.id}" <if condition="$district_item['id']==$data['district_id']">selected="true"</if>  >{$district_item.name}</option>
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>学校：</label>
+				<select id="school_list" class="input-control" name="school_id">
+                                    <option value="0">-请选择-</option> 
+                                    <volist name="school_list" id="school_item" key="key">
+                                        <option value="{$school_item.id}" <if condition="$school_item['id']==$data['school_id']">selected="true"</if>  >{$school_item.name}</option>
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>学校代码：</label>
+                                <input type="text" class="input-control school_code" name="name" value="{$data.school_code}" placeholder="请输入学校代码" disabled="true">
+			</div>
+			<div class="cell">
+				<label>教师姓名：</label>
+				<input type="text" class="input-control teacher_name" name="name" value="{$data.teacher_name}" placeholder="请输入教师姓名">
+			</div>
+			<div class="cell">
+				<label>教师手机号：</label>
+				<input type="text" class="input-control telephone" name="telephone" value="{$data.telephone}" placeholder="请输入教师手机号">
+			</div>
+                    <div class="cell">
+				<label>密码：</label>
+				<input type="password" class="input-control password" name="password" value="{$data.password}" placeholder="请输入教师手机号">
+			</div>
+			<div class="cell">
+				<label>教师邮箱：</label>
+				<input type="text" class="input-control email" name="email" value="{$data.email}" placeholder="请输入邮箱">
+			</div>
+			<div class="cell">
+				<label>性别：</label>
+				<select id="sex" class="input-control" name="sex">
+					<option value="0">-请选择-</option>
+					<option value="男" <if condition="$data['sex'] eq '男'"> selected="true"</if> >男</option>
+					<option value="女" <if condition="$data['sex'] eq '女'"> selected="true"</if> >女</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>教师账号状态：</label>
+				<select id="account_status" class="input-control" name="account_status">
+					<option value="">-请选择-</option>
+					<option value="0" <if condition="$data['flag']==='0'"> selected="true"</if> >停用</option>
+					<option value="1" <if condition="$data['flag']==='1'"> selected="true"</if> >正常</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>教师审核状态：</label>
+				<select id="auth_status" class="input-control" name="auth_status">
+					<option value="">-请选择-</option>
+                                        <option value="0" <if condition="$data['auth_status']==='0'"> selected="true"</if> >待审核</option>
+					<option value="1" <if condition="$data['auth_status']==='1'"> selected="true"</if> >已审核</option>
+					<option value="2" <if condition="$data['auth_status']==='2'"> selected="true"</if> >拒绝</option>
+				</select>
+			</div> 
+		</div>
+		<div class="row cells1" style="margin-top:8px !important">
+			<div class="cell">
+				<label>简介：</label>
+				<textarea name="brief_intro" id="brief_intro" class="textarea-control" maxlength="40">{$data.brief_intro}</textarea>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="tabBox">
+	<ul class="left tabUl" id="tabUl">
+		<li class="tabLi tabActive">任教学科</li>
+		<li class="tabLi">教师的班级</li>
+	</ul>
+	<div class="tabCon" id="tabCon">
+		<iframe class="tabConActive" id="courseFrame" style="width: 100%;" frameborder="0" src="{:U('Teacher/teacherCourseList')}&id={$data.id}"></iframe>
+		<iframe id="classFrame" style="width: 100%;" frameborder="0" src="{:U('Teacher/teacherClassList')}&id={$data.id}"></iframe>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/importCommon.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+	window.onload = function () {
+		var tabs = document.getElementById("tabUl").getElementsByTagName("li");
+		var divs = document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for (var i = 0; i < tabs.length; i++) {
+			tabs[i].onclick = function () {
+				change(this);
+			}
+		}
+
+		function change(obj) {
+			for (var i = 0; i < tabs.length; i++) {
+				if (tabs[i] == obj) {
+					tabs[i].className = "tabLi tabActive";
+					divs[i].className = "tabConActive";
+				} else {
+					tabs[i].className = "tabLi";
+					divs[i].className = "";
+				}
+			}
+		}
+	}
+        $("#school_list").change(function(){
+            var id=$("#school_list").val();
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getSchoolInfo')}",
+                dataType:"json",
+                data:{'school_id':id},
+                success: function(msg){ 
+                    $(".school_code").val(msg.data.school_code);
+                }
+            })
+        });
+        
+        
+        var teacher_id="{$data.id}"; 
+        //学校移除学生
+        $('.remove_school').click(function(){ 
+            var status=2; 
+            var id=teacher_id; 
+            $.ajax({
+                type:"post",
+                url:"{:U('Teacher/updateApplyStatus')}",
+                dataType:"json",
+                data:{'id':id,'status':status},
+                success: function(msg){
+                    if(msg.status==200){  
+                        location.href="{:U('Teacher/teacherList')}";
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+
+	//检测
+	function checkInfo() {
+                var province,city,district,school;
+		var name, telephone, password, email, sex;
+                var account_status,auth_status,apply_status;
+                province=$("#province_list").val();
+                city=$("#city_list").val();
+                district=$("#district_list").val();
+                school=$("#school_list").val();
+                
+                account_status=$("#account_status").val();
+                auth_status=$("#auth_status").val(); 
+                 
+		telephone = $('.telephone').val();
+		password = $('.password').val();
+		email = $('.email').val();
+		sex = $("#sex").val()
+                if(account_status==''){
+                    $.NotifyBox.NotifyOne('注意','请选择账户状态！','确定');
+                    return false;
+                }
+                if(auth_status==''){
+                    $.NotifyBox.NotifyOne('注意','请选择教师认证状态！','确定');
+                    return false;
+                } 
+                
+		//联系人姓名
+		var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		var linkmanName = $('.teacher_name').val();
+		if (!regName.test(linkmanName)) {
+			$.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+			return false;
+		} else if (linkmanName == '') {
+			$.NotifyBox.NotifyOne('注意','姓名不能为空！','确定'); 
+			return false;
+		}
+		if (telephone == '') {
+			$.NotifyBox.NotifyOne('注意', '手机号不能为空！', '确定');
+			return false;
+		}
+		var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		if (!regMobilePhone.test(telephone)) {
+			$.NotifyBox.NotifyOne('注意', '手机号格式不正确！', '确定');
+			return false;
+		}
+		if (password == '') {
+			$.NotifyBox.NotifyOne('注意', '密码不能为空！', '确定');
+			return false;
+		}
+		if (email != '') {
+			var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+			if (!regEmail.test(email)) {
+				$.NotifyBox.NotifyOne('注意', '邮箱格式不正确！', '确定');
+				return false;
+			}
+		}
+		if (sex == 0) {
+			$.NotifyBox.NotifyOne('注意', '请选择性别！', '确定');
+			return false;
+		}
+		return true;
+	}
+</script>

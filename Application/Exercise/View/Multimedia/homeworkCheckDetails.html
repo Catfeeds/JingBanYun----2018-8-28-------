@@ -1,0 +1,265 @@
+<layout name="admin_layout_exercise"/>
+<style>
+    .filterInner {
+    overflow: hidden;
+    }
+
+    .filterBox label {
+    float: left;
+    width: 70px !important;
+    margin-right: 5px;
+    line-height: 18px
+    }
+
+    .filterBox .labelSpan {
+    max-width: 300px;
+    display: inline-block;
+    word-break: break-all;
+    line-height: 18px
+    }
+</style>
+
+<div class="boxOutter">
+	<div class="borderBottom pt20 of">
+		<span class="tabBtn left  text-center">试题详情</span>
+        <?php if(in_array('Multimedia/homeworkCheckMgmtZuoYieRuKu',session('exercises_permissions'))){ ?>
+		<button type="button" name="button" class="btn btn2 right mt_10" pid="{$id}" id="rukubiaoyin">入库</button>
+        <?php }?>
+        <?php if(in_array('Multimedia/homeworkCheckMgmtZuoYieFanGong',session('exercises_permissions'))){ ?>
+		<button type="button" name="button" class="btn btn2 right mt_10"  pid="{$id}" id="rukubatchReject">返工录入</button>
+        <?php }?>
+	</div>
+    <div class="filterOutter of pt10 pb0 borderNone mb0">
+		<div class="filterInner">
+			<div class="filterBox">
+				<label>单词/句子 -</label>
+				<span class="labelSpan">{$exercise_info.words}</span>
+			</div>
+			<div class="filterBox">
+				<label>翻&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;译 -</label>
+				<span class="labelSpan">{$exercise_info.analysis|html_entity_decode}</span>
+			</div>
+			<div class="filterBox">
+				<label>OSS地址 -</label>
+				<span class="labelSpan">{$exercise_info.subject_name}</span>
+			</div>
+		</div>
+		
+		<div class="filterInner">
+			<div class="filterBox">
+				<label>ID -</label>
+				<span class="labelSpan">{$id}</span>
+			</div>
+			<div class="filterBox">
+				<label>类&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型 -</label>
+				<span class="labelSpan">{$exercise_info.ordinary_type.name}</span>
+			</div>
+			<div class="filterBox">
+				<label>录入人员 -</label>
+				<span class="labelSpan">{$exercise_info.creator_name}</span>
+			</div>
+		</div>
+
+		<div class="filterInner">
+			<div class="filterBox">
+				<label>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态 -</label>
+				<span class="labelSpan">{$exercise_info.status}</span>
+			</div>
+			<div class="filterBox">
+				<label>录入时间 -</label>
+				<span class="labelSpan">{$exercise_info.create_at|date='Y-m-d H:i:s',###}</span>
+			</div>
+		</div>
+	</div>
+
+    <div class="of borderBottom pt10">
+        <span class="tabBtn left text-center">所属教材树</span>
+    </div>
+    <div class="filterOutter of pt10 pb20">
+        <div class="filterInner">
+            <div class="filterBox">
+                <label>版&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本 -</label>
+                <span class="labelSpan">{$exercise_info.version_name}</span>
+            </div>
+            <div class="filterBox">
+                <label>学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科 -</label>
+                <span class="labelSpan">{$exercise_info.cnamecourse}</span>
+            </div>
+            <div class="filterBox">
+                <label>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级 -</label>
+                <span class="labelSpan">{$exercise_info.grade_name}</span>
+            </div>
+        </div>
+        
+        <div class="filterInner">
+            <div class="filterBox">
+                <label>分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册 -</label>
+                <span class="labelSpan">{$exercise_info.section_name}</span>
+            </div>
+            <div class="filterBox">
+                <label>章 -</label>
+                <span class="labelSpan">{$exercise_info.chapter_name}</span>
+            </div>
+            <div class="filterBox">
+                <label>节 -</label>
+                <span class="labelSpan">{$exercise_info.festival_name}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="tableTop mb20">
+        <div class="tableTitle">作业追踪</div>
+    </div>
+    <table class="tableCommon borderNone mt20">
+        <thead>
+        <tr>
+            <th width="20%">序号</th>
+            <th width="20%">操作</th>
+            <th width="20%">操作人</th>
+            <th width="20%">时间</th>
+            <th width="20%">备注</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($exercise_info['track'] as $trackK => $trackV): ?>
+        <tr>
+            <td><?=$trackK+1?></td>
+            <td><?=$trackV['oper_name']?></td>
+            <td><?=$trackV['operator_name']?></td>
+            <td><?=$trackV['oper_time']?></td>
+            <td class="showDetails"><a href="javascript:"><?=$trackV['comment']?></a></td>
+        </tr>
+        <?php endforeach ?>
+        </tbody>
+    </table>
+</div>
+
+<!-- 弹窗：添加备注 -->
+<div class="adminNotifyBox" id="addRemarks" style="z-index:100">
+  <div class="adminNotifyTitle">
+    添加备注
+  </div>
+  <div class="adminNotifyContent">
+    <textarea name="" id="" class="remarksMain" rows="6" placeholder="请输入返工的理由，限100字" maxlength="100"></textarea>
+  </div>
+  <p class="adminNotifyButton">
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" pid="{$id}" state="<?= EXERCISE_STATE_REPROCESS ?>" id="addRemarksSure">完成</a>
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksCancel">取消</a>
+  </p>
+</div>
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+
+<script>
+
+  $('#rukubatchReject').click(function(){
+    $('#addRemarks').show();
+  });
+
+  //审核习题为返工
+  $('#addRemarksSure').unbind().click(function(){
+    var reason = $('.remarksMain').val().trim();
+    var id = $(this).attr('pid');
+    var state = $(this).attr('state');
+
+    if(reason == '')
+    {
+      $.NotifyBox.NotifyOne('提示','请输入返工录入原因','确定');
+    }
+    else {
+      $('.fullBack,#addRemarks').hide();
+      rukureject(id,state,reason);
+    }
+
+  })
+
+  function rukureject( id,state,reason ) {
+
+      var states = "<?= EXERCISE_STATE_REPROCESS ?>";
+    var requestdata={ids:id,state:states,additionalInfo:reason}
+    $.ajax({
+      type: "POST",   //访问WebService使用Post方式请求
+      url: 'index.php?m=Exercise&c=ExerciseState&a=setExerciseState', //调用WebService的地址和方法名称组合---WsURL/方法名
+      data:requestdata,
+      dataType:'json',
+      beforeSend:function () {
+        loading('createAnswerQuestions');
+      },
+      success: function(res){
+        console.log(res);
+        if (res.status ==200) {
+          removeLoad('createAnswerQuestions');
+          window.history.go(-1);
+        } else {
+          removeLoad('createAnswerQuestions');
+          showError(res.message);
+        }
+      }
+    });
+  }
+
+  // 添加备注
+  $('#addRemarksCancel').click(function(){
+    $('.fullBack,#addRemarks').hide();
+  })
+
+  //提交入库
+
+  $('#rukubiaoyin').click(function(){
+    var id = $(this).attr('pid');
+    var state = "<?= EXERCISE_STATE_INBOUND ?>";
+    $.NotifyBox.NotifyTwoCallTwo('入库','确定要入库吗？','确定','取消',function(){
+      var requestdata={ids:id,state:state}
+      $.ajax({
+        type: "POST",   //访问WebService使用Post方式请求
+        url: 'index.php?m=Exercise&c=ExerciseState&a=setExerciseState', //调用WebService的地址和方法名称组合---WsURL/方法名
+        data:requestdata,
+        dataType:'json',
+        beforeSend:function () {
+          loading('createAnswerQuestions');
+        },
+        success: function(res){
+          console.log(res);
+          if (res.status ==200) {
+            removeLoad('createAnswerQuestions');
+            window.history.go(-1);
+          } else {
+            removeLoad('createAnswerQuestions');
+            showError(res.message);
+          }
+        }
+      });
+    })
+  })
+
+  //重新标引
+  $('#chongxinbiaoyin').click(function(){
+    var id = $(this).attr('pid');
+    var state = "<?= EXERCISE_STATE_WAITMARK ?>";
+    $.NotifyBox.NotifyTwoCallTwo('标引','确定要重新标引吗？','确定','取消',function(){
+      var requestdata={ids:id,state:state}
+      $.ajax({
+        type: "POST",   //访问WebService使用Post方式请求
+        url: 'index.php?m=Exercise&c=ExerciseState&a=setExerciseState', //调用WebService的地址和方法名称组合---WsURL/方法名
+        data:requestdata,
+        dataType:'json',
+        beforeSend:function () {
+          loading('createAnswerQuestions');
+        },
+        success: function(res){
+          console.log(res);
+          if (res.status ==200) {
+            removeLoad('createAnswerQuestions');
+            window.history.go(-1);
+          } else {
+            removeLoad('createAnswerQuestions');
+            showError(res.message);
+          }
+        }
+      });
+    })
+  })
+
+
+</script>

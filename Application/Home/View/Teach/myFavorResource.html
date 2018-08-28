@@ -1,0 +1,59 @@
+<layout name="teacher_layout_2"/>
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=2.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/resourceList')}" title="返回教师资源分享" class="btn btnReturn2">返回</a>
+</div>
+<div class="main_opr">
+    <a href="{:U('Teach/publishResource')}" title="发布资源" class="btn btn-main-opr" >发布资源</a> &nbsp;
+    <a href="{:U('Teach/myPublishResource')}" title="我发布的资源" class="btn btn-main-opr">我发布的资源</a> &nbsp;
+    <a href="{:U('Teach/myFavorResource')}" title="我收藏的资源" class="btn btn-main-opr" style="background:#fff;color:#333">我收藏的资源</a>
+</div>
+<empty name="list">
+    <div class="emptyResult">您还没有收藏任何资源</div>
+</empty>
+<notempty name="list">
+    <table class="table striped hovered border">
+        <thead>
+        <tr>
+            <th class="text-center">发布单位/人</th>
+            <th>资源名称</th>
+            <th class="text-center">发布时间</th>
+            <th class="text-center">获赞数</th>
+            <th class="text-center">收藏数</th>
+            <th class="text-center">查看数</th>
+            <th class="text-center">教材分册</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="">
+            <tr id="l_{$data.id}">
+                <td class="text-center">
+                    <img class="list_avatar" src="__ROOT__/Uploads/Avatars/{$data.teacher_id}_t.jpg">
+                    {$data.teacher_name}
+                </td>
+                <td>
+                    <h3 class="list_title" title="{$data.name}">
+                        <a href="{:U('Teach/resourceDetails?f=favor&id=')}{$data.id}">{$data.name}</a>
+                    </h3>
+
+                    <div class="list_sub_title">{$data.description}</div>
+                </td>
+                <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+                <td class="text-center">
+                    {$data.zan_count}
+                </td>
+                <td class="text-center">
+                    {$data.favorite_count}
+                </td>
+                <td class="text-center">
+                    {$data.follow_count}
+                </td>
+                <td class="text-center">
+                    {$data.textbook}
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</notempty>

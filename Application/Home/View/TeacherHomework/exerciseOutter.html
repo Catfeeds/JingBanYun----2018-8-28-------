@@ -1,0 +1,289 @@
+<div class="exerciseOutter unPreviewOutter" style="display: none">
+    <div class="emptyDiv mt20" v-if="exerciseData == ''">
+        <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="" class="sorry">
+        <p>抱歉，暂无习题！</p>
+    </div>
+	<div class="exerciseBox" v-for="(exerciseList, index) in exerciseData" :id="exerciseList.id" :exerciseScore="exerciseList.count_score" :topicType="exerciseList.topic_type" :topic-type-name="exerciseList.topic_type_name" v-else>
+		<!-- 选择题/选择填空题 -->
+        <span v-if="exerciseList.is_topic_type == 1 || exerciseList.is_topic_type == 3">
+        	<input type="checkBox" v-if='selectExerciseList.indexOf(exerciseList.id)>-1' :checked=true class="chooseOne" @click="selectExercise($event)" :exerciseCourseId="exerciseList.subject" :exerciseId="exerciseList.id" :exerciseScore="exerciseList.count_score" :topicType="exerciseList.topic_type" :topic_type_name="exerciseList.topic_type_name">
+			<input type="checkBox" v-else class="chooseOne" @click="selectExercise($event)" :checked=false  :exerciseCourseId="exerciseList.subject" :exerciseId="exerciseList.id" :exerciseScore="exerciseList.count_score" :topicType="exerciseList.topic_type" :topic_type_name="exerciseList.topic_type_name">
+			<img src="__PUBLIC__/img/resource/shoucang.png" v-if='exerciseList.eid != null' alt="" class="favorImg active" @click="favorExercise($event)">
+			<!-- 这是未收藏的图片 -->
+			<img src="__PUBLIC__/img/resource/2shoucang.png" alt="" class="favorImg" v-else @click="favorExercise($event)">
+
+			<div class="exerciseLabel">题型：{{ exerciseList.topic_type_name }}（{{ exerciseList.count_score }}分）</div>
+			<div class="exerciseTitle" v-html="exerciseList.subject_name"></div>
+
+			<div class="exerciseMain" v-if="exerciseList.is_topic_type == 1">
+                <span class="option" v-for="(answerValue, answerIndex) in exerciseList.answer" :class="{w100:exerciseList.class_type != 2 && exerciseList.class_type != 4, w50:exerciseList.class_type == 2, w25:exerciseList.class_type == 4}">
+                    {{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;
+                    <span class="exerciseStem" v-html="answerValue"></span>&nbsp;&nbsp;
+                </span>
+            </div>
+            <div class="exerciseMain" v-if="exerciseList.is_topic_type == 3">
+                <span class="option" v-for="(answerValue, answerIndex) in exerciseList.answerList" :class="{w100:exerciseList.class_type != 2 && exerciseList.class_type != 4, w50:exerciseList.class_type == 2, w25:exerciseList.class_type == 4}">
+                    {{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;
+                    <span class="exerciseStem" v-html="answerValue"></span>&nbsp;&nbsp;
+                </span>
+            </div>
+
+			<div class="exerciseDifficulty">难度：{{ exerciseList.difficulty }}</div>
+			<div class="exerciseBtnBox">
+				<span class="errorRecovery" :exerciseId="exerciseList.id" @click="errorCorrection($event)">纠错</span>
+				<span class="showAnalysis">显示解析</span>
+				<div class="analysisOutter">
+					<div class="analysisBox">
+						<span class="analysisTitle">答案：</span>
+						<span class="analysisMain" v-if="exerciseList.is_topic_type == 1">{{ exerciseList.right_key }}</span>
+                        <span class="analysisMain analysisMainMuch" v-if="exerciseList.is_topic_type == 3" v-html="exerciseList.answer"></span>
+					</div>
+					<div class="analysisBox">
+						<span class="analysisTitle">解析：</span>
+						<span class="analysisMain analysis" v-html="exerciseList.analysis"></span>
+					</div>
+				</div>
+			</div>
+		</span>
+
+		<!-- 连线题 -->
+        <span v-else-if="exerciseList.is_topic_type == 4">
+            暂不支持连线题
+        </span>
+
+        <!-- 填空/作图/解答 -->
+        <span v-else-if="exerciseList.is_topic_type == 2 || exerciseList.is_topic_type == 5 || exerciseList.is_topic_type == 6">
+        	<input type="checkBox" v-if='selectExerciseList.indexOf(exerciseList.id)>-1' :checked=true class="chooseOne" @click="selectExercise($event)"  :exerciseCourseId="exerciseList.subject" :exerciseId="exerciseList.id" :exerciseScore="exerciseList.count_score" :topicType="exerciseList.topic_type" :topic_type_name="exerciseList.topic_type_name">
+			<input type="checkBox" v-else class="chooseOne" @click="selectExercise($event)" :checked=false  :exerciseCourseId="exerciseList.subject" :exerciseId="exerciseList.id" :exerciseScore="exerciseList.count_score" :topicType="exerciseList.topic_type" :topic_type_name="exerciseList.topic_type_name">
+			<img src="__PUBLIC__/img/resource/shoucang.png" v-if='exerciseList.eid != null' alt="" class="favorImg active" @click="favorExercise($event)">
+			<!-- 这是未收藏的图片 -->
+			<img src="__PUBLIC__/img/resource/2shoucang.png" alt="" class="favorImg" v-else @click="favorExercise($event)">
+
+            <div class="exerciseLabel">题型：{{ exerciseList.topic_type_name }}（{{ exerciseList.count_score }}分）</div>
+			<div class="exerciseTitle" v-html="exerciseList.subject_name"></div>
+			<div class="exerciseDifficulty">难度：{{ exerciseList.difficulty }}</div>
+			<div class="exerciseBtnBox">
+				<span class="errorRecovery" :exerciseId="exerciseList.id" @click="errorCorrection($event)">纠错</span>
+				<span class="showAnalysis">显示解析</span>
+				<div class="analysisOutter">
+					<div class="analysisBox">
+						<span class="analysisTitle">答案：</span>
+						<span class="analysisMain analysisMainMuch" v-html="exerciseList.answer"></span>
+					</div>
+					<div class="analysisBox">
+						<span class="analysisTitle">解析：</span>
+						<span class="analysisMain analysis" v-html="exerciseList.analysis"></span>
+					</div>
+				</div>
+			</div>
+        </span>
+
+        <!-- 其他题 -->
+        <span v-else>
+            其他题型
+        </span>
+
+	</div>
+</div>
+
+<div class="exerciseOutter previewOutter">
+	<div class="emptyDiv mt20" v-if="voiceData == ''">
+        <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="" class="sorry">
+        <p>抱歉，暂无习题！</p>
+    </div>
+	<div class="exerciseBox" v-for="(voiceD, index) in voiceData" :id="voiceD.id" :exerciseScore="voiceD.point" :topicType="voiceD.category" :topic-type-name="voiceD.name" v-else>
+
+		<!-- 跟读词汇/跟读句子 -->
+		<span v-if="voiceD.category == 1 || voiceD.category == 2">
+			<input type="checkBox" v-if='selectExerciseList.indexOf(voiceD.id)>-1' :checked=true class="chooseOne" @click="selectExercise($event)"  :exerciseCourseId="voiceD.subject" :exerciseId="voiceD.id" :exerciseScore="voiceD.point" :topicType="voiceD.category" :topic_type_name="voiceD.category_name" >
+			<input type="checkBox" v-else class="chooseOne" @click="selectExercise($event)" :checked=false :exerciseId="voiceD.id" :exerciseScore="voiceD.point" :topicType="voiceD.category" :topic_type_name="voiceD.category_name" >
+
+			<div class="exerciseLabel">{{ voiceD.category_name}}（{{ voiceD.point }}分）</div>
+			<div class="wordMain previewBox">
+				<img src="__PUBLIC__/img/homeworkV1/videoGray36×30.png" :audioSrc="voiceD.url" alt="" class="videoPrimary" @click="play($event)">
+				<div class="wordRight">
+					{{ voiceD.name }}
+				</div>
+			</div>
+			<audio :src="voiceD.url" class="audioHide"></audio>
+			<div class="exerciseBtnBox">
+				<span class="errorRecovery" :exerciseId="voiceD.id" @click="errorCorrection($event)">纠错</span>
+				<span class="showAnalysis" v-if="voiceD.category == 1">显示解析</span>
+				<div class="analysisOutter">
+					<div class="analysisBox">
+						<span class="analysisTitle">解析：</span>
+						<span class="analysisMain analysis">{{ voiceD.translation }}</span>
+					</div>
+				</div>
+			</div>
+		</span>
+
+		<!-- 观看视频 -->
+		<span v-else-if="voiceD.category == 3">
+			<input type="checkBox" v-if='selectExerciseList.indexOf(voiceD.id)>-1' :checked=true class="chooseOne" @click="selectExercise($event)"  :exerciseCourseId="voiceD.subject" :exerciseId="voiceD.id" :exerciseScore="voiceD.point" :topicType="voiceD.category" :topic_type_name="voiceD.category_name" >
+			<input type="checkBox" v-else class="chooseOne" @click="selectExercise($event)" :checked=false :exerciseId="voiceD.id" :exerciseScore="voiceD.point" :topicType="voiceD.category" :topic_type_name="voiceD.category_name" >
+
+			<div class="exerciseLabel">{{ voiceD.category_name}}（{{ voiceD.point }}分）</div>
+			<video :src="voiceD.url" class="outterVideo" controls preload controlsList="nodownload"></video>
+			<div class="exerciseBtnBox">
+				<span class="errorRecovery" :exerciseId="voiceD.id" @click="errorCorrection($event)">纠错</span>
+			</div>
+		</span>
+
+		<!-- 观看课文 -->
+		<span v-else-if="voiceD.category == 4">
+			<input type="checkBox" v-if='selectExerciseList.indexOf(voiceD.id)>-1' :checked=true class="chooseOne" @click="selectExercise($event)"  :exerciseCourseId="voiceD.subject" :exerciseId="voiceD.id" :exerciseScore="voiceD.point" :topicType="voiceD.category" :topic_type_name="voiceD.category_name" >
+			<input type="checkBox" v-else class="chooseOne" @click="selectExercise($event)" :checked=false :exerciseId="voiceD.id" :exerciseScore="voiceD.point" :topicType="voiceD.category" :topic_type_name="voiceD.category_name" >
+
+			<div class="exerciseLabel">{{ voiceD.category_name}}（{{ voiceD.point }}分）</div>
+			<img :src="voiceD.url" alt="" class="outterImage" title="点击可查看大图" onclick="zoomIn(this)">
+			<div class="exerciseBtnBox">
+				<span class="errorRecovery" :exerciseId="voiceD.id" @click="errorCorrection($event)">纠错</span>
+			</div>
+		</span>
+
+		<!-- 其他题型 -->
+		<span v-else>
+			其他题型
+		</span>
+		
+	</div>
+</div>
+
+
+<div class="publishBoxFixed">
+	<div class="title">选择试题</div>
+	<div class="numScore">
+		<div class="numBox">
+			<img src="__PUBLIC__/img/homeworkV1/exerciseNum.png" alt="" class="exerciseNumScore">
+			<div class="text"><span class="num">{{ exerciseNumLength }}</span>道<br>试题</div>
+		</div>
+		<div class="numBox">
+			<img src="__PUBLIC__/img/homeworkV1/exerciseScore.png" alt="" class="exerciseNumScore">
+			<div class="text"><span class="num">{{ exerciseNumScore }}</span>分<br>&nbsp;&nbsp;总分</div>
+		</div>
+	</div>
+	<div class="chooseOutter">
+		<div class="chooseBox" v-for="( value,key,index ) in selectExerciseGroupList">
+			<span>{{ value.typename }}</span>
+			<span>{{ value.num }}题</span>
+			<span>{{ value.score }}分</span>
+		</div>
+	</div>
+	<button class="btnCommon" id="publishHomework" :class="{btnDisabled: selectExerciseList.length == 0}">布置作业</button>
+</div>
+
+<!-- 纠错 -->
+<div class="homeworkBlack"></div>
+<div class="errorRecoveryFixed homeworkFixed">
+	<div class="homeworkFixedTitle">
+		<img src="__PUBLIC__/img/homeworkV1/errorRecoveryImg.png" alt="">
+		纠错
+		<img src="__PUBLIC__/img/homeworkV1/guanbi.png" alt="" class="closeFixed">
+	</div>
+	<div class="homeworkFixedMain">
+		<div class="homeworkFixdCheck">
+			<span class="checkOutter">
+				<input type="checkBox" name="checkbox" class="checkCommon" value="1" id="checkAnalysis" >
+				<label for="checkAnalysis">解析有问题</label>
+			</span>
+			<span class="checkOutter">
+				<input type="checkBox" name="checkbox" class="checkCommon" value="2" id="checkAnswer" >
+				<label for="checkAnswer">答案有问题</label>
+			</span>
+			<span class="checkOutter">
+				<input type="checkBox" name="checkbox" class="checkCommon" value="3" id="checkQuestion" >
+				<label for="checkQuestion">试题有问题</label>
+			</span>
+		</div>
+		<div class="homeworkFixdInput">
+			<div class="inputTitle">错误描述：</div>
+			<textarea name="" id="" v-model="errorContent" cols="30" rows="10" class="textareaCommon" placeholder="请输入您的错误描述"></textarea>
+		</div>
+	</div>
+	<div class="homeworkFixedBtnBox">
+		<button class="btnCommon cancelBtn" id="errorRecoveryCancel">取消</button>
+		<button class="btnCommon sureBtn" id="errorRecoverySure" @click="sendErrorCorrection($event)">确定</button>
+	</div>
+	<div class="homeworkFixedError"></div>
+</div>
+
+<div class="downLoading pt10">
+    <img src="__PUBLIC__/img/homeworkV1/loading.png" alt="" class="loadingRotate">
+    加载中...
+</div>
+
+<!-- 课本图片放大区域 -->
+<div class="zoomInOutter">
+	<div class="zoomInBox" onclick="closeZoomIn()"></div>
+	<img src="" alt="" class="zoomInImg">
+</div>
+
+
+
+<script>
+	// 放大课本图片
+	function zoomIn(obj) {
+		var imgUrl = $(obj).attr('src');
+		$('.zoomInOutter').show().children('.zoomInImg').attr('src', imgUrl);
+		$('body').css('overflow-y', 'hidden')
+	}
+
+	// 缩小课本图片
+	function closeZoomIn() {
+		$('.zoomInOutter').hide();
+		$('body').css('overflow-y', 'auto')
+	}
+</script>
+
+
+
+<script>
+
+    $(document).on('click','#publishHomework',function(){
+    	if(!$(this).hasClass('btnDisabled')) {
+        	window.location.href="/index.php?m=Home&c=TeacherHomework&a=checkHomeworkChoose";
+    	}
+    })
+
+	// 查看解析
+    $(document).on('click','.showAnalysis',function(){
+        if($(this).hasClass('active')) {
+            $(this).removeClass('active').text('查看解析').siblings('.analysisOutter').stop(false,true).slideUp();
+        } else {
+            $(this).addClass('active').text('收起').siblings('.analysisOutter').stop(false,true).slideDown();
+        }
+    })
+
+    // 纠错框出现
+    $(document).on('click','.errorRecovery',function(){
+    	$('.errorRecoveryFixed').find(".checkCommon").prop("checked", false);
+        $('.errorRecoveryFixed').find('.textareaCommon').val("");
+        $('body').css('overflow-y', 'hidden');
+        $('.homeworkBlack, .errorRecoveryFixed').show();
+    })
+
+    // 取消纠错框
+    $(document).on('click','#errorRecoveryCancel, .closeFixed',function(){
+    	$('body').css('overflow-y', 'auto');
+        $('.homeworkBlack, .errorRecoveryFixed').hide();
+    })
+
+    // 确定纠错框
+    // $(document).on('click','#errorRecoverySure',function(){
+    // 	var checkLength = $('.errorRecoveryFixed').find(".checkCommon:checked").length;
+    // 	var textareaContent =  $.trim($('.errorRecoveryFixed').find('.textareaCommon').val());
+    // 	if(checkLength == 0) {
+    // 		$('.homeworkFixedError').show().text('* 请选择错误模块');
+    // 		return false
+    // 	} else if(textareaContent == '') {
+    // 		$('.homeworkFixedError').show().text('* 请输入您的错误描述');
+    // 		return false
+    // 	} else {
+    // 		alert('提交');
+    // 		$('.homeworkFixedError').hide().text('');
+    // 		$('body').css('overflow-y', 'auto');
+    // 		$('.homeworkBlack, .errorRecoveryFixed').hide();
+    // 	}
+    // })
+</script>

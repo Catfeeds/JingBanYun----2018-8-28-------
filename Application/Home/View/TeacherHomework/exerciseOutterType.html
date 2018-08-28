@@ -1,0 +1,615 @@
+<div class="exerciseOutter exerciseOutterNoBorder">
+	<div class="exerciseOutterTop">
+		<div class="exerciseBigTitle">
+			<span class="beforeName">{{NameData.fname}}{{NameData.name}}</span>
+
+			<span class="changeInput" id="changeNameBtn">修改</span>
+			<input type="text" class="inputCommon changeName" :value="NameData.fname+NameData.name" >
+			<button class="btnCommon" id="changeNameSure">确定</button>
+
+			<img src="__PUBLIC__/img/homeworkV1/daibuzhi.png" alt="" class="nameImg">
+			<!-- <img src="__PUBLIC__/img/homeworkV1/zuioyezhong.png" alt="" class="nameImg">
+			<img src="__PUBLIC__/img/homeworkV1/daipigai.png" alt="" class="nameImg">
+			<img src="__PUBLIC__/img/homeworkV1/zuoyebaogao.png" alt="" class="nameImg"> -->
+		</div>
+		<div class="exerciseRemark">
+			<span class="grage">{{ classIno.grade }}{{ classIno.name }}</span>
+			已选<span class="num">{{ exerciseNumLength }}</span>题 分数<span class="num">{{ exerciseNumScore }}</span>分
+		</div>
+		<div class="exerciseDate">
+			<span class="boldText">开始时间：</span>
+			<span class="beforeDate">{{ NameData.release_time}}</span>
+			<input type="text" class="inputCommon dateInput changeDate" id="startTimeHome" :value="NameData.release_time" readonly>
+			<span class="boldText">收作业时间：</span>
+			<span class="beforeDate">{{ NameData.deadline}}</span>
+			<input type="text" class="inputCommon dateInput changeDate" id="endTimeHome" :value="NameData.deadline" readonly>
+			<span class="changeInput" id="changeDateBtn">修改</span>
+			<button class="btnCommon" id="changeDateSure">确定</button>
+		</div>
+	</div>
+	
+
+	<!-- 循环以下 -->
+	<div class="exerciseBox" v-for="(VocieData, index) in exerciseListVocieData.data">
+		<div class="exerciseBoxType">
+			{{ index+1 | filtersVoiceNumber }}、{{ VocieData.name}}
+			<span class="remark">(共{{ VocieData.count }}题，总分值{{ VocieData.totalScore }}分)</span>
+		</div>
+		<!-- 循环以下 -->
+		<div class="exerciseInner" v-for="(childVocieData, cindex) in VocieData.data" :class="{exerciseInnerNoBorder: childVocieData.category == 1 || childVocieData.category == 2}" :exerciseId="childVocieData.id">
+
+            <!-- 跟读词汇/跟读句子 -->
+            <span v-if="childVocieData.category == 1 || childVocieData.category == 2">
+                <div class="boxOutter">
+                    <div class="exerciseTitle">
+                        <span class="titleVerTop">
+                            {{ cindex+1 }}.<span class="scoreSpan">（{{ childVocieData.score }}分）</span>
+                        </span>
+                        <div class="wordMain previewBox">
+                            <img src="__PUBLIC__/img/homeworkV1/videoGray36×30.png" :audioSrc="childVocieData.url" alt="" class="videoPrimary" @click="play($event)">
+                            <div class="wordRight">
+                                {{ childVocieData.name }}
+                            </div>
+                        </div>
+                        <audio :src="childVocieData.url" class="audioHide"></audio>
+                    </div>
+                    <div class="exerciseDifficulty">难度：中等</div>
+                </div>
+                <div class="exerciseBtnBox">
+                    <span class="deleteExercise" @click="deleteExerciseId($event)" :exerciseScore="childVocieData.score" :exerciseId="childVocieData.id" :topicType="childVocieData.sub_type" >删除</span>
+                    <span class="showAnalysis" v-if="childVocieData.category == 1">显示解析</span>
+                    <div class="analysisOutter">
+                        <div class="analysisBox">
+                            <span class="analysisTitle">解析：</span>
+                            <span class="analysisMain analysis" v-html="childVocieData.translation"></span>
+                        </div>
+                    </div>
+                </div>
+            </span>
+
+            <!-- 观看视频 -->
+            <span v-else-if="childVocieData.category == 3">
+                <div class="boxOutter">
+                    <div class="exerciseTitle">
+                        <span class="titleVerTop">
+                            {{ cindex+1 }}.<span class="scoreSpan">（{{ childVocieData.score }}分）</span>
+                        </span>
+                        <video :src="childVocieData.url" class="outterVideo" controls preload controlsList="nodownload"></video>
+                    </div>
+                    <div class="exerciseDifficulty">难度：中等</div>
+                </div>
+                <div class="exerciseBtnBox">
+                    <span class="deleteExercise" @click="deleteExerciseId($event)" :exerciseScore="childVocieData.score" :exerciseId="childVocieData.id" :topicType="childVocieData.sub_type" >删除</span>
+                </div>
+            </span>
+    
+            <!-- 观看课本 -->
+            <span v-else-if="childVocieData.category == 4">
+                <div class="boxOutter">
+                    <div class="exerciseTitle">
+                        <span class="titleVerTop">
+                            {{ cindex+1 }}.<span class="scoreSpan">（{{ childVocieData.score }}分）</span>
+                        </span>
+                        <img :src="childVocieData.url" alt="" class="outterImage" title="点击可查看大图" onclick="zoomIn(this)">
+                    </div>
+                    <div class="exerciseDifficulty">难度：中等</div>
+                </div>
+                <div class="exerciseBtnBox">
+                    <span class="deleteExercise" @click="deleteExerciseId($event)" :exerciseScore="childVocieData.score" :exerciseId="childVocieData.id" :topicType="childVocieData.sub_type" >删除</span>
+                </div>
+            </span>
+
+            <!-- 其他题型 -->
+            <span v-else>
+                其他题型
+            </span>
+
+		</div>
+	</div>
+
+	<div class="exerciseBox" v-for="(VocieData, index) in exerciseListData.data">
+		<div class="exerciseBoxType">
+			{{ index+1 | filtersNumber }}、{{ VocieData.name}}
+			<span class="remark">(共{{ VocieData.count }}题，总分值{{ VocieData.totalScore }}分)</span>
+		</div>
+		<!-- 循环以下 -->
+		<div class="exerciseInner" v-for="(childVocieData, cindex) in VocieData.data" :exerciseId="childVocieData.id">
+            <!-- 选择题/选择填空题 -->
+            <span v-if="childVocieData.topic_type == 1 || childVocieData.topic_type == 3">
+                <img src="__PUBLIC__/img/resource/shoucang.png"  alt="" class="favorImg active" v-if='childVocieData.eid != null && childVocieData.eid != ""' :exerciseId="childVocieData.id" @click="favorExercise($event)">
+                <img src="__PUBLIC__/img/resource/2shoucang.png" alt="" class="favorImg" v-else  :exerciseId="childVocieData.id" @click="favorExercise($event)">
+
+                <div class="boxOutter">
+                    <div class="exerciseTitle">
+                        {{ cindex+1 }}.<span class="scoreSpan">（{{ childVocieData.score }}分）</span>
+                        <span class="exerciseStem" v-html="childVocieData.subject_name"></span>
+                    </div>
+
+                    <div class="exerciseMain" v-if="childVocieData.topic_type == 1">
+                        <span class="option" v-for="(answerValue, answerIndex) in childVocieData.answer" :class="{w100:childVocieData.class_type != 2 && childVocieData.class_type != 4, w50:childVocieData.class_type == 2, w25:childVocieData.class_type == 4}">
+                            {{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;
+                            <span class="exerciseStem" v-html="answerValue"></span>&nbsp;&nbsp;
+                        </span>
+                    </div>
+                    <div class="exerciseMain" v-if="childVocieData.topic_type == 3">
+                        <span class="option" v-for="(answerValue, answerIndex) in childVocieData.answerList" :class="{w100:childVocieData.class_type != 2 && childVocieData.class_type != 4, w50:childVocieData.class_type == 2, w25:childVocieData.class_type == 4}">
+                            {{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;
+                            <span class="exerciseStem" v-html="answerValue"></span>&nbsp;&nbsp;
+                        </span>
+                    </div>
+
+                    <div class="exerciseDifficulty">难度：{{ childVocieData.difficulty }}</div>
+                </div>
+                <div class="exerciseBtnBox">
+                    <span class="deleteExercise" @click="deleteExerciseId($event)" :exerciseScore="childVocieData.score" :exerciseId="childVocieData.id" :topicType="childVocieData.home_topic_type">删除</span>
+                    <span class="showAnalysis">显示解析</span>
+                    <div class="analysisOutter">
+                        <div class="analysisBox">
+                            <span class="analysisTitle">答案：</span>
+                            <span class="analysisMain" v-if="childVocieData.topic_type == 1">{{ childVocieData.right_key }}</span>
+                            <span class="analysisMain" v-if="childVocieData.topic_type == 3">{{ childVocieData.answer }}</span>
+                        </div>
+                        <div class="analysisBox">
+                            <span class="analysisTitle">解析：</span>
+                            <span class="analysisMain analysis" v-html="childVocieData.translation"></span>
+                        </div>
+                    </div>
+                </div>
+            </span>
+    
+            <!-- 连线题 -->
+            <span v-else-if="childVocieData.topic_type == 4">
+                暂不支持连线题
+            </span>
+
+            <!-- 填空/作图/解答 -->
+            <span v-else-if="childVocieData.topic_type == 2 || childVocieData.topic_type == 5 || childVocieData.topic_type == 6">
+                 <img src="__PUBLIC__/img/resource/shoucang.png"  alt="" class="favorImg active" v-if='childVocieData.eid != null && childVocieData.eid != ""' :exerciseId="childVocieData.id" @click="favorExercise($event)">
+                <img src="__PUBLIC__/img/resource/2shoucang.png" alt="" class="favorImg" v-else  :exerciseId="childVocieData.id" @click="favorExercise($event)">
+
+                <div class="boxOutter">
+                    <div class="exerciseTitle">
+                        {{ cindex+1 }}.<span class="scoreSpan">（{{ childVocieData.score }}分）</span>
+                        <span class="exerciseStem" v-html="childVocieData.subject_name"></span>
+                    </div>
+                    
+                    <div class="exerciseDifficulty">难度：{{ childVocieData.difficulty }}</div>
+                </div>
+                <div class="exerciseBtnBox">
+                    <span class="deleteExercise" @click="deleteExerciseId($event)" :exerciseScore="childVocieData.score" :exerciseId="childVocieData.id" :topicType="childVocieData.home_topic_type">删除</span>
+                    <span class="showAnalysis">显示解析</span>
+                    <div class="analysisOutter">
+                        <div class="analysisBox">
+                            <span class="analysisTitle">答案：</span>
+                            <span class="analysisMain" v-html="childVocieData.answer"></span>
+                        </div>
+                        <div class="analysisBox">
+                            <span class="analysisTitle">解析：</span>
+                            <span class="analysisMain analysis" v-html="childVocieData.translation"></span>
+                        </div>
+                    </div>
+                </div>
+            </span>
+
+            <!-- 其他题型 -->
+            <span v-else>
+                其他题型
+            </span>
+			
+		</div>
+	</div>
+</div>
+
+<!-- 布置 -->
+<div class="homeworkBlack"></div>
+<div class="publishHomeworkFixed homeworkFixed">
+	<div class="homeworkFixedTitle">
+		<img src="__PUBLIC__/img/homeworkV1/errorRecoveryImg.png" alt="">
+		布置作业
+		<img src="__PUBLIC__/img/homeworkV1/guanbi.png" alt="" class="closeFixed">
+	</div>
+	<div class="homeworkFixedMain pt0">
+		<div class="homeworkFixdInput">
+			<div class="inputTitle">作业名称：</div>
+			<input type="text" class="inputCommon" id="name"  placeholder="请输入作业名称" maxlength="25" :value="NameData.fname+NameData.name+'作业'" v-if="homeworkId == ''">
+            <input type="text" class="inputCommon" id="name"  placeholder="请输入作业名称" v-else :value="NameData.fname+NameData.name+'作业'">
+		</div>
+		<div class="homeworkFixdInput">
+			<div class="inputTitle">作业类别：</div>
+			<select name="" class="inputCommon" id="homeworkType" placeholder="请选择">
+				<option :value="dv.chapter" v-for="(dv, di) in DanData.list" :selected ="dv.chapter==DanData.setOrder.chapter" >{{ dv.fname }}</option>
+			</select>
+		</div>
+		<div class="homeworkFixdInput">
+			<div class="inputTitle">开始时间：</div>
+			<input type="text" class="inputCommon dateInput" id="startTime" placeholder="请选择开始时间" :value="workData.release_time" readonly>
+		</div>
+		<div class="homeworkFixdInput">
+			<div class="inputTitle">收作业时间：</div>
+			<input type="text" class="inputCommon dateInput" id="endTime" placeholder="请选择收作业时间" :value="workData.deadline" readonly>
+		</div>
+		<div class="homeworkFixdInput">
+			<div class="inputTitle">作业要求：</div>
+			<textarea cols="30" rows="10" class="textareaCommon" id="jobsments" maxlength="50" placeholder="请输入作业要求">{{ workData.jobsments }}</textarea>
+		</div>
+		<div class="homeworkFixdInput">
+			<div class="inputTitle">布置给：</div>
+			<div class="homeworkFixdCheck">
+                <span class="createSpan" v-if="classData == ''">
+                    您名下暂无班级哎，快去<a href="{:U('ClassList/createClass')}" class="createA">创建一个</a>吧！
+                </span>
+				<span class="checkOutter"  v-for="(cd, ci) in classData" v-else>
+					<input type="checkBox" name="checkbox" class="checkCommon" onclick="getClassGrade(this)" :class_id="cd.id" :grade_id="cd.grade_id" :grade_name="cd.grade" :class_name="cd.name">
+					<label for="">{{ cd.grade }}{{ cd.name }}</label>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div class="homeworkFixedBtnBox">
+		<button class="btnCommon sureBtn" id="publishHomeworkSure" onclick="submitHomeWork()" >布置</button>
+        <span class="homeworkFixedError homeworkFixedErrorAb"></span>
+	</div>
+</div>
+
+<!-- 课本图片放大区域 -->
+<div class="zoomInOutter">
+    <div class="zoomInBox" onclick="closeZoomIn()"></div>
+    <img src="" alt="" class="zoomInImg">
+</div>
+
+
+
+<script>
+    // 放大课本图片
+    function zoomIn(obj) {
+        var imgUrl = $(obj).attr('src');
+        $('.zoomInOutter').show().children('.zoomInImg').attr('src', imgUrl);
+        $('body').css('overflow-y', 'hidden')
+    }
+
+    // 缩小课本图片
+    function closeZoomIn() {
+        $('.zoomInOutter').hide();
+        $('body').css('overflow-y', 'auto')
+    }
+</script>
+
+
+<script>
+    // 左侧固定
+    $(function(){
+        var winHeight = $(window).height();// 浏览器窗口高度
+        var mainHeight = winHeight - 120 - 40 - 30 - 30 - 100 - 110; // 答题卡最高高度
+        if(window.location.href.indexOf('lookHomeWorkExercise') > -1) {
+            // 没有下方的按钮
+            $('.homeworkLeft.homeworkLeftFixed .homeworkLeftMain').css('height', mainHeight + 60);
+        } else {
+            $('.homeworkLeft.homeworkLeftFixed .homeworkLeftMain').css('height', mainHeight);
+        }
+        $('.homeworkLeft.homeworkLeftFixed').css('height', mainHeight + 116);
+    })
+
+    $(window).scroll(function(){
+        var scrollHeight = $(this).scrollTop();
+        if(scrollHeight >= 220) {
+            $('.homeworkLeft.homeworkLeftFixed').addClass('fixed').siblings('.homeworkRight').css('margin-left', '220px')
+        } else{
+            $('.homeworkLeft.homeworkLeftFixed').removeClass('fixed').siblings('.homeworkRight').css('margin-left', '0')
+        }
+    });
+</script>
+
+
+
+<script>
+	// 查看解析
+    var grade_class_list={};
+
+	function getClassGrade(obj) {
+        var grade_id = $(obj).attr("grade_id");
+        var class_id = $(obj).attr("class_id");
+        var grade_name = $(obj).attr("grade_name");
+        var class_name = $(obj).attr("class_name");
+        var maps={};
+        maps['grade_id'] = grade_id;
+        maps['class_id'] = class_id;
+        maps['grade_name'] = grade_name;
+        maps['class_name'] = class_name;
+
+        if($(obj).is(':checked')) {
+            grade_class_list[grade_id+class_id] = maps;
+        } else {
+			delete grade_class_list[grade_id+class_id];
+		}
+    }
+
+    function submitHomeWork(){
+
+        var name = $('#name').val();
+        var startTime = $('#startTime').val();
+        var endTime = $('#endTime').val();
+        var jobsments = $('#jobsments').val();
+        var g_c_l= new Array();
+
+        for(var key in grade_class_list){
+            g_c_l.push(grade_class_list[key]);//取得value
+        }
+
+        var exercises_num = homework.exerciseNumLength;
+        var create_user_id = homework.userId;
+        var create_user_name = homework.create_user_name;
+        var is_group_work = 1;
+        var total_score = homework.exerciseNumScore;
+        var course_id = homework.courseId;
+        var course_name = "";
+        var version_id = 1;
+        var exercise_list = homework.selectExerciseList;
+        var isPc = 1;
+        var selectExerciseListMap = homework.selectExerciseListMap;
+        var knowledge_id = homework.NameData.id;
+
+        var chapter_id = $('#homeworkType').val();
+
+        if(name == "" || name == undefined) {
+            $('.homeworkFixedError').show().text('* 请输入作业名称');
+            return;
+		}
+        
+        if(startTime=="" || startTime ==undefined) {
+            $('.homeworkFixedError').show().text('* 请选择作业开始时间');
+            return;
+        }
+
+        if(endTime=="" || endTime ==undefined) {
+            $('.homeworkFixedError').show().text('* 请选择收作业时间');
+            return;
+        }
+
+        var timestamp2 = Date.parse(new Date(startTime));
+        timestamp2 = timestamp2 / 1000;
+        console.log("当前时间戳为：" + timestamp2);
+
+        var timestamp3 = Date.parse(new Date(endTime));
+        timestamp3 = timestamp3 / 1000;
+        console.log("当前时间戳为：" + timestamp3);
+
+
+        var timestamp = Date.parse(new Date());
+        timestamp = timestamp / 1000;
+        console.log("当前时间戳为：" + timestamp);
+
+        // if(timestamp2<timestamp) {
+        //     $('.homeworkFixedError').show().text('* 布置时间不能小于当前时间');
+        //     return;
+        // }
+
+        if(timestamp2 >= timestamp3) {
+            $('.homeworkFixedError').show().text('* 布置时间不能大于或者等于截止时间');
+            return;
+        }
+
+
+        if (paperId<0 || paperId=="" || paperId==undefined) {
+            if(exercise_list=="" || exercise_list ==undefined) {
+                $('.homeworkFixedError').show().text('* 请选择习题');
+                return;
+            }
+        }
+
+
+        if(chapter_id=="" || chapter_id ==undefined) {
+            $('.homeworkFixedError').show().text('* 请选择单元');
+            return;
+        }
+
+        if(g_c_l=="" || g_c_l ==undefined) {
+            $('.homeworkFixedError').show().text('* 请选择班级');
+            return;
+        }
+
+        store.set(homework.userId+"selectExerciseListMap","");
+        store.set(homework.userId+"exerciseNumLength","");
+        store.set(homework.userId+"exerciseNumScore","");
+        store.set(homework.userId+"selectExerciseList","");
+        store.set(homework.userId+"selectExerciseGroupList","");
+        homework.selectExerciseList=[];
+        homework.selectExerciseListMap={};
+        homework.selectExerciseGroupList={};
+        homework.exerciseNumLength=0;
+        homework.exerciseNumScore=0;
+
+        //布置试卷url accordingPaperAssignment
+
+        var url = "";
+        if (paperId>0) { //试卷提交
+            url ="/index.php/ApiInterface/Version1_3/TeacherHomework/accordingPaperAssignment";
+        } else {
+            url ="/index.php/ApiInterface/Version1_3/TeacherHomework/selectExerciseIdMakeHomeWork";
+        }
+
+        $.ajax({
+            url:url,
+            type:'POST', //GET
+            data:{
+                "userName":setuserName,"paperId":paperId,"name":name,"release_time":startTime,"deadline":endTime,"jobsments":jobsments,"grade_class_list":g_c_l,"exercises_num":exercises_num,"userId":create_user_id, "is_group_work":is_group_work,"total_score":total_score,"course_id":course_id,"version_id":version_id,"exercise_list":exercise_list,"isPc":isPc,"selectExerciseListMap":selectExerciseListMap,"knowledge_id":knowledge_id,'chapter_id':chapter_id,
+            },
+            dataType:'json',
+            success:function(data,textStatus,jqXHR){
+                if (data.status == 200){
+                    //清空缓存
+                    window.location.href="index.php?m=Home&c=TeacherHomework&a=homeworkList";
+                } else {
+
+                    alert(data.info);
+                    $('.jinyongsave').attr('disabled',false);
+                }
+            },
+        });
+
+
+
+    }
+
+    $(document).on('click','.showAnalysis',function(){
+        if($(this).hasClass('active')) {
+            $(this).removeClass('active').text('显示解析').siblings('.analysisOutter').stop(false,true).slideUp();
+        } else {
+            $(this).addClass('active').text('收起').siblings('.analysisOutter').stop(false,true).slideDown();
+        }
+    })
+
+    // 删除某个习题
+    $(document).on('click','.deleteExercise',function(){
+    	var that = $(this);
+    	that.addClass('active');
+    	$.NotifyBox.NotifyPromptTwoCtNc('提示', '确定要删除此习题吗？', '确定', '取消', function(){
+
+    	    console.log(homework.selectExerciseList);
+
+            homework.selectExerciseList.removeByValue(homework.delexerciseId);
+            homework.selectExerciseList = homework.selectExerciseList;
+            //删除key
+            if (homework.selectExerciseGroupList[homework.topicType]["num"] ==1) { //就一个习题的时候
+                delete homework.selectExerciseGroupList[homework.topicType];
+            } else {
+                homework.selectExerciseGroupList[homework.topicType]["num"] -= 1;
+                homework.selectExerciseGroupList[homework.topicType]["score"] -= parseInt(homework.exerciseScore);
+            }
+
+            delete homework.selectExerciseListMap[homework.delexerciseId]
+
+            homework.exerciseNumLength -= 1;
+            homework.exerciseNumScore -= homework.exerciseScore;
+            if (homework.exerciseNumLength<0) {
+                homework.exerciseNumLength =0;
+			}
+			if (homework.exerciseNumScore<0) {
+                homework.exerciseNumScore =0;
+			}
+
+            store.set(homework.userId+"selectExerciseListMap",homework.selectExerciseListMap);
+            store.set(homework.userId+"exerciseNumLength",homework.exerciseNumLength);
+            store.set(homework.userId+"exerciseNumScore",homework.exerciseNumScore);
+
+            store.set(homework.userId+"selectExerciseList",homework.selectExerciseList);
+            store.set(homework.userId+"selectExerciseGroupList",homework.selectExerciseGroupList);
+
+
+            homework.selectExerciseIdList = homework.selectExerciseList.join(","); //初始化请求
+            console.log(homework.selectExerciseIdList);
+            if (homework.selectExerciseIdList==""){
+                homework.selectExerciseIdList = 0;
+            }
+            homework.getOrderedExerciseList();
+    		that.removeClass('active');
+    		//删除节点
+
+    	},function(){
+    		that.removeClass('active');
+    	})
+    })
+
+    // 布置框出现
+    $(document).on('click','#publishNow',function(){
+        if(!$(this).hasClass('btnDisabled')) {
+            $('.publishHomeworkFixed').find(".checkCommon").prop("checked", false);
+            //$('.publishHomeworkFixed').find('.textareaCommon, .inputCommon').val("");
+            // var settext = $('.beforeName').text();
+            // $('#id').val(settext);
+
+            $('body').css('overflow-y', 'hidden');
+            $('.homeworkBlack, .publishHomeworkFixed').show();
+        } else {
+            $.NotifyBox.NotifyPromptOne('提示', '当前没有题可以布置，请您继续选题。', '确定')
+        }
+    	
+    })
+
+    // 取消布置框
+    $(document).on('click','.closeFixed',function(){
+    	$('body').css('overflow-y', 'auto');
+        $('.homeworkBlack, .publishHomeworkFixed').hide();
+    })
+
+
+    // 修改名字框
+    $(document).on('click','#changeNameBtn',function(){
+    	$(this).parent('.exerciseBigTitle').addClass('active');
+    	$(this).hide().siblings('.beforeName').hide().siblings('.changeName, #changeNameSure').show()
+    })
+
+    // 确定修改名字
+    $(document).on('click','#changeNameSure',function(){
+    	$(this).parent('.exerciseBigTitle').removeClass('active');
+    	$(this).hide().siblings('.changeName').hide().siblings('.beforeName, #changeNameBtn').show()
+		var name = $('.changeName').val();
+    	if (name=='' || name==undefined) {
+    	    alert("请输入要修改的作业名称");
+    	    return;
+		}
+        $('#name').val(name);
+        $('.beforeName').text(name);
+
+    //     $.ajax({
+    //         url:"/index.php?m=Home&c=TeacherHomework&a=editHomeWorkName",
+    //         type:'POST', //GET
+    //         data:{
+    //             homeworkId : homeworkId,
+		// 		name : name,
+    //         },
+    //         dataType:'json',
+    //         success:function(data,textStatus,jqXHR){
+    //             if (data.status == 200){
+    //                 //清空缓存
+    //                 //{{NameData.fname}}{{NameData.name}}
+    //                 //homework.NameData.fname
+    //                 $('#name').val(name);
+    //                 $('.beforeName').text(name);
+    //             } else {
+    //
+    //                 alert(data.info);
+    //                 $('.jinyongsave').attr('disabled',false);
+    //             }
+    //         },
+    //     });
+     })
+
+    // 修改时间框
+    $(document).on('click','#changeDateBtn',function(){
+    	$(this).parent('.exerciseDate').addClass('active');
+    	$(this).hide().siblings('.beforeDate').hide().siblings('.changeDate, #changeDateSure').show()
+       // editHomeWorkTime($('#startTimeHome').val(),$('#endTimeHome').val());
+    })
+
+    // 确定修改时间
+    $(document).on('click','#changeDateSure',function(){
+    	$(this).parent('.exerciseDate').removeClass('active');
+    	$(this).hide().siblings('.changeDate').hide().siblings('.beforeDate, #changeDateBtn').show()
+        editHomeWorkTime($('#startTimeHome').val(),$('#endTimeHome').val());
+    })
+
+	function editHomeWorkTime( startime,endtime) {
+        $.ajax({
+            url:"/index.php?m=Home&c=TeacherHomework&a=editHomeWorkTime",
+            type:'POST', //GET
+            data:{
+                "startime":startime,"endtime":endtime,"homeworkId":homeworkId,"classId":classId
+            },
+            dataType:'json',
+            success:function(data,textStatus,jqXHR){
+                if (data.status == 200){
+                    //清空缓存
+                    // alert("修改成功");
+                    $.NotifyBox.NotifyPromptOne('提示', '修改成功', '确定')
+
+                    //重新赋值
+                    homework.getHomeworkDetail();
+                } else {
+
+                    alert(data.info);
+                    $('.jinyongsave').attr('disabled',false);
+                }
+            },
+        });
+	}
+</script>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>新年祝福</title>
+	<script src="__PUBLIC__/js/external/jquery.min.js"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			outline: none;
+		}
+		
+		.left {
+			float: left;
+		}
+		
+		.right {
+			float: right;
+		}
+		
+		.text-left	{
+			text-align: left;
+		}
+		
+		.text-right	{
+			text-align: right;
+		}
+		
+		html, body {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			font-family: "黑体";
+			color: #ffbe23;
+		}
+		
+		body {
+			background: url({$oss_path}public/web_img/Festival/wechatBack.png) no-repeat center;
+			background-size: 100% 100%
+		}
+		
+		.wechatWish {
+			display: block;
+			margin: 18% auto 0;
+			width: 50%;
+		}
+		
+		.videoBox {
+			width: 100%;
+			background: url({$oss_path}public/web_img/Festival/wechatVideo.png) no-repeat center;
+			background-size: 100% 100%;
+			padding: 5% 0;
+			margin: 1rem auto 0;;
+		}
+		
+		video {
+			display: block;
+			width: 92%;
+			margin: 0 auto;
+		}
+		
+		.nameBox {
+			text-align: center;
+			margin: 1rem auto;
+		}
+		
+		.wechatName {
+			width: 33%;
+			border: none;
+			background: none;
+			font-family: "黑体";
+			color: #ffbe23;
+			font-size: 1.5rem;
+			font-weight: bold;
+			text-align: center;
+		}
+		
+		.nameBox span {
+			color: #ffbe23;
+			font-size: 1.6rem;
+			font-weight: bold;
+		}
+		
+		.wishBox {
+			text-align: center;
+			font-size: 1.5rem;
+			line-height: 1.7rem;
+			margin: 0.5rem auto 0;
+		}
+		
+		.wechatBtn {
+			border: none;
+			background: none;
+			background: url({$oss_path}public/web_img/Festival/wechatBtn.png) no-repeat center;
+			background-size: 100% 100%;
+			padding: 2.5% 3%;
+			display: block;
+			margin: 1.3rem auto 0;
+			font-family: "黑体";
+			color: #cd2c1c;
+			font-size: 1.4rem;
+		}
+		
+		.QRcodeBox {
+			overflow: hidden;
+			width: 100%;
+			position: absolute;
+			bottom: 3.5rem;
+		}
+		
+		.codeBox {
+			width: 50%;
+		}
+		
+		.codeBox img {
+			width: 45%;
+			margin: 2% 1rem 0
+		}
+		
+		.codeBox p {
+			font-size: 1rem;
+			text-align: center
+		}
+		
+		.codeBoxP1 {
+			width: 54%;
+			margin: 0 0.5rem;
+		}
+		
+		.codeBoxP2 {
+			width: 45%;
+			margin: 0 1rem;
+		}
+		
+		.wechatBottom {
+			text-align: center;
+			position: absolute;
+			bottom: 0.5rem;
+			left: 0;
+			right: 0;
+			margin: 0 auto;
+		}
+		
+		.wechatfull {
+			background: rgba(0,0,0,.8);
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 2;
+			width: 100%;
+			height: 100%;
+			display: none;
+		}
+		
+		.wechatfull img {
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<img src="{$oss_path}public/web_img/Festival/wechatWish.png" alt="" class="wechatWish">
+	<div class="videoBox">
+		<video src="__PUBLIC__/flash/intro.mp4" controls preload="auto"></video>
+	</div>
+	<div class="nameBox">
+		<input type="text" class="wechatName" value="田小胖" placeholder="输入您的姓名" disabled>
+		<span>祝您：</span>
+	</div>
+	<div class="wishBox">
+		金鸡报晓，一鸣惊人！雄鹰展翅，一飞冲天！
+	</div>
+	<button type="button" class="wechatBtn">点击制作自己的祝福</button>
+	<div class="QRcodeBox">
+		<div class="left text-right codeBox">
+			<img src="{$oss_path}public/web_img/Festival/wechatClass.png" alt="">
+			<p class="right codeBoxP1">今日课堂订阅号</p>
+		</div>
+		<div class="left text-left codeBox">
+			<img src="{$oss_path}public/web_img/Festival/wechatApp.png" alt="">
+			<p class="codeBoxP2">京版云APP</p>
+		</div>
+	</div>
+	<div class="wechatBottom">
+		在微信搜索“今日课堂”公众号，<br>关注京版云·教育官方微信，获取教育最新咨询。
+	</div>
+	<!--黑色蒙層，提醒分享-->
+	<div class="wechatfull">
+		<img src="{$oss_path}public/web_img/Festival/wechatArrows.png" alt="">
+	</div>
+	<script>
+		$('.wechatBtn').click(function(){
+			$(this).html("确定生成祝福").attr("disabled","disabled");
+			$('.wechatName').attr("value","").removeAttr("disabled","disabled").focus();
+		})
+		
+		$('.wechatName').bind('input propertychange', function() {  
+			$('.wechatBtn').removeAttr("disabled","disabled");
+		});  
+	</script>
+</body>
+</html>

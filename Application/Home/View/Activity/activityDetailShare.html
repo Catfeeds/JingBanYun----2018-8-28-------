@@ -1,0 +1,107 @@
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link href="__PUBLIC__/css/activity.css" rel="stylesheet" type="text/css"/>
+
+<style>
+	.answerA a {
+        background-color: inherit !important
+    }
+
+    .answerCode {
+        text-align: center;
+    }
+
+    p.answerName {
+        text-align: center;
+        text-indent: 0 !important;
+        font-weight: 600
+    }
+</style>
+
+
+<div class="activityTitle">
+	<p class="title">{$data.title}</p>
+	<p class="publishBox">{$data.publisher}&nbsp;/&nbsp;{$data.approve_at|date="Y-m-d",###}</p>
+	<p class="ctrl_box">
+		<img id="zanIcon" src="__PUBLIC__/img/icon/zan.png">
+		<img id="favorIcon" src="__PUBLIC__/img/icon/favor.png">
+	</p>
+</div>
+<div class="activityContent">
+	<div class="left activityConLeft">
+		<p>
+			活动时间：<br>
+			{$data.activitystart|date="Y-m-d H:i",###} 至 {$data.activityend|date="Y-m-d H:i",###}
+		</p>
+		<p>
+			报名时间：<br>
+			{$data.applystart|date="Y-m-d H:i",###} 至 {$data.applyend|date="Y-m-d H:i",###}
+		</p>
+		<p>限制人数：{$data.apply_people_number}人</p>
+		<p>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：{$data.remark}</p>
+		<p>已&nbsp;&nbsp;报&nbsp;&nbsp;名：{$data.register_numbers}人</p>
+		<p>
+			面向人群：<br>
+			<span class="stakeholder padding10">
+				{$data.stakeholder}
+			</span>
+		</p>
+		<div class="activityData">
+			<span class="dataTitle">
+				<img src="__PUBLIC__/img/activity/dataTitle.png" alt="">
+				活动资料
+			</span>
+			<ul class="dataUl">
+				<volist name="contactData" id="contactData">
+					<li class="dataLi">
+						<a class="dataA" type="{$contactData.type}" src="{$oss_path}{$contactData.activity_file_path}" href="javascript:;">{$contactData.activity_file_name}</a>
+					</li>
+				</volist>
+
+			</ul>
+		</div>
+		<div class="text-center applyBox">
+			<button class="btn btn-red" id="applyBtn">我要报名</button>
+		</div>
+	</div>
+	<div class="activityConRight padding10">
+		{$data.content}
+	</div>
+</div>
+
+<!--弹窗-->
+<div class="fullBlack"></div>
+<!--提示去注册弹窗-->
+<div class="tooltipLogin tooltipLogin1">
+	<p class="tooltipLoginP1">
+		<a href="{:U('Index/index')}" class="loginJby">登录京版云</a>&nbsp;&nbsp;
+		<a href="javascript:;" class="noRegister">还没有注册？</a>
+	</p>
+</div>
+
+<div class="tooltipLogin tooltipLogin2">
+	<p class="tooltipLoginP2">
+		<a href="{:U('Teach/register')}" class="teacherA">我是老师</a>
+		<a href="{:U('Student/register')}" class="studentA">我是学生</a>
+		<a href="{:U('Parent/register')}" class="parentA">我是家长</a>
+	</p>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/queryLimit.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+
+<script>
+	$('#applyBtn,#zanIcon,#favorIcon').click(function(){
+		$('.fullBlack,.tooltipLogin1').show();
+	})
+
+	$('.noRegister').click(function(){
+		$('.tooltipLogin1').hide();
+		$('.tooltipLogin2').show();
+	})
+
+	$('.fullBlack').click(function(){
+		$('.fullBlack,.tooltipLogin1,.tooltipLogin2').hide();
+	})
+</script>

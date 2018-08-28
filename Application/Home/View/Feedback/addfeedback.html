@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class='no-js'>
+
+<head>
+    <meta charset='utf-8'>
+    <meta name="renderer" content="webkit">
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <title>用户反馈 :: 京版云教育平台</title>
+    <meta content='' name='description'>
+    <meta content='' name='keywords'>
+    <link href="__PUBLIC_THEME__/stylesheets/application-a07755f5.css" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC_THEME__/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC__/css/layout.css?v=7" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC__/css/feedback.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+	<img src="__PUBLIC__/img/feedback/feedTitle.png" alt="" class="feedTitle">
+	<div class="feedMain">
+		<div class="feedTop">
+			<div class="feed1">亲爱的用户：</div>
+			<div class="feed2">您好！</div>
+			<div class="feed3">以下是京版云<span style="position:relative;top:-5px">®</span>平台功能模块，如果您在使用京版云<span style="position:relative;top:-5px">®</span>平台的过程中遇到过问题，亦或是对平台有建议，请您按照自己的实际情况如实勾选填写。您的宝贵意见将有助于我们了解您的教学，学习习惯和方法，以便调整平台功能和内容，更加有助于您的教学、学习成绩的提高。请认真填写，非常感谢您的配合。</div>
+		</div>
+		<div class="feedCon">
+			<div class="feedContent">
+				<!--励耘圈-->
+				<?php foreach ($node_list as $key => $value): ?>
+					<div class="feed_content">
+						<div class="feed_left">
+
+							<?php if ($value['node_name']=='励耘圈'): ?>
+								<img src="__PUBLIC__/img/feedback/liyunquan.png" alt="" class="feedImg">
+								<span class="liyunquan"><?=$value['node_name']?></span>
+							<?php endif; ?>
+
+							<?php if ($value['node_name']=='教学+'): ?>
+								<img src="__PUBLIC__/img/feedback/jiaoxuejia.png" alt="" class="feedImg">
+								<span class="jiaoxuejia">教学<span class="plusIcon">+</span></span>
+							<?php endif; ?>
+
+							<?php if ($value['node_name']=='班级行'): ?>
+								<img src="__PUBLIC__/img/feedback/banjixing.png" alt="" class="feedImg">
+								<span class="banjixing">班级行</span>
+							<?php endif; ?>
+						</div>
+						<?php if (!empty($value['child_data'])): ?>
+							<div class="feed_right">
+								<?php foreach ($value['child_data'] as $k => $v): ?>
+									<div class="feedCheck feedCheck1">
+										<label for="<?=$v['id']?>"><img src="__PUBLIC__/img/icon/emptyCheckImg.png" alt="" class=""></label>
+										<input type="checkbox" class="checkBox childid" name="childid[]" id="<?=$v['id']?>"  value=<?=$v['id']?>>
+										<?=$v['node_name']?>
+									</div>
+
+									<?php if ($v['node_name']=='家长督学'): ?>
+										<div class="feedCheck">
+											<label for="qita"><img src="__PUBLIC__/img/icon/emptyCheckImg.png" alt="" class=""></label>
+											<input type="checkbox" class="checkBox childid" name="childid[]" id="qita" value="qita" >
+											其他反馈
+										</div>
+									<?php endif; ?>
+
+								<?php endforeach ?>
+							</div>
+						<?php endif; ?>
+					</div>
+				<?php endforeach ?>
+			</div>
+			<textarea class="form-control feedback_text" name="content" rows="9" placeholder="填写您的反馈意见"></textarea>
+
+			<label for="" class="contactLabel">请留下你的联系方式：</label>
+			<input type="text" class="form-control contactInput" placeholder="手机号码、邮箱或QQ号码" required>
+
+		</div>
+		<input type="hidden" class="token" value="{$_token}">
+    	<button type="submit" class="feedback_btn"></button>
+	</div>
+	<div class="copyRight">
+		<div class="copyTop">京ICP备 10009247号-5</div>
+		<div class="copyBottom">北京出版集团版权所有 Copyright {$Think.const.NOW_TIME|date="Y",###}</div>
+	</div>
+
+  <!--【弹窗】反馈成功-->
+   <div id="bg"></div>
+   <div class="regNotify" id="points4">
+   		<div class="regTop">
+   			<img src="__PUBLIC__/img/register/notify2.png" alt="" class="regTopImg">
+   			<span class="regTopTitle">提示！</span>
+   		<div class="regMiddle">
+			提交成功！<br>感谢您的反馈！
+   		</div>
+   		<div class="regBottom">
+			<a href="javascript:;" class="regSureBtn2" onclick="refresh()">继续反馈</a>
+			<a href="javascript:;" class="regSureBtn2 fanhui">去逛逛</a>
+   		</div>
+   </div>
+
+	<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+	<script src="__PUBLIC__/js/notify/notifyRegister.js"></script>
+
+	<script>
+    	function refresh() {
+    		window.location.reload();//刷新当前页面
+    	}
+		$('.cont').on('click',function(){
+			$(this).toggleClass('choice');
+		})
+
+		$('.feedback_btn').click(function(){
+			$(this).attr("disabled", "disabled");
+			$('.fanhui').attr('href','javascript:;');
+			var regName = /^(([\u4E00-\u9FA5]{1,9999}))$/;
+			var contact = $('.contactInput').val();
+			var contactArr = contact.split('');
+			var indexthis = this;
+			var content = $('.feedback_text').val();
+			var contact = $('.contactInput').val();
+			if (content == null || content == undefined || content == '') {
+//				alert("请填写意见反馈内容");
+				$.NotifyBox.NotifyRegisterOne('提示！','请填写意见反馈内容！','确定');
+				$(indexthis).attr("disabled", false);
+				return;
+			} else if(contact == '') {
+				$.NotifyBox.NotifyRegisterOne('提示！','请留下您的联系方式！','确定');
+				$(indexthis).attr("disabled", false);
+				return;
+			}
+
+            for(var i=1; i<contactArr.length; i++) {
+            	if (regName.test(contactArr[i]) == true) {
+	                $.NotifyBox.NotifyRegisterOne('提示！','联系方式格式错误！','确定');
+					$(indexthis).attr("disabled", false);
+					return;
+					break
+	            }
+            }
+
+			var ids = '';
+			$('.childid').each(function(){
+				if($(this).is(':checked')) {
+					ids += ','+$(this).val();
+				}
+			})
+
+			var _token = $('.token').val();
+
+			$.post('index.php?m=Home&c=Feedback&a=savefeedback', {content: content,id:ids,_token:_token,contact:contact}, function (res) {
+	           if (res.code == 'success') {
+	                //添加成功后进行跳转
+	                $('#bg,#points4').show();
+	                $('.fanhui').attr('href',res.url);
+	            } else {
+//	                alert(res.url);
+				   $(indexthis).attr("disabled", false);
+					$.NotifyBox.NotifyRegisterOne('提示！',res.url,'确定')
+	            }
+	        })
+
+		})
+	</script>
+
+	<script>
+		$('.feed_content').eq(0).find('label').click(function(){
+			if($(this).siblings('input').attr('checked') == 'checked') {
+				$(this).children('img').attr('src','__PUBLIC__/img/icon/emptyCheckImg.png')
+			} else {
+				$(this).children('img').attr('src','__PUBLIC__/img/icon/redCheckImg.png')
+			}
+		})
+		$('.feed_content').eq(1).find('label').click(function(){
+			if($(this).siblings('input').attr('checked') == 'checked') {
+				$(this).children('img').attr('src','__PUBLIC__/img/icon/emptyCheckImg.png')
+			} else {
+				$(this).children('img').attr('src','__PUBLIC__/img/icon/greenCheckImg.png')
+			}
+		})
+		$('.feed_content').eq(2).find('label').click(function(){
+			if($(this).siblings('input').attr('checked') == 'checked') {
+				$(this).children('img').attr('src','__PUBLIC__/img/icon/emptyCheckImg.png')
+			} else {
+				$(this).children('img').attr('src','__PUBLIC__/img/icon/yellowCheckImg.png')
+			}
+		})
+	</script>
+</body>
+
+</html>

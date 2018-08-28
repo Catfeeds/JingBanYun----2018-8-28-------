@@ -1,0 +1,98 @@
+<layout name="teacher_layout_withouticon" />
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<style>
+	.left {
+		float: left;
+	}
+	
+	.right {
+		float: right;
+	}
+	
+	.row .col-md-4 {
+		margin-bottom: 10px;
+	}
+	
+	.search_exercise {
+		color: #595757 !important;
+		background-color: #fff !important;
+		border: 1px solid #CD7C7E !important;
+		font-weight: 600;
+		display: block;
+		margin: 60px auto;
+	}
+	
+	.search_exercise:hover {
+		background-color: #CD7C7E !important;
+	}
+	
+	.exerciseBox {
+		width: 100%;
+		min-height: 100px;
+		border: 1px solid #ccc;
+		border-radius: 5px
+	}
+</style>
+<div style="margin-bottom: 12px;">
+	<a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>
+<form action="{:U('Teach/homeworkCompleteDetails')}" method="post" onkeydown="if(event.keyCode==13)return false;">
+	<div style="overflow: hidden;">
+		<div class="row left" style="width: 90%">
+			<div class="col-md-4">
+				<label>年级：</label>
+				<select name="grade" id="grade" class="form-control">
+					<option value="0">-请选择-</option>
+					<volist name="grade_list" id="grade_item" empty="">
+						<option value="{$grade_item.id}" <if condition="$grade_item['id']==$default_grade">selected</if>>{$grade_item.grade}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>学科：</label>
+				<select name="course" id="course" class="form-control">
+					<option value="0">-请选择-</option>
+					<volist name="course_list" id="course_item" empty="">
+						<option value="{$course_item.id}" <if condition="$course_item['id']==$default_course">selected</if>>{$course_item.course_name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>教材分册：</label>
+				<select name="subject" id="subject" class="form-control">
+					<option value="0">-请选择-</option>
+					<volist name="textbook_list" id="textbook_item" empty="">
+						<option value="{$textbook_item.id}" <if condition="$textbook_item['id']==$default_textbook">selected</if>>{$textbook_item.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>章：</label>
+				<select name="" id="" class="form-control">
+					<option value="0">-请选择-</option>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>节：</label>
+				<select name="" id="" class="form-control">
+					<option value="0">-请选择-</option>
+				</select>
+			</div>
+			<div class="col-md-4">
+				<label>习题名称：</label>
+				<input type="text" class="form-control" placeholder="请输入习题名称" value='{$keyword}'>
+			</div>
+		</div>
+
+		<div class="left" style="width: 10%; height: 138px;">
+			<button type="button" class="btn btn-primary search_exercise">搜索</button>
+		</div>
+	</div>
+</form>
+
+<div id="exerciseWrapper"></div>
+<div class="exerciseBox">
+	习题区
+	<img class="collectImg right" src="/Public/img/icon/collect1.png">
+</div>

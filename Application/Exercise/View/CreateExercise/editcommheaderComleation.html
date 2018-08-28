@@ -1,0 +1,62 @@
+<div class="m10 color333">
+    试题ID：{$exercise_info['id']}
+</div>
+<div class="borderBottom of">
+    <button type="button" name="button" class="tabBtn active left duli">独立题录入</button>
+    <button type="button" name="button" class="tabBtn left fuhe">复合题录入</button><span class="color3baeab ml20 lh32">*复合题：一题含多个小题</span>
+</div>
+<ul class="subjectUl">
+    <li class="subjectLi">
+        <span class="color3baeabFixed">学段</span>
+
+        <?php foreach (C('Studysection') as $studyK => $studyV): ?>
+            <?php if ($studyV['id'] == $exercise_info['study_section']): ?>
+                <span class="color333 study_id color3baeab" study_id="<?=$studyV['id']?>"><?=$studyV['name']?></span>
+            <?php else: ?>
+                <span class="color333 study_id" study_id="<?=$studyV['id']?>"><?=$studyV['name']?></span>
+            <?php endif ?>
+        <?php endforeach ?>
+        <span class="red classred dn" v-if="subject" style="display:none">*该项为必选项</span>
+    </li>
+    <li class="subjectLi">
+        <div class="subjectDiv color3baeabFixed">科目</div>
+        <?php foreach ($getCourse as $CourseK => $CourseV): ?>
+
+            <?php if ($CourseV['id'] == $exercise_info['subject']): ?>
+                <span class="color333 CourseVdata color3baeab" Courseid="<?=$CourseV['id']?>"  onclick="courseClick(<?=$CourseV['id']?>)"  ><?=$CourseV['name']?></span>
+            <?php else: ?>
+                <span class="color333 CourseVdata" Courseid="<?=$CourseV['id']?>"  onclick="courseClick(<?=$CourseV['id']?>)"  ><?=$CourseV['name']?></span>
+            <?php endif ?>
+        <?php endforeach; ?>
+        <span class="red classred dn" v-if="subject" style="display:none">*该项为必选项</span>
+    </li>
+    <li class="subjectLi">
+        <span class="color3baeabFixed">试题类型</span>
+        <?=$exercise_info['topic_type_name']['name']?>
+    </li>
+    <li class="createCompletionLicontent">
+        <div class="mt10 mb10">
+            <span class="color3baeabFixed textSpan">题目</span>
+            <div class="dib">
+                <script type="text/plain" id="completionA" name="message" style="width:580px">{$exercise_info.subject_name|html_entity_decode}</script>
+            </div>
+            <span class="red classred dn" v-if="subject" style="display:none">*该项为必选项</span>
+        </div>
+        <button type="button" name="button" class="btn mb10 getTxt">生成答案</button>
+        <div class="mb5">
+            <span class="color3baeabFixed mr0">题型展示</span>
+            <select class="selectSize presentation" name="">
+                <?php foreach ($getChildCourse as $cck => $ccv): ?>
+                <?php if ($ccv['id'] == $exercise_info['home_topic_type']): ?>
+                <option value="<?=$ccv['id']?>" selected><?=$ccv['name']?></option>
+                <?php else: ?>
+                <option value="<?=$ccv['id']?>"><?=$ccv['name']?></option>
+                <?php endif ?>
+                <?php endforeach ?>
+            </select>
+            <span class="red classred dn" v-if="subject" style="display:none">*该项为必选项</span>
+        </div>
+
+        <input type="hidden" class="question_type" value="{$type}">
+        <input type="hidden" class="subject_type" value="{$exercise_info['subject']}">
+        <input type="hidden" class="id" value="{$exercise_info['id']}">

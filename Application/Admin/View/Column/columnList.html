@@ -1,0 +1,173 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		栏目管理
+		<span class="blueSpan">
+			<a href="javascript:;">数据字典管理</a>>>
+			<a href="javascript:;">栏目管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="{:U('Column/get_column_list')}" method="post">
+	<p class="blueText fs16">栏目查询</p>
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>栏目名称：</label>
+				<input type="text"  id="column_name" class="input-control" name="keyword" value="{$keyword}" placeholder="请输入栏目名称">
+			</div>
+			<div class="cell">
+				<label>所属板块：</label>
+				<select id="model" class="input-control" name="module_name">
+                	<option value="0" {$module_name =="0"?'selected':''} >-请选择-</option>
+                	<option value="京版资源" {$module_name =="京版资源"?'selected':''} >京版资源</option>
+                	<option value="教师分享" {$module_name =="教师分享"?'selected':''} >教师分享</option>
+					<option value="京版活动" {$module_name =="京版活动"?'selected':''} >京版活动</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>所属端口：</label>
+				<select id="prot" class="input-control" name="port_name">
+               		<option value="0" {$port_name =="0"?'selected':''}>-请选择-</option>
+                	<option value="PC前台" {$port_name =="PC前台"?'selected':''}>PC前台</option>
+                	<option value="pc前台、Andiord、ios" {$port_name =="pc前台、Andiord、ios"?'selected':''}>PC前台、Android、iOS</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<input type='submit' value='查询' class='blueBtn'/>
+		<input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+
+<p class="blueText fs16">栏目列表</p>
+<form action="{:U('Column/column_sort_save')}" method="post">
+<div class="right">
+	<label for="submitSave"><img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="saveImg"></label>
+	<input type='submit' class="submitInput submitInputSpecial" id=""  value='保存排序'/>
+</div>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+        <tr>
+            <th class="text-center">序号</th>
+            <th class="text-center">栏目名称</th>
+            <th class="text-center">所属板块</th>
+            <th class="text-center">所属端口</th>
+			<th class="text-center">显示状态</th>
+			<th class="text-center">所在位置</th>
+            <th class="text-center">操作</th>
+        </tr>
+	</thead>
+	<tbody id="body">
+	<volist name="list" id="data">
+		<tr>
+			<td class="text-center">
+				{$i}
+			</td>
+			<td class="text-center">
+				{$data.column_name}
+			</td>
+			<td class="text-center">
+				{$data.module_name}
+			</td>
+			<td class="text-center">
+				{$data.port_name}
+			</td>
+			<td class="text-center">
+				{$data['is_display'] == 1 ? '显示':'隐藏'}
+			</td>
+			<td class="text-center">
+				<input type="hidden" value="{$data.id}" name="ids[]">
+				<input type="text" value="{$data.sort}" name="values[]" class="input-control numInput maxnum">
+			</td>
+			<td>
+				<a href="{:U('Column/get_column_details')}&id={$data.id}" class="operBtn" id="">修改</a>
+				<?php if($data['module_name'] == '京版活动') : ?>
+				  <?php if($data['is_display'] == 1) : ?>
+				    <a href="javascript:void(0)" onclick="setActivityColumnDisplayState({$data.id},0)" class="operBtn" id="">隐藏</a>
+				  <?php else : ?>
+				    <a href="javascript:void(0)" onclick="setActivityColumnDisplayState({$data.id},1)" class="operBtn" id="">显示</a>
+				  <?php endif ?>
+				<?php endif ?>
+			</td>
+		</tr>
+	</volist>
+	</tbody>
+</table>
+</form>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"15%"},
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"},
+				{"width":"10%"},
+                {"width":"15%"}
+            ]
+        });
+    });
+	function setActivityColumnDisplayState(id,state)
+	{
+		$.post("/index.php?m=Admin&c=Activities&a=setColumnDisplayState", {
+			'id': id ,'state':state
+	    }, function (res) {
+		res = eval('('+ res + ')');
+		if(res.status == 200)
+		{
+			$.NotifyBox.NotifyOneCall('成功','设置成功','确定',function()
+			{
+				window.location.reload()
+			})
+		}
+		else
+		{
+			$.NotifyBox.NotifyOne('失败','设置失败','确定');
+		}
+	});
+	}
+	
+	<!--重置-->
+	$('.resetButton').click(function () {
+		$('#column_name').attr('value','');
+		$('#model').attr('value','0');
+		$('#prot').attr('value','0');
+    })
+</script>
+<script>
+    function check() {
+        var arr = new Array();
+        $('.numInput').each(function (k,v) {
+            arr[k] = $(this).val();
+        });
+        //console.log(arr);return false;
+        var nary=arr.sort();
+
+        for(var i=0;i<arr.length;i++){
+
+            if (nary[i]==nary[i+1]){
+
+//                alert("数组重复内容："+nary[i]);
+                $.NotifyBox.NotifyOne('注意','排序标号重复：'+nary[i],'确定');
+                return false;
+
+            }
+
+        }
+
+    }
+</script>

@@ -1,0 +1,198 @@
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/expertInfo.css" type="text/css" rel="stylesheet">
+<style>
+	.emptyDiv {
+		position: absolute;
+	}
+
+	@media(max-width:1200px) and (min-width:0){ 
+		.emptyDiv {
+			position: inherit;
+			width: auto; 
+			clear: none; 
+			margin-right: 500px;
+		}
+	}
+
+	.SearchMainRight {
+		position: relative;
+		z-index: 1
+	}
+</style>
+
+<div>
+	<a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1" style="top: 0px;">返回</a>
+</div>
+<div class="expertInfoSearchOutter">
+	<div class="expertInfoSearch">
+		<div class="search">
+			<select name="time_status" id="time_status">
+				<option value="">--资讯类型--</option>
+				<?php foreach($columnResources as $item){?>
+				<?php if($item['id'] == SHUFFLING){?>
+				<?php }else{ ?>
+				<option value="<?php echo $item['id']?>" <?php if($time_status == $item['id']){ echo 'selected';}?>><?php echo $item['column_name']?></option>
+				<?php } }?>
+			 </select>
+			<button class="search_btn">搜索</button>
+			<input type="hidden" name="type" value=""id="type_value">
+			<input type="hidden" name="tip" value=""id="tip">
+			<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资讯名称" autocomplete="off">
+		</div>
+	</div>
+	<!-- 搜索结果 -->
+	<div class="searchResult">
+		<?php if(!empty($keyword)){?>
+		京版云为您找到“<?php echo $keyword?>”相关结果约<?php echo $counts?>个
+		<?php }?>
+	</div>
+</div>
+
+	<div class="expertInfoSearchMain">
+		<!-- 这里是右边的浏览热度排行榜 -->
+		<div class="SearchMainRight">
+			<div class="SearchMainRightTit">
+				<span>浏览热度排行榜</span>
+			</div>
+			<ul class="SearchMainRightUl">
+				<?php foreach($browseRanking as $key=>$item){?>
+				<li class="SearchMainRightLi">
+					<?php if($item['type'] == WINWORK){?>
+					<a href="/index.php?m=Home&c=ExpertInformation&a=winningWorksDetails&id=<?php echo $item['id']?>" class="SearchMainRightA <?php if($item['create_at'] > $times && $item['create_at'] < time()){echo '';}else{echo 'active';} ?>">
+						<span class="numSpan"><?php echo $key+1; ?></span>
+						<span class="textSpan">
+							<?php echo $item['title']?>
+							<img src="__PUBLIC__/img/expertInfo/hot.png" alt="" class="hotImg">
+						</span>
+					</a>
+					<?php }else{?>
+					<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id=<?php echo $item['id']?>" class="SearchMainRightA <?php if($item['create_at'] > $times && $item['create_at'] < time()){echo '';}else{echo 'active';} ?>">
+						<span class="numSpan"><?php echo $key+1; ?></span>
+						<span class="textSpan">
+							<?php echo $item['title']?>
+							<img src="__PUBLIC__/img/expertInfo/hot.png" alt="" class="hotImg">
+						</span>
+					</a>
+				</li>
+				<?php } }?>
+			</ul>
+		</div>
+
+		<!-- 搜索结果为空时 -->
+		<empty name="list">
+			<div class="emptyDiv">
+	            <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+	            <p>抱歉，没有搜索到相关的资讯！</p>
+			</div>
+		</empty>
+		<?php if(!empty($list)){ ?>
+		<div class="SearchMainLeft">
+			<!--每页显示5个-->
+			<?php foreach($list as $list_item){
+				if(!empty($list_item['pc_cover'])){ ?>
+				<?php if($list_item['type'] == WINWORK){?>
+			<a href="/index.php?m=Home&c=ExpertInformation&a=winningWorksDetails&id=<?php echo $list_item['id']?>" class="expertInfoMoreMain">
+				<?php }else{ ?>
+			<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id=<?php echo $list_item['id']?>" class="expertInfoMoreMain">
+				<?php } ?>
+				<div class="expertInfoMoreTop">
+					<div class="left">
+						<?php echo $list_item['title']?>
+					</div>
+					<div class="right">
+						<?php if(date(‘Y’,$list_item['up_time']) === date(‘Y’,time())){ echo date('m-d',$list_item['up_time']);}else{echo date('Y-m-d',$list_item['up_time']);}?>
+					</div>
+				</div>
+				<!--教学动态（有图片）只是img p 标签不一样，其他都一样-->
+				<div class="expertInfoMoreBottom">
+					<img src="<?php echo $oss_path.$list_item['pc_cover']?>" alt="" class="expertInfoMoreImg">
+					<p class="expertInfoMoreText expertInfoMoreTextDynamic">
+						<?php echo strip_tags(html_entity_decode($list_item['content']))?>
+					</p>
+					<div class="expertInfoMoreWatch">
+						<img src="__PUBLIC__/img/expertInfo/watch.png" alt="">
+						<?php echo $list_item['browse_count']?>
+					</div>
+				</div>
+			</a>
+			<?php }else{ ?>
+		 	<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id=<?php echo $list_item['id']?>" class="expertInfoMoreMain">
+				<div class="expertInfoMoreTop">
+					<div class="left"><?php echo $list_item['title']?>
+					</div>
+					<div class="right">
+						<?php if(date(‘Y’,$list_item['up_time']) === date(‘Y’,time())){ echo date('m-d',$list_item['up_time']);}else{echo date('Y-m-d',$list_item['up_time']);}?>
+					</div>
+				</div>
+				<!--教育新闻/热点话题（无图片）-->
+				<div class="expertInfoMoreBottom">
+					<p class="expertInfoMoreText">
+						<?php echo strip_tags(html_entity_decode($list_item['content']))?>
+					</p>
+					<div class="expertInfoMoreWatch">
+						<img src="__PUBLIC__/img/expertInfo/watch.png" alt="">
+						<?php echo $list_item['browse_count']?>
+					</div>
+				</div>
+			</a>
+			<?php }} ?>
+		</div>
+		<?php }else{?>
+
+		<?php }?>
+		<!--页码-->
+		<div class="Pagination">{$page}</div>
+	</div>
+</div>
+
+<script>
+	<!--超过150个字，显示省略号加详细-->
+	$('.expertInfoMoreText').each(function(){
+		var maxwidth=100;
+		var trimString = $.trim($(this).html());
+		if(trimString.length > maxwidth){
+			$(this).html(trimString.substring(0,maxwidth)+'…'+'<span class="detailSpan">[详细]</span>');
+		}
+	});
+
+	//热门浏览排行榜前三名的颜色
+	$('.SearchMainRightLi').eq(0).find('.numSpan').css('background', '#e9573f');
+	$('.SearchMainRightLi').eq(1).find('.numSpan').css('background', '#f27751');
+	$('.SearchMainRightLi').eq(2).find('.numSpan').css('background', '#ef9552');
+
+	//hot图片根据字数的长短有不同的位置
+	$('.SearchMainRightA').each(function(){
+		var maxwidth=25;
+		var trimString = $.trim($(this).children('.textSpan').text());
+		if(trimString.length >= maxwidth){
+			$(this).css('position', 'relative').children('.textSpan').css('position','initial').children('.hotImg').css({
+				'position': 'absolute',
+				'top': '3px',
+				'right': '3px'
+			});
+		} else{
+			$(this).css('position', 'inherit').children('.textSpan').css('position','relative').children('.hotImg').css({
+				'position': 'absolute',
+				'top': '-7px',
+				'right': '-20px'
+			});
+		}
+	});
+    function submits(type_values,tip) {
+        var str = '';
+        var keyword = $('.search_text').val();
+        var time_status = $('#time_status').val();
+        if(time_status != 0 && time_status != undefined){
+            str += '&time_status='+time_status;
+        }
+        if(keyword != ''){
+            str += '&keyword='+keyword;
+        }
+        str = "index.php?m=Home&c=ExpertInformation&a=expertInformationSearch" + str;
+        location.href = str;
+    }
+    $('.search_btn').click(function () {
+        submits();
+        //return false;
+    });
+</script>

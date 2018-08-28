@@ -1,0 +1,65 @@
+<div class="class_wrapper">
+    <div>
+        班级编号：{$data_stu.class_info.class_code} &nbsp;&nbsp;&nbsp;&nbsp;班级状态：{$data_stu.class_info.flag_name}
+    </div>
+    <span>班级成员：学生{$data_stu.stu_count}人  待审核学生{$data_stu.wating_stu}人</span>
+
+    <span class="right right40 tea_stu">筛选：
+        <span class="padding5  "><span class="student_siftings">已通过的学生</span></span>
+            <span class="padding5 "><span style="position: relative;z-index: 2;">未通过的学生</span><span class="padding5Active"></span></span>
+            </span>
+    <div class="class_screen">
+
+        <div class="right right40 btn4right">
+            <button href="" class="padding15" id="export_btn_aupt" classid="{$classid}">批量导出</button>
+            <?php if ($data_stu['class_info']['flag'] !=0): ?>
+                <button href="" class="padding15" id="batchpass" classid="{$classid}">批量通过</button>
+                <button href="" class="padding15" id="batchNopass" classid="{$classid}">批量不通过</button>
+            <?php endif ?>
+        </div>
+    </div>
+    <input type="hidden" class="hiddenclass_status" value="{$data_stu.class_info.class_status}">
+    <input type="hidden" class="search_btn" value="{$classid}">
+    <div class="row">
+        <empty name="list">
+            <div class="emptyResult">该班级尚未有学生加入</div>
+        </empty>
+
+        <volist name="list" id="data" empty="">
+            <div class="col-lg-3 col-md-6 col-sm-12 student_list" student_id="{$data.student_id}">
+                <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+                <img class="avatar" width="58" height="58" onerror="img_teacher(this)" src="<?php echo C('oss_path').$data['avatar']?>">
+                <?php else: ?>
+                    <?php if ( $data['sex']=='男' || empty($data['sex']) ): ?>
+                    <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_m.png">
+                    <?php else: ?>
+                    <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_w.png">
+                    <?php endif; ?>
+
+                <?php endif; ?>
+
+                <span class="name">{$data.student_name}</span>
+                <input type="checkbox" name="stuselect" class="stuselect">
+                <br>
+                <span class="sex">{$data.sex}</span>
+                <br>
+                <br>
+                <p class="parent_tel">家长手机号：{$data.parent_tel}</p>
+                <p class="email">邮箱地址：{$data.email}</p>
+                <?php if ($data_stu['class_info']['flag'] !=0): ?>
+                    <div class="receive">
+                        <a href="javascript:;" class="receive_y" student_id="{$data.student_id}">通过</a>
+                        <a href="javascript:;" class="receive_no" student_id="{$data.student_id}">拒绝</a>
+                    </div>
+                <?php endif ?>
+            </div>
+        </volist>
+    </div>
+    <div>
+
+    </div>
+
+</div>
+
+
+

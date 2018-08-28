@@ -1,0 +1,87 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/learnPathList.css" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<style>
+	#contentWrapper{
+		position: relative
+	}
+</style>
+<div class="row">
+    <div class="class_left left">
+		<volist name="list" id="data" empty="">
+			<a href="{:U('TeachLearnPath/classList',array('id'=>$data['id']))}">
+				<div class="class_name <if condition="$data.id eq $id">class_active</if> " classid="{$data.id}"  >
+					<?php if ($data['class_status'] == 1): ?>
+					<?php if ($data['flag'] != 0): ?>
+					<img src="__PUBLIC__/img/classManage/yirenzheng.png" alt="">
+					<?php else: ?>
+					<img src="__PUBLIC__/img/classManage/tingyong.png" alt="">
+					<?php endif ?>
+					<?php else: ?>
+
+					<?php if ($data['flag'] != 0): ?>
+					<img src="__PUBLIC__/img/classManage/zijian.png" alt="">
+					<?php else: ?>
+					<img src="__PUBLIC__/img/classManage/tingyong.png" alt="">
+					<?php endif ?>
+
+					<?php endif ?>
+					{$data.grade}{$data.name}
+				</div>
+			</a>
+
+		</volist>
+    </div>
+	<empty name="list">
+		<div class="emptyResult">暂时没有学习轨迹</div>
+	</empty>
+
+	<?php if (!empty($list)): ?>
+		<div class="class_student col-lg-10 col-md-9 col-sm-9 class_right left">
+			<iframe id="mainweb" style="width: 100%;height: 100%" frameborder="0" src="{:U('TeachLearnPath/getClassStuPath')}&classId={$id}"></iframe>
+		</div>
+
+	<?php endif ?>
+
+</div>
+
+<script> 
+    function join_string(){
+        var keyword=$('.search_text').val();
+        var grade_id=$('.grade_ul').find('.current_selected').attr('attr_id');
+        var class_name=$('.class_ul').find('.current_selected').attr('attr_id');
+        var condition='';
+        if(keyword!=''){
+            condition='&keyword='+keyword;
+        }
+        if(grade_id!=''){
+            condition += '&grade=' + grade_id;
+        }
+        if(class_name!=''){
+            condition += '&class=' + class_name;
+        }
+        return condition;
+    }
+    
+    $(".search_btn").click(function(){
+            var string=join_string();   
+            location.href = "index.php?m=Home&c=Teach&a=learnPathList" + string;
+        });
+        
+        
+    $(".classify_ul").children('li').click(function(){
+        $(this).siblings('li').removeClass('current_selected');
+        $(this).addClass('current_selected');
+        var string=join_string();   
+            location.href = "index.php?m=Home&c=Teach&a=learnPathList" + string;
+    });
+	$('.class_left>.class_name').click(function(){
+		$(this).addClass('class_active').siblings().removeClass('class_active')
+	})
+	$(function(){
+		$('.class_left>.class_name').eq(0).addClass('class_active')
+	})
+</script>
+<script src="__PUBLIC__/js/class.js"></script>

@@ -1,0 +1,344 @@
+<layout name="admin_layout_back_iframe"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<!--
+<form action="" method="post">
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>教师姓名：</label>
+				<input type="text" class="input-control" name="" value="" placeholder="请输入教师姓名">
+			</div>
+			<div class="cell">
+				<label>教师手机号：</label>
+				<input type="text" class="input-control" name="" value="" placeholder="请输入教师手机号">
+			</div>
+			<div class="cell">
+				<label>账号状态：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">正常</option>
+					<option value="2">停用</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>任教学科：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">英语</option>
+					<option value="2">语文</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+	</div>
+</form>
+-->
+<div class="grayBox">
+	<div class="left">
+            <if condition="$data['class_status']==1">
+		<span class="btns" id="addTeacher">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt=""> 
+                        <a href="javascript:;" attr="{:U('Teacher/createTeacherAccount')}">添加</a>
+		</span>
+            </if>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-import.png" alt=""> 
+                        <a target="_blank" href="{:U('Class/importClassTeacherView')}&id={$class_id}">导入</a>
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt=""> 
+                        <a href="javascript:;" class="export_btn">批量导出</a>
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt="">
+                        <a href="{:U('Class/exportedClassTeacherAll')}&{$condition_str}">导出全部</a>
+			
+		</span>
+	</div>
+	<!--<div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue-->
+	<!--		<button class="upBtn upBtnBlue"></button>
+			<button class="downBtn"></button>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>-->
+</div>
+
+<empty name="list">
+    <div class="emptyResult">没有相关信息</div>
+</empty>
+<notempty name="list">
+	<table id="listWrapper" class="table striped hovered border">
+		<thead>
+			<tr>
+				<th class="text-center" style="width: 13%"><input type="checkbox" class="check_all mr5">全选</th>
+				<th class="text-center" style="width: 12%">序号</th>
+				<th class="text-center" style="width: 15%">教师姓名</th>
+				<th class="text-center" style="width: 15%">教师手机号</th>
+				<th class="text-center" style="width: 15%">任教学科</th>
+				<th class="text-center" style="width: 15%">账号状态</th>
+				<th class="text-center" style="width: 15%">操作</th>
+			</tr>
+		</thead>
+		<tbody id="body">
+				<volist name="list" id="item" key="key">
+					<tr>
+							<td class="text-center">
+					<input type="checkbox" attr="{$item.id}" class="check_child" name="checkbox">
+				</td>
+				<td class="text-center">
+					{$key}
+				</td>
+				<td class="text-center">
+					{$item.teacher_name}
+				</td>
+				<td class="text-center">
+					{$item.telephone}
+				</td>
+				<td class="text-center">
+					{$item.course_name}
+				</td>
+				<td class="text-center">
+
+								<if condition="$item['flag']==1">
+									正常
+								<else />
+									停用
+								</if>
+				</td>
+				<td class="text-center">
+					<a href="javascript:;" attr="{:U('Teacher/teacherDetail')}&id={$item.id}" class="operBtn browse_info" >查看</a>
+					<a href="javascript:;" attr="{:U('Teacher/updateTeacher')}&id={$item.id}" class="operBtn update_info" >修改</a>
+					<if condition="$data['class_status']==1">
+						<a href="javascript:;" class="operBtn remove_teacher" id="">移除教师</a>
+					</if>
+					<input type='hidden' value='{$item.id}' class='teacher_id'/>
+				</td>
+			</tr>
+				</volist>    
+		</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+</notempty>
+
+<!--添加教师弹窗-->
+<div class="fullscr1" id="teacherBox">
+	<div class="adminNotifyBox1 aBoxHeight">
+		<div class="adminNotifyTitle">添加教师</div>
+		<div class="adminNotifyContent aConHeight">
+			<div class="adminSelect pt20">
+				<div class="selectBox mb10">
+					<label for="">教师姓名：</label>
+					<input type="text" name="" id="teacher_name" class="input-control" placeholder="请输入教师姓名">
+				</div>
+				<div class="selectBox mb10">
+					<label for="">教师手机号：</label>
+					<input type="text" name="" id="teacher_telephone" class="input-control" placeholder="请输入教师手机号">
+				</div>
+                                
+                                    <div class="selectBox">
+                                            <label for="">任教学科：</label>
+                                            <select id="teacher_course" class="input-control" name="">
+                                                    <option value="0">-请选择-</option> 
+                                            </select>
+                                    </div> 
+			</div>
+			<p class="adminNotifyButton">
+                            <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn">确定</a>
+                            <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script> 
+    var class_status="{$data.class_status}";
+    //点击批量导出
+    $(".export_btn").click(function(){
+        var check_input=$('#body').find("[name='checkbox']:checked");
+        if(check_input.length<1){
+            $.Notify({
+                caption: '提示',
+                content: '请勾选您要导出的账号',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('Class/exportedClassTeacher')}");
+        form.attr('method','post');
+
+        for(var i=0;i<check_input.length;i++){ 
+            var temp_val=$(check_input[i]).attr('attr'); 
+            var temp= $("<input type='hidden' name='hid[]'/>")
+            $(temp).attr('value',temp_val);
+            form.append(temp);
+        } 
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+    
+    
+    var class_id="{$class_id}"; 
+    var temp_option="<option >-请选择-</option>";
+    var teacher_id='';
+    
+    $('#teacher_name,#teacher_telephone').blur(function(){
+        var teacher_name,tel;
+        teacher_name=$("#teacher_name").val();
+        tel=$("#teacher_telephone").val();
+        if(teacher_name=='' || tel==''){
+            return false;
+        }
+        var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regMobilePhone.test(tel)) {     
+            return false;
+        }
+        //清空之前的学科
+        $("#teacher_course option:not(:eq(0))").remove();
+        $.ajax({
+            dataType:"json",
+            data:{'name':teacher_name,'tel':tel},
+            type: "post",
+            url:"{:U('Class/getTeacherCourse')}",
+            success: function(msg){ 
+                for(var i=0;i<msg.data.length;i++){
+                    if(i==0){
+                        teacher_id=msg.data[i].teacher_id;
+                    }
+                    var clonr_obj=$(temp_option).clone(true);
+                    $(clonr_obj).val(msg.data[i].course_id);
+                    $(clonr_obj).text(msg.data[i].course_name);
+                    $("#teacher_course").append(clonr_obj);
+                }
+            }
+        });
+    });
+    
+    
+    //点击教师加入班级
+    $('#sureBtn').click(function(){ 
+        if(class_status==2){
+            return false;
+        }
+        var teacher_name,tel,course_val;
+        teacher_name=$("#teacher_name").val();
+        tel=$("#teacher_telephone").val();
+        course_val=$("#teacher_course").val();
+        if(teacher_name=='' || tel==''){
+            return false;
+        }
+        var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regMobilePhone.test(tel)) {     
+            return false;
+        } 
+        if(course_val==0 || course_val==''){
+            return false;
+        }
+        $.ajax({
+            dataType:"json",
+            data:{'teacher_id':teacher_id,'class_id':class_id,'course_id':course_val},
+            type: "post",
+            url:"{:U('Teacher/addTeacherClassInfo')}",
+            success: function(msg){
+                if(msg.status==200){
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        });
+    });
+    
+    //班级移除教师
+    $('.remove_teacher').click(function(){ 
+        var status=2; 
+        var id=$(this).siblings('.teacher_id').val(); 
+        $.ajax({
+            type:"post",
+            url:"{:U('Common/classRemoveTeacher')}",
+            dataType:"json",
+            data:{'class_id':class_id,'teacher_id':id},
+            success: function(msg){
+                if(msg.status==200){  
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    
+    //全选
+    $('.check_all').click(function(){
+        var childCheck=$('.check_child');
+        var temp_status=true;
+        if($(this)[0].checked==true){
+            //本次选中
+            temp_status=true;
+        }else{
+            //本次取消
+            temp_status=false;
+        }
+        for(var i=0;i<childCheck.length;i++){
+            childCheck[i].checked=temp_status
+        }
+    });
+	
+    //取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				 $('.check_all').removeAttr('checked','checked');
+				 $('.check_all').removeProp('checked','checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $("[name='checkbox']:checked").length) {
+					$('.check_all').attr('checked','checked');
+					$('.check_all').prop('checked','checked');
+				};
+			}
+		}
+	};
+
+</script>
+
+<script>
+	$('#addTeacher').click(function(){
+		$('#teacherBox').show();
+	})
+	
+	$('#cancelBtn').click(function(){
+		$('#teacherBox').hide();
+	})
+</script>
+
+<!--iframe跳转-->
+<script>
+	$('.browse_info').click(function(){
+            var url=$(this).attr('attr');
+            parent.location.href=url;
+	})
+	$('.update_info').click(function(){
+            var url=$(this).attr('attr');
+            parent.location.href=url;
+	})
+</script>

@@ -1,0 +1,110 @@
+<layout name="exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<style media="screen">
+	html,body{
+		min-width: 1100px
+	}
+	li{
+		list-style: none
+	}
+	.boxOutter{
+		width: 1138px
+	}
+	.red{
+		display: none
+	}
+</style>
+<div class="boxOutter border-none p0">
+
+  <div class="">
+      <li class="createCompletionLicontent pt0 border-none">
+          <div class="mt10 mb10">
+              <span class="color3baeabFixed textSpan left mr5">二级题目</span>
+              <div style="width: 580px; " class="dib left">
+                  <script type="text/plain" id="completionA" name="message" style="width:100%;"></script>
+              </div>
+			  <div class="dib mt10 red classred left">
+	                *该项不可为空
+	         </div>
+          </div>
+          <div class="">
+            <div class="dib mtb10 ">
+              <span class="color3baeabFixed w64 mr0 text-right vertical-top">正确答案</span>
+              <div style="width: 580px;" class="dib">
+                <script type="text/plain" id="Answermessage1" name="message" style="width:100%;height:50px;"></script>
+              </div>
+            </div>
+            <div class="dib mtb10 vertical-top">
+              <span class="color3baeabFixed  mr0">分数</span>
+                <input type="number" class="count_score inputCommon">
+				<div class="red classred dn mt10 answerRed">*该项为必选项</div>
+            </div>
+          </div>
+      <include file="CreateExercise:compositefooter" />
+      </li>
+      </ul>
+  </div>
+</div>
+<div class="exercise_choice dn">
+	<div class="exerciseTitle">
+
+		<div class="">
+			<div class="p15 pb0 ">
+				<span class="numval">
+				</span>
+				<span class="score"></span>
+				<span class="caption"></span>
+			</div>
+			<div class="exerciseAnswer">
+				<span class="color3baeab">【答案】</span>
+				<span class="solution"></span>
+			</div>
+			<div class="exerciseJx borderBottomEEE">
+				<span class="color3baeab">【解析】</span>
+				<span class="analysisSpan"></span>
+			</div>
+
+		</div>
+	</div>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+    var completionA = UE.getEditor('completionA');
+    var Answermessage1 = UE.getEditor('Answermessage1');
+    var messageJx = UE.getEditor('messageJx');
+	function resShow(){
+		var a = 0;
+		if(UE.getEditor('completionA').getContentLength() == 0){
+			$('#completionA').parent().siblings('.red').show();
+			a++
+		}else{
+			$('#completionA').parent().siblings('.red').hide();
+		}
+		if(UE.getEditor('Answermessage1').getContentLength() == 0 ||$('.count_score').val() == ''||$('.count_score').val()<=0){
+			$('.answerRed').show();
+			a++
+		}else{
+			$('.answerRed').hide();
+		}
+		if(UE.getEditor('messageJx').getContentLength() == 0){
+			$('.jxtext').show();
+			a++
+		}else{
+			$('.jxtext').hide();
+		}
+		return a
+	}
+	function exerciseHtml(){
+		$('.score').text('('+$('.count_score').val()+'分)');
+		var title = completionA.getContent();
+		$('.caption').html(title);
+		var answerExer = Answermessage1.getContent();
+		$('.solution').html(answerExer);
+		var answerJX = messageJx.getContent();
+		$('.analysisSpan').html(answerJX);
+		return $('.exercise_choice').html();
+	}
+</script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>

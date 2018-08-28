@@ -1,0 +1,429 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+    .numInput {
+        height: 2.125rem
+    }
+
+    .saveImg {
+        width: 18px;
+    }
+
+    .topDiv {
+        width: 135px;
+        text-align: right
+    }
+
+    .topDiv .topCheck {
+        width: 18px;
+        height: 18px;
+    }
+    .marginleft_short
+    {
+        margin-left:15px;
+    }
+</style>
+
+<div class="titleBox">
+    <p class="blueText fs18 underline1">
+        专栏管理
+        <span class="blueSpan">
+			<a href="{:U('Activities/activitiesMgmt')}">京版活动管理</a>>>
+			<a href="{:U('Activities/specialColumnMgmt')}">专栏管理</a>>>
+			<a href="javascript:;">修改专栏信息</a>
+		</span>
+    </p>
+    <div class="underline2"></div>
+</div>
+
+<div class="blueBox">
+	<span class="blueText left fs16">修改专栏信息</span>
+	<span href="javascript:;" class="blackText right" id="">
+		<img src="{$oss_path}public/web_img/Admin/icon-modify.png" alt="" class="mr10">
+<!--		<a href="javascript:;" class="submitInput" id="submitInput">保存修改</a>-->
+		<input type='button' value='保存修改' class='submitInput' id="saveCon"/>
+	</span>
+</div>
+<hr class="thin bg-grayLighter mb10">
+	
+<div class="grid condensed cellBox">
+    <div class="row cells3">
+        <div class="cell">
+			<label for="">专栏名称：</label>
+			<input id="columnName" class="input-control" value="{$data.name}"/>
+        </div>
+        <div class="cell">
+			<label for="">专栏名称：</label>
+			{$data.sort}
+       		<input type="text" class="input-control" style="visibility: hidden;width: 1px">
+        </div>
+    </div>
+</div>
+<hr class="thin bg-grayLighter mb10">
+<form id="info-list" action="{:U('Activities/saveSpecialColumnContentSort')}" method="post">
+    <div class="grayBox">
+        <div class="left">
+			<span class="btns" id="addBtn">
+				<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="">
+				<a href="javascript:;">新增内容</a>
+			</span>
+        </div>
+
+        <div class="right">
+            <notempty name="list">
+            <label for="submitSave"><img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="saveImg"></label>
+            <input type='submit' class="submitInput submitInputSpecial" id="" onclick="return check()" value='保存排序'/>
+            </notempty>
+        </div>
+    </div>
+
+    <p class="blueText fs16">首页内容列表</p>
+    <table id="listWrapper" class="table striped hovered border">
+        <thead>
+        <tr>
+            <th class="text-center">序号</th>
+            <th class="text-center">名称</th>
+            <th class="text-center">所属类型</th>
+            <th class="text-center">创建时间</th>
+            <th class="text-center">所在位置</th>
+            <th class="text-center">上架状态</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody id="body">
+        <volist name="list" id="item">
+            <tr>
+                <td class="text-center">
+                    {$i}
+                </td>
+                <td class="text-center">
+                    {$item.title}
+                </td>
+                <td class="text-center" >
+                    <?php if($item['content_type'] == 1)  : ?>
+                    活动
+                    <?php elseif($item['content_type'] == 2) : ?>
+                    热点资讯
+                    <?php elseif($item['content_type'] == 3) : ?>
+                    活动投票
+                    <?php endif ; ?>
+
+                </td>
+                <td class="text-center">
+                    {$item.create_at|date="Y-m-d",###}
+                </td>
+                <td class="text-center">
+                    <input type="hidden" value="{$item.id}" name="ids[]">
+                    <input type="text" value="{$item.sort}" name="values[]" class="input-control numInput">
+                </td>
+                <td class="text-center">
+                    <if condition="($item.status eq 1)">
+                        已上架
+                        <else/>
+                        未上架
+                    </if>
+                </td>
+
+
+                <td class="text-center">
+                    <a href="javascript:;" class="operBtn" id="modify_click" title="{$item.title}" key_id={$item.id} attr="{$item.content_id}" type="{$item.content_type}">修改</a>
+                    <a href="javascript:;" class="operBtn" id="delete_click" attr="{$item.id}">删除</a>
+                    <if condition="$item.status eq 1">
+                        <a href="javascript:;" class="operBtn down" attr="{$item.id}">下架</a>
+                        <else/>
+                        <a href="javascript:;" class="operBtn up" attr="{$item.id}">上架</a>
+                    </if>
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</form>
+
+<!--新增内容弹窗-->
+<div class="fullscr1" id="addCon">
+    <div class="adminNotifyBox1 aBoxHeight">
+        <div class="adminNotifyTitle">新增内容</div>
+        <div class="adminNotifyContent aConHeight">
+            <div style="text-align: center;padding-top:20px">
+                <input class="marginleft_short contentTypeRadio" type="radio" name="contentType" value="1"/>活动
+                <input class="marginleft_short contentTypeRadio" type="radio" name="contentType" value="2"/>热门资讯
+                <input class="marginleft_short contentTypeRadio" type="radio" name="contentType" value="3"/>活动投票
+            </div>
+            <div class="adminSelect pt20">
+                <div class="selectBox mb10">
+                    <label for="">ID号：</label>
+                    <input type="text" class="input-control num" name="resource_id" value="" placeholder="请输入资源编号">
+                </div>
+                <div class="selectBox mb10">
+                    <label for="">名称：</label>
+                    <input type="text" class="input-control" name="" id="names" value="" placeholder="请输入资源名称">
+                </div>
+
+            </div>
+            <p class="adminNotifyButton">
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureCon">确定</a>
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelCon">取消</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"}
+            ]
+        });
+    });
+</script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+    var columnFlag = {$data.flag};
+    var listLength = <?php echo sizeof($list) ?>;
+    var columnId = {$data.id};
+    var options = {
+        success: showResponse, // post-submit callback
+        resetForm: false,
+        dataType: 'json'
+    };
+
+    // bind to the form's submit event
+    $('#info-list').submit(function () {
+        $(this).ajaxSubmit(options);
+        return false;
+    });
+
+
+    function showResponse(responseText, statusText) {
+        switch (responseText.status) {
+            case "200": //failed
+//                alert('更新成功');
+				 $.NotifyBox.NotifyOneCall('注意','更新成功','确定',function(){
+                     history.go();
+                 });
+
+                break;
+            default:
+//                alert(responseText.message);
+				$.NotifyBox.NotifyOne('注意',responseText.message,'确定');
+                break;
+        }
+    }
+</script>
+<script>
+    $('#saveCon').click(function(){
+        var name = $('#columnName').val();
+        $.get('index.php?m=Admin&c=Activities&a=setSpecialColumnName', {'id': columnId,'name':name} , function (res) {
+            res = eval('('+res+')');
+            if (res.status == 200) {
+//                alert('保存成功');
+				$.NotifyBox.NotifyOne('注意','保存成功','确定');
+                history.go();
+            } else {
+//                alert('名称设置失败');
+				$.NotifyBox.NotifyOne('注意','名称设置失败','确定');
+            }
+        })
+    })
+    //修改
+    $('#modify_click').live('click',function(){
+        var id = $(this).attr('attr');
+        var key_id = $(this).attr('key_id');
+        var type = $(this).attr('type');
+        var title = $(this).attr('title');
+        $('.contentTypeRadio').attr('disabled',true);
+        $('.num').attr('disabled',true).val(id);
+        $('#names').val(title);
+        $('.contentTypeRadio:[value=\''+type+'\']').attr('checked',true);
+        $('#sureCon').unbind().bind("click",function(){editContent(key_id)});
+        $('#addCon').show();
+    });
+
+    //删除
+    $('#delete_click').live('click',function(){
+        var id=$(this).attr('attr');
+        var column_id = "<?php echo $_GET['id']?>";
+        //alert(column_id);
+        deleteJBResource(id,column_id,this);
+    });
+
+    function deleteJBResource(id,column_id,obj) {
+        var confirmString = '确定要删除吗？';
+        if(columnFlag == 4 && 1 == listLength)
+             confirmString = '是否删除专栏最后一条信息，删除后该专栏下架';
+        if (confirm(confirmString)) {
+            $.get('index.php?m=Admin&c=Activities&a=deleteSpecialColumnContent', {id: id,column_id:column_id}, function (res) {
+                res = eval('('+res+')');
+                if (res.status == 200) {
+                    if(1 == listLength)
+                    {
+                        $.get('index.php?m=Admin&c=Activities&a=setSpecialColumnStatus', {'id': column_id,'status':5} , function (res) {
+                            res = eval('('+res+')');
+                            if (res.status == 200) {
+                                history.go();
+                            } else {
+//                                alert('专栏下架失败');
+								$.NotifyBox.NotifyOne('注意','专栏下架失败','确定');
+                            }
+                        })
+                    }
+                    else
+                        history.go();
+                } else {
+//                    alert('删除失败，请刷新页面后重新尝试');
+					$.NotifyBox.NotifyOne('注意','删除失败，请刷新页面后重新尝试','确定');
+                }
+            })
+        }
+    }
+
+    //上下架
+    $('.up,.down').live('click',function() {
+        if($(this).hasClass('up')){
+            var status=1;
+        }else{
+            var status=0;
+        }
+        var id=$(this).attr('attr');
+        var column_id = "<?php echo $_GET['id']?>";
+
+        updownJBResource(id,column_id,status,this);
+    })
+    function updownJBResource(id,column_id,status,obj) {
+        if (confirm('确定要执行此吗？请务必谨慎处理')) {
+            $.get('index.php?m=Admin&c=Activities&a=upDownSpecialContent', {id: id,column_id:column_id,status:status}, function (res) {
+                res = eval('('+res+')');
+                if (res.status == 200) {
+                    history.go();
+                }else {
+//                    alert('上下架失败');
+					$.NotifyBox.NotifyOne('注意','上下架失败','确定');
+                }
+            })
+        }
+    }
+
+    function check() {
+        var arr = new Array();
+        $('.numInput').each(function (k,v) {
+            arr[k] = $(this).val();
+        });
+        //console.log(arr);return false;
+        var nary=arr.sort();
+
+        for(var i=0;i<arr.length;i++){
+
+            if (nary[i]==nary[i+1]){
+
+//                alert("数组重复内容："+nary[i]);
+				$.NotifyBox.NotifyOne('注意','排序标号重复：'+nary[i],'确定');
+                return false;
+
+            }
+
+        }
+
+    }
+    //新增
+    function addContent() {
+        var statu = false;
+        var num = $('.num').val();
+        var content_type = $('.contentTypeRadio:checked').val();
+        if (content_type == undefined) {
+//            alert('请选择内容类型');
+			$.NotifyBox.NotifyOne('注意','请选择内容类型','确定');
+            return;
+        }
+        var title = $('#names').val();
+        if ('' == title) {
+//            alert('内容名称不能为空');
+			$.NotifyBox.NotifyOne('注意','内容名称不能为空','确定');
+            return;
+        }
+        var column_id = "<?php echo $_GET['id']?>";
+        if (num == '') {
+//            alert('ID不能为空');
+			$.NotifyBox.NotifyOne('注意','ID不能为空','确定');
+        } else if (checks(num) == false) {
+//            alert('请输入正确格式的资源ID');
+			$.NotifyBox.NotifyOne('注意','请输入正确格式的资源ID','确定');
+        }
+        else {
+            $.ajax({
+                url: "{:U('Activities/addSpecialColumnContent')}",
+                data: {'content_type': content_type, 'resource_id': num, 'title': title, 'column_id': column_id},
+                dataType: 'json',
+                type: "post",
+                success: function (msg) {
+                    if (msg.status == 200) {
+//                        alert('添加成功');
+						$.NotifyBox.NotifyOne('注意','添加成功','确定');
+                        history.go();
+                    } else
+//                        alert(msg.message);
+						$.NotifyBox.NotifyOne('注意',msg.message,'确定');
+                }
+            })
+
+        }
+    }
+    function editContent(id)
+    {
+        var title = $('#names').val();
+        if('' == title)
+        {
+//            alert('内容名称不能为空');
+			$.NotifyBox.NotifyOne('注意','添加成功','确定');
+            return;
+        }
+        $.ajax({
+            url:"{:U('Activities/editSpecialColumnContent')}",
+            data:{'id': id,'title':title},
+            dataType:'json',
+            type:"post",
+            success:function (msg) {
+                if(msg.status == 200){
+//                    alert('修改成功');
+					$.NotifyBox.NotifyOne('注意','修改成功','确定');
+                    history.go();
+                }else
+//                    alert(msg.message);
+					$.NotifyBox.NotifyOne('注意',msg.message,'确定');
+            }
+        })
+    }
+
+    //验证所输值是否为正整数
+    function checks(num) {
+        var r = /^[0-9]*[1-9][0-9]*$/;　　//正整数
+        return r.test(num);
+    }
+    //添加内容显示资源名称
+    $('#addBtn').click(function(){
+        $('.contentTypeRadio').attr('disabled',false).attr('checked',false);
+        $('.num').attr('disabled',false).val('');
+        $('#names').val('');
+        $('#sureCon').unbind().bind('click',function(){addContent()});
+        $('#addCon').show()
+    })
+
+    $('#cancelCon').click(function(){
+        $('#addCon').hide()
+    })
+</script>

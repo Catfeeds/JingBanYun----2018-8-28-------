@@ -1,0 +1,344 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/jquery-2.1.1.min.js"></script>
+<script src="__PUBLIC__/bootstrap/js/bootstrap.js"></script>
+<script language="javascript" src="http://www.yeefx.cn/templates/blue/imagefiles/layer/layer.js"></script>
+
+<style media="screen">
+.mr15p{
+  margin-right: 15%
+}
+.dib{
+  display: inline-block;
+}
+.w80{
+  width: 80px
+}
+.lh50{
+  line-height: 50px
+}
+.red{
+  color:red
+}
+</style>
+
+<input type="hidden" value="{$role}" id="role_id"/>
+
+<div class="listview set-border padding20 tabContent">
+  <ul id="myTab" class="nav nav-tabs">
+      <volist name="hotColumn" id="data">
+
+          <if condition="$data['id'] eq $cid ">
+              <li class="active">
+                  <a href="{:U('Information/informationList?cid=')}{$data.id}" >
+                      {$data.column_name}
+                  </a>
+              </li>
+
+              <else />
+
+              <li>
+                  <a href="{:U('Information/informationList?cid=')}{$data.id}" >
+                      {$data.column_name}
+                  </a>
+              </li>
+          </if>
+
+      </volist>
+  </ul>
+  <div id="myTabContent" class="tab-content padding10">
+    <!--教师教师教师-->
+    <div class="tab-pane fade in active" id="activeTab">
+      <div style="margin-bottom: 12px;">
+          <a href="{:U('Information/addInformation?cid=')}{$cid}" title="添加" class="button primary ">添加</a>
+          <div class="input-control text right m0" data-role="input" style="width: 320px;">
+              <input type="text" value="{$keyword}" id="keyword" name="keyword" placeholder="搜索...">
+              <button onclick="search()" class="button button-before"><span class="mif-search"></span></button>
+          </div>
+
+          <div class="dib right cell ">
+              <label>状态：</label>
+              <select class="input-control input-control-before mt2 status_select">
+                  <option value="" {$status==''?'selected':''} >请选择</option>
+                  <option value="1" {$status==1?'selected':''} >待审核</option>
+                  <option value="2" {$status==2?'selected':''} >审核通过</option>
+                  <option value="3" {$status==3?'selected':''} >已下架</option>
+                  <option value="4" {$status==4?'selected':''} >已发布</option>
+                  <option value="5" {$status==5?'selected':''} >已拒绝</option>
+              </select>
+
+          </div>
+      </div>
+
+
+      <div class="padding10">
+        <table id="listWrapper" class="table striped hovered border">
+          <thead>
+            <tr>
+              <th class="text-center">ID号</th>
+              <th class="text-center">新闻标题</th>
+              <th class="text-center">创建时间</th>
+              <th class="text-center">发布单位</th>
+              <th class="text-center">状态</th>
+              <th class="text-center">操作</th>
+            </tr>
+          </thead>
+          <tbody class="teacherhtml">
+          <volist name="list" id="listdata">
+                <tr>
+                  <td class="text-center" >
+                      {$listdata.id}
+                    </td>
+                  <td class="text-center" >
+                      <a href="javascript:;" onclick='look_up("{$listdata.id}","{$listdata.title}",this)'>
+                        {$listdata.title}
+                      </a>
+                  </td>
+                  <td class="text-center" >
+                      {$listdata.create_at|date="Y-m-d H:i",###}
+                  </td>
+                  <td class="text-center" >
+                      {$listdata.publisher}
+                  </td>
+                <td class="text-center reviewJ">
+                    <if condition="$listdata['status'] eq 1">
+                        未通过审核
+                        <elseif condition="$listdata['status'] eq 2"/>
+                        审核通过
+                        <elseif condition="$listdata['status'] eq 3"/>
+                        已下架
+                        <elseif condition="$listdata['status'] eq 4"/>
+                        已发布
+                        <else/>
+                        已拒绝
+                    </if>
+                </td>
+                    <td class="text-center">
+                        <in name="Think.session.admin.role" value="1,2">
+
+
+                            <if condition="($cid eq 10) OR ($cid eq 11)"><a href="{:U('Information/editHot')}&id={$listdata.id}&cid={$cid}" class="button info">修改</a>
+
+                                <elseif condition="$cid eq 9"/><a href="{:U('Information/editWinging')}&id={$listdata.id}&cid={$cid}" class="button info">修改</a>
+
+                                <else /> <a href="{:U('Information/editTeaching')}&id={$listdata.id}&cid={$cid}" class="button info">修改</a>
+                            </if>
+
+                            <button onclick="delete_data({$listdata.id},this)" class="button downR">删除</button>
+                        </in>
+
+                        <if condition="($listdata['status'] eq 1) ">
+                            <in name="Think.session.admin.role" value="2">
+                                <button onclick="approve({$listdata.id},this)" class="button info">通过</button>
+                                <button onclick="deny({$listdata.id},this)" class="button danger">拒绝</button>
+                            </in>
+                            <elseif condition="$listdata['status'] eq 5"/>
+                            <!--<button onclick="xiajia({$data.id},this)" class="button downR">下架</button> -->
+                            <in name="Think.session.admin.role" value="2">
+                                <button onclick="approve({$listdata.id},this)" class="button info">通过</button>
+                                <button onclick="delete_data({$listdata.id},this)" class="button danger">删除</button>
+                            </in>
+                            <elseif condition="($listdata['status'] eq 2) OR ($listdata['status'] eq 3)"/>
+                            <button onclick="fabu({$listdata.id},this)" class="button downR">发布</button>
+                            <in name="Think.session.admin.role" value="2">
+                                <button onclick="deny({$listdata.id},this)" class="button danger">拒绝</button>
+                            </in>
+                            <elseif condition="$listdata['status'] eq 4"/>
+                            <button onclick="xiajia({$listdata.id},this)" class="button downR">下架</button>
+                            <button onclick="push({$listdata.id})" class="button pushR">推送</button>
+                        </if>
+                    </td>
+                </tr>
+          </volist>
+
+          </tbody>
+        </table>
+
+        <div class="Pagination teacherPage">{$page}</div>
+      </div>
+    </div>
+</div>
+</div>
+    <input type="hidden" class="add_cid" value="{$cid}">
+<input type="hidden" class="add_status" value="{$status}">
+<script>
+    function look_up(id,title,obj){
+        var add_cid = $('.add_cid').val();
+        var url = '/index.php?m=Admin&c=Information&a=expertInformationDetails&id='+id+'&cid='+add_cid;
+        $('body').css('overflow-y','hidden')
+        layer.open({
+            type: 2,
+            title: title,
+            shadeClose: true,
+            shade: 0.2,
+            area: ['60%', '80%'],
+            content: url, //iframe的url
+            cancel: function(index, layero){ 
+              $('body').css('overflow-y','auto') 
+            } 
+        });
+    }
+
+
+    function search() {
+        var string='';
+        var status=$(".add_status").val();
+        var keyword=$('#keyword').val();
+        var add_cid = $('.add_cid').val();
+        if(status!=0 && status!=''){
+            string=string+'&status='+status;
+        }
+        if(keyword!=0&& keyword!=''){
+            string=string+'&keyword='+keyword;
+        }
+
+        string=string+'&cid='+add_cid;
+
+        var url = '/index.php?m=Admin&c=Information&a=informationList'+string;
+        window.location.href = url;
+    }
+    
+    function lookup(id) {
+        var string='';
+        var add_cid = $('.add_cid').val();
+        if(add_cid!=0 && add_cid!=''){
+            string=string+'&add_cid='+add_cid;
+        }
+        if(id!=0&& id!=''){
+            string=string+'&id='+id;
+        }
+
+        var url = '/index.php?m=Admin&c=Information&a=expertInformationDetails'+string;
+        window.location.href = url;
+    }
+
+    function approve(id,obj) {
+        $.get('/index.php?m=Admin&c=ExpertInformation&a=approveExpertInformation', {id: id}, function (res) {
+            if (res == 'success') {
+                var temp_downR="<button onclick=fabu("+id+",this) class='button downR'>发布</button>&nbsp;";
+                var temp_pushR="<button onclick=deny("+id+",this) class='button danger'>拒绝</button>";
+
+                $(obj).parent().siblings('.reviewJ').text('审核通过');
+                $(obj).siblings('.danger').remove();
+                $(obj).before(temp_downR);
+                $(obj).before(temp_pushR);
+                $(obj).remove();
+            } else {
+                alert('通过失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    function fabu(id,obj) {
+        $.get('/index.php?m=Admin&c=ExpertInformation&a=publishExpertInformationNormal', {id: id}, function (res) {
+            if (res == 'success') {
+
+                var temp_downR="<button onclick=xiajia("+id+",this) class='button downR'>下架</button>&nbsp;";
+                var temp_pushR="<button onclick=push("+id+",this) class='button pushR'>推送</button>";
+                $(obj).parent().siblings('.reviewJ').text('');
+                $(obj).parent().siblings('.reviewJ').text('已发布');
+                $(obj).siblings('.danger').remove();
+                $(obj).before(temp_downR);
+                $(obj).before(temp_pushR);
+                $(obj).remove();
+
+            } else {
+                alert('发布失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    function deny(id,obj) {
+        $.get('/index.php?m=Admin&c=ExpertInformation&a=denyExpertInformation', {id: id}, function (res) {
+            if (res == 'success') {
+                var temp="<button onclick=delete_data("+id+",this) class='button danger'>删除</button>";
+                var temptwo="<button onclick=approve("+id+",this) class='button info'>通过</button>&nbsp;";
+                $(obj).parent().siblings('.reviewJ').text('已拒绝');
+                $(obj).siblings('.info').remove();
+                $(obj).siblings('.pushR').remove();
+                $(obj).siblings('.downR ').remove();
+                $(obj).before(temptwo);
+                $(obj).before(temp);
+                $(obj).remove();
+
+            } else {
+                alert('拒绝失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+    //删除
+    function delete_data(id,obj){
+        if(confirm('你确定删除么')){
+            $.get('/index.php?m=Admin&c=ExpertInformation&a=deleteExpertInformation', {id: id}, function (res) {
+                if (res == 'success') {
+                    $(obj).parent().parent().remove();
+                    if($('.odd')<1){
+                        location.reload();
+                    }
+                } else {
+                    alert('删除失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+    }
+
+    function xiajia(id,obj) {
+        $.get('/index.php?m=Admin&c=ExpertInformation&a=downExpertInformation', {id: id}, function (res) {
+            if (res == 'success') {
+                var role_id=$('#role_id').val();
+                if(role_id==1){
+                    var temp_info = "<button onclick=fabu("+id+",this) class='button downR'>发布</button>";
+
+                    $(obj).parent().siblings('.reviewJ').text('已下架');
+                    $(obj).siblings('.pushR').remove();
+                    $(obj).before(temp_info);
+                    $(obj).remove();
+                }else if(role_id==2){
+                    var temp_info="<button onclick=fabu("+id+",this) class='button downR'>发布</button>&nbsp;";
+                    var temp_deny="<button onclick=deny("+id+",this) class='button danger'>拒绝</button>&nbsp;";
+                    $(obj).parent().siblings('.reviewJ').text('已下架');
+                    $(obj).siblings('.pushR').remove();
+                    $(obj).before(temp_info);
+                    $(obj).before(temp_deny);
+                    $(obj).remove();
+                }
+            } else {
+                alert('下架失败，请刷新页面后重新尝试');
+            }
+        })
+    }/**/
+    function push(id) {
+        $.get('/index.php?m=Admin&c=ExpertInformation&a=pushExpertInformation', {id: id}, function (res) {
+            if (res.status == 200) {
+                alert('推送成功');
+                location.reload();
+            } else {
+                alert('推送失败');
+            }
+        })
+    }/**/
+
+    $('.status_select').change(function(){
+        var status = $(this).val();
+        var add_cid = $('.add_cid').val();
+        window.location.href="index.php?m=Admin&c=Information&a=informationList&cid="+add_cid+'&status='+status;
+    })
+
+    $(".save_time_length").click(function(){
+        var add_cid = $('.add_cid').val();
+        var time_length= $('.time_length').val();
+        if (time_length<0 || time_length>5) {
+            alert('请输入正确的时间间隔');
+            return false;
+        }
+
+        $.get('/index.php?m=Admin&c=Information&a=addOrUpdateTimelength', {cid: add_cid,time_length:time_length}, function (res) {
+            if (res == 'success') {
+                location.reload();
+            } else {
+                alert('修改失败');
+            }
+        })
+
+    });
+</script>

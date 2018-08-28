@@ -1,0 +1,145 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<style>
+    #listWrapper img{
+        width: 50px !important;
+        height: 50px !important;
+		margin-right: 10px;
+		margin-top: 5px;
+    }
+    
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+	
+	.list_title {
+		width: 120px;
+		line-height: 50px;
+	}
+	
+	.list_title a {
+		color: #2086bf !important;
+	}
+</style>
+<!--
+<div style="margin-bottom: 12px;float: left">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}" style="box-sizing:border-box;">&lt; 返回</a>
+</div>-->
+
+<div>
+	<div class="grid condensed searchbar">
+		<div class="row cells3 cellBox">
+			<div class="cell">
+				<label>是否生成邀请码：</label>
+				<select id="level" name="level" onchange="" class="input-control input-control-before">
+					<option value="">-请选择-</option>
+					<option value="2" {$is_generate==2?'selected':''}>是</option>
+					<option value="1" {$is_generate==1?'selected':''}>否</option>
+				</select>
+			</div>
+			<div class="cell">
+   				<label>关键词：</label>
+   				<input type="text" id="keyword" class="input-control input-control-before" name="keyword" placeholder="请输入活动名称或邀请码" value="{$keyword|default=''}">
+   			</div>
+    
+    		<div class="cell" data-role="input">
+    			<label for="">&nbsp;</label>
+				<button onclick="search()" class="button" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div style="text-align: right;margin-bottom:20px;">
+	<a href="{:U('InvitationCode/exportAll')}" class="button" style="">全部导出</a>
+</div>
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+        <tr>
+            <th class="text-center">序号</th>
+            <th class="text-center">活动名称</th>
+            <th class="text-center">是否生成邀请码</th>
+            <th class="text-center">邀请码个数</th>
+            <th class="text-center">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <volist name="list" id="data">
+            <tr>
+                <td class="text-center">
+                    <?php echo $data_page--;?>
+                </td>
+                <td class="text-center">{$data.title}</td>
+                <td class="text-center">
+                    <if condition="($data.is_generate eq 1) OR ($data.is_disable eq 2) "> 否
+                        <else /> 是
+                    </if>
+                </td>
+                <td class="text-center">
+                    {$data.snum}
+                </td>
+                <td class="text-center">
+                    <a href="{:U('InvitationCode/lookCodeDetails?id=')}{$data.id}&titles={$data.title}" class="button info">查看</a>
+                </td>
+
+            </tr>
+        </volist>
+    </tbody>
+</table>
+
+<div class="Pagination">{$page}</div>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"30%"},
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"}
+            ]
+        });
+    });
+    //搜索
+    function search() {
+        var string = "";
+        var keyword = $('#keyword').val();
+        var is_generate = $('#level').val();
+        if (keyword != '') {
+            string += '&keyword=' + keyword;
+        }
+        if (level != '') {
+            string += '&is_generate=' + is_generate;
+        }
+        var url = '/index.php?m=Admin&c=InvitationCode&a=codeList'+string;
+        window.location.href = url;
+    }
+	
+	//回车搜索
+	$("#keyword").keydown(function (evt) {
+            if (event.keyCode == "13") { //keyCode=13是回车键
+                var evt = (evt) ? evt : ((window.event) ? window.event : "")
+                var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+
+                var string = "";
+                var keyword = $('#keyword').val();
+                var is_generate = $('#level').val();
+                if (keyword != '') {
+                        string += '&keyword=' + keyword;
+                }
+                if (level != '') {
+                        string += '&is_generate=' + is_generate;
+                }
+                var url = '/index.php?m=Admin&c=InvitationCode&a=codeList'+string;
+                window.location.href = url;
+
+            }
+	})
+ 
+</script>

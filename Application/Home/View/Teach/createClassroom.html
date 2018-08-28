@@ -1,0 +1,123 @@
+<layout name="teacher_layout_3"/>
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/classroomList')}" title="返回"class="btn btnReturn3">返回</a>
+</div>
+<div>
+    <form action="__URL__/createClassroom" method="post" onsubmit="$('#saveButton').attr('disabled',true);">
+        <div class="example" data-text="课堂数据">
+            <div class="form_section">
+                <label for="class_id">班级</label>
+                <div class="input-control text full-size">
+                    <select id="class_id" name="class_id" class="form-control" onchange="getAvailableCourse();getTextbooks()" required>
+                        <option value="">-请选择-</option>
+                        <volist name="classes" id="dataClass" empty="暂时没有信息">
+                            <option value="{$dataClass.id}">{$dataClass.name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="course_id">关联学科</label>
+                <div class="input-control text full-size">
+                    <select id="course_id" name="course_id" class="form-control" onchange="getTextbooks()" required>
+                        <option value="">-请选择-</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="grade_id">关联年级</label>
+
+                <div class="input-control text full-size">
+                    <select id="grade_id" name="grade_id" class="form-control" onchange="getTextbooks()"  required>
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                            <option value="{$dataGrade.id}">{$dataGrade.grade}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="textbook_id">教材分册</label>
+
+                <div class="input-control text full-size">
+                    <select id="textbook_id" name="textbook_id" class="form-control" required>
+                        <option value="">-请先选择学科和年级-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="classroom">上课教室</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="classroom" id="classroom" class="form-control" required>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="btn btn-primary" id="saveButton">保存</button>
+        </div>
+    </form>
+</div>
+<script>
+    function getAvailableCourse(){
+        var classId = $('#class_id').val();
+        $.get('index.php?m=Home&c=ClassList&a=getJoinedCourseByClassId', {
+            'classId': classId
+        }, function (res) {
+            res = JSON.parse(res);
+            var options = [];
+            $.each(res.data, function (index, item) {
+                options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+            });
+            if (options.length > 0) {
+                $('#course_id').html(options.join(''));
+            } else {
+                $('#course_id').html('<option value="">-请选择-</option>');
+            }
+        })
+    }
+    function getTextbooks() {
+        var courseId = $('#course_id').val();
+        var gradeId = $('#grade_id').val();
+        if (courseId == '' || gradeId == '') {
+            $('#textbook_id').html('<option value="">-请选择-</option>');
+        }
+        $.get('index.php?m=Home&c=DictRest&a=get_textbooks_by_courseAndGrade', {
+            'course_id': courseId,
+            'grade_id': gradeId
+        }, function (res) {
+            var options = [];
+            $.each(res, function (index, item) {
+                options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+            });
+            if (options.length > 0) {
+                $('#textbook_id').html(options.join(''));
+            } else {
+                $('#textbook_id').html('<option value="">-请选择-</option>');
+            }
+        })
+    }
+</script>
+<script>
+    function notifyOnErrorInput(input){
+        var message = input.data('validateHint');
+        $.notify({
+            title: '提示',
+            message: message
+        },{
+            type: 'warning',
+            placement: {
+                from: "top",
+                align: "center"
+            }
+        });
+    }
+</script>

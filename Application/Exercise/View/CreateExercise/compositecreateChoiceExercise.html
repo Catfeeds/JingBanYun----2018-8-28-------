@@ -1,0 +1,286 @@
+<layout name="exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<style media="screen">
+	html,body{
+		min-width: 1100px
+	}
+	li{
+		list-style: none
+	}
+	.boxOutter{
+		width: 1138px
+	}
+	.red{
+		display: none
+	}
+</style>
+<div class="boxOutter border-none p0" id="app" v-cloak>
+	<li class="createCompletionLicontent  pt0 border-none">
+		<div class="mt10 mb10 of">
+			<span class="color3baeabFixed textSpan left mr5">二级题目</span>
+			<!--<span class="textSpan">题干</span>-->
+			<div style="width: 580px;height: 115px;" class="dib left">
+				<script type="text/plain" id="message" name="message" style="width:100%;height:50px;"></script>
+			</div>
+		</div>
+	</li>
+	<div class="">
+				<div class="ml62">
+					<span >选项数量</span>
+					<select class="exerciseNums selectSize" name="" onchange="optionShow(this)" v-model="exerciseNums">
+                         <option>2</option>
+                         <option>3</option>
+                         <option selected>4</option>
+                         <option>5</option>
+                         <option>6</option>
+                         <option>7</option>
+                         <option>8</option>
+					</select>
+				    <div class="mt10 editors db">
+						<span class="textSpan optionSpan left">A</span>
+						 <div style="width: 580px;" class="dib left mr10">
+									<script type="text/plain" id="messageA" name="message" style="width:100%;height:50px;"></script>
+						 </div>
+						 <button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('A')">设为答案</button>
+						 <button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('A','cancel')">取消设置</button>
+						 <br>
+						 <div class="dib left mt10 red classred">
+							 *该项不可为空
+						 </div>
+						<div class="dib left mt10 red classred oneAnswer">
+							*请选择答案
+						</div>
+					</div>
+					<div class="mt10 editors db">
+						 <span class="textSpan optionSpan left">B</span>
+							<div style="width: 580px;" class="dib left mr10">
+									 <script type="text/plain" id="messageB" name="message" style="width:100%;height:50px;"></script>
+							</div>
+							<button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('B')" >设为答案</button>
+							<button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('B','cancel')" >取消设置</button>
+							<br>
+							<div class="dib left mt10 red classred">
+								*该项不可为空
+							</div>
+                    </div>
+					 <div class="mt10 editors db">
+                        <span class="textSpan optionSpan left">C</span>
+                             <div style="width: 580px;" class="dib left mr10">
+                                        <script type="text/plain" id="messageC" name="message" style="width:100%;height:50px;"></script>
+                             </div>
+                             <button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('C')">设为答案</button>
+                             <button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('C','cancel')">取消设置</button>
+                             <br>
+                             <div class="dib left mt10 red classred">
+                                 *该项不可为空
+                             </div>
+                        </div>
+						    <div class="mt10 editors db">
+							 <span class="textSpan optionSpan left">D</span>
+								<div style="width: 580px;" class="dib left mr10">
+										 <script type="text/plain" id="messageD" name="message" style="width:100%;height:50px;"></script>
+								</div>
+								<button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('D')">设为答案</button>
+								<button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('D','cancel')">取消设置</button>
+								<br>
+								<div class="dib left mt10 red classred">
+									*该项不可为空
+								</div>
+						    </div>
+						    <div class="mt10 editors dn">
+								<span class="textSpan optionSpan left">E</span>
+								 <div style="width: 580px;" class="dib left mr10">
+											<script type="text/plain" id="messageE" name="message" style="width:100%;height:50px;"></script>
+								 </div>
+								 <button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('E')">设为答案</button>
+								 <button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('E','cancel')">取消设置</button>
+								 <br>
+								 <div class="dib left mt10 red classred">
+									 *该项不可为空
+								 </div>
+							</div>
+							<div class="mt10 editors dn">
+								 <span class="textSpan optionSpan left">F</span>
+									<div style="width: 580px;" class="dib left mr10">
+						 					<script type="text/plain" id="messageF" name="message" style="width:100%;height:50px;"></script>
+						 		 </div>
+									<button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('F')">设为答案</button>
+									<button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('F','cancel')">取消设置</button>
+									<br>
+									<div class="dib left mt10 red classred">
+										*该项不可为空
+									</div>
+							 </div>
+							 <div class="mt10 editors dn">
+									<span class="textSpan optionSpan left">G</span>
+									 <div style="width: 580px;" class="dib left mr10">
+												<script type="text/plain" id="messageG" name="message" style="width:100%;height:50px;"></script>
+									 </div>
+									 <button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('G')">设为答案</button>
+									 <button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('G','cancel')">取消设置</button>
+									 <br>
+									 <div class="dib left mt10 red classred">
+										 *该项不可为空
+									 </div>
+								</div>
+								<div class="mt10 editors dn">
+									 <span class="textSpan optionSpan left">H</span>
+										<div style="width: 580px;" class="dib left mr10">
+							 					<script type="text/plain" id="messageH" name="message" style="width:100%;height:50px;"></script>
+							 		 </div>
+										<button type="button" name="button" class="btn textSpan setAnswer" v-on:click="setAnswer('H')">设为答案</button>
+										<button type="button" name="button" class="btn textSpan Deselect" v-on:click="cancelAnswer('H','cancel')">取消设置</button>
+										<br>
+										<div class="dib left mt10 red classred">
+											*该项不可为空
+										</div>
+								 </div>
+				</div>
+				<div class="mtb10">
+					<span class="color3baeabFixed w64 mr0">分数</span>
+                    <input type="number" v-model="Fractiondata" class="inputCommon">
+					<span class="red classred" >*格式不正确请重新输入</span>
+
+				</div>
+				<div class="mtb10">
+					<div class="borderBottom">
+							<p  class="tabBtn pl20 pr20 text-center">解析</p>
+							<span class="  mt10 red classred jxtext">
+								*该项不可为空
+							</span>
+					</div>
+					<div class="mt10 mb10">
+						<script type="text/plain" id="messageJx" name="message" style="width:900px;height:150px;"></script>
+
+					</div>
+				</div>
+			</li>
+			</ul>
+	</div>
+</div>
+<div class="exercise_choice dn">
+	<div class="exerciseTitle">
+		<p class="box1000 mt20 of pr20">
+
+			<button type="button" name="button" class="btn right mr0 answer4">所有选项一行</button>
+			<button type="button" name="button" class="btn right answer2">每行两个选项</button>
+			<button type="button" name="button" class="btn right answer1">每行一个选项</button>
+		</p>
+		<div class="">
+			<div class="p15 pb0">
+				<span class="numval">
+				</span>
+				<span class="score"></span>
+				<span class="caption"></span>
+			</div>
+			<ul class="borderBottomEEE exerciseContent ">
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+				<li style="display:none"></li>
+			</ul>
+			<div class="exerciseAnswer">
+				<span class="color3baeab">【答案】</span>
+				<span class="solution"></span>
+			</div>
+			<div class="exerciseJx borderBottomEEE">
+				<span class="color3baeab">【解析】</span>
+				<span class="analysisSpan"></span>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" class="setAnswerinfo">
+<input type="hidden" class="fuheti" value="1">
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+
+<script>
+
+
+		var ueMessage;
+		ueMessage	= UE.getEditor('message');
+		var messageA;
+		messageA	= UE.getEditor('messageA');
+		var messageB;
+		messageB= UE.getEditor('messageB');
+		var messageC;
+		messageC= UE.getEditor('messageC');
+		var messageD;
+		messageD	= UE.getEditor('messageD');
+		var messageE;
+		messageE	= UE.getEditor('messageE');
+		var messageF;
+		messageF= UE.getEditor('messageF');
+		var messageG;
+		messageG= UE.getEditor('messageG');
+		var messageH;
+		messageH= UE.getEditor('messageH');
+		var messageJx;
+		messageJx= UE.getEditor('messageJx');
+		var abcArr = new Array();
+  		abcArr = ['A','B','C','D','E','F','G','H']
+		function resShow(){
+			var a = 0;
+
+			if($('.inputCommon').val().length == ''){
+				$('.inputCommon').siblings('.red').show();
+				a++
+			}else{
+				$('.inputCommon').siblings('.red').hide();
+			}
+			for (var j = 0; j <$('.exerciseNums').children('option:selected').val(); j++) {
+				if(UE.getEditor('message'+abcArr[j]).getContentLength() == 0){
+					$('.editors').eq(j).find('.red').show();
+					a++;
+				}else {
+					$('.editors').eq(j).find('.red').hide();
+				}
+			}
+			if(UE.getEditor('messageJx').getContentLength() == 0){
+				$('.jxtext').show();
+				a++
+			}else{
+				$('.jxtext').hide();
+			}
+			if($('.ml62').find('.active').length== 0){
+				$('.oneAnswer').show();
+				console.log(1)
+				a++
+			}else{
+				$('.oneAnswer').hide();
+			}
+			return a
+		}
+		function exerciseHtml(){
+			// var html = '';
+			$('.exerciseContent').children('li').hide()
+			$('.solution').html('')
+			$('.score').text('('+$('.inputCommon').val()+'分)');
+			var title = ueMessage.getContent();
+			$('.caption').html(title);
+			var exerciseNum = $('.exerciseNums').children('option:selected').val();
+			var ueName = [messageA,messageB,messageC,messageD,messageE,messageF,messageG,messageH];
+			for(var i=0;i<exerciseNum;i++){
+				let word = $('.editors').eq(i).children('.optionSpan').text()+'.';
+				$('.exerciseContent').children().eq(i).show().html(word+ueName[i].getContent())
+			}
+			for(var i=0;i<exerciseNum;i++){
+				var answerName = $('.editors').eq(i).find('.active').parents('.editors').children('.optionSpan').text()
+				$('.solution').append('<span>'+answerName+'</span>')
+			}
+			var analysis = messageJx.getContent();
+			$('.analysisSpan').html(analysis)
+			return $('.exercise_choice').html();
+		}
+</script>
+
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/input.js"></script>

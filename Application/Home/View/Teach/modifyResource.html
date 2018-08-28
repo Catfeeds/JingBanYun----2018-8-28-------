@@ -1,0 +1,1020 @@
+<layout name="teacher_layout_2" />
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+
+<style>
+    body {
+        display: block;
+    }
+    
+    ul,
+    li {
+        list-style: none
+    }
+    
+    .form_section {
+        margin-bottom: 12px;
+    }
+    
+    .text {
+        display: inline-block;
+    }
+    
+    .text input {
+        width: 400px;
+    }
+    
+    .text select {
+        width: 400px;
+    }
+    
+    .text textarea {
+        width: 400px;
+    }
+    
+    .remove_btn {
+        background: #fff;
+        outline: none;
+        border: none;
+        color: #dd1010;
+        margin-left: 13%
+    }
+    
+    #remove_file a {
+        color: #333;
+    }
+    
+    #navThumImg1, #navThumImg3 {
+        -moz-transform:rotate(20deg);
+        -webkit-transform:rotate(20deg);
+        transform:rotate(20deg);
+    }
+    
+    #navThumImg2, #navThumImg4 {
+        -moz-transform:rotate(-20deg);
+        -webkit-transform:rotate(-20deg);
+        transform:rotate(-20deg);
+    }
+    
+    #navThumImg1:hover,#navThumImg3:hover {
+        -moz-animation:rotate_z 0.8s infinite ease;
+        -webkit-animation:rotate_z 0.8s infinite ease;
+        animation:rotate_z 0.8s infinite ease;
+    }
+    
+    #navThumImg2:hover, #navThumImg4:hover {
+        -moz-animation:rotate_f 0.8s infinite ease;
+        -webkit-animation:rotate_f 0.8s infinite ease;
+        animation:rotate_f 0.8s infinite ease;
+    }
+    
+    @-moz-keyframes rotate_z{
+        0%{
+          -moz-transform:rotate(20deg);
+         }
+         100%{
+           -moz-transform:rotate(360deg);
+         }
+      }
+    
+      @-webkit-keyframes rotate_z{
+        0%{
+          -webkit-transform:rotate(20deg);
+         }
+         100%{
+           -webkit-transform:rotate(360deg);
+         }
+      }
+    
+      @keyframes rotate_z{
+        0%{
+          transform:rotate(20deg);
+         }
+         100%{
+           transform:rotate(360deg);
+         }
+      }
+    
+    @-moz-keyframes rotate_f{
+        0%{
+          -moz-transform:rotate(20deg);
+         }
+         100%{
+           -moz-transform:rotate(360deg);
+         }
+      }
+    
+      @-webkit-keyframes rotate_f{
+        0%{
+          -webkit-transform:rotate(20deg);
+         }
+         100%{
+           -webkit-transform:rotate(360deg);
+         }
+      }
+    
+      @keyframes rotate_f{
+        0%{
+          transform:rotate(20deg);
+         }
+         100%{
+           transform:rotate(360deg);
+         }
+      }
+    
+    .form-control {
+        display: inline-block;
+    }
+	
+	#fine-uploader {
+		width: 50%;
+		margin: 0 auto;
+	}
+	
+	.qq-uploader {
+		width: 100%;
+	}
+	
+	.qq-upload-list {
+		box-shadow: none
+	}
+	
+	.qq-upload-button {
+		background: #8fc201;
+		border: 1px solid #92B925
+	}
+	
+	.qq-upload-list li {
+		margin-top: 5px
+	}
+	
+	.qq-thumbnail-selector {
+		width: 50px;
+	}
+</style>
+<div style="margin-bottom: 12px;">
+    <if condition="$from eq 'my'">
+        <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn2">返回</a>
+        <else />
+        <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn2">返回</a>
+    </if>
+</div>
+<p class="bg-warning" style="padding: 10px;">
+    注意：资源一旦经过修改，将变为待审核状态，需要重新通过审核后才能上线。
+</p>
+<div>
+    <form id="mainForm" action="__URL__/modifyResource" method="post" onsubmit="$('#saveButton').attr('disabled',true);">
+        <div style="text-align:center">
+            <input type="hidden" name="id" value="{$id}">
+            <div class="example" data-text="基本信息">
+                <div class="form_section">
+                    <label for="name">资源名称</label>
+
+                    <div class="input-control text full-size" style="display:inline-block">
+                        <input type="text" name="name" id="name" value="{$data.name}" class="form-control" required placeholder="必填，不超过40个字" maxlength="40">
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="description" style="vertical-align:top">资源描述</label>
+
+                    <div class="input-control text full-size">
+                        <textarea id="description" name="description" rows="4" class="form-control" required placeholder="必填，不超过500个字" maxlength="500">{$data.description}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example" data-text="关联数据">
+                <div class="form_section">
+                    <label for="course_id">关联学科</label>
+
+                    <div class="input-control text full-size">
+                        <select id="course_id" name="course_id" class="form-control" onchange="getTextbooks()" required>
+                            <option value="">-请选择-</option>
+                            <volist name="courses" id="dataCourse" empty="">
+                                <option value="{$dataCourse.id}" {$data['course_id']==$dataCourse[ 'id']? 'selected': ''}>{$dataCourse.code} : {$dataCourse.course_name}</option>
+                            </volist>
+                                <!--<option value="-1" {$data['course_id']==-1?'selected':''} >QUK : 全学科</option>-->
+                        </select>
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="grade_id">关联年级</label>
+                    <div class="input-control text full-size">
+                        <select id="grade_id" name="grade_id" class="form-control" onchange="getTextbooks()" required>
+                            <option value="">-请选择-</option>
+                            <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                                <option value="{$dataGrade.id}" {$data[ 'grade_id']==$dataGrade[ 'id']? 'selected': ''}>{$dataGrade.grade}</option>
+                            </volist>
+                                <!--<option value="-1" {$data['grade_id']==-1?'selected':''}>小学全年级</option>
+                                <option value="-2" {$data['grade_id']==-2?'selected':''}>中学全年级</option>
+                                <option value="-3" {$data['grade_id']==-3?'selected':''}>高中全年级</option>-->
+                        </select>
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="textbook_id">教材分册</label>
+                    <div class="input-control text full-size">
+                        <select id="textbook_id" name="textbook_id" class="form-control">
+                            <option value="">-请选择-</option>
+                            <volist name="textbooks" id="dataTextbook">
+                                <option value="{$dataTextbook.id}" {$dataTextbook[ 'id']==$data[ 'textbook_id']? 'selected': ''}>{$dataTextbook.name}</option>
+                            </volist>
+                                <!--<option value="-1" {$data['textbook_id']==-1?'selected':''}>无</option>-->
+                        </select>
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="type">资源类型</label>
+
+                    <div class="input-control text full-size" style="display:inline-block">
+                        <select id="type" name="l_type" class="form-control" required style="width:400px">
+                            <option value="">-请选择-</option>
+                            <option extval=".mp4" value="VIDEO" {$data['type']==video? 'selected': ''} >视频</option>
+                            <option extval=".mp3" value="AUDIO" {$data['type']==audio? 'selected': ''} >音频</option>
+                            <option extval=".swf" value="SWF" {$data['type']==swf? 'selected': ''} >SWF</option>
+                            <option extval=".doc,.docx" value="WORD" {$data['type']==word? 'selected': ''} >WORD</option>
+                            <option extval=".ppt,.pptx" value="PPT" {$data['type']==ppt? 'selected': ''} >PPT</option>
+                            <option extval=".pdf" value="PDF" {$data['type']==pdf? 'selected': ''} >PDF</option> 
+                            <option extval=".jpg,.png,.jpeg" value="IMAGE" {$data['type']==image? 'selected': ''} >图片</option>
+							<option extval=".zip,.rar" value="condensed" {$data['type']==condensed? 'selected': ''} >压缩包</option>
+                        </select>
+                    </div>
+                </div>
+                <!--<div id="remove_file">
+                    <ul>
+                        <volist name="contact_result" id="contact_data_item" empty="" key="i"> 
+                            <li>
+                                <a href="javascript:void(0)" attr_id="{$contact_data_item.id}">资源{$i}</a>
+                                <span class="remove_btn remove_button_1" style="cursor:pointer;">删除</span>
+                                <input type="hidden" name="y_id[]" value="{$contact_data_item.id}" class="y_id"/>
+                            </li>
+                        </volist>  
+                    </ul>
+                </div>-->
+                <div id="fine-uploader" style="display:block;"> 
+            
+                </div>
+                <div class="hidden_ids">
+                    <volist name="contact_result" id="resource_item" empty="" key="i"> 
+                            <if condition="$data['type'] eq 'video'">
+                                <input type="hidden" attr_id="{$resource_item.id}" name='y_id[]' value="{$resource_item.id}" vid_image='{$resource_item.vid_image_path}'  attr_type="{$resource_item.type}" attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr_path="{$resource_item.resource_path}"/>  
+                            <elseif condition="$data['type'] eq 'audio'"/>  
+                                <input type="hidden" attr_id="{$resource_item.id}" name='y_id[]' value="{$resource_item.id}"  attr_type="{$resource_item.type}" attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr_path="{$resource_item.resource_path}"/> 
+                            <else />  
+                                <input type="hidden" attr_id="{$resource_item.id}" name='y_id[]' value="{$resource_item.id}"  attr_type="{$resource_item.type}"  attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr_path="{$resource_item.resource_path}"  />
+                            </if>  
+                    </volist> 
+                </div>
+                <!--<div id="adds_file" style="text-align:center">
+                    <a href="javascript:void(0)" style="color:#dd1010;text-decoration: none" class='choose_file'>选择上传文件</a>
+                </div>-->
+            </div>
+            
+            <div id="add_file">
+                    <ul> 
+                        
+                    </ul> 
+                </div>
+        <input type="hidden" name="unique_string" id="unique_string"/>
+        <input type='hidden' name='unique_vid' id='unique_vid'/>
+        <input type='hidden' name='vid_width' id='vid_width'/>
+        <input type='hidden' name='vid_time' id='vid_time'/>
+        <input type='hidden' name='vid_fullpath' id='vid_fullpath'/>
+        <input type='hidden' name='vid_image_path' id='vid_image_path'/>
+        <input type='hidden' name='vid_transition' id='vid_transition'/>
+        <input type='hidden' name='real_type' id='real_type'/>
+            
+            <!--
+        <div data-text="资源内容">
+            <div>
+                <script type="text/plain" id="contentEditor" name="content" style="width:100%;height:340px;">
+                {$data.content}
+                </script>
+            </div>
+        </div>
+-->
+            <div class="form-actions" style="background:none" style="background:none">
+                <!--<button type="button" class="btn btn-primary" id="uploadButton">开始上传</button>-->
+                <button type="submit" class="btn btn-primary" id="upload_ture" onclick="return check();">确定</button>
+            </div>
+        </div>
+    </form>
+    <div >  <!--add_file-->
+        <form id="secondForm" action="__URL__/upload_file" method="post" enctype="multipart/form-data" >
+            <div style="display:none;">
+                <button type="submit" class="btn btn-primary" id="real_uploadButton">开始上传</button>
+            </div>
+            <div id="add_file_child" style="display:none;">
+            
+            </div>
+        </form>
+        
+    </div> 
+    
+</div>
+<!--<script src="__PUBLIC__/js/external/jquery.form.js" ></script>-->
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+
+<script type="text/template" id="qq-template">
+        <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+            <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+                <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+            </div>
+            <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+                <span class="qq-upload-drop-area-text-selector"></span>
+            </div>
+            <div class="qq-upload-button-selector qq-upload-button">
+                <div>上传文件</div>
+            </div>
+            <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+            <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+                <li>
+                    <div class="qq-progress-bar-container-selector">
+                        <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                    </div>
+                    <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                    <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+                    <span class="qq-upload-file-selector qq-upload-file"></span>
+                    <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                    <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                    <span class="qq-upload-size-selector qq-upload-size"></span>
+                    <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">取消</button>
+                    <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">重传</button>
+                    
+                    <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+                </li>
+            </ul>
+
+            <dialog class="qq-alert-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Close</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-confirm-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">No</button>
+                    <button type="button" class="qq-ok-button-selector">Yes</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-prompt-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <input type="text">
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                    <button type="button" class="qq-ok-button-selector">Ok</button>
+                </div>
+            </dialog>
+        </div>
+</script>
+<script>
+    var uploadInfo = {};
+    function changeInputFilter(){
+        var acceptStr = $('#type').find("option:selected").attr('extval');  
+        $(':file').attr('accept',acceptStr);        
+    }
+    
+    
+    function onFileCheck(){
+        if($('li').hasClass('qq-upload-fail')){
+            alert('有文件上传错误');
+            return false;
+        }
+        return true;
+    }
+    var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById('fine-uploader'),
+        request1Enable : true,
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mov","mp4","mp3"),
+            inputName:'Filedata', 
+        },
+        request: {
+            endpointnum: 0,
+            endpoint: 'index.php?m=Home&c=Teach&a=upload_file&watermark_status=1',
+            params:{},
+            inputName:'file[]',							
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'				
+        },
+        retry: {
+           enableAuto: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[id];
+        },
+        responseCallBack: function(id,specNum,xhr){       
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                alert('上传失败!错误原因'+e);
+                return false;
+            }
+            if(specNum == 0){			  
+              if(result.code == 0){ 
+                    if(typeof(uploadInfo[id])== 'undefined'){
+                        uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid_file_path'] = result.res;
+                    uploadInfo[id]['vid_image_path'] = result.message_video_image;     //这里是视频截图,如果不是视频这里就是空
+                    uploadInfo[id]['is_transition'] = result.is_transition;            //这里是视频转换状态。
+                    return true;
+               }else{ 
+                    alert(result.msg);
+               }
+            }else if(specNum == 1){
+                if(result.error == 0){
+                //alert("上传成功!VID:"+result.data[0].vid);
+                    //TODO: add result.res to XXX
+                    if(typeof(uploadInfo[id])== 'undefined')
+                    {
+                    uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid'] = result.data[0].vid;
+                    uploadInfo[id]['playerwidth'] = result.data[0].playerwidth + '*' +result.data[0].playerheight;
+                    uploadInfo[id]['duration'] = result.data[0].duration;
+                    uploadInfo[id]['vid_fullpath'] = result.data[0].mp4; 
+                    return true;
+                }else{ 
+                    alert("上传失败!错误码:"+result.error);
+                }
+            }
+            return false;
+        }			
+    }); 
+    changeInputFilter();
+    
+    
+    var resource_id="{$id}";    
+    function init_funtion(){        
+        //var temp_ul='<div class="qq-uploader-selector qq-uploader"></div>'
+        var temp_li='<div class="show_div" style="margin-left:10px;margin-top:10px;"><img src=""><input type="hidden" /><a target="_black;"></a><a class="delete_button" style="margin-left:10px;cursor:pointer;">删除</a></div>';
+        var other_file_id=3;
+        var copy_li,copy_ul;
+
+        //这里开始复制
+        var all_exists_input=$('.hidden_ids').children('input'); 
+        for(var i=0;i<all_exists_input.length;i++){ 
+            copy_li=$(temp_li).clone(true);
+            $(copy_li).find('a').eq(1).attr('attr_class',($(all_exists_input[i]).attr('attr_class')));
+            $(copy_li).find('img').css({
+				'width': '50px',
+				'margin-right': '10px'
+			});
+            $(copy_li).find('a').eq(0).text('资源'+(i+1));  
+            
+            if($(all_exists_input[i]).attr('attr_type')=='image'){
+                $(copy_li).find('a').eq(0).attr('href',"{$oss_path}"+$(all_exists_input[i]).attr('attr_path'));
+                $(copy_li).find('img').attr('src',"{$oss_path}"+$(all_exists_input[i]).attr('attr_path'))  
+                
+            }else if($(all_exists_input[i]).attr('attr_type')=='swf'){ 
+                $(copy_li).find('a').eq(0).attr('href',"{$oss_path}"+$(all_exists_input[i]).attr('attr_path'));
+                $(copy_li).find('img').attr('src',"/Public/img/resource/b_swf.jpg")  
+                
+            }else if($(all_exists_input[i]).attr('attr_type')=='video'){ 
+                var vid_image_path='';
+                if($(all_exists_input[i]).attr('vid_image').indexOf('http')== -1){
+                    vid_image_path="{$oss_path}"+$(all_exists_input[i]).attr('vid_image');
+                }else{
+                    vid_image_path=$(all_exists_input[i]).attr('vid_image');
+                }
+                
+                $(copy_li).find('a').eq(0).attr('href',"{$oss_path}"+$(all_exists_input[i]).attr('attr_path'));
+                $(copy_li).find('img').attr('src',vid_image_path)  
+                
+            }else if($(all_exists_input[i]).attr('attr_type')=='audio'){ 
+                $(copy_li).find('a').eq(0).attr('href',"{$oss_path}"+$(all_exists_input[i]).attr('attr_path'));
+                $(copy_li).find('img').attr('src',"/Public/img/resource/b_radio.jpg")  
+                
+			}else if($(all_exists_input[i]).attr('attr_type')=='condensed'){ 
+                $(copy_li).find('a').eq(0).attr('href',"{$oss_path}"+$(all_exists_input[i]).attr('attr_path'));
+                $(copy_li).find('img').attr('src',"/Public/img/resource/b_rar.jpg")  
+                
+            }else if($(all_exists_input[i]).attr('attr_type')=='pdf'){ 
+                $(copy_li).find('a').eq(0).attr('href',"{$oss_path}"+$(all_exists_input[i]).attr('attr_path'));
+                $(copy_li).find('img').attr('src',"/Public/img/resource/b_pdf.jpg")  
+                
+            }else if($(all_exists_input[i]).attr('attr_type')=='ppt' || $(all_exists_input[i]).attr('attr_type')=='word'){ 
+                var ppt_str= $(all_exists_input[i]).attr('attr_path');
+                var ppt_arr=ppt_str.split('/'); 
+                ppt_str=ppt_arr[(ppt_arr.length-1)];  
+                var ppt_temp_arr=ppt_str.split('.');
+                var ppt_name=ppt_temp_arr[0];   
+                
+                var ppt_url="{$oss_path}"+"teacher/"+resource_id+'/'+$(all_exists_input[i]).val()+'/'+ppt_name+'.pdf';  
+                $(copy_li).find('a').eq(0).attr('href',ppt_url);
+                if($(all_exists_input[i]).attr('attr_type')=='ppt'){
+                    $(copy_li).find('img').attr('src',"/Public/img/resource/b_ppt.jpg")  
+                }else{
+                    $(copy_li).find('img').attr('src',"/Public/img/resource/b_word.jpg") 
+                } 
+            } 
+            $('.qq-upload-list-selector').append(copy_li);
+        } 
+    } 
+    init_funtion();
+    
+    
+    
+    //点击删除
+    $(".delete_button").live('click',function(){
+        var contact_class=$(this).attr('attr_class');   
+        $("."+contact_class).remove();  
+        $(this).parent().remove();
+    });  
+    
+    $("#fine-uploader").find(':file').live('click',function(){ console.log('run'); 
+        if($("#type").val()==''){
+            return false;
+        }
+    });
+    
+    var before_type=$("#type").val();
+    $("#real_type").val($("#type").val());  
+    //点击切换
+    $("#type").change(function () {  
+        var file_count=$('.qq-upload-list').children('li').length;
+        var exists_ele=$(".show_div").length;
+        if(file_count>0 || exists_ele>0){
+            if(confirm('您确认改变资源类型吗?改变后之前的资源将会被清除')){
+                uploadInfo={};   
+                $(".show_div").remove();
+                $(".hidden_ids").remove(); 
+                $('.qq-upload-list').children('li').remove();
+            }else{
+                $("#type").find("option[value="+before_type+"]").attr('selected',true);   
+            }   
+        }
+            //$("#fine-uploader").find(':file').attr('accept','undefined'); 
+        var inner_type=$("#type").val();
+        if(inner_type==''){
+            $("#fine-uploader").find(':file').attr('accept','undefined');
+        }
+        $("#real_type").val(inner_type);        
+        before_type=inner_type;  
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').attr('accept',acceptStr);
+    });
+    
+    function check() {
+        //资源名称
+        if(!onFileCheck()){
+            return false;
+        }
+        //TODO: PROECESS uploadInfo
+        $('#unique_string').val('');    
+        $("#unique_vid").val();         
+        $("#vid_width").val();          
+        $("#vid_time").val();           
+        $("#vid_fullpath").val('');
+        $("#vid_image_path").val('');
+        $("#vid_transition").val(''); 
+        
+        
+        for(var key in uploadInfo){ 
+            $('#unique_string').val($('#unique_string').val() + uploadInfo[key].vid_file_path +',');
+            var width = typeof(uploadInfo[key].playerwidth) != 'undefined' ? uploadInfo[key].playerwidth : '0*0';
+            
+            $('#vid_width').val($('#vid_width').val() + width +',');
+            var duration = typeof(uploadInfo[key].playerduration) != 'undefined' ? uploadInfo[key].playerduration : '00:00:00';
+            
+            $('#vid_time').val($('#vid_time').val() + duration +',');
+            var vid = typeof(uploadInfo[key].vid) != 'undefined' ? uploadInfo[key].vid : '0';
+            $('#unique_vid').val($('#unique_vid').val() + vid +',');
+            
+            var vid_fullpath= typeof(uploadInfo[key].vid_fullpath) != 'undefined' ? uploadInfo[key].vid_fullpath : '0';
+            $('#vid_fullpath').val($('#vid_fullpath').val()+vid_fullpath+',');
+            
+            var vid_image_path= typeof(uploadInfo[key].vid_image_path) != 'undefined' ? uploadInfo[key].vid_image_path : '0';
+            $('#vid_image_path').val($('#vid_image_path').val()+vid_image_path+',');
+            
+            var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+            $('#vid_transition').val($('#vid_transition').val()+vid_transition+',');
+        } 
+        $('#unique_string').val($('#unique_string').val().substr(0 ,$('#unique_string').val().length-1));
+        $('#vid_width').val($('#vid_width').val().substr(0 ,$('#vid_width').val().length-1));
+        $('#vid_time').val($('#vid_time').val().substr(0 ,$('#vid_time').val().length-1));
+        $('#unique_vid').val($('#unique_vid').val().substr(0 ,$('#unique_vid').val().length-1));
+        $('#vid_fullpath').val($('#vid_fullpath').val().substr(0 ,$('#vid_fullpath').val().length-1));
+        $('#vid_image_path').val($('#vid_image_path').val().substr(0 ,$('#vid_image_path').val().length-1));
+	$('#vid_transition').val($('#vid_transition').val().substr(0 ,$('#vid_transition').val().length-1));
+        
+        var exists_element=$(".hidden_ids").children('input');
+        var vid_file_path=$('#unique_string').val();   
+        if(exists_element.length==0){
+            if(vid_file_path==''){ 
+                alert('上传文件不能为空');
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+
+<script>
+    /*Array.prototype.elremove = function(m){  
+　　      if(isNaN(m)||m>this.length){return false;}  
+　　      this.splice(m,1);  
+　   }
+    var global_vid=new Array();     
+    var global_vid_file_path=new Array();
+    var global_playerwidth=new Array();
+    var global_playerduration=new Array();
+    var global_vid_fullpath=new Array();
+    var global_vid_image_path=new Array();
+    var global_transition=new Array();
+    
+    $(document).ready(function(){
+        var out_type=$("#type").val();
+        $("#real_type").val(out_type); 
+        var before_type=$("#type").val();
+        
+         $("#type").change(function(){
+            var click_tag=1;
+            
+            if(confirm('您确认改变资源类型吗?改变后之前的资源将会被清除')){
+                $("#add_file").find('li').remove();
+                $("#remove_file").find('li').remove();
+                $("#unique_string").val();
+                $("#unique_vid").val();
+                $("#vid_width").val();
+                $("#vid_time").val(); 
+                $(".real_hidden_file").remove();
+                //$("#type").attr('disabled', true);
+                global_vid=[];
+                global_vid_file_path=[];
+                global_playerwidth=[];
+                global_playerduration=[];
+                global_vid_fullpath=[];
+                global_vid_image_path=[];
+                global_transition=[];
+                
+            }else{
+                $("#type").find("option[value="+before_type+"]").attr('selected',true);  
+            }
+            var inner_type=$("#type").val();
+            $("#real_type").val(inner_type);
+            before_type=inner_type;
+            global_click_event=1;
+        }); 
+        
+        var options = { 
+                    success:    showResponse,  // post-submit callback
+                    resetForm:  false,
+                    dataType:  'json' , 
+                };
+                
+        var optionsVideo = { 
+                    success:    showResponseVideo,  // post-submit callback
+                    resetForm:  false,
+                    dataType:  'json',
+                    async:false
+                };
+                
+        var currentUploadingVideo=0;
+        var temp_li="<li><a href='##'>二氧化碳的溶解性1</a><span class='remove_btn remove_button_2 no' style='cursor:pointer;'>删除</span></li>";
+        var temp_input="<input type='file' name='file[]' class='real_hidden_file uncomplete' />";
+        var number=0;
+        var new_element='';
+        var new_li=''
+        var global_click_event=1;
+        var BLWSUploadError=0;
+        var is_upload_file=0; 
+        
+        //点击上传文件去触发第二个form
+        $("#uploadButton").click(function(){
+            $("#real_uploadButton").trigger('click');
+        });
+        
+        //点击上传文件
+        $(".choose_file").click(function(){
+            if(global_click_event==0){
+                return false;
+            }
+            file_type=$('#type').val();
+            var acceptStr = $('#type').find("option:selected").attr('extval');  
+
+            number++; 
+           
+            new_element=$(temp_input).clone(true);
+            $(new_element).addClass('class_'+number);   
+            $(new_element).attr('number',  number);
+            $(new_element).attr('accept',acceptStr);  
+            $("#add_file_child").append(new_element);
+  
+            $(new_element).trigger('click');   
+        });
+        
+        
+        function join_file_type(){
+            var type_value=$("#type").val();
+            var accept_value=[];
+            switch (type_value) {
+                case 'VIDEO':
+                    accept_value=['.mp4']
+                    break;
+                case 'AUDIO':
+                    accept_value=['.mp3']
+                    break;
+                case 'SWF':
+                    accept_value=['.swf']
+                    break;
+                case 'WORD':
+                    accept_value=['.doc','.docx']
+                    break;
+                case 'PPT':
+                    accept_value=['.ppt','.pptx']
+                    break;
+                case 'PDF':
+                    accept_value=['.pdf']
+                    break;
+                case 'IMAGE':
+                    accept_value=['.jpg','.png','.jpeg']
+                    break; 
+            }
+            return accept_value;
+        }
+        
+        
+        //文件发生改变
+        allow_type=2;
+        $(".real_hidden_file").live('change',function(){
+            //这里判断文件类型
+            var accept_parameter=join_file_type();
+            if(check_file(this,accept_parameter)==false){
+                return false;
+            }
+            
+            if(global_click_event==0){
+                return false;
+            }
+            
+             var value=$(".class_"+number).val();  
+                
+            var a_element=$(temp_li).clone(true);
+            $(a_element).find('.remove_button_2').attr('number',number)
+            $(a_element).find('.remove_button_2').addClass('delete'+number);
+            $(a_element).find('a').text(value);
+            $("#add_file").children('ul').append(a_element);
+             
+        });
+         
+        
+              
+        //点击已有的元素而的删除
+        $(".remove_button_1").live('click',function(){
+            if(global_click_event==0){
+                return false;
+            }
+            $(this).parent().remove();
+        });
+        
+        //点击新增的元素的删除
+        $(".remove_button_2").live('click',function(){         
+            if(global_click_event==0){
+                return false;
+            }
+            var current_number=$(this).attr('number');  
+            $(".class_"+current_number).remove();
+            var index=$(this).parent().index(); 
+             
+            if($(this).hasClass('yes')){  
+                //判断是否是视频,音频
+                var type = $("#type").val()
+                if(type == 'VIDEO' || type == 'AUDIO'){
+                    global_vid.elremove(index);
+                    global_playerwidth.elremove(index);
+                    global_playerduration.elremove(index);
+                    global_vid_fullpath.elremove(index);
+                    global_vid_image_path.elremove(index);
+                    global_transition.elremove(index);
+
+                }
+                global_vid_file_path.elremove(index); 
+            }  
+            if(global_vid_file_path.length==0){
+                is_upload_file=0;
+            }
+            
+            $(this).parent().remove();
+        });
+        
+        //点击确定
+        $("#upload_ture").click(function(){ 
+            if($(".y_id").length==0){
+                if(is_upload_file==0){
+                    alert('请上传文件资源');
+                    return false;
+                } 
+            }  
+            //这里要重新拼接那个资源,先把以前的那些资源进行替换
+            var vid_string=global_vid.join(','); 
+            var vid_width_string=global_playerwidth.join(',');
+            var vid_time_string=global_playerduration.join(',');
+            var vid_file_string=global_vid_file_path.join(',');
+            var vid_fullpath=global_vid_fullpath.join(',');
+            var vid_image_path=global_vid_image_path.join(',');
+            var vid_transition=global_transition.join(',');
+            
+            $("#unique_vid").val(vid_string);
+            $("#vid_width").val(vid_width_string);
+            $("#vid_time").val(vid_time_string);
+            $("#unique_string").val(vid_file_string);
+            $("#vid_fullpath").val(vid_fullpath);
+            $("#vid_image_path").val(vid_image_path); 
+            $("#vid_transition").val(vid_transition);
+            
+        });
+        
+        $('#secondForm').submit(function() { 
+            //如果没有所有的文件都没有值则不上传
+            var all_file=$(".real_hidden_file");
+            var file_exists=0;
+            for(var i=0;i<all_file.length;i++){
+                if($(all_file[i]).val()!=''){
+                    file_exists=1;
+                }else{
+                    $(all_file[i]).remove();
+                }
+            }
+               if(file_exists==1){
+                   //if(confirm('您确定上传么?上传后不可再次操作资源')){
+                       var type=$("#type").val()
+                       if(type=='VIDEO' || type=='AUDIO'){
+                            $(".uncomplete").each(function(i,n){  
+                                //currentUploadingVideo=$(n).attr('id');
+                                //var num=$(n).attr('number');
+                                //$('.delete'+num).removeClass('no').addClass('yes');
+                                $(n).removeClass('uncomplete').addClass('complete');
+                                var current_class=$(n).attr('class');
+                                var form = makeMediaForm($(n)[0]);              
+                                //optionsVideo
+                                $(form).submit(function() { 
+                                    $(this).ajaxSubmit(optionsVideo);
+                                    return false;
+                                });
+                                $(form).submit();  
+                                $(form).find('[class="'+current_class+'"]').attr('name','file[]');  
+                                $('#add_file_child')[0].appendChild($(form).find('[class="'+current_class+'"]')[0]);//[0].appendChild($(form).find('[class="real_hidden_file"]')[0]); 
+                                  
+                                if(BLWSUploadError == 1){
+                                    return false;
+                                } 
+                            });
+                        }  
+                       $(this).ajaxSubmit(options);   
+                       //$('#uploadButton').attr('disabled',true);//unique_vid 
+                        //global_click_event=0;
+                        is_upload_file=1;
+                        $('#add_file_child').empty();
+                        var all=$('.no');
+                        for(var i=0;i<all.length;i++){
+                            $(all[i]).removeClass('no').addClass('yes');
+                        }
+                   //} 
+               } 
+               return false;
+           });
+           
+           function showResponseVideo(responseText, statusText){
+                switch(responseText.error)
+                   {
+                       case '0': //success
+                           if($('#unique_vid').val() =="" ){
+                               $('#unique_vid').val(responseText.data[0].vid); 
+                               
+                                if(responseText.data[0].playerwidth=='' || responseText.data[0].playerheight==''){
+                                    $("#vid_width").val('0*0');
+                                }else{
+                                    $("#vid_width").val(responseText.data[0].playerwidth + '*' + responseText.data[0].playerheight);
+                                } 
+                                if(responseText.data[0].duration==''){
+                                    $("#vid_time").val('00:00:00');
+                                }else{
+                                    $("#vid_time").val(responseText.data[0].duration);
+                                }
+                           }else{
+                               $('#unique_vid').val( $('#unique_vid').val() + ','+ responseText.data[0].vid);
+                               //$("#vid_width").val( $("#vid_width").val()+','+  responseText.data[0].playerwidth + '*' + responseText.data[0].playerheight);
+                               //$("#vid_time").val( $("#vid_time").val()+','+ responseText.data[0].duration);
+                               if(responseText.data[0].playerwidth=='' || responseText.data[0].playerheight==''){
+                                    $("#vid_width").val($("#vid_width").val()+','+'0*0');
+                                }else{
+                                    $("#vid_width").val($("#vid_width").val()+','+responseText.data[0].playerwidth + '*' + responseText.data[0].playerheight);
+                                }
+
+                                if(responseText.data[0].duration==''){
+                                    $("#vid_time").val($("#vid_time").val() + ','+'00:00:00');
+                                }else{
+                                    $("#vid_time").val($("#vid_time").val() + ',' + responseText.data[0].duration);
+                                } 
+                                
+                                $("#vid_fullpath").val($("#vid_fullpath").val()+','+ responseText.data[0].mp4);
+                                $("#vid_image_path").val($("#vid_image_path").val()+','+ responseText.data[0].images[1]);
+                           }
+                           global_vid.push(responseText.data[0].vid);
+                           global_playerwidth.push(responseText.data[0].playerwidth + '*' + responseText.data[0].playerheight);
+                           global_playerduration.push(responseText.data[0].duration);
+                           global_vid_fullpath.push(responseText.data[0].mp4);
+                           
+            
+                           BLWSUploadError = 0;
+                           break; 
+                       default: alert("上传失败!错误码:"+responseText.error);
+                                 BLWSUploadError = 1;
+                                 break;
+                   }
+                   //$('#'+currentUploadingVideo).attr('name','file[]');
+                   //console.log($('#'+currentUploadingVideo).val());
+           }
+                
+           
+           function showResponse(responseText, statusText) {
+            switch(responseText.code)
+            {
+                case 0: //success
+                    alert(responseText.msg); 
+                    
+                    
+                    if($('#unique_string').val()==''){
+                        $('#unique_string').val(responseText.res);
+                    }else{
+                        $('#unique_string').val($('#unique_string').val()+','+responseText.res);
+                    }  
+                    var arr=responseText.res.split(',');
+                    var video_image_arr=responseText.message_video_image.split(',');
+                    var vid_transition_arr=responseText.is_transition.split(',');
+                    
+                    for(var i=0;i<arr.length;i++){
+                        global_vid_file_path.push(arr[i]);
+                        global_vid_image_path.push(video_image_arr[i]);
+                        global_transition.push(vid_transition_arr[i]);
+                    }
+                    
+                    //global_array.push(responseText.res);
+                    break;
+
+                default: alert(responseText.msg);
+                    $('#unique_string').val('');
+                    //global_array.push(responseText.res);
+                    break;
+            }
+        }
+        
+        //保利威视上传
+        function makeMediaForm(mediaNode)
+         {
+             // 创建一个 form
+             var form1 = document.createElement("form");
+             form1.id = "form1";
+             form1.name = "form1";
+             form1.enctype="multipart/form-data";
+             // 添加到 body 中
+             // 创建一个输入
+             var input = document.createElement("input");
+             // 设置相应参数
+             input.type = "text";
+             input.name = "writetoken";
+             input.value = "9c538d85-340c-466c-9e35-bb301734eb0d";
+             form1.appendChild(input);
+             var input2 = document.createElement("input");
+             input2.type = "text";
+             input2.name = "JSONRPC";
+             input2.value = '{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}';
+             form1.appendChild(input2);
+             var clonedNode = mediaNode.cloneNode(true); // 克隆节点
+             mediaNode.setAttribute('name','Filedata');
+             $(mediaNode).appendTo($(form1));
+             //form1.appendChild(mediaNode);
+             form1.action='http://v.polyv.net/uc/services/rest?method=uploadfile';
+             form1.method ='POST';
+
+             // 对该 form 执行提交
+             return form1;
+             // 删除该 form
+         }
+    });*/
+</script>
+ 

@@ -1,0 +1,299 @@
+
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<!-- <link href="__PUBLIC__/css/activity.css?ver=1" type="text/css" rel="stylesheet"> -->
+<link href="__PUBLIC__/css/expertInfo.css" type="text/css" rel="stylesheet">
+
+<style>
+	@media screen and (max-width: 1360px) and (min-width: 0) {
+		body {
+			min-width: 1250px;
+			overflow-x: auto;
+		}
+		
+		.mainbody {
+			width: 97%;
+		}
+
+		#contentWrapper {
+			overflow: hidden;
+		}
+	}
+</style>
+
+<div class="exportInfoOutter">
+	<div class="expertInfoSearch">
+		<div class="search">
+			<select name="time_status" id="time_status">
+				<option value="">--资讯类型--</option>
+				<?php foreach($columnResources as $item){?>
+					<?php if($item['id'] == SHUFFLING){?>
+					<?php }else{ ?>
+				<option value="<?php echo $item['id']?>"><?php echo $item['column_name']?></option>
+				<?php } }?>
+			 </select>
+			<button class="search_btn">搜索</button>
+			<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资讯名称" autocomplete="off">
+		</div>
+	</div>
+
+	<div class="expertInfoMain">
+		<div class="expertInfoMainLeft">
+			<!-- 轮播图 -->
+			<?php if(!empty($data)){?>
+			<div id="carousel-example-generic" class="carousel slide bannerBox" data-ride="carousel">
+				<!-- Indicators -->
+				<ol class="carousel-indicators">
+					<?php for($i = 0;$i<count($data);$i++){ //var_dump($data[$i])?>
+						<?php if($i == 0){ ?>
+					<li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+						<?php }elseif($i == 1){?>
+					<li data-target="#carousel-example-generic" data-slide-to="1"></li>
+						<?php }else{?>
+					<li data-target="#carousel-example-generic" data-slide-to="2"></li>
+					<?php } }?>
+				</ol>
+				<!-- Wrapper for slides -->
+				<div class="carousel-inner" role="listbox">
+					<?php for($i = 0;$i<count($data);$i++){ //var_dump($data[$i])?>
+						<?php if($i == 0){ ?>
+                    <div class="item active">
+						<?php }else{ ?>
+					<div class="item">
+						<?php }?>
+                    	<a href="<?php echo $data[$i]['linkaddress']?>">
+	                    	<img src="<?php echo $oss_path.$data[$i]['file_path']?>" alt="">
+	                    	<div class="itemText"><?php echo $data[$i]['title']?></div>
+                    	</a>
+                    </div>
+					<?php } ?>
+				</div>
+
+				<!-- Controls -->
+				<a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+					<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+					<span class="sr-only">Previous</span>
+				</a>
+				<a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+					<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+					<span class="sr-only">Next</span>
+				</a>
+			</div>
+			<?php } ?>
+
+			<?php if(!empty($data1)){?>
+			<!-- 教学动态 -->
+			<div class="teachingDynamicBox">
+				<div class="teachingDynamicTop">
+					教学动态
+					<?php if(count($data1) > 3){?>
+					<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationMore&id=<?php echo $data1[0]['type']?>" class="right moreBtn" id="teachingDynamicMore">更多>></a>
+					<?php } ?>
+				</div>
+				<?php foreach($data1 as $key=>$data1_item){?>
+				<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id=<?php echo $data1_item['id']?>" class="expertInfoMoreMain <?php if($key == 0){echo 'active';}?>">
+					<div class="expertInfoMoreTop">
+						<div class="left">
+							<?php echo $data1_item['title']?>
+						</div>
+						<div class="right">
+							<?php if(date(‘Y’,$data1_item['up_time']) === date(‘Y’,time())){ echo date('m-d',$data1_item['up_time']);}else{echo date('Y-m-d',$data1_item['up_time']);}?>
+						</div>
+					</div>
+
+					<div class="expertInfoMoreBottom">
+						<img src="<?php echo $oss_path.$data1_item['pc_cover']?>" alt="" class="expertInfoMoreImg">
+						<p class="expertInfoMoreText expertInfoMoreTextDynamic">
+							<?php echo strip_tags(html_entity_decode($data1_item['content']))?>
+						</p>
+						<div class="expertInfoMoreWatch">
+							<img src="__PUBLIC__/img/expertInfo/watch.png" alt="">
+							<?php echo $data1_item['browse_count']?>
+						</div>
+					</div>
+				</a>
+				<?php } ?>
+			</div>
+			<?php }?>
+
+			<?php if(!empty($data2)){?>
+			<!-- 获奖作品 -->
+			<div class="winningWorksBox">
+				<div class="winningWorksTop">
+					获奖作品
+					<?php if(count($data2) > 4){?>
+					<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationMore&id=<?php echo $data2[0]['type']?>" class="right moreBtn" id="winningWorksMore">更多>></a>
+					<?php }?>
+				</div>
+				<?php foreach($data2 as $data2_item){?>
+				<a href="/index.php?m=Home&c=ExpertInformation&a=winningWorksDetails&id=<?php echo $data2_item['id']?>" class="expertInfoMoreMainWorks">
+					<img src="<?php echo $oss_path.$data2_item['pc_cover']?>" alt="" class="expertInfoMoreWorksImg">
+					<!--教育新闻/热点话题（无图片）-->
+					<div class="expertInfoMoreRight">
+						<div class="ib expertInfoMoreRightTitle">
+							<?php echo $data2_item['title']?>
+						</div>
+						<br>
+						<div class="ib expertInfoMoreRightWatch">
+							<img src="__PUBLIC__/img/expertInfo/watch.png" alt="" class="">
+							<?php echo $data2_item['browse_count']?>
+						</div>
+						<br>
+						<div class="oh expertInfoMoreRightTime">
+							<span class="ib left"><?php echo $data2_item['linkaddress']?></span>
+							<span class="i
+							......b right"><?php if(date(‘Y’,$data2_item['up_time']) === date(‘Y’,time())){ echo date('m-d',$data2_item['up_time']);}else{echo date('Y-m-d',$data2_item['up_time']);}?></span>
+						</div>
+					</div>
+				</a>
+			<?php }?>
+			</div>
+			<?php }?>
+
+		</div>
+
+		<div class="expertInfoMainRight">
+			<?php if(!empty($data3)){?>
+			<!-- 这里是右边的教育新闻榜单 -->
+			<div class="SearchMainRight eduNewsOutter">
+				<div class="SearchMainRightTit">
+					<span>谭晓培说数学</span>
+					<?php if(count($data3) > 7){?>
+					<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationMore&id=<?php echo $data3[0]['type']?>" class="right moreBtn" id="eduNewsMore">更多>></a>
+					<?php } ?>
+				</div>
+				<ul class="InfoMainRightUl">
+					<!-- 显示7条 -->
+					<?php foreach($data3 as $data3_item){?>
+					<li class="InfoMainRightLi">
+						<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id=<?php echo $data3_item['id']?>" class="InfoMainRightA">
+							<span class="textSpan">
+								<?php echo $data3_item['title']?>
+							</span>
+							<span class="InfoMainRightTime"><?php if(date(‘Y’,$data3_item['up_time']) === date(‘Y’,time())){ echo date('m-d',$data3_item['up_time']);}else{echo date('Y-m-d',$data3_item['up_time']);}?></span>
+							<?php if(date('Y-m-d',$data3_item['up_time']) === date('Y-m-d',time())){?><img src="__PUBLIC__/img/expertInfo/new.png" alt="" class="newImg"><?php } ?>
+						</a>
+					</li>
+					<?php } ?>
+				</ul>
+			</div>
+			<?php }?>
+
+			<?php if(!empty($data4)){?>
+			<!-- 这里是右边的热点话题榜单 -->
+			<div class="hotTopicOutter">
+				<img src="__PUBLIC__/img/expertInfo/hotTopicImg.png" alt="" class="hotTopicImg">
+				<ul class="SearchMainRightUl hotTopicUl">
+					<?php foreach($data4 as $k=>$data4_item){?>
+					<li class="SearchMainRightLi">
+						<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id=<?php echo $data4_item['id']?>" class="SearchMainRightA">
+							<span class="numSpan"><?php echo $k+1?></span>
+							<span class="textSpan">
+								<?php echo $data4_item['title']?>
+								<?php if(date('Y-m-d',$data4_item['up_time']) == date('Y-m-d',time())){?><img src="__PUBLIC__/img/expertInfo/new.png" alt="" class="hotImg"><?php }?>
+							</span>
+						</a>
+					</li>
+					<?php }?>
+				</ul>
+				<div class="moreBox">
+
+					<a href="/index.php?m=Home&c=ExpertInformation&a=expertInformationMore&id=<?php echo $data4_item['type']?>" class="moreBtn" id="hotTopicMore">更多>></a>
+
+				</div>
+			</div>
+			<?php }?>
+
+		</div>
+	</div>
+</div>
+
+<script>
+	// 教育新闻 热点话题 限制7条
+	function hidePart(li_,more_,outter_,num_) {
+		var arrLi = $(li_);
+		for (var i = 0; i < $(li_).length; i++) {
+	        arrLi[i].index = i;
+	        if (i >= num_) {
+	            arrLi[i].style.display = 'none';
+	        }
+	    }
+
+	    if($(li_).length > 0 && $(li_).length <= num_) {
+			$(more_).hide()
+		} else if($(li_).length == 0) {
+			$(outter_).hide()
+		}
+	}
+
+	hidePart('.InfoMainRightLi','#eduNewsMore','.eduNewsOutter',7);
+	hidePart('.SearchMainRightLi','#hotTopicMore','.hotTopicOutter',7);
+	hidePart('.expertInfoMoreMain','#teachingDynamicMore','.teachingDynamicBox',3);
+	hidePart('.expertInfoMoreMainWorks','#winningWorksMore','.winningWorksBox',4);
+
+	//热门浏览排行榜前三名的颜色
+	$('.SearchMainRightLi').eq(0).find('.numSpan').css('background', '#e9573f');
+	$('.SearchMainRightLi').eq(1).find('.numSpan').css('background', '#f27751');
+	$('.SearchMainRightLi').eq(2).find('.numSpan').css('background', '#ef9552');
+
+	//hot图片根据字数的长短有不同的位置
+	$('.SearchMainRightA').each(function(){
+		var maxwidth=25;
+		var trimString = $.trim($(this).children('.textSpan').text());
+		if(trimString.length >= maxwidth){
+			$(this).css('position', 'relative').children('.textSpan').css('position','initial').children('.hotImg').css({
+				'position': 'absolute',
+				'top': '3px',
+				'right': '3px'
+			});
+		} else{
+			$(this).css('position', 'inherit').children('.textSpan').css('position','relative').children('.hotImg').css({
+				'position': 'absolute',
+				'top': '-7px',
+				'right': '-20px'
+			});
+		}
+	});
+
+	// 超过150个字，显示省略号加详细
+	$('.expertInfoMoreText').each(function(){
+		var maxwidth=100;
+		var trimString = $.trim($(this).html());
+		if(trimString.length > maxwidth){
+			$(this).html(trimString.substring(0,maxwidth)+'…'+'<span class="detailSpan">[详细]</span>');
+		}
+	});
+
+	$('.expertInfoMoreMain.active').children('.expertInfoMoreBottom').show()
+	$('.expertInfoMoreMain').hover(function(){
+		$(this).addClass('active').siblings('.expertInfoMoreMain').removeClass('active').children('.expertInfoMoreBottom').stop(true, true).slideUp()
+		$(this).children('.expertInfoMoreBottom').stop(true, true).slideDown()
+	},function(){})
+</script>
+
+<script>
+	//轮播图只有一张时，隐藏左右按钮和小点点
+	if($('.carousel-inner').children('.item').length <= 1) {
+		$('.carousel-control').hide();
+		$('.carousel-indicators').hide();
+		$('.bannerBox .itemText').css('padding','10px 5px 10px')
+	}
+
+    function submits(type_values,tip) {
+        var str = '';
+        var keyword = $('.search_text').val();
+        var time_status = $('#time_status').val();
+        if(time_status != 0 && time_status != undefined){
+            str += '&time_status='+time_status;
+        }
+        if(keyword != ''){
+            str += '&keyword='+keyword;
+        }
+        str = "index.php?m=Home&c=ExpertInformation&a=expertInformationSearch" + str;
+        location.href = str;
+    }
+    $('.search_btn').click(function () {
+        submits();
+        //return false;
+    });
+</script>
+

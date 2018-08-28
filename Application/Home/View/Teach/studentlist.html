@@ -1,0 +1,99 @@
+<script src="__PUBLIC__/js/external/jquery-2.0.0.min.js"></script>
+<style>
+    ul {margin-left:-30px;}
+    ul li{margin-left:10px;float:left;width:80px;height:120px;}
+    .avatar {width: 70px;height: 70px;z-index: 10;border: 1px solid transparent;border-radius: 8px;cursor:pointer}
+    .nameControl{width:70px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow: ellipsis;word-break: break-all;text-shadow: 1px 1px 1px #aaaaaa;}
+    .nameControl:hover{text-overflow:inherit;overflow: visible;white-space: pre-line; }
+    .notOnline{
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+        filter: grayscale(100%);
+        filter: gray;}
+    .watermark{background:transparent url(/Public/img/lock.png) no-repeat;background-size:70px;}
+    img.inBackground {
+        filter:alpha(opacity=30);
+        opacity:.30;
+    }
+</style>
+<body id="body">
+</body>
+<script>
+    var studentlistjson = {$list};
+    var slist = eval(studentlistjson);
+    var shtml = '<tr><ul style="width:100%;">';
+    for(var i=0;i<slist.length;i++)
+    {
+        var data = slist[i];
+        shtml +='<li><div id="watermark'+data['id']+'"><img class="avatar" onclick="modifyStatus(this)" id="img'+data['id']+'" src="__ROOT__/Uploads/StudentAvatars/'+data['avatar']+'"></div><div class="nameControl"><span class="stuName">'+data['student_name']+'</span></div></li>';
+    }
+    shtml+="</ul></tr>";
+    document.getElementById("body").innerHTML=shtml;
+
+
+    getStudentStatus();
+    function modifyStatus(obj)
+    {
+      if($(obj).hasClass('notOnline'))
+        return;
+      var id = $(obj).attr('id').split('g')[1];
+      var nextStatus = $(obj).hasClass('inBackground') == true ? 'false':'true';
+      parent.operateSpecLockInfo(id,nextStatus);
+    }
+    function getStudentStatus()
+    {
+        parent.requestList();
+    }
+    function  refreshStatus(msg){
+        for(var i=0;i<slist.length;i++)
+        {
+            var data = slist[i];
+            var isOnline = 'false';
+            var locked = 'false';
+
+            if(data['id'] in (msg))
+            if("isonline" in (msg[data['id']]))
+            {
+                if(msg[data['id']]['isonline'] == 'true')
+                isOnline = 'true';
+            }
+
+            if(isOnline == 'true')
+                $('#img'+data['id']).removeClass('notOnline');
+            else
+                $('#img'+data['id']).addClass('notOnline');
+
+            if(data['id'] in (msg))
+            if("locked" in (msg[data['id']]))
+            {
+                if(msg[data['id']]['locked'] == 'true')
+                    locked = 'true';
+            }
+            if(locked == 'true' && isOnline == 'true')
+            {
+                $('#watermark'+data['id']).addClass('watermark');
+                $('#img'+data['id']).addClass('inBackground');
+            }
+            else
+            {
+                $('#watermark'+data['id']).removeClass('watermark');
+                $('#img'+data['id']).removeClass('inBackground');
+            }
+        }
+    }
+    function getStudentStatusCallback(msg)
+    {
+        refreshStatus(msg);
+    }
+    function setAllStudentLockInfoCallback(msg)
+    {
+
+    }
+    function setSpecStudentLockInfoCallback(msg)
+    {
+        getStudentStatus();
+    }
+    //TODO:GET student status from parent html
+</script>

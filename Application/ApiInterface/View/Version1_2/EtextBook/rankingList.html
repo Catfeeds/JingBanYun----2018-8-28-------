@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>{$title}</title>
+    <style media="screen">
+        * {
+            margin: 0;
+            padding: 0
+        }
+        html {
+            height:100%;
+        }
+        body {
+            background: #f6f6f6;
+            height:100%;
+        }
+
+        .header img, .headportrait {
+            width: 100%;
+            vertical-align: middle;
+        }
+
+        .me {
+            border: 2px solid #ffb52c;
+            background: #fff8ce;
+            overflow: hidden;
+            border-left: none;
+            border-right: none;
+            padding: 10px 0
+        }
+
+        .left {
+            float: left
+        }
+
+        .right {
+            float: right;
+        }
+
+        .rank {
+            color: #999;
+            font-size: 14px
+        }
+
+        .name {
+            font-size: 18px;
+            color: #333
+        }
+
+        .meheader {
+            border-radius: 50%;
+            border: 1px solid #ffdb90;
+            overflow: hidden;
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            line-height: 60px;
+            margin-left: 40px
+        }
+
+        .number {
+            line-height: 60px;
+            font-size: 20px;
+            color: #333;
+            margin-right: 20px
+        }
+
+        .name {
+            font-size: 18px;
+            margin-top: 17px;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .namediv {
+            margin-left: 10px;
+            width: 30%;
+            width: -moz-calc(100% - 230px);
+            width: -webkit-calc(100% - 230px);
+            width: calc(100% - 230px);
+        }
+
+        .rankDiv {
+            margin-top: 10px;
+            background: #fff;
+            overflow: hidden;
+            padding: 10px 0
+        }
+
+        .rankDiv .meheader {
+            margin-left: 0
+        }
+
+        .ranking {
+            margin: 10px 0;
+            margin-left: 10px;
+            margin-right: 10px;
+            min-width: 50px;
+            text-align: center;
+            line-height: 38px;
+            font-size: 20px;
+        }
+
+        .ranking img {
+            width: 50px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img src="__PUBLIC__/img/pictureBooks/paihangbang.png" alt=""/>
+</div>
+<if condition = 'empty($result) eq true' >
+    <div style="position: absolute;text-align: center;margin: auto;left: 50%;margin-left: -40px;top: 50%;margin-top: -7px;">
+   <div >暂无跟读记录</div>
+    </div>
+</if>
+<if condition = 'empty($selfResult) eq false' >
+<div class="me">
+    <div class="meheader left">
+        <img src="{$selfResult['avatar']}"
+             alt="" /class="headportrait">
+    </div>
+    <div class="namediv left">
+        <p class="name">
+            {$selfResult['name']}
+        </p>
+        <p class="rank">
+            第{$selfResult['rank']}名
+        </p>
+    </div>
+    <div class="number right">
+        {$selfResult['score']}分
+    </div>
+</div>
+</if>
+
+ <volist name="result" id="result">
+ <if condition="$result.rank eq 1">
+ <div class="rankDiv">
+    <div class="ranking left">
+        <img src="__PUBLIC__/img/pictureBooks/guanjun.png" alt="" />
+    </div>
+    <div class="meheader left">
+        <img src="{$result.avatar}"
+             alt="" /class="headportrait">
+    </div>
+    <div class="namediv left">
+        <p class="name">
+            {$result['name']}
+        </p>
+
+    </div>
+    <div class="number right">
+        {$result.score}分
+    </div>
+</div>
+
+     <elseif condition="$result['rank'] eq 2" />
+     <div class="rankDiv">
+         <div class="ranking left">
+             <img src="__PUBLIC__/img/pictureBooks/yajun.png" alt="" />
+         </div>
+         <div class="meheader left">
+             <img src="{$result['avatar']}"
+                  alt="" /class="headportrait">
+         </div>
+         <div class="namediv left">
+             <p class="name">
+                 {$result['name']}
+             </p>
+
+         </div>
+         <div class="number right">
+             {$result['score']}分
+         </div>
+     </div>
+
+     <elseif condition="$result['rank'] eq 3" />
+     <div class="rankDiv">
+         <div class="ranking left">
+             <img src="__PUBLIC__/img/pictureBooks/jijun.png" alt="" />
+         </div>
+         <div class="meheader left">
+             <img src="{$result['avatar']}"
+                  alt="" /class="headportrait">
+         </div>
+         <div class="namediv left">
+             <p class="name">
+                 {$result['name']}
+             </p>
+
+         </div>
+         <div class="number right">
+             {$result['score']}分
+         </div>
+     </div>
+     <else />
+     <div class="rankDiv">
+         <div class="ranking left">
+             {$result['rank']}
+         </div>
+         <div class="meheader left">
+             <img src="{$result['avatar']}"
+                  alt="" /class="headportrait">
+         </div>
+         <div class="namediv left">
+             <p class="name">
+                 {$result['name']}
+             </p>
+
+         </div>
+         <div class="number right">
+             {$result['score']}分
+         </div>
+     </div>
+  </if>
+ </volist>
+
+</body>
+</html>

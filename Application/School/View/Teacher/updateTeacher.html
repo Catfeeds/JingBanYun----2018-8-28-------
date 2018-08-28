@@ -1,0 +1,186 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+	<div class="standardMain hrefContent">
+		<a href="{:U('Teacher/teacherList')}" class="returnBack">教师列表</a>
+		>
+		<span class="thePage">修改教师信息</span>
+	</div>
+
+	<form action="{:U('Teacher/updateTeacher')}" method="post" onsubmit="return checkInfo()">
+		<div class="standardMain classContent tableContent mt0">
+			<div class="blueBox">
+				<span class="left blueTitle">修改教师</span>
+				<a href="javascript:;" class="blackText right submitA" id="">
+					<img src="__PUBLIC__/img/admin/baocun.png" alt="" class="mr10">
+					<input type='submit' class='submitInput' value='保存修改' onClick="return checkInfo()"/>
+				</a>
+		        <a href="javascript:;" class="blackText right submitA" style='margin-right:30px;' id="">
+					<img src="__PUBLIC__/img/admin/yichu.png" alt="" class="mr10"> 
+					<input type='button' class="remove_school submitInput" value='从学校移除'/>
+				</a>
+			</div>
+			<p class="fs14" style="color: #999; width: 100%; padding: 0 20px; margin: 10px 0 0">注：不能任意修改教师的任教学科和学校信息，如要修改其任教学科需先解除教师与该学科任教班级的关联关系方可操作。如要修改教师的学校信息，修改学校信息后，该教师与之前教师的校建班级会自动解除任教关系。</p>
+
+			<div class="grid condensed infoOutter infoOutterModify">
+                <input type="hidden" value="{$data.id}" name="id"/>
+				<div class="row cells3 infoBox">
+					<div class="cell">
+						<label>教师姓名：</label>
+						<input type="text" class="input-control teacher_name" name="name" value="{$data.teacher_name}" placeholder="请输入教师姓名" required>
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>教师手机号：</label>
+						<input type="text" class="input-control telephone" name="telephone" value="{$data.telephone}" placeholder="请输入教师手机号" maxlength="11" required>
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>登录密码：</label>
+						<input type="password" class="input-control password" name="password" value="{$data.password}" placeholder="请输入6-16位登录密码" required onchange="changePwd(this)">
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</label>
+						<input type="email" class="input-control email" name="email" value="{$data.email}" placeholder="请输入邮箱">
+					</div>
+					<div class="cell">
+						<label>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</label>
+						<select id="sex" class="input-control" name="sex">
+							<option value="0">-请选择-</option>
+                            <option value="男" <if condition="$data['sex'] eq '男'"> selected="true"</if> >男</option>
+							<option value="女" <if condition="$data['sex'] eq '女'"> selected="true"</if> >女</option>
+						</select>
+                        <span class="redStar">*</span>
+					</div>
+				</div>
+				<div class="row cells1 infoBox">
+					<div class="cell">
+						<label>简&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;介：</label>
+						<textarea name="brief_intro" id="brief_intro" class="textarea-control input-control" maxlength="40">{$data.brief_intro}</textarea>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<div class="tabBox">
+			<ul class="left tabUl" id="tabUl">
+				<li class="tabLi tabActive">任教学科</li>
+				<li class="tabLi">教师的班级</li>
+			</ul>
+			<div class="tabCon" id="tabCon">
+				<iframe class="tabConActive" id="courseFrame" style="width: 100%;" frameborder="0" src="{:U('Teacher/teacherCourseList')}&id={$data.id}"></iframe>
+				<iframe id="classFrame" style="width: 100%;" frameborder="0" src="{:U('Teacher/teacherClassList')}&id={$data.id}"></iframe>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="";
+				}
+			}
+		} 
+	}
+        var teacher_id="{$data.id}";
+        
+        //学校移除学生
+        $('.remove_school').click(function(){ 
+            var status=2; 
+            var id=teacher_id; 
+            $.ajax({
+                type:"post",
+                url:"{:U('Teacher/updateApplyStatus')}",
+                dataType:"json",
+                data:{'id':id,'status':status},
+                success: function(msg){
+                    if(msg.status==200){  
+                        location.href="{:U('Teacher/teacherList')}";
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+        
+        
+        //检测
+	function checkInfo(){
+       //联系人姓名
+		var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		var linkmanName = $('.teacher_name').val();
+		if (linkmanName == '') {
+			$.NotifyBox.NotifyOne('注意','姓名不能为空！','确定'); 
+			return false;
+		} else if (!regName.test(linkmanName)) {
+			$.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+			return false;
+		}
+
+		//教师手机号
+		var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		var linkmanPhone = $('.telephone').val();
+		if (linkmanPhone == '') { 
+			$.NotifyBox.NotifyOne('注意','请输入教师手机号！','确定');
+			return false;
+		} else if (!regMobilePhone.test(linkmanPhone)) { 
+			$.NotifyBox.NotifyOne('注意','教师手机号格式错误！','确定');
+			return false;
+		}
+ 
+ 		if(changePassword == 1) {
+			var pwd = $.trim($('.password').val());
+			if(pwd == ''){
+				$.NotifyBox.NotifyOne('注意','请输入密码！','确定');
+				return false;
+			} else if(pwd.length < 6 || pwd.length > 16) {
+				$.NotifyBox.NotifyOne('注意','请输入6-16位密码！','确定');
+				return false;
+			}
+ 		}
+
+		//联系人邮箱
+		var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+		var linkmanEmail = $('.email').val();
+		if(linkmanEmail!=''){
+			if (!regEmail.test(linkmanEmail)) { 
+				$.NotifyBox.NotifyOne('注意','邮箱格式错误！','确定');
+				return false;
+			}
+		}
+
+		var sex_value=$('#sex').val();  
+		if(sex_value==0){ 
+			$.NotifyBox.NotifyOne('注意','请选择性别！','确定');
+			return false;
+		} 
+        return true;
+    }
+
+    var changePassword;
+    function changePwd(obj) {
+        changePassword = 1;
+    }
+</script>

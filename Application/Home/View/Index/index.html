@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="renderer" content="webkit">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+	<meta name="keywords" content="{$keywords}" />
+	<meta name="description" content="{$description}" />
+	<meta name="author" content="">
+	<title>{$webtitle}</title>
+	<link rel="shortcut icon" href="favicon.ico">
+	<link href="__PUBLIC__/theme/2016/front/css/bootstrap.min.css" rel="stylesheet">
+	<link href="__PUBLIC__/theme/2016/front/css/rol3D.css" rel="stylesheet" />
+	<link rel="stylesheet" href="__PUBLIC__/css/index.css?ver=5">
+	<script src="__PUBLIC__/js/external/jquery.js" type="text/javascript"></script>
+	<script src="__PUBLIC__/js/index.js?ver=2" type="text/javascript"></script>
+	<!--[if lt IE 9]>
+    <script src="__PUBLIC__/js/external/html5shiv.min.js"></script>
+    <script src="__PUBLIC__/js/external/respond.min.js"></script>
+    <![endif]-->
+
+	<style>
+		/*============国庆============*/
+		#mask {
+			display: none;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.6);
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 1100
+		}
+
+		#nationalDay {
+			display: none;
+			width: 700px;
+			height: 484px;
+			position: fixed;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			margin: auto auto;
+/*			background: url({$oss_path}public/web_img/Festival/labour_back.png) no-repeat bottom center;*/
+			z-index: 2016;
+			max-width: 98%;
+			max-height: 98%
+		}
+
+		#nationalDay .nationalImg {
+			width: 100%;
+			height: 100%;
+		}
+
+		#nationalDay canvas {
+			cursor: crosshair;
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 1;
+		}
+
+		.nationalLogo2 {
+			position: absolute;
+			top: 20px;
+			left: 20px;
+			z-index: 2;
+		}
+
+		.nationalClose {
+			position: absolute;
+			top: 0;
+			right: 0;
+			z-index: 2;
+			cursor: pointer;
+		}
+
+		.nationalLogo1 {
+			position: absolute;
+			top: 78px;
+			left: 0;
+			right: 0;
+			margin: 0 auto;
+			z-index: 2;
+		}
+
+		.nationalText {
+			position: absolute;
+			bottom: 65px;
+			left: 0;
+			right: 0;
+			margin: 0 auto;
+			z-index: 2;
+		}
+
+		.imgClose {
+			float: right;
+			cursor: pointer;
+			position: absolute;
+			right: 0;
+		}
+
+		.ieLow {
+			display: none;
+			width: 100%;
+			min-width: 1250px;
+			margin: 70px auto 0;
+			text-align: center;
+			padding: 20px;
+			height: 100px;
+			line-height: 25px;
+			font-size: 22px;
+			color: #ff0000;
+			position: relative;
+			z-index: 1;
+			background: #fff;
+		}
+
+		.ieLow .ie9 {
+			display: none;
+		}
+
+		.redRegister, .redRegister:hover {
+			color: #EE6557;
+			text-decoration: none
+		}
+
+		.browser-item {
+			float: none;
+			width: inherit;
+			margin-right: 20px;
+		}
+
+		.browser-item a {
+			outline: none
+		}
+	</style>
+
+	<script type="text/javascript"> 
+		// window.onload = function(){
+		// 	var browser=navigator.appName 
+		// 	var b_version=navigator.appVersion 
+		// 	var version=b_version.split(";"); 
+		// 	var trim_Version=version[1].replace(/[ ]/g,""); 
+		// 	if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE6.0") 
+		// 	{ 
+		// 		$('.ieLow').show();
+		// 	} else if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE7.0") { 
+		// 		$('.ieLow').show();
+		// 	} else if(browser=="Microsoft Internet Explorer" && trim_Version=="MSIE8.0") { 
+		// 		$('.ieLow').show();
+		// 	} else if(browser=="Microsoft Internet Explorer") { 
+		// 		$('.ieLow').show();
+		// 	} else {
+		// 		$('.ieLow').hide();
+		// 	}
+		// }
+
+		function IEVersion() {
+            var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串  
+            var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器  
+            var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器  
+            var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1;
+            if(isIE) {
+                var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+                reIE.test(userAgent);
+                var fIEVersion = parseFloat(RegExp["$1"]);
+                if(fIEVersion == 7) {
+                	$('.ieLow').show();
+                	$('#page1').css('top', '-70px');
+                    // return 7;
+                } else if(fIEVersion == 8) {
+                	$('.ieLow').show();
+                	$('#page1').css('top', '-70px');
+                    // return 8;
+                } else if(fIEVersion == 9) {
+                	$('.ieLow, .ieLow .ie9').show();
+                	$('.ieLow .ie8').hide();
+                	$('#page1').css('top', '-70px');
+                    // return 9;
+                } else if(fIEVersion == 10) {
+                	$('.ieLow, .ieLow .ie9').show();
+                	$('.ieLow .ie8').hide();
+                	$('#page1').css('top', '-70px');
+                    // return 10;
+                } else {
+                	$('.ieLow').show();
+                	$('#page1').css('top', '-70px');
+                    // return 6;//IE版本<=7
+                }   
+            } else if(isEdge) {
+            	$('.ieLow, .ieLow .ie9').show();
+            	$('.ieLow .ie8').hide();
+            	$('#page1').css('top', '-70px');
+                // return 'edge';//edge
+            } else if(isIE11) {
+            	$('.ieLow, .ieLow .ie9').show();
+            	$('.ieLow .ie8').hide();
+            	$('#page1').css('top', '-70px');
+                // return 11; //IE11  
+            }else{
+            	$('.ieLow').hide();
+            	$('#page1').css('top', '0');
+                // return -1;//不是ie浏览器
+            }
+        }
+
+        window.onload = function(){
+			IEVersion()
+		}
+	</script>
+
+</head>
+
+<body class="pcHover">
+	<div class="ieLow">
+		<span class="ie8">
+			您使用的IE浏览器版本过低，部分功能可能无法使用，为了更好的使用体验，建议您使用以下浏览器来访问京版云
+		</span>
+		<span class="ie9">
+			您使用的浏览器不支持部分资源的观看和使用，为了更好的使用体验，建议您使用以下浏览器访问京版云。
+		</span>
+		<div style="margin-top: 20px;">
+			<!-- <div style="color: #000000;font-size: 18px;margin-bottom: 10px;">以下浏览器均能完美运行京版云：</div> -->
+			<div class="browser-item"><a href="https://www.google.cn/chrome/" target="_blank">Chrome浏览器</a></div>
+			<div class="browser-item"><a href="https://download-ssl.firefox.com.cn/releases-sha2/stub/official/zh-CN/Firefox-latest.exe">火狐浏览器</a></div>
+			<div class="browser-item"><a href="http://down.360safe.com/se/360se9.1.0.426.exe">360安全浏览器</a></div>
+			<div class="browser-item"><a href="http://down.360safe.com/cse/360cse_9.5.0.132.exe">360极速浏览器</a></div>
+			<div class="browser-item"><a href="https://dlie.sogoucdn.com/se/sogou_explorer_8.0_0524_v1.exe">搜狗浏览器</a></div>
+			<div class="browser-item"><a href="https://dldir1.qq.com/invc/tt/QQBrowser_Setup_QB10.exe">QQ浏览器</a></div>
+			<!-- <div class="browser-item"><a href="http://dl.liebao.cn/kb/KSbrowser_home_201804101.exe">猎豹浏览器</a></div> -->
+			<div class="browser-item"><a href="http://j.br.baidu.com/v1/t/full/p/browser/tn/11000002/ch_dl_url" target="_blank">百度浏览器</a>
+			</div>
+			<div class="browser-item"><a href="https://support.apple.com/zh_CN/downloads/safari" target="_blank">safari浏览器</a>
+			</div>
+		</div>
+	</div>
+	<div class="navbar navbar-default nav navbar-fixed-top" role="navigation">
+		<div class="navBox">
+			<div class="navbar-header">
+			<span class="navbar-brand" id="navbar-brand">
+				<img src="__PUBLIC__/img/home/logo.png" alt="">
+			</span>
+			<p class="nava navbar-text" id="navbar-text"><span onclick="showLogin()">登录 · </span><a class="redRegister" href="/index.php?m=Home&c=Index&a=register&{$share_str}">注册</a></p>
+			<a href="{:U('SchoolJoin/SchoolJoin')}" target="_blank" class="nava schJoin">学校加入</a>
+			<a href="{:U('help/vedio')}" target="_blank" class="nava oi">操作说明</a>
+			<a href="{:U('Feedback/addfeedback')}" target="_blank" class="nava feedback">意见反馈</a>
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#example-navbar-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="example-navbar-collapse">
+			<ul class="navbar-nav" id="navu">
+				<li><a href="#page1" onclick="return false;">首页</a></li>
+				<li><a href="#page2">6大用户群</a></li>
+				<li><a href="#page3" style="position: relative;padding-right: 15px">互联网<span style="font-size:26px; position: absolute; top:11px; left:56px">+</span></a></li>
+				<li><a href="#page4">云服务</a></li>
+				<li><a href="#page5">励耘圈</a></li>
+				<li><a href="#page6" style="position: relative;padding-right: 15px">教学<span style="font-size:26px; position: absolute; top:11px; left:38px">+</span></a></li>
+				<li><a href="#page7">班级行</a></li>
+			</ul>
+		</div>
+		</div>
+
+	</div>
+
+	<div style="width: 100%; height: 100%">
+		<div id="page1" class="mainWrapper">
+			<div class="outter">
+				<img src="__PUBLIC__/img/home/swing1.png" alt="" class="swingImg">
+				<div class="loginBox">
+					<div class="loginTitle">
+						<ul class="nav nav-tabs pcUl" role="tablist" id="loginTab" style="">
+							<li role="presentation" class="active">
+								<a href="#teacherLogin" aria-controls="teacherLogin" role="tab" data-toggle="tab" class="teaLogin">教师登录</a>
+								<span class="loginText">教师登录</span>
+							</li>
+							<li role="presentation">
+								<a href="#studentLogin" aria-controls="studentLogin" role="tab" data-toggle="tab" class="stuLogin">学生登录</a>
+								<span class="loginText">学生登录</span>
+							</li>
+							<li role="presentation" class="mr0">
+								<a href="#parentLogin" aria-controls="parentLogin" role="tab" data-toggle="tab" class="parLogin">家长登录</a>
+								<span class="loginText">家长登录</span>
+							</li>
+<!--
+							<li role="presentation">
+								<a href="#adminLogin" aria-controls="adminLogin" role="tab" data-toggle="tab" class="admLogin">管理登录</a>
+								<span class="loginText">管理登录</span>
+							</li>
+-->
+						</ul>
+					</div>
+					<div class="loginMain">
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="teacherLogin">
+								<div id="prompt_t" class="alert alert-warning"></div>
+								<form id="teacherLoginForm" class="form-horizontal" action="/index.php?m=Home&c=Teach&a=login&{$share_str}<?php if(empty($share_str)) echo '&url='.$_GET['url']; ?>" method="post">
+									<input type="password" style="display: none;">
+
+									<div class="form-group">
+										<div class="input_phone">
+											<input type="text" class="input_new" id="telephone_1" name="telephone" placeholder="手机号码" value="" autocomplete="off" maxlength="11">
+										</div>
+<!--										<a target="_blank" tabindex="-1" href="/index.php?m=Home&c=Teach&a=register" class="a_new">教师注册</a>-->
+									</div>
+									<div class="form-group">
+										<div class="input_psd">
+											<input type="password" class="input_new" id="password_1" name="password_1" placeholder="密码" maxlength="16" value="" autocomplete="off">
+										</div>
+										<a target="_blank" tabindex="-2" href="/index.php?m=Home&c=Teach&a=forgetPassword&{$share_str}" class="a_new">忘记密码</a>
+									</div>
+									<div class="login-opr">
+										<div class="labelBox">
+											<input id="teacher_rember_pwd" type="checkbox" class="check_new">
+											<label for="teacher_rember_pwd">
+												<span class="label_new" id="label_rember_pwd">
+													<img class="label_choose" id="teacher_psd" src="__PUBLIC__/img/home/labelChoose.png">
+												</span>
+												<span class="label_text">记住密码</span>
+											</label>
+										</div>
+										<div class="labelBox">
+											<input id="teacher_auto_login" type="checkbox" class="check_new">
+											<label for="teacher_auto_login">
+												<span class="label_new" id="label_auto_login">
+													<img class="label_choose" id="teacher_auto" src="__PUBLIC__/img/home/labelChoose.png">
+												</span>
+												<span class="label_text">自动登录</span>
+											</label>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="btnSubmitBox">
+											<button type="submit" class="btnSubmit" onclick="return checkLoginTeacher()">登录</button>
+											<a href="/index.php?m=Home&c=Index&a=register&{$share_str}" target="_blank" tabindex="-1"  class="btnSubmit reg_btn">注册</a>
+										</div>
+										<div class="touristBox">
+											<a class="tourist" href="/index.php?m=Home&c=Teach&a=login&type=youke">游客模式</a>
+										</div>
+									</div>
+								</form>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="studentLogin">
+								<div id="prompt_s" class="alert alert-warning"></div>
+								<form id="studentLoginForm" class="form-horizontal" action="/index.php?m=Home&c=Student&a=login&{$share_str}<?php if(empty($share_str)) echo '&url='.$_GET['url']; ?>" method="post">
+									<input type="password" style="display: none;">
+
+									<div class="form-group">
+										<div class="input_name input_s1">
+											<input type="text" class="input_new" id="user_name_2" name="user_name_2" placeholder="请输入您的姓名" value="" autocomplete="off">
+										</div>
+<!--										<a target="_blank" tabindex="-1" href="/index.php?m=Home&c=Student&a=register" class="a_new">学生注册</a>-->
+									</div>
+									<div class="form-group">
+										<div class="input_phone input_s2">
+											<input type="text" class="input_new" id="telephone_2" name="telephone_2" placeholder="家长手机号码" value="" autocomplete="off" maxlength="11">
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="input_psd">
+											<input type="password" class="input_new" id="password_2" name="password_2" placeholder="密码" maxlength="16" value="" autocomplete="off">
+										</div>
+										<a target="_blank" tabindex="-2" href="/index.php?m=Home&c=Student&a=forgetPassword&{$share_str}" class="a_new">忘记密码</a>
+									</div>
+									<div class="login-opr">
+										<div class="labelBox">
+											<input id="student_rember_pwd" type="checkbox" class="check_new">
+											<label for="student_rember_pwd">
+												<span class="label_new">
+													<img class="label_choose" id="student_psd" src="__PUBLIC__/img/home/labelChoose.png">
+												</span>
+												<span class="label_text">记住密码</span>
+											</label>
+										</div>
+										<div class="labelBox">
+											<input id="student_auto_login" type="checkbox" class="check_new">
+											<label for="student_auto_login">
+												<span class="label_new">
+													<img class="label_choose" id="student_auto" src="__PUBLIC__/img/home/labelChoose.png">
+												</span>
+												<span class="label_text">自动登录</span>
+											</label>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="btnSubmitBox">
+											<button type="submit" class="btnSubmit" onclick="return checkLoginStudent()">登录</button>
+											<a href="/index.php?m=Home&c=Index&a=register&{$share_str}<?php if(empty($share_str)) echo '&url='.$_GET['url']; ?>" target="_blank" tabindex="-1"  class="btnSubmit reg_btn">注册</a>
+										</div>
+										<div class="touristBox">
+											<a class="tourist" href="/index.php?m=Home&c=Teach&a=login&type=youke&type=youke">游客模式</a>
+										</div>
+									</div>
+								</form>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="parentLogin">
+								<div id="prompt_p" class="alert alert-warning"></div>
+								<form id="parentLoginForm" class="form-horizontal" action="/index.php?m=Home&c=Parent&a=login&{$share_str}" method="post">
+									<input type="password" style="display: none;">
+
+									<div class="form-group">
+										<div class="input_phone">
+											<input type="text" class="input_new" id="telephone_3" name="telephone" placeholder="手机号码" value="" autocomplete="off" maxlength="11">
+										</div>
+<!--										<a target="_blank" href="/index.php?m=Home&c=Parent&a=register" tabindex="-3" class="a_new">家长注册</a>-->
+									</div>
+									<div class="form-group">
+										<div class="input_psd">
+											<input type="password" class="input_new" id="password_3" name="password_3" placeholder="密码" maxlength="16" value="" autocomplete="off">
+										</div>
+										<a target="_blank" tabindex="-4" href="/index.php?m=Home&c=Parent&a=forgetPassword&{$share_str}" class="a_new">忘记密码</a>
+									</div>
+									<div class="login-opr">
+										<div class="labelBox">
+											<input id="parent_rember_pwd" type="checkbox" class="check_new">
+											<label for="parent_rember_pwd">
+												<span class="label_new">
+													<img class="label_choose" id="parent_psd" src="__PUBLIC__/img/home/labelChoose.png">
+												</span>
+												<span class="label_text">记住密码</span>
+											</label>
+										</div>
+										<div class="labelBox">
+											<input id="parent_auto_login" type="checkbox" class="check_new">
+											<label for="parent_auto_login">
+												<span class="label_new">
+													<img class="label_choose" id="parent_auto" src="__PUBLIC__/img/home/labelChoose.png">
+												</span>
+												<span class="label_text">自动登录</span>
+											</label>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="btnSubmitBox">
+											<button type="submit" class="btnSubmit" onclick="return checkLoginParent()">登录</button>
+											<a href="/index.php?m=Home&c=Index&a=register&{$share_str}" target="_blank" tabindex="-1"  class="btnSubmit reg_btn">注册</a>
+										</div>
+										<div class="touristBox">
+											<a class="tourist" href="/index.php?m=Home&c=Teach&a=login&type=youke">游客模式</a>
+										</div>
+									</div>
+								</form>
+							</div>
+							<div role="tabpanel" class="tab-pane" id="adminLogin">
+								<div id="prompt_a" class="alert alert-warning"></div>
+								<form id="adminLoginForm" class="form-horizontal" action="/index.php?m=Home&c=Admin&a=login" method="post">
+									<input type="password" style="display: none;">
+
+									<div class="form-group">
+										<div class="input_name input_a">
+											<input type="text" class="input_new" id="user_name_4" name="user_name" placeholder="账号" value="" autocomplete="off">
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="input_psd input_a2">
+											<input type="password" class="input_new" id="password_4" name="password_4" placeholder="密码" maxlength="16" value="" autocomplete="off">
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="btnSubmitBox">
+											<button type="submit" class="btnSubmit" onclick="return checkLoginUser()">&nbsp;</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="page2" class="mainWrapper">
+			<img class="main-img" src="__PUBLIC__/img/home/index0623_2.png">
+		</div>
+		<div id="page3" class="mainWrapper">
+			<img id="navImg" class="main-img" src="__PUBLIC__/img/home/index0623_3.png">
+
+			<div class="nav-opr fir_ani_box1" id="jiaoxuejia" onclick="showLogin()">
+				<div class="fir_ani fir_ani1"></div>
+			</div>
+			<div class="nav-opr fir_ani_box1" id="liyunquan" onclick="showLogin()">
+				<div class="fir_ani fir_ani1"></div>
+			</div>
+			<div class="nav-opr fir_ani_box1" id="banjixing" onclick="showLogin()">
+				<div class="fir_ani fir_ani1"></div>
+			</div>
+		</div>
+		<div id="page4" class="mainWrapper">
+			<img class="main-img" src="__PUBLIC__/img/home/index0623_4.png">
+		</div>
+		<div id="page5" class="mainWrapper">
+			<img class="main-img" src="__PUBLIC__/img/home/index0623_5.png">
+		</div>
+		<div id="page6" class="mainWrapper">
+			<img class="main-img" src="__PUBLIC__/img/home/index0623_6.png">
+		</div>
+		<div id="page7" class="mainWrapper">
+			<img class="main-img" src="__PUBLIC__/img/home/index0623_7.png">
+		</div>
+		<div id="page8" class="mainWrapper">
+			<img class="main-img" src="__PUBLIC__/img/home/page8.png">
+			<div class="mainFooter">
+				<img class="footImg" src="__PUBLIC__/img/home/mainFooter.png">
+				<div class="mainFooterText1">客服电话：400-655-3588</div>
+				<div class="mainFooterText2">京ICP备 10009247号-5</div>
+				<div class="mainFooterText2">北京出版集团版权所有Copyright {$Think.const.NOW_TIME|date="Y",###}</div>
+			</div>
+		</div>
+	</div>
+	<div style="display:none;">
+		<input type="hidden">{$db_host}
+	</div>
+
+	<div id="mask"></div>
+	<div id="nationalDay">
+		<img src="{$oss_path}public/web_img/Festival/answerClose.png" alt="" class="imgClose right">
+		<a href="javascript:;">
+
+			<img src="{$oss_path}{$adlist.file_path}" alt="" class="nationalImg">
+
+		</a>
+	</div>
+
+	<script src="__PUBLIC__/js/store.js"></script>
+	<script src="__PUBLIC__/theme/2016/front/js/bootstrap.min.js"></script>
+	<script src="__PUBLIC__/js/jquery.navScroll.js"></script>
+
+	<script src="/Public/js/cookie.js"></script>
+	<!-- <script src="__PUBLIC__/js/Base64.js"></script> -->
+
+<!-- 	<script>
+		var urlInput = base64encode('http://www.jingbanyun.com/index.php?m=Home&c=Activity&a=activityApplyDetails&id=111');
+		$('.urlInput').val(urlInput);
+	</script> -->
+	<script>
+		var starttime = "<?php echo $adlist['starttime']; ?>";
+		var endtime = "<?php echo $adlist['endtime']; ?>";
+		var a_id = "<?php echo $adlist['id']; ?>";
+
+		var currentTime = "<?php echo time(); ?>";
+//		console.log(getLocalTime(currentTime))
+
+		//2017/6/1 00:00:00  1496246400
+		//2017/8/17  23:59:59 1502985599
+		if( currentTime >= starttime && currentTime<= endtime) {
+			function guoqing() {
+				$('#mask').hide();
+				$('#nationalDay').hide();
+				$('body').css('overflow-y','auto')
+				cookie.set('guoqingjie','tanchuang',1)
+			};
+			var bb = typeof(cookie.get('guoqingjie'));
+			var cc = cookie('guoqingjie')
+			if (bb == 'string') {
+				$('#mask').hide();
+				$('#nationalDay').hide();
+				$('body').css('overflow-y','auto')
+			}else if (cc == false) {
+				$('#mask').show();
+				$('#nationalDay').show();
+				$('body').css('overflow-y','hidden')
+			}
+
+			$('.imgClose').click(function(){
+				guoqing();
+			})
+			$('.nationalImg').click(function(){
+				// cookie.set('guoqingjie','tanchuang',1)
+				$.get('index.php?m=Home&c=Index&a=adImgCount', {id: a_id}, function (res) {
+
+				})
+				guoqing();
+			})
+			$("#mask").click(function(event){
+				event.stopPropagation();
+				guoqing();
+			})
+		}
+	</script>
+
+	<script>
+		function showLogin() {
+			$("html,body").animate({ scrollTop: 0 });
+//			$('#login').modal('show');
+//			$('#loginTab a:first').tab('show')
+//			$('.mainWrapper img').addClass('mohu')
+		}
+
+		$('#login').on('hidden.bs.modal', function (e) {
+//			$('.mainWrapper img').removeClass('mohu');
+		});
+
+		var role = '{$role}';
+		var err = '{$err}';
+		$(function () {
+			if (err == 1) {
+				showLogin();
+				switch (role) {
+				case 't':
+					$('#loginTab a').eq(0).tab('show');
+					$('#prompt_t').html('账号或密码输入错误').show();
+					endPlay();
+					break;
+				case 's':
+					$('#loginTab a').eq(1).tab('show');
+					$('#prompt_s').html('账号或密码输入错误').show();
+					endPlay();
+					break;
+				case 'p':
+					$('#loginTab a').eq(2).tab('show');
+					$('#prompt_p').html('账号或密码输入错误').show();
+					endPlay();
+					break;
+				case 'a':
+					$('#loginTab a').eq(3).tab('show');
+					$('#prompt_a').html('账号或密码输入错误').show();
+					endPlay();
+					break;
+				default:
+					break;
+				}
+			}
+
+			if (err == 5) {
+				showLogin();
+				switch (role) {
+				case 't':
+					$('#loginTab a').eq(0).tab('show');
+					$('#prompt_t').html('账号已被锁定').show();
+					endPlay();
+					break;
+				case 's':
+					$('#loginTab a').eq(1).tab('show');
+					$('#prompt_s').html('账号已被锁定').show();
+					endPlay();
+					break;
+				case 'p':
+					$('#loginTab a').eq(2).tab('show');
+					$('#prompt_p').html('账号已被锁定').show();
+					endPlay();
+					break;
+				case 'a':
+					$('#loginTab a').eq(3).tab('show');
+					$('#prompt_a').html('账号已被锁定').show();
+					endPlay();
+					break;
+				default:
+					break;
+				}
+			}
+
+			if (err == 6) {
+				showLogin();
+				switch (role) {
+					case 't':
+						$('#loginTab a').eq(0).tab('show');
+						$('#prompt_t').html('账号被拒绝').show();
+						endPlay();
+						break;
+					case 's':
+						$('#loginTab a').eq(1).tab('show');
+						$('#prompt_s').html('账号被拒绝').show();
+						endPlay();
+						break;
+					case 'p':
+						$('#loginTab a').eq(2).tab('show');
+						$('#prompt_p').html('账号被拒绝').show();
+						endPlay();
+						break;
+					case 'a':
+						$('#loginTab a').eq(3).tab('show');
+						$('#prompt_a').html('账号被拒绝').show();
+						endPlay();
+						break;
+					default:
+						break;
+				}
+			}
+
+			if (err == 7) {
+				showLogin();
+				switch (role) {
+					case 't':
+						$('#loginTab a').eq(0).tab('show');
+						$('#prompt_t').html('账号未通过审核').show();
+						endPlay();
+						break;
+					case 's':
+						$('#loginTab a').eq(1).tab('show');
+						$('#prompt_s').html('账号未通过审核').show();
+						endPlay();
+						break;
+					case 'p':
+						$('#loginTab a').eq(2).tab('show');
+						$('#prompt_p').html('账号未通过审核').show();
+						endPlay();
+						break;
+					case 'a':
+						$('#loginTab a').eq(3).tab('show');
+						$('#prompt_a').html('账号未通过审核').show();
+						endPlay();
+						break;
+					default:
+						break;
+				}
+			}
+
+			if (err == 9) {
+				showLogin();
+				switch (role) {
+					case 't':
+						$('#loginTab a').eq(0).tab('show');
+						$('#prompt_t').html('账号被禁用').show();
+						endPlay();
+						break;
+					case 's':
+						$('#loginTab a').eq(1).tab('show');
+						$('#prompt_s').html('账号被禁用').show();
+						endPlay();
+						break;
+					case 'p':
+						$('#loginTab a').eq(2).tab('show');
+						$('#prompt_p').html('账号被禁用').show();
+						endPlay();
+						break;
+					case 'a':
+						$('#loginTab a').eq(3).tab('show');
+						$('#prompt_a').html('账号被禁用').show();
+						endPlay();
+						break;
+					default:
+						break;
+				}
+			}
+
+			var agent = navigator.userAgent;
+			if (agent.indexOf("MSIE") > 0) {
+				if (agent.indexOf("MSIE 6.0") > 0 || agent.indexOf("MSIE 7.0") > 0 || agent.indexOf("MSIE 8.0") > 0 || agent.indexOf("MSIE 9.0") > 0 || agent.indexOf("MSIE 10.0") > 0) {
+					$('.nav-opr,#loginForVideo').css({
+						'background': '#fff',
+						'background-color': '#fff',
+						'filter': 'alpha(opacity=0)',
+						'opacity': '0'
+					});
+				}
+			}
+		});
+
+		$(function () {
+			var ctrlImgRoot = '/Public/img/home/';
+			window.setTimeout(function () {
+				$('input').val('');
+			}, 500);
+			$('.ctrl').click(function () {
+				showLogin();
+			}).hover(function () {
+				var img = $(this).attr('data-id');
+				this.src = ctrlImgRoot + img + '2.png';
+			}, function () {
+				var img = $(this).attr('data-id');
+				this.src = ctrlImgRoot + img + '1.png';
+			});
+		});
+
+		function endPlay() {
+			$('#topVideo').hide();
+			$('#video_login_img').show();
+		}
+	</script>
+	<script>
+		$('#teacher_auto_login').click(function() {
+			if (document.getElementById('teacher_auto_login').checked) {
+				$('#teacher_auto').show();
+				if (!document.getElementById('teacher_rember_pwd').checked) {
+					$('#teacher_rember_pwd').click();
+					$('#teacher_psd').show()
+				}
+			} else if (!document.getElementById('teacher_auto_login').checked) {
+				$('#teacher_auto').hide()
+			}
+		});
+		$('#teacher_rember_pwd').click(function() {
+			if (!document.getElementById('teacher_rember_pwd').checked) {
+				$('#teacher_psd').hide();
+				if (document.getElementById('teacher_auto_login').checked) {
+					$('#teacher_auto_login').click();
+					$('#teacher_auto').hide()
+				}
+			} else if (document.getElementById('teacher_rember_pwd').checked) {
+				$('#teacher_psd').show()
+			}
+		});
+
+		$('#student_auto_login').click(function() {
+			if (document.getElementById('student_auto_login').checked) {
+				$('#student_auto').show();
+				if (!document.getElementById('student_rember_pwd').checked) {
+					$('#student_rember_pwd').click();
+					$('#student_psd').show()
+				}
+			} else if (!document.getElementById('student_auto_login').checked) {
+				$('#student_auto').hide()
+			}
+		});
+		$('#student_rember_pwd').click(function() {
+			if (!document.getElementById('student_rember_pwd').checked) {
+				$('#student_psd').hide();
+				if (document.getElementById('student_auto_login').checked) {
+					$('#student_auto_login').click();
+					$('#student_auto').hide()
+				}
+			} else if (document.getElementById('student_rember_pwd').checked) {
+				$('#student_psd').show()
+			}
+		});
+
+		$('#parent_auto_login').click(function() {
+			if (document.getElementById('parent_auto_login').checked) {
+				$('#parent_auto').show();
+				if (!document.getElementById('parent_rember_pwd').checked) {
+					$('#parent_rember_pwd').click();
+					$('#parent_psd').show()
+				}
+			} else if (!document.getElementById('parent_auto_login').checked) {
+				$('#parent_auto').hide()
+			}
+		});
+		$('#parent_rember_pwd').click(function() {
+			if (!document.getElementById('parent_rember_pwd').checked) {
+				$('#parent_psd').hide()
+				if (document.getElementById('parent_auto_login').checked) {
+					$('#parent_auto_login').click();
+					$('#parent_auto').hide()
+				}
+			} else if (document.getElementById('parent_rember_pwd').checked) {
+				$('#parent_psd').show()
+			}
+		});
+	</script>
+	<script>
+
+		var logout = '{$logout}';
+		$(function () {
+			//自动登录 - 教师
+			var teacher_auto_login = store.get('teacher_auto_login');
+			if (typeof teacher_auto_login == 'object') {
+				document.getElementById('teacher_auto_login').checked = true;
+				$('#telephone_1').val(teacher_auto_login.telephone);
+				$('#password_1').val(teacher_auto_login.password);
+				$('#teacher_auto').show();
+				//判断是否退出
+				if (logout == '' && err == '') {
+					$('#teacherLoginForm').submit();
+					return false;
+				}
+			}
+			//记住密码 - 教师
+			window.setTimeout(function () {
+				var teacher_rem_pwd = store.get('teacher_rem_pwd');
+				if (typeof teacher_rem_pwd == 'object' && role != 't') {
+					document.getElementById('teacher_rember_pwd').checked = true;
+					$('#telephone_1').val(teacher_rem_pwd.telephone);
+					$('#password_1').val(teacher_rem_pwd.password);
+					$('#teacher_psd').show();
+				} else {
+					document.getElementById('teacher_rember_pwd').checked = false;
+					$('#teacher_psd').hide();
+				}
+
+			}, 1000);
+
+			//自动登录 - 学生
+			var student_auto_login = store.get('student_auto_login');
+			if (typeof student_auto_login == 'object') {
+				document.getElementById('student_auto_login').checked = true;
+				$('#user_name_2').val(student_auto_login.username);
+				$('#telephone_2').val(student_auto_login.telephone);
+				$('#password_2').val(student_auto_login.password);
+				$('#student_auto').show();
+				//判断是否退出
+				if (logout == '' && err == '') {
+					$('#studentLoginForm').submit();
+					return false;
+				}
+			}
+			//记住密码 - 学生
+			window.setTimeout(function () {
+				var student_rem_pwd = store.get('student_rem_pwd');
+				if (typeof student_rem_pwd == 'object' && role != 's') {
+					document.getElementById('student_rember_pwd').checked = true;
+					$('#telephone_2').val(student_rem_pwd.telephone);
+					$('#user_name_2').val(student_rem_pwd.username);
+					$('#password_2').val(student_rem_pwd.password);
+					$('#student_psd').show();
+				} else {
+					document.getElementById('student_rember_pwd').checked = false;
+					$('#student_psd').hide();
+				}
+			}, 1000);
+
+			//自动登录 - 家长
+			var parent_auto_login = store.get('parent_auto_login');
+			if (typeof parent_auto_login == 'object') {
+				document.getElementById('parent_auto_login').checked = true;
+				$('#telephone_3').val(parent_auto_login.telephone);
+				$('#password_3').val(parent_auto_login.password);
+				$('#parent_auto').show();
+				//判断是否退出
+				if (logout == '' && err == '') {
+					$('#parentLoginForm').submit();
+					return false;
+				}
+			}
+			//记住密码 - 家长
+			window.setTimeout(function () {
+				var parent_rem_pwd = store.get('parent_rem_pwd');
+				if (typeof parent_rem_pwd == 'object' && role != 'p') {
+					document.getElementById('parent_rember_pwd').checked = true;
+					$('#telephone_3').val(parent_rem_pwd.telephone);
+					$('#password_3').val(parent_rem_pwd.password);
+					$('#parent_psd').show();
+				} else {
+					document.getElementById('parent_rember_pwd').checked = false;
+					$('#parent_psd').hide();
+				}
+			}, 1000);
+
+		});
+
+		function checkLoginTeacher() {
+			//remover_pwd_teacher
+			//auto_login_teacher
+			var telephone = $('#telephone_1').val();
+			var password = $('#password_1').val();
+			//            if (telephone == '' || password == '') return false;
+			if (telephone == '' || password == '') {
+				$('#prompt_t').html('请输入账号或密码').show();
+				return false;
+			}
+			if (document.getElementById('teacher_rember_pwd').checked) {
+				store.set('teacher_rem_pwd', {
+					telephone: telephone,
+					password: password
+				});
+			} else {
+				store.remove('teacher_rem_pwd');
+				telephone = '';
+				password = '';
+			}
+
+			if (document.getElementById('teacher_auto_login').checked) {
+				store.set('teacher_auto_login', {
+					telephone: telephone,
+					password: password
+				});
+			} else {
+				store.remove('teacher_auto_login');
+				telephone = '';
+				password = '';
+			}
+			return true;
+		}
+
+		function checkLoginStudent() {
+			//remover_pwd_teacher
+			//auto_login_teacher
+			var username = $('#user_name_2').val();
+			var telephone = $('#telephone_2').val();
+			var password = $('#password_2').val();
+			//            if (telephone == '' || password == '') return false;
+			if (telephone == '' || password == '') {
+				$('#prompt_s').html('请输入账号或密码').show();
+				return false;
+			}
+			if (document.getElementById('student_rember_pwd').checked) {
+				store.set('student_rem_pwd', {
+					telephone: telephone,
+					password: password,
+					username: username
+				});
+			} else {
+				store.remove('student_rem_pwd');
+			}
+
+			if (document.getElementById('student_auto_login').checked) {
+				store.set('student_auto_login', {
+					telephone: telephone,
+					password: password,
+					username: username
+				});
+			} else {
+				store.remove('student_auto_login');
+			}
+			return true;
+		}
+
+		function checkLoginParent() {
+			//remover_pwd_teacher
+			//auto_login_teacher
+			var telephone = $('#telephone_3').val();
+			var password = $('#password_3').val();
+			//            if (telephone == '' || password == '') return false;
+			if (telephone == '' || password == '') {
+				$('#prompt_p').html('请输入账号或密码').show();
+				return false;
+			}
+			if (document.getElementById('parent_rember_pwd').checked) {
+				store.set('parent_rem_pwd', {
+					telephone: telephone,
+					password: password
+				});
+			} else {
+				store.remove('parent_rem_pwd');
+			}
+
+			if (document.getElementById('parent_auto_login').checked) {
+				store.set('parent_auto_login', {
+					telephone: telephone,
+					password: password
+				});
+			} else {
+				store.remove('parent_auto_login');
+			}
+			return true;
+		}
+
+		function checkLoginUser() {
+			var telephone = $('#user_name_4').val();
+			var password = $('#password_4').val();
+			if (telephone == '' || password == '') {
+				$('#prompt_a').html('请输入账号或密码').show();
+				return false;
+			}
+		}
+
+		//开启滚动监听====================================================
+		$('#navu').navScroll({})
+	</script>
+
+	<script type="text/javascript">
+		var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+		document.write(unescape("%3Cspan id='cnzz_stat_icon_1260468617'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1260468617' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+
+	<script>
+		$('.stuLogin').on('click',function(){
+			$('.logoSmall').css('margin-top','40px')
+		})
+		$('.teaLogin,.parLogin,.admLogin').on('click',function(){
+			$('.logoSmall').css('margin-top','0')
+		})
+
+	</script>
+
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?e494a515ba038bec7c211401c50361a7";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+    <script>
+		//第二屏之后，“登录·注册”按钮出现
+		$(document).ready(function () {
+			$(window).scroll(function () {
+				if (($(window).scrollTop()+100) >= $(window).height()) {
+					$('.navbar-text').show();
+				} else {
+					$('.navbar-text').hide();
+				}
+			});
+		});
+		//小面包出现后，点击导航栏，导航栏默认收回
+		$('#navu').find('a').click(function() {
+			if($(window).width()<1240){
+				$('.navbar-toggle').click()
+			}
+		})
+	</script>
+
+<script>
+    var storage=window.localStorage;storage.removeItem("a");
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,167 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=3.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<style>
+    #listWrapper img {
+        width: 50px !important;
+        height: 50px !important;
+        margin-right: 10px;
+        margin-top: 5px;
+    }
+
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+
+    .list_title {
+        width: 100%;
+        line-height: 50px;
+    }
+
+    .list_title a {
+        color: #2086bf !important;
+    }
+
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="{:U('WeiXinPush/weiXinPushDetail')}" title="发布活动" class="button primary {:session('btntheme')}">创建推送</a>
+</div>
+
+<div style="margin: 20px 0;">
+    <div class="grid condensed searchbar">
+        <div class="row cells3 cellBox">
+            <div class="cell">
+                <label>创建时间：</label>
+                <input type="text" name="creat_time" class="input-control input-control-before sendTime_id" id="datepicker" placeholder="创建时间" autocomplete="off" value="<?php echo $creat_time?>">
+            </div>
+
+            <div class="cell">
+                <label>关键词：</label>
+                <input class="activity_name input-control input-control-before" type="text" value="<?php echo $title?>" placeholder="标题">
+            </div>
+
+            <div class="cell" data-role="input">
+                <label for="">&nbsp;</label>
+                <button class="button search_button" onclick="" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input type="hidden" value="{$role}" id="role_id"/>
+
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">ID</th>
+        <th class="text-center">显示时间</th>
+        <th class="text-center">创建时间</th>
+        <th class="text-center">title</th>
+        <th class="text-center">状态</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data">
+        <tr id="l_{$data.id}">
+
+            <td class="text-center">{$data.id}</td>
+            <td class="text-center"><?php echo date('Y-m-d H:i:s',$data['show_time'])?></td>
+            <td class="text-center">
+                <?php echo date('Y-m-d H:i:s',$data['creat_time'])?>
+            </td>
+            <td class="text-center">
+                <?php echo $data['title'];?>
+            </td>
+            <td class="text-center">
+                <?php if($data['weixin_push_status'] == '1'){ echo '上架';}else{ echo '下架';}?>
+            </td>
+           <td class="text-center"><button class="button info"> <a href="/index.php?m=Admin&c=WeiXinPush&a=weiXinPushSave&id={$data.id}">修改</a></button></td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js" type="text/javascript"></script>
+<!--<script src="__PUBLIC__/js/jquery.dataTables.min.js" type="text/javascript"></script>-->
+
+<script>
+    function imageError(obj) {
+        $(obj).remove();
+    }
+    //点击搜索按钮,只能搜索中文不能含有空格等
+    $('.search_button').click(function () {
+        var title = $('.activity_name').val();
+        var type = $('#class_name').val();
+        var creat_time = $("#datepicker").val();
+
+        /*if(str.match(/[^\u4e00-\u9fa5]/g))
+         {
+         alert("只能输入中文");
+         return false;
+         }else{}*/
+        var string = '';
+        if (title != '') {
+            string = '&title=' + title;
+        }
+        if(creat_time != 0) {
+            string = string + '&creat_time=' + creat_time;
+        }
+        location.href = "{:U('WeiXinPush/weiXinPushList')}" + string;
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#datepicker").datepicker({
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+//			maxDate: '0',
+            yearRange: "1950:2050"
+        });
+
+    });
+    jQuery(function ($) {
+        $.datepicker.regional['zh-CN'] = {
+            clearText: '清除',
+            clearStatus: '清除已选日期',
+            closeText: '关闭',
+            closeStatus: '不改变当前选择',
+            prevText: '<上月',
+            prevStatus: '显示上月',
+            prevBigText: '<<',
+            prevBigStatus: '显示上一年',
+            nextText: '下月>',
+            nextStatus: '显示下月',
+            nextBigText: '>>',
+            nextBigStatus: '显示下一年',
+            currentText: '今天',
+            currentStatus: '显示本月',
+            monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthStatus: '选择月份',
+            yearStatus: '选择年份',
+            weekHeader: '周',
+            weekStatus: '年内周次',
+            dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+            dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+            dayStatus: '设置 DD 为一周起始',
+            dateStatus: '选择 m月 d日, DD',
+            dateFormat: 'yy-mm-dd',
+            firstDay: 1,
+            initStatus: '请选择日期',
+            isRTL: false
+        };
+        $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+    });
+</script>

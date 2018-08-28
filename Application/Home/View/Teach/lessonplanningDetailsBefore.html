@@ -1,0 +1,219 @@
+<layout name="teacher_layout_2" />
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<style>
+    .list_avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+    
+    h3 {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .file-name a {
+        color: #333;
+        padding: 10px 20px;
+        display: inline-block;
+    }
+    
+    .file-name a:hover {
+        background: #fff
+    }
+    
+    ul,
+    li {
+        list-style: none
+    }
+    
+    #downloadname button {
+        background: #fff;
+        outline: none;
+        border: none;
+        color: #dd1010
+    }
+    
+    .downloadHref {
+        position: absolute;
+        left: 300px;
+    }
+    
+    .row {
+        margin: 0
+    }
+    
+    #data_load {
+        padding: 0;
+        margin-top: 50px;
+    }
+    
+    #data_load a {
+        color: #333;
+    }
+    
+    #data_load li:hover a {
+        color: #CB5F61;
+    }
+    
+    #classname {
+        text-align: left;
+        border: 1px solid #92B925;
+        border-radius: 4px;
+        padding: 20px;
+        background: #f8fbf0;
+    }
+    
+    .downloadHref {
+        padding: 0
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <if condition="$from eq 'favor'">
+        <a href="{:U('Teach/myLessonPlannings')}" title="返回" class="btn btnReturn2">返回</a>
+        <else />
+        <a href="{:U('Teach/myLessonPlannings')}" title="返回" class="btn btnReturn2">返回</a>
+    </if>
+
+</div>
+<div class="example">
+    <div class="listview">
+        <div class="padding10">
+            <h3 style="text-align:center">{$data.name}</h3>
+        </div>
+    </div>
+</div>
+<div class="row" style="margin-top:30px">
+    <div class="col-md-1"></div>
+    <div class="col-md-4">
+        <div id="classname">
+            学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：{$data.course}
+            <br>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：{$data.grade}
+            <br>教&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;材：{$data.textbook}
+        </div>
+        <ul id="data_load">
+            <volist name="sublist" id="contact_data_item" empty="" key="i">
+                <li><a href="##" onclick="showResource(this)" class="browse_resource" attr_type={$contact_data_item.type} attr_id="{$contact_data_item.vid}" attr_path="<?php
+                   if($contact_data_item['type'] == 'WORD' || $contact_data_item['type'] == 'PPT')
+                   {
+                     $str =  $contact_data_item['oss_path'].'/lessonplanning/'.$contact_data_item['biz_lesson_planning_id'] .'/'.$contact_data_item['id']. '/' ;
+                     $path=explode('.',basename($contact_data_item['file_path']));
+                     $path=$path[0] . '.pdf';
+                     $str.=$path;
+                     $str = str_replace('//','/',substr($str,7));
+                     echo 'http://'. $str;
+                   }
+                   else
+                   {
+                   if(is_file($_root.$contact_data_item['file_path']))
+                    {echo $_root.$contact_data_item['file_path'];}
+                    else
+                     echo $contact_data_item['oss_path'].'/'.$contact_data_item['file_path'];
+                   }
+                     ?>"><?php echo basename($contact_data_item['file_path']); ?> </a>
+                        <a class="downloadHref btn" href="{:U('Teach/downloadlessonPlanning')}&id={$data.id}&url=<?php if(is_file($_root.$contact_data_item['file_path']))
+                    {echo $_root.$contact_data_item['file_path'];}
+                    else {echo $contact_data_item['oss_path'].'/'.$contact_data_item['file_path'];} ?>" target="_blank" >下载</a>
+
+                </li>
+            </volist>
+        </ul>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-5">
+        <div class="example" data-text="资源内容">
+            <div class="listview set-border">
+                <div>
+                    <!--<a style="float: right;margin-bottom: 4px;" target="_blank" href="__PUBLIC__/pdfjs/viewer/viewer.html?f={$data.file_path}" class="btn btn-default">在新窗口打开</a>-->
+                    <div id="document" class="displayContent" style="display:none">
+                        <iframe id="resourceFrame" frameborder="0" width="100%" height="500">
+                        </iframe>
+                    </div>
+                    <div id="pic" class="displayContent" style="display:none">
+                        <div class="browse_image">
+                            <img id="imgDisplay" src="" />
+                        </div>
+                    </div>
+
+                    <div id="videoAudio" class="displayContent" style="display:none">
+                        <div id='plv'></div>
+                    </div>
+                    <div id="flash" class="displayContent">
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+<!--        <img src="__PUBLIC__/img/download2.jpg" alt="" title="点击查看大图" id="Bimg">-->
+    </div>
+</div>
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.1.min.js" type="text/javascript"></script>
+<script src="__PUBLIC__/js/layer/layer.js"></script>
+<script>
+    var swfVideoPlay = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf"><embed width="{1}" height="{2}" name="plugin" src="{0}" type="application/x-shockwave-flash"><param name="loop" value="false"><param name="movie" value="images/zf03320.swf"></object>';
+
+    function showResource(obj) {
+        var type = $(obj).attr('attr_type');    
+        type = type.toLowerCase();
+        var attr_id = $(obj).attr('attr_id');
+        var attr_path = $(obj).attr('attr_path');
+        $('.displayContent').attr('style', 'display:none');
+        switch (type) {
+        case 'video':
+        case 'audio':
+            polyvObject('#plv').videoPlayer({
+                'vid': attr_id
+            });
+            $('#videoAudio').attr('style', 'display:block');
+            break;
+        case 'ppt':
+        case 'word':
+        case 'pdf':
+            $('#resourceFrame').attr('src', '__PUBLIC__/pdfjs/viewer/viewer.html?f=' + attr_path);
+            $('#document').attr('style', 'display:block');
+            break;
+        case 'pic':
+            $('#imgDisplay').attr('src', attr_path);
+            $('#pic').attr('style', 'display:block');
+            break;
+        case 'swf':
+            var videoEle = swfVideoPlay.format(attr_path, 500, 500);
+            $('#flash').html(videoEle);
+            $('#flash').attr('style', 'display:block');
+            break;
+        }
+
+    }
+    showResource($('.browse_resource')[0]);
+
+    function adjustLayout() {
+        var resourceFrame = $('#resourceFrame');
+
+        if (resourceFrame.length == 1) {
+            window.setTimeout(function () {
+                $('#contentWrapper').removeAttr('style');
+            }, 500)
+
+        }
+
+    }
+</script>
+<!--
+<script>
+    $('#Bimg').click(function () {
+        layer.open({
+            type: 1,
+            title: false,
+            closeBtn: 0,
+            area: ['70%', '100%'],
+            skin: 'layui-layer-nobg', //没有背景色
+            shadeClose: true,
+            content: $('#Bimg'),
+            end: function () {
+                $('#Bimg').show()
+            }
+
+        })
+    })
+</script>-->

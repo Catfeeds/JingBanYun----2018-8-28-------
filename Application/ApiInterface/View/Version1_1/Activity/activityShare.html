@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>活动详情&nbsp;&nbsp;</title>
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+    <script src="https://lkme.cc/js/linkedme.min.js" ></script>
+    <link href="__PUBLIC__/css/app/activityDetails.css?v=6" rel="stylesheet" type="text/css"/>
+
+	<style>
+		.fullscreen {
+			display: none;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.3);
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 3;
+		}
+
+		.notifyBox {
+			display: none;
+			width: 280px;
+			height: 200px;
+			background: #fff;
+			border-radius: 10px;
+			position: fixed;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			margin: auto;
+			z-index: 4;
+		}
+
+		.notifyTitle {
+			text-align: center;
+			font-size: 22px;
+			margin: 30px 0;
+		}
+
+		.btnBox {
+			text-align: center;
+		}
+
+		.notifyCancel,
+		.notifyBtn {
+			display: inline-block;
+			background-color: #28D0C1;
+			border: 1px solid transparent;
+			border-radius: 6px;
+			color: white;
+			font-size: 16px;
+			padding: 6px 22px;
+		}
+
+		.notifyMain {
+			width: 180px;
+			text-align: center;
+			margin: 0 auto 20px;
+			color: rgba(51, 51, 51);
+			font-size: 16px;
+			font-family: 'Lantinghei SC', 'Open Sans', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', 微软雅黑, STHeiti, 'WenQuanYi Micro Hei', SimSun, sans-serif;
+		}
+
+		#enteredjby {
+			text-align: center;
+			/*			margin: 5rem*/
+		}
+
+		#enteredjby a,#enteredjbytwo a {
+			background: #46cfdd;
+			color: #fff;
+			margin: 30px auto;
+			padding: 15px 20px;
+			border-radius: 10px;
+			text-decoration: none;
+			font-size: 18px
+		}
+
+
+		#enteredjby,#enteredjbytwo{text-align: center;margin: 5rem 0}
+
+		#Mask{
+			width: 100%;
+			height: 100%;
+			position: fixed;
+			top: 0;left: 0;right: 0;bottom: 0;
+			z-index: 300;
+			background: #000;
+			opacity: 0.8;
+			display: none;
+		}
+		#Mask img{
+			width: 100%;
+		}
+
+		.answerA p {
+	        text-align: center;
+	        text-indent: 0 !important
+	    }
+
+	    .answerA p:nth-child(1) {
+	        margin-bottom: 8px;
+	    }
+
+	    .answerA a {
+	    	color: #12b7f5 !important;
+	    }
+
+	    .answerCode {
+	        text-align: center;
+	    }
+
+	    p.answerCode img {
+	        max-width: 100%;
+	        display: block;
+	        margin: 0 auto !important;
+	    }
+
+	    p.answerName {
+	        text-align: center;
+	        text-indent: 0 !important;
+	        font-weight: 600
+	    }
+
+		@media(min-width:600px) {
+			.pText p {
+				font-size: 18px;
+			}
+
+			.pText .span1{
+				width: 90px
+			}
+
+			.liveTimeBox .liveBtn {
+				font-size: 16px;
+			}
+		}
+	</style>
+
+	<script>
+		var currentServerTime = '<?= date('Y-m-d H:i:s',time()+5); ?>';
+		var activityStartTime = '{$data.activitystart|date="Y-m-d H:i:s",###}';
+		var activityEndTime = '{$data.activityend|date="Y-m-d H:i:s",###}';
+		var liveStartTime = '{$data.livestart|date="Y-m-d H:i:s",###}';
+		var liveEndTime = '{$data.liveend|date="Y-m-d H:i:s",###}';
+		var liveUrl = '{$data.url}';
+	</script>
+
+</head>
+<body>
+	<div id="content">
+		<h1 class="h1Text">{$data.title}</h1>
+		<p class="liveTitleTime" style="display: none">活动时间：{$data.activitystart|date="Y-m-d H:i",###}至{$data.activityend|date="Y-m-d H:i",###}</p>
+		<img src="__PUBLIC__/img/live/mainImg.png" alt="" class="mainImg" style="display: none">
+		
+		<div class="pText activityConLeft" unselectable="on" style="-moz-user-select:none;-webkit-user-select:none;" onselectstart="return false;">
+			<!--			<p>{$data.publisher}/{$data.approve_at|date="Y-m-d H:i",###}</p>-->
+			<p><span class="span1"><b>活动时间:</b></span><span class="span2">
+
+                        <if condition="$data['activitystart'] neq 0">
+                            {$data.activitystart|date="Y-m-d H:i",###}
+                        </if>
+                        至
+                        <if condition="$data['activityend'] neq 0">
+                            {$data.activityend|date="Y-m-d H:i",###}
+                        </if>
+                        </span>
+			</p>
+			<?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+			<p class="applyTimeBox"><span class="span1"><b>报名时间:</b></span><span class="span2">
+
+                        <if condition="$data['applystart'] neq 0">
+                            {$data.applystart|date="Y-m-d H:i",###}
+                        </if>
+                        至
+                        <if condition="$data['applyend'] neq 0">
+                            {$data.applyend|date="Y-m-d H:i",###}
+                        </if>
+                    </span>
+			</p>
+			<if condition="$data['display_people_register'] eq 1">
+			<p class="applyLimitBox"><span class="span1"><b>限制人数:</b></span><span class="span2">
+                        <if condition="$data['apply_people_number'] eq 0">
+                            无
+                        <else />
+                            {$data.apply_people_number}
+                        </if>
+                    </span></p>
+			</if>
+			<?php endif; ?>
+			<p><span class="span1"><b>备<span style="color: #fff">白色</span>注:</b></span><span class="span2">{$data.remark}</span></p>
+			<?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+			<if condition="$data['display_people_register'] eq 1">
+			<p class="applyNumBox"><span class="span1"><b>已报名:</b></span><span class="span2">{$data.register_numbers}人</span></p>
+			</if>
+			<p><span class="span1"><b>面向人群:</b>
+				</span><span class="span2">
+				<span class="trimSpan">
+				<volist name="activity_course_info" id="course_item">
+					<if condition="$course_item['course'] eq 0">全学科/<else />{$course_item.course_name}/</if>
+					<if condition="$course_item['grade'] eq 0">全年级<else />{$course_item.grade_name}</if>
+				</volist>
+				</span> {$data.stakeholder}
+				</span>
+			</p>
+			<?php endif; ?>
+
+			<p class="liveTimeBox" style="display: none">
+				<span class="span1"><b>直播时间:</b></span>
+				<span class="span2">
+	                <script>document.write(window.liveStartTime + ' - ' + window.liveEndTime);</script>
+                </span>
+			</p>
+			<p class="liveTimeBox" style="display: none">
+				<span class="span1"><b>直播状态:</b></span>
+				<span class="span2">
+                	<button class="liveBtn" id="playButton"></button>
+                </span>
+			</p>
+
+		</div>
+
+		<h3 class="h3Text liveH3Text">活动详情</h3>
+		<div class="blod active_ct">
+			{$data.content}
+		</div>
+
+		<div class="resource_div"></div>
+		<?php if(!in_array($data['id'],C('IGNOREINFO_ACTIVITY_ID'))) : ?>
+		<notempty name="activity_contact_file">
+			<p class="blod">活动资料：</p>
+			<volist name="activity_contact_file" id="activity_contact_file_item">
+				<p class="blod"><a class='browse_resource' flag="{$activity_contact_file_item['flag']}" attr_type="{$activity_contact_file_item.type}" attr_path="{$oss_path}<?php
+                                        if($activity_contact_file_item['type']=='word' || $activity_contact_file_item['type']=='ppt'){
+                                            $path=explode('.',basename($activity_contact_file_item['activity_file_path']));
+                                            $path=$path[0].'.pdf';
+                                            $path = 'Activity/' .$data['id'].'/' .$path;
+                                            echo $path;
+                                        }else{
+                                            echo $activity_contact_file_item['activity_file_path'];
+                                        }
+                                        ?>">{$activity_contact_file_item.activity_file_name}</a></p>
+			</volist>
+
+			<div class="contentBox" style="display:none;">
+				<switch name="activity_contact_file[0].type">
+					<case value="pdf|word|ppt">
+						<iframe id="resourceFrame" flag="{$activity_contact_file[0]['flag']}" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={$oss_path}<?php
+                                    if($activity_contact_file[0]['type'] == 'word' ||   $activity_contact_file[0]['type'] == 'ppt')
+                                    {
+                                    $path = explode('.',basename($activity_contact_file[0]['activity_file_path']));
+                                    $path=$path[0].'.pdf';
+                                    $path = 'teacher/' .$data['id'].'/'.$activity_contact_file[0]['id'] .'/' .$path;
+                                    echo $path;
+                                    }
+                                    else
+                                    echo $activity_contact_file[0]['activity_file_path'];
+                                    ?>" width="100%" height="500">
+						</iframe>
+					</case>
+					<case value="image">
+						<div class="browse_image">
+							<img src="{$oss_path}{$activity_contact_file[0].activity_file_path}" />
+						</div>
+					</case>
+					<case value="video">
+						<div id='plv'>
+							<video src="{$activity_contact_file[0].vid_fullpath}" controls/>
+						</div>
+					</case>
+					<case value="audio">
+						<div id='plv'>
+							<video src="{$activity_contact_file[0].vid_fullpath}" controls/>
+						</div>
+					</case>
+					<default/>
+					<div>
+					</div>
+				</switch>
+			</div>
+		</notempty>
+        <?php endif; ?>
+
+		<?php if ($flag==1): ?>
+			<div id="enteredjby">
+				<a href="javascript:" class="openadd linkedme">打开京版云</a>
+				<input type="hidden" value="{$urldata}" class="url">
+			</div>
+
+			<?php endif ?>
+
+	</div>
+	</notempty>
+
+    <?php if ($flag!=1): ?>
+        <div class="btnBottom">
+            <if condition="$data.works_show_status eq 1">
+            <div class="notifyReg text-center">
+                <img src="__PUBLIC__/img/app/icon_huojiangzuopin.png" alt="" class="img24"><br>
+                <span class="font_size18">获奖作品</span>
+            </div>
+            </if>
+            <div class="notifyReg text-center">
+                <img src="__PUBLIC__/img/app/icon_woyaobaoming.png" alt="" class="img25"><br>
+				<?php if($data['display_people_register'] == 1) : ?>
+                <if condition="time() gt $data['applyend']">
+                <span class="font_size18">报名已截止</span>
+                <else/>
+                <span class="font_size18">我要报名</span>
+                </if>
+				<?php endif; ?>
+            </div>
+            <if condition="$is_true eq 'yes'">
+            <div class=" text-center" onclick="location.href = '__URL__/voteList?id={$data.id}&userId={$user_id}&role={$role}'">
+                <img src="__PUBLIC__/img/app/icon_woyaotoupiao.png" alt="" class="img32"><br>
+                <span class="font_size18 ">我要投票</span>
+            </div>
+            </if>
+        </div>
+    <?php endif ?>
+
+    <div class="fullscreen"></div>
+    <div class="notifyBox">
+        <p class="notifyTitle">提示</p>
+        <div class="notifyMain">请进入或下载京版云APP后观看!</div>
+        <div class="btnBox">
+            <span class="notifyCancel">取消</span>
+            <span class="notifyBtn">好的</span>
+        </div>
+    </div>
+    <div id="Mask">
+		 <img src="{$oss_path}public/web_img/App/arrows.png" alt="">
+	</div>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="__PUBLIC__/js/share.js?v=20170712"></script>
+
+    <script>
+        var appId = '{$signPackage.appId}';
+        var timestamp = '{$signPackage.timestamp}';
+        var nonceStr = '{$signPackage.nonceStr}';
+        var signature = '{$signPackage.signature}';
+        var title = '{$data.title}';
+        var content = '{$data.content_copy}';
+        var linkimgUrl = 'http://{$WEB_URL}/Public/img/sharelogo.png';
+		var res_id = '{$data.id}';
+		var type = 2;
+        share_weixin(appId, timestamp, nonceStr, signature, title, content, linkimgUrl,res_id,type);
+    </script>
+
+<script>
+var uInfo = navigator.userAgent;
+var isAndroidInfo = uInfo.indexOf('Android') > -1 || uInfo.indexOf('Adr') > -1; //android终端
+var isiOSInfo = !!uInfo.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+
+var bottomElementPercent = 100 / $('.btnBottom').children().length;
+$('.btnBottom').children().each(function(i,n){
+    $(n).attr('style','width:'+bottomElementPercent + '%;float:left')
+})
+$('#share').click(function(){
+	window.location.href ='https://www.baidu.com'
+})
+
+$('.resource_div').click(function(){
+        $('.fullscreen,.notifyBox').show();
+})
+$('.notifyBtn').click(function(){
+    location.href="{:U('ApiInterface/Version1_1/Activity/download')}?id={$data.id}&title={$data.title}";
+        //$('.fullscreen,.notifyBox').hide();
+})
+
+$('.notifyCancel').click(function(){
+        $('.fullscreen,.notifyBox').hide();
+})
+</script>
+<script>
+	var obj = {};
+	var sp_arr = window.location.search.substr(1).split("&");
+	for (var i = 0; i < sp_arr.length; i++) {
+		var arr2 = sp_arr[i].split("=");
+		obj[arr2[0]] = arr2[1];
+	}
+	if(obj.role == 2) {
+		$('.teacherId').val(obj.user_id);
+	}
+
+	$('.submitBtn').click(function () {
+            var url=$('.baoming').attr('href');
+            console.log(url);
+                return false;
+		console.log($('#register_info').val())
+		if($('#register_info').val() != ''){
+			window.location.reload();
+		}
+	})
+
+	$('.notifyReg').click(function() {
+            $('.fullscreen,.notifyBox').show();
+		//$('#register_info').focus()
+	})
+</script>
+<!--不同角色不同功能-->
+<script>
+    var user_id="{$user_id}";
+    var role="{$role}";
+    var id="{$data.id}";
+    var zan_count="{$data.zan_count}";
+    var favor_count="{$data.favor_count}";
+
+    $('#zanIcon').click(function(){
+        if(user_id==false || role==false || id==false){
+            return false;
+        }else{
+            $.getJSON("{:U('ApiInterface/Version1_1/activity/operationActivityZan')}",{id:id,role:role,user_id:user_id},function(msg){
+                 if(msg.status==200){
+                     if($('#zanIcon').hasClass('zanBtnRed')){
+                         zan_count--;
+                         $('#zanIcon').text(zan_count);
+                         $('#zanIcon').removeClass('zanBtnRed').addClass('zanBtnBlack');
+                     }else{
+                         zan_count++;
+                         $('#zanIcon').text(zan_count);
+                         $('#zanIcon').removeClass('zanBtnBlack').addClass('zanBtnRed');
+                     }
+                 }else{
+                     alert('操作失败');
+                 }
+            });
+        }
+    });
+
+    $("#favorIcon").click(function(){
+        if(user_id==false || role==false || id==false){
+            return false;
+        }else{
+            $.getJSON("{:U('ApiInterface/Version1_1/activity/operationActivityFavor')}",{id:id,role:role,user_id:user_id},function(msg){
+                if(msg.status==200){
+                    if($('#favorIcon').hasClass('favorBtnRed')){
+                        favor_count--;
+                        $('#favorIcon').text(favor_count);
+                        $('#favorIcon').removeClass('favorBtnRed').addClass('favorBtnBlack');
+                    }else{
+                        favor_count++;
+                        $('#favorIcon').text(favor_count);
+                        $('#favorIcon').removeClass('favorBtnBlack').addClass('favorBtnRed');
+                    }
+                }else{
+                    alert('操作失败');
+                }
+            });
+        }
+    });
+</script>
+<script>
+		$('.browse_resource').click(function(){
+			var u = navigator.userAgent;
+			var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+			var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+			console.log('是否是Android：'+isAndroid);
+			console.log('是否是iOS：'+isiOS);
+			//ios系统 除了image,别的都新页面打开
+                        var type = $(this).attr('attr_type');
+			if(isiOS == true){
+				switch(type) {
+					case 'ppt':
+					case 'word': //ppt ios是否支持
+					case 'pdf':
+                                       var flag = $(this).attr('flag');
+                                       if(2 != flag)
+                                       {
+                                           location.href = "/ApiInterface/Version1_1/Activity/dataConversion";
+                                           return;
+                                       }
+                    case 'image':
+                    case 'video':
+                    case 'audio':
+					                    var attr_path = $(this).attr('attr_path');
+                                            location.href=attr_path;
+
+                                        break;
+					case 'swf':
+					case 'condensed':
+                                            var swfBox = '<span>暂时不支持该格式</span>';
+                                            $('.contentBox').append(swfBox);
+                                        break;
+
+				}
+			} else if(isAndroid == true) {
+				$(".contentBox").css('display','block');
+                                $('.contentBox').empty();
+				switch(type) {
+					case 'video':
+					case 'audio':
+						var video_src = $(this).attr('attr_path');
+						var videoBox = '<video src="'+video_src+'" controls/>';
+                                                var video_element="<div id='plv'></div>";
+                                                $(".contentBox").append(video_element);
+                                                $("#plv").append(videoBox)
+
+                                                break;
+					case 'image':
+						var file_path = $(this).attr('attr_path');
+                                                var imaggBox='<img src='+file_path+' />';
+                                                var image_element='<div class="browse_image"></div>';
+                                                $(".contentBox").append(image_element);
+                                                $(".browse_image").append(imaggBox);
+
+						break;
+					case 'ppt':
+					case 'word':
+					case 'pdf':
+                                                var flag = $(this).attr('flag');
+                                                if(2 != flag)
+                                                {
+                                                    location.href = "/ApiInterface/Version1_1/Activity/dataConversion";
+                                                    return;
+                                                }
+						                        var file_path = $(this).attr('attr_path');
+                                                var iframe_element='<iframe id="resourceFrame" frameborder="0" src="" width="100%" height="500" </iframe>';
+                                                $(".contentBox").append(iframe_element);
+
+                                                $("#resourceFrame").attr('src', "__PUBLIC__/pdfjs/viewer/viewer.html?f=" + file_path);
+						break;
+					case 'swf':
+                                        case 'condensed':
+						var swfBox = '<span>暂时不支持该格式</span>';
+						$('.contentBox').append(swfBox);
+						break;
+				}
+			}
+
+		})
+	</script>
+
+    <script>
+        function isWeiXin(){
+                    var ua = window.navigator.userAgent.toLowerCase();
+                    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+                            return true;
+                    }else{
+                            return false;
+                    }
+            }
+        function isMQQ()
+		{
+			return (navigator.userAgent.indexOf("MQQBrowser")>-1);
+		}
+        $('#Mask').click(function(){
+                    $(this).hide()
+            })
+
+        $('.openadd').click(function(){
+            var url = $(this).attr('url-data');
+            window.location.href = url;//跳到生成的深度链接的url
+        });
+    </script>
+
+    <script>
+        var url = $('.url').val();
+        console.log(url);
+        linkedme.init("fd65bd508366dff5336015e5db872def", {type: "live"}, null);
+        var data = {};
+        data.type = "live";  //表示现在使用线上模式,如果填写"test", 表示测试模式.【可选】
+        data.feature = "功能名称"; // 自定义深度链接功能，多个用逗号分隔，【可选】
+        data.stage = "阶段名称"; // 自定义深度链接阶段，多个用逗号分隔，【可选】
+        data.channel = "渠道名称"; // 自定义深度链接渠道，多个用逗号分隔，【可选】
+        data.tags = "标签名称"; // 自定义深度链接标签，多个用逗号分隔，【可选】
+        data.ios_custom_url = ""; // 自定义iOS平台下App的下载地址，如果是AppStore的下载地址可以不用填写，【可选】
+        data.android_custom_url = "";// 自定义安卓平台下App的下载地址，【可选】
+        // 下面是自定义深度链接参数，用户点击深度链接打开app之后，params参数将被带入app
+        // 比如详情页面的参数，可以写进去，这样唤起app后可直接跳转到详情页【可选】
+        var value1 = 1;
+        var value2 = 2;
+        data.params = '{"url":"'+url+'","key2":"'+value2+'"}'; //注意单引号和双引号的位置
+        linkedme.link(data, function(err, data){
+            if(err){
+                // 生成深度链接失败，返回错误对象err
+                //alert('生成错误');
+            } else {
+                /*
+                 生成深度链接成功，深度链接可以通过data.url得到，
+                 将深度链接绑定到<a>标签，这样当用户点击这
+                 个深度链接，如果是在pc上，那么跳转到深度链接二维
+                 码页面，用户用手机扫描该二维码就会打开app；如果
+                 在移动端，深度链接直接会根据手机设备类型打开ios
+                 或者安卓app
+                 */
+                $('.openadd').attr('url-data',data.url);
+                //document.body.innerHTML += '<a class="linkedme" href="'+data.url+'">打开app</a>'
+            }
+        },false);
+    </script>
+    <script>
+		function removeAllSpace(str) {
+			return str.replace(/\s+/g, "");
+		}
+
+		$(function(){
+			var trimSpan = $('.trimSpan').html();
+			$('.trimSpan').html(removeAllSpace(trimSpan));
+		})
+
+
+	</script>
+</body>
+</html>

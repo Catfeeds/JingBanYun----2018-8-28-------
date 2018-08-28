@@ -1,0 +1,1259 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<link href="__PUBLIC__/adminExercise/css/knowledge.css?ver=1" rel="stylesheet">
+<link href="__PUBLIC__/dataTable/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="__PUBLIC__/adminExercise/css/zTree/demo.css" type="text/css">
+<link rel="stylesheet" href="__PUBLIC__/adminExercise/css/zTree/zTreeStyle.css" type="text/css">
+<link rel="stylesheet" href="__PUBLIC__/adminExercise/css/jquery.bigautocomplete.css" type="text/css">
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/jquery.ztree.core-3.5.js"></script>
+<style>
+	.knowledgeTreeBtn {
+		padding: 7px 10px;
+		margin-right: 10px;
+	}
+
+	.boxRight #versionList {
+		width: 160px;
+	}
+
+	.boxRight.active #versionList {
+		width: 200px;
+	}
+
+	.boxRight .knowledgeTreeBtn {
+		float: none;
+		margin-left: 5px;
+	}
+
+	.boxRight.active .knowledgeTreeBtn {
+		float: right;
+	}
+</style>
+
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter,.boxLeft,.boxRight').css('min-height',boxHeight)
+	})
+</script>
+<div class="boxOutter p0">
+	<div class="boxLeft">
+		<div class="mb20 pb10 of">
+		    <span class="color3baeab spanTitle">试题搜索</span>
+		    <span class="fs12 pl5">(您有<a href="javascript:;" class="color3baeab" id="unMarkCount">0</a>道题待标引)</span>
+	  	</div>
+		<div id="form">
+	  	<div class="filterOutter borderNone pb20">
+			<div class="filterInner">
+				<div class="filterBox">
+					<label for="">试&nbsp;题&nbsp;ID</label>
+					<input name="questionId" type="number" class="inputCommon" id="" placeholder="请输入试题ID">
+				</div>
+				<div class="filterBox">
+					<label for="">关&nbsp;键&nbsp;词</label>
+					<input name="keyword" type="text" class="inputCommon" id="" placeholder="请输入关键词">
+				</div>
+				<div class="filterBox">
+					<label for="">题&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型</label>
+					<select name="exerciseCategory" id="" class="inputCommon">
+						<option value="0">请选择</option>
+                        <volist name="exerciseCategory" id="exerciseCategory">
+							<option value="{$exerciseCategory.id}">{$exerciseCategory.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">试题状态</label>
+					<select name="status" id="exStatus" class="inputCommon">
+						<option value="0">请选择</option>
+						<option value="<?= EXERCISE_STATE_WAITMARK; ?>">待标引</option>
+						<option value="<?= EXERCISE_STATE_FINISH; ?>">已完成</option>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">试&nbsp;卷&nbsp;ID</label>
+					<input name="paperId" type="text" class="inputCommon" id="" placeholder="请输入试卷ID">
+				</div>
+				<div class="filterBox">
+					<label for="">试卷名称</label>
+					<input name="paperName" type="text" class="inputCommon" id="" placeholder="请输入试卷名称关键词">
+				</div>
+				<div class="filterBox">
+				<label for="">指派时间</label>
+					<input name="assignStartTime" type="text" class="inputCommon inputTime" id="startTime" placeholder="开始时间" readonly>
+					至
+					<input name="assignEndTime" type="text" class="inputCommon inputTime" id="endTime" placeholder="结束时间" readonly>
+				</div>
+				<div class="filterBox">
+					<label for="">挂起状态</label>
+					<select name="lock"id="" class="inputCommon">
+						<option value="0">请选择</option>
+						<option value="<?= LOCKSTATE_LOCK ?>">是</option>
+						<option value="<?= LOCKSTATE_NORMAL ?>">否</option>
+					</select>
+				</div>
+			</div>
+			<div class="filterBtn">
+				<button class="btn" id="queryBtn" onclick="getQueryParameter('form');query();">查询</button>
+				<button class="btn" id="" onclick="$('#form input,select').val('');resetDate()">重置</button>
+				<?php if(in_array('ExerciseState/setExerciseStateEXERCISE_STATE_UNINBOUND',session('exercises_permissions'))){ ?>
+				<button class="btn" id="batchSubmit">选中提交审核</button>
+				<?php }?>
+			</div>
+		</div>
+		</div>
+		<table class="tableCommon" id="table">
+			<thead>
+				<tr>
+					<th width=10%><input type="checkbox" class="checkBox checkAll" id="">序号</th>
+					<th width=15%>试题ID</th>
+					<th width=15%>题型</th>
+					<th width=45%>题目信息</th>
+					<th width=15%>试题状态</th>
+					<th width=15%>挂起状态</th>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+	</div>
+	<div class="boxRight active">
+		<img src="{$oss_path}public/web_img/adminExercise/leftDrag.png" alt="" class="leftDrag">
+		<img src="{$oss_path}public/web_img/adminExercise/rightDrag.png" alt="" class="rightDrag active">
+    	<div class="borderBottom pb10 of">
+		    <span class="color3baeab left spanTitle">题目显示</span>
+			<?php if(in_array('zhi-shi-dian-biao-yin-fan-gong-lu-ru-an-niu',session('exercises_permissions'))){ ?>
+		    <button id="reject" type="button" name="button" class="btn btn2 right addRemarksBtn">返工录入</button>
+			<?php }?>
+			<?php if(in_array('zhi-shi-dian-biao-yin-fan-hui-fen-pei-an-niu',session('exercises_permissions'))){ ?>
+		    <button id="returnAssign" type="button" name="button" class="btn btn2 right">返回分配</button>
+			<?php }?>
+			<button id="suspendBtn" type="button" name="button" class="btn btn2 right">挂起</button>
+	  	</div>
+	  	<div class="exerciseShow" style="min-height: 50px; margin-top: 15px; margin-bottom: 30px"></div>
+
+	  	<div class="borderBottom pb10 of">
+		    <span class="color3baeab spanTitle">知识点标引</span>
+	  	</div>
+		<div class="filterBox mt15 mb15">
+			<label for="">试题难度</label>
+			<select name="" id="difficulty" class="inputCommon">
+				<volist name="difficultyList" id="difficultyList">
+					<option value="{$difficultyList.id}">{$difficultyList.name}</option>
+				</volist>
+			</select>
+		</div>
+	  	<table class="tableCommon" id="knowledgeTable">
+			<thead>
+				<tr>
+					<th width=12%>序号</th>
+					<th width=20%>教材版本</th>
+					<th width=18%>知识点</th>
+					<th width=20%>年级分册</th>
+					<th width=30%>操作</th>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+
+		<div class="filterOutter borderNone pb20 mt30" id="know">
+			<div class="red dn tishi">
+				请在下方修改知识点信息
+			</div>
+			<div class="filterInner">
+				<div class="filterBox">
+					<label for="">教材版本</label>
+					<select name="" id="versionList" class="inputCommon">
+						<volist name="versionData" id="versionData1">
+						<option value="{$versionData1.id}">{$versionData1.name}</option>
+						</volist>
+					</select>
+					<?php if(in_array('zhi-shi-dian-biao-yin-zhi-shi-shu-yu-lan-an-niu',session('exercises_permissions'))){ ?>
+				    <button type="button" name="button" class="btn btn2 knowledgeTreeBtn">知识树预览</button>
+					<?php }?>
+				</div>
+				<div class="filterBox">
+					<label for="">知&nbsp;识&nbsp;点</label>
+					<input type="text" class="inputCommon pointInput" id="knowledgePoint" placeholder="请输入知识点">
+				</div>
+				<div class="filterBox">
+					<label for="">年级分册</label>
+					<select name="" id="gradeTerm" class="inputCommon">
+
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">章&nbsp;/&nbsp;单元</label>
+					<select name="" id="chapter" class="inputCommon">
+
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">节&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;课</label>
+					<select name="" id="festival" class="inputCommon">
+
+					</select>
+				</div>
+			</div>
+			<div class="filterBtn">
+				<?php if(in_array('zhi-shi-dian-biao-yin-bao-cun-bing-wan-cheng-an-niu',session('exercises_permissions'))){ ?>
+				<button class="btn" id="" onclick="saveCurrentPoint(setFinishState);">保存并完成</button>
+				<?php }?>
+
+				<?php if(in_array('zhi-shi-dian-biao-yin-ji-xu-tian-jia',session('exercises_permissions'))){ ?>
+				<button class="btn" id="" onclick="saveCurrentPoint('saveDifficulty(resetKnowledge)');">保存并继续</button>
+				<?php }?>
+				<?php if(in_array('zhi-shi-dian-biao-yin-wan-cheng-bing-ji-xu',session('exercises_permissions'))){ ?>
+				<button class="btn" id="" onclick="saveCurrentPoint('setFinishState(getNextExercise)');">完成并继续</button>
+				<?php }?>
+				<!--<button class="btn mr0 addFeedbackBtn" id="">反馈并挂起</button>-->
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 弹窗：添加备注 -->
+<div class="fullBack"></div>
+<div class="adminNotifyBox" id="addRemarks">
+	<div class="adminNotifyTitle">
+		添加备注
+	</div>
+	<div class="adminNotifyContent">
+		<textarea name="" id="" class="remarksMain" rows="6" placeholder="请输入返工的理由，限100字" maxlength="100"></textarea>
+	</div>
+	<p class="adminNotifyButton">
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksSure">完成</a>
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksCancel">取消</a>
+	</p>
+</div>
+
+<!-- 弹窗：知识点反馈内容 -->
+<div class="adminNotifyBox" id="addFeedback">
+	<div class="adminNotifyTitle">
+		知识点反馈内容
+	</div>
+	<div class="adminNotifyContent">
+		<textarea name="" id="" class="remarksMain" rows="6" placeholder="请输入您对知识点的意见反馈，限100字" maxlength="100"></textarea>
+	</div>
+	<p class="adminNotifyButton">
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addFeedbackSure">完成</a>
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addFeedbackCancel">取消</a>
+	</p>
+</div>
+
+<!-- 弹窗：知识树预览 -->
+<div class="adminNotifyBox notifyBoxTree" id="knowledgeTree" >
+	<div class="adminNotifyTitle">
+		知识树预览
+	</div>
+	<div class="adminNotifyContent">
+		<div class="mb15">
+			<label for="">版本选择</label>
+			<select onchange="src()" name="" id="version" class="inputCommon">
+				<volist name="versionData" id="versionData">
+					<option value="{$versionData.id}">{$versionData.name}</option>
+				</volist>
+
+			</select>
+		</div>
+		<div class="zTreeDemoBackground left" id="zTreeDemoBackground">
+			<iframe src="/index.php?m=Exercise&c=TextbookTree&a=ifreamTree&courseId={$courseId}&version=1&fasciculeId=1" width="100%" id="textbookTree" scrolling="no"></iframe>
+  		</div>
+	</div>
+	<p class="adminNotifyButton">
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="knowledgeTreeSure">关闭</a>
+	</p>
+</div>
+
+<iframe src="" width="100%" height="500px" id="exerciseIframe" class="dn"></iframe>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	$(window).load(function() {
+		iframeHeightTimer()
+			window.setInterval("iframeHeightTimer()",200)
+	});
+	function iframeHeightTimer(){
+		$("#textbookTree").height($("#textbookTree").contents().find(".resource_middle").height()+50);
+		$('#zTreeDemoBackground').height($("#textbookTree").height())
+	}
+	!function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+
+	var startMin = actstart.min;
+	var startMax = actstart.max;
+	var endMin = actend.min;
+	var endMax = actend.max;
+	function resetDate() {
+		actstart.min = startMin;
+		actstart.max = startMax;
+		actend.min = endMin;
+		actend.max = endMax;
+	}
+
+	$(document).on('click','#laydate_clear',function(){
+		if($('#startTime').val() == '' && $('#endTime').val() != '') {
+			actend.min = endMin;
+		} else if($('#startTime').val() != '' && $('#endTime').val() == '') {
+			actstart.max = startMax;
+		} else {
+			resetDate()
+		}
+	})
+</script>
+<script src="__PUBLIC__/dataTable/js/jquery.dataTables.min.js"></script>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+	function loading(name) {
+		$('body').loading({
+			loadingWidth:240,
+			title:'请稍候...',
+			name:name,
+			discription:'这是一个描述...',
+			direction:'row',
+			type:'origin',
+			originBg:'#71EA71',
+			originDivWidth:30,
+			originDivHeight:30,
+			originWidth:4,
+			originHeight:4,
+			smallLoading:false,
+			titleColor:'#388E7A',
+			loadingBg:'#312923',
+			loadingMaskBg:'rgba(22,22,22,0.2)'
+		});
+	}
+
+	function removeLoad(name) {
+		removeLoading(name);
+	}
+</script>
+<script type="text/javascript" src="__PUBLIC__/js/Base64.js"></script>
+<script>
+	function getQueryParameter(divId)
+	{
+		parameters = {};
+		$('#'+divId+' select').each(function(i,n){
+			if($(n).val() != '' && $(n).val() != 0)
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		$('#'+divId+' input').each(function(i,n){
+			if($(n).val().trim() !== '')
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+	}
+	var parameters = {};
+	var ignoreQuery = false;
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		ignoreQuery = true;
+	}
+
+	var oTable = $("#table").dataTable({
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"tableTools": {
+			"sRowSelect": "os",//选中行高亮
+		},
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=KnowledgeIndexing&a=exerciseListPage",//这个是请求的地址
+		"fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+			if(aData[5] != '否')
+				$(nRow).addClass('suspended')
+		},
+			"fnServerData": retrieveData ,
+		aoColumnDefs : [
+			{
+				"aTargets" :[0],
+				"mRender" : function(data, type, full){
+
+					return '<input type="checkbox" name="" class="checkBox checkOne" attr-id='+full[1]+'>'+data;
+				}
+
+			},
+			{
+				"aTargets" :[1],
+				"mRender" : function(data, type, full){
+					if(needShowExerciseId == data)
+					return '<a href="javascript:void(0)" class="aId" id="showId" onclick="showExercise(this,\''+data+ '\')">'+data+'</a>';
+					return '<a href="javascript:void(0)" class="aId" onclick="showExercise(this,\''+data+ '\')">'+data+'</a>';
+				}
+
+			}],
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		}
+
+	});
+
+
+
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		parameters = JSON.parse(base64decode(window.location.href.split('#')[1]));
+		oTable.fnPageChange(parameters.startIndex/parameters.pageSize);
+		delete parameters['startIndex'];
+		delete parameters['pageSize'];
+		//oTable.api().draw(false);
+	}
+	function query()
+	{
+		//table reset;
+ 		oTable.fnUpdate()
+	}
+    var needShowExerciseId = 0;
+	var isFirstIn = 1;
+	function retrieveData( sSource,aoData, fnCallback) {
+		if(window.location.href.indexOf('#')!=-1)
+		{
+			if(ignoreQuery)
+			{
+				ignoreQuery =false;
+				return;
+			}
+		}
+		var queryData =  $.extend(true,{},parameters); //深度拷贝
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+//		// queryData.sEcho = qq.sEcho;
+		if(!isBrowser)
+			window.location.hash = lastHash =  base64encode(JSON.stringify(queryData));
+		loading('loadData');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				if(typeof(result.aaData) == "undefined") $.NotifyBox.NotifyOne('提示',result.message || result.msg,'确定');if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+				if(needShowExerciseId != 0) {
+					$('#showId').click();
+					//needShowExerciseId = 0;
+				}
+                if(isFirstIn == 1)
+				{$('#table').find('.aId').eq(0).click();isFirstIn = 0;}
+			},
+			error : function(msg) {
+			}
+		});
+	}
+</script>
+<script>
+	// 左右切换
+	$('.leftDrag').click(function(){
+		$('.boxLeft').hide();
+		$('.boxRight').removeClass('active').css({
+			'width': 'auto',
+			'margin-left': '30px',
+			'padding': '30px 20px'
+		});
+		$('.leftDrag').hide();
+	})
+
+	$('.rightDrag').click(function(){
+		$('.boxLeft').show();
+		$('.boxRight').addClass('active').css({
+			'width': '33.33%',
+			'margin-left': '0',
+			'padding': '30px 10px'
+		});
+		$('.leftDrag').show();
+	})
+</script>
+
+<script>
+	var currentQuestionId = 0;
+	var currentModifyKnowledgeId = 0;
+	//知识点标引TABLE
+	var oKnowledgeTable = $("#knowledgeTable").dataTable({
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=KnowledgeIndexing&a=knowledgeList",//这个是请求的地址
+		"fnServerData": retrieveData1 ,
+		aoColumnDefs : [
+			{
+				"aTargets" :[4],
+				"mRender" : function(data, type, full){
+					var buttonStr = '';
+					var id = data.split(',')[0];
+					if(data.indexOf('modify') != -1)
+					{
+						buttonStr += "<a class='tableABtn' onclick='modifyKnowledge(this,"+id+")' href='javascript:void(0)' >修改</a>";
+					}
+					if(data.indexOf('delete') != -1)
+					{
+						buttonStr += "<a class='tableABtn' onclick='deleteKnowledge("+id+")' href='javascript:void(0)' >删除</a>";
+					}
+					return buttonStr;
+				}
+			}],
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		}
+
+	});
+	function retrieveData1( sSource,aoData, fnCallback) {
+
+		var queryData =  $.extend(true,{},{}); //深度拷贝
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+		queryData.id = currentQuestionId;
+
+		// queryData.sEcho = qq.sEcho;
+		loading('loadData');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			success : function(result) {
+				if(typeof(result.aaData) == "undefined") $.NotifyBox.NotifyOne('提示',result.message || result.msg,'确定');if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+			},
+			error : function(msg) {
+			}
+		});
+	}
+	function showExercise(obj,id)
+	{
+	  $('.tishi').hide()
+	  currentQuestionId = parseInt(id);
+	  currentModifyKnowledgeId = 0;
+		$(obj).parent().parent().siblings().removeClass('selected').removeClass('greenTr');
+		$(obj).parent().parent().addClass('greenTr');
+	  //load knowledge
+	    oKnowledgeTable.api().draw(false);
+		needShowExerciseId = currentQuestionId;
+		if(currentQuestionId == 0)
+		{$.NotifyBox.NotifyOneCall('错误','请在页面左方选择习题','确定');return;}
+      //修改挂起按钮状态
+		var isLock = $(obj).parent().parent().children().eq(5).html();
+        if(isLock != '否')
+        	$('#suspendBtn').text('激活');
+		else
+			$('#suspendBtn').text('挂起');
+		$.ajax({
+			url : "{:U('KnowledgeIndexing/getExerciseDifficulty')}",
+			data : {id:currentQuestionId},
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				removeLoad('loadData');
+				if(result.status == 200)
+					$('#difficulty').val(parseInt(result.message))
+			},
+			error : function(msg) {
+				removeLoad('loadData');
+			}
+		});
+		$('#know input,select').val('');
+		$('#know #gradeTerm,#know #chapter,#know #festival').html('<option value="0">请选择</option>');
+		var difficultyArray = <?= json_encode(C('difficulty')) ?>;
+		$.ajax({
+			url : "/index.php?m=Exercise&c=CreateExercise&a=getApiExercisesInfo&id="+currentQuestionId,
+			type : 'get',
+			dataType : 'json',
+			async : true,
+			beforeSend:function(result){  
+	            loading('infoData');
+	        },  
+			success : function(result) {
+				if(result.status == 200){
+					$('.exerciseShow').html(result.data.json_html);
+					$('.btn.answer1,.btn.answer2,.btn.answer4').hide()
+				}
+				removeLoad('infoData');
+			},
+			error : function(msg) {
+				removeLoad('infoData');
+				$.NotifyBox.NotifyOne('提示','请求数据错误','确定');
+			}
+		});
+
+
+	}
+
+	
+
+	$('#suspendBtn').click(function(){
+		var text = $('#suspendBtn').text();
+		if(0 == currentQuestionId)
+			$.NotifyBox.NotifyOne('错误','请选择习题','确定');
+		else
+		lockOrUnlock(currentQuestionId,text == '挂起' ? '<?= LOCKSTATE_LOCK ?>':'<?= LOCKSTATE_NORMAL ?>')
+	});
+	function lockOrUnlock(id,state)
+	{
+		function sendRequest(id,state,reason)
+		{
+			loading('loadData');
+			$.ajax({
+				url : "{:U('ExerciseState/setLockState')}",
+				data : {'ids':id,'state':state,'additionalInfo':reason},
+				type : 'post',
+				dataType : 'json',
+				async : false,
+				success : function(result) {
+					removeLoad('loadData');
+					if(result.status == 200)
+						$.NotifyBox.NotifyOneCall('成功','操作成功','确定',function(){oTable.api().draw(false);});
+					else
+						$.NotifyBox.NotifyOne('错误',result.message,'确定');
+				},
+				error : function(msg) {
+					removeLoad('loadData');
+					$.NotifyBox.NotifyOneCall('错误','操作失败','确定');
+				}
+			});
+		}
+		if(<?= LOCKSTATE_NORMAL ?> != state)
+		{
+			$('.fullBack,#addRemarks').show();
+			$('.remarksMain').attr('placeholder','请输入挂起的理由，限100字').val('');
+			$('#addRemarksSure').unbind().click(function(){
+				var reason = $('.remarksMain').val().trim();
+				if(reason == '')
+				{
+					$.NotifyBox.NotifyOne('提示','请输入挂起原因','确定');
+				}
+				else {
+					$('.fullBack,#addRemarks').hide();
+					sendRequest(id,state,reason);
+				}
+
+			})
+		}
+	   else
+		{
+			sendRequest(id,state,'');
+		}
+	}
+	// 添加知识点反馈
+	$('.addFeedbackBtn').click(function(){
+		$('.fullBack,#addFeedback').show();
+	})
+
+	$('#addFeedbackSure').click(function(){
+		alert('添加成功！');
+		$('.fullBack,#addFeedback').hide();
+	})
+
+	$('#addFeedbackCancel').click(function(){
+		alert('添加取消！');
+		$('.fullBack,#addFeedback').hide();
+	})
+
+	// 知识树查看
+	$('.knowledgeTreeBtn').click(function(){
+		$('.fullBack,#knowledgeTree').show();
+	})
+
+	$('#knowledgeTreeSure').click(function(){
+		//alert('确定！');
+		$('.fullBack,#knowledgeTree').hide();
+	});
+	//根据版本切换不同的if
+	function src() {
+	    var courseId = "<?= $courseId ?>";
+	    var version = $('#version').val();
+        $('#textbookTree').attr('src','/index.php?m=Exercise&c=TextbookTree&a=ifreamTree&courseId='+courseId+'&version='+version)
+    }
+</script>
+
+<script>
+
+	//全选
+	$('.checkAll').click(function(){
+		$('.checkOne').attr('checked',$(this)[0].checked)
+	});
+	$('.checkOne').live('click',function(){
+		var checkedLength = 0;
+		$('.checkOne').each(function(i,n){
+			if($(n)[0].checked)
+				checkedLength++
+		})
+		$('.checkAll')[0].checked = checkedLength == $('.checkOne').length;
+	})
+
+	//batch submit
+	$('#batchSubmit').click(function(){
+		var idArray = Array();
+		$('.checkOne').each(function(i,n){
+			if(n.checked == true)
+			{
+				idArray.push($(n).attr('attr-id'))
+			}
+		})
+		if(idArray.length == 0)
+			$.NotifyBox.NotifyOne('提示','请勾选习题','确定');
+		else {
+			publicSetState(idArray.join(','),<?= EXERCISE_STATE_UNINBOUND ?>,"提交审核");
+		}
+	});
+	$('#addRemarksCancel').click(function(){
+		$('.fullBack,#addRemarks').hide();
+	})
+	$('#reject').click(function(){
+		if(currentQuestionId == 0)
+			{$.NotifyBox.NotifyOneCall('错误','请在页面左方选择习题','确定');return;}
+		else
+		 {
+			 $('.remarksMain').attr('placeholder','请输入返工的理由，限100字');
+			 $('.fullBack,#addRemarks').show();
+			 $('.remarksMain').val('');
+			 $('#addRemarksSure').unbind().click(function(){
+				 var reason = $('.remarksMain').val().trim();
+				 if(reason == '')
+				 {
+					 $.NotifyBox.NotifyOne('提示','请输入返工原因','确定');
+				 }
+				 else {
+					 $('.fullBack,#addRemarks').hide();
+					 publicSetState(currentQuestionId,<?= EXERCISE_STATE_REPROCESS ?>,'返工',reason);
+				 }
+
+			 })
+		 }
+	})
+	$('#returnAssign').click(function(){
+		if(currentQuestionId == 0)
+		{$.NotifyBox.NotifyOneCall('错误','请在页面左方选择习题','确定');return;}
+		else
+		{
+			$('.remarksMain').attr('placeholder','请输入返回分配的理由，限100字');
+			$('.fullBack,#addRemarks').show();
+			$('.remarksMain').val('');
+			$('#addRemarksSure').unbind().click(function(){
+				var reason = $('.remarksMain').val().trim();
+				if(reason == '')
+				{
+					$.NotifyBox.NotifyOne('提示','请输入返回分配原因','确定');
+				}
+				else {
+					$('.fullBack,#addRemarks').hide();
+					publicSetState(currentQuestionId,<?= EXERCISE_STATE_REASSIGN ?>,'返回分配',reason);
+					getUnMarkExerciseCount();
+				}
+
+			})
+
+		}
+	})
+	//return assign
+
+	function publicSetState(id,state,chineseState,additionalInfo)
+	{
+		loading('loadData');
+		$.ajax({
+			url : "{:U('ExerciseState/setExerciseState')}",
+			data : {'ids':id,'state':state,'additionalInfo':additionalInfo},
+			type : 'post',
+			dataType : 'json',
+			async : false,
+			success : function(result) {
+				removeLoad('loadData');
+				if(result.status == 200){
+
+					$.NotifyBox.NotifyOneCall('成功',chineseState+'成功','确定',function(){if(state != <?= EXERCISE_STATE_UNINBOUND ?>) {oTable.api().draw(false);}else {oTable.fnUpdate();currentQuestionId=0;oKnowledgeTable.fnUpdate();}});
+					if(state == <?= EXERCISE_STATE_REASSIGN ?>)
+						currentQuestionId = 0;
+				}
+				else
+					$.NotifyBox.NotifyOne('错误',result.message,'确定');
+			},
+			error : function(msg) {
+				removeLoad('loadData');
+				$.NotifyBox.NotifyOneCall('错误',chineseState+'失败','确定');
+			}
+		});
+	}
+
+</script>
+
+<script>
+
+	String.prototype.format = function (args) {
+		if (arguments.length > 0) {
+			var result = this;
+			if (arguments.length == 1 && typeof (args) == "object") {
+				for (var key in args) {
+					var reg = new RegExp("({" + key + "})", "g");
+					result = result.replace(reg, args[key]);
+				}
+			}
+			else {
+				for (var i = 0; i < arguments.length; i++) {
+					if (arguments[i] == undefined) {
+						return "";
+					}
+					else {
+						var reg = new RegExp("({[" + i + "]})", "g");
+						result = result.replace(reg, arguments[i]);
+					}
+				}
+			}
+			return result;
+		} else {
+			return this;
+		}
+	}
+	var keyword ;
+	var versionId ;
+	function loadGradeTerm(gradeTerm){
+		keyword = $('#knowledgePoint').val();
+		versionId = $('#versionList').val();
+		loading('loadData');
+		$('#gradeTerm').html('');
+		$.ajax({
+			url : "{:U('KnowledgeIndexing/queryGradeByKeywordAndVersion')}",
+			data : {keyword:keyword,versionId:versionId},
+			type : 'post',
+			dataType : 'json',
+			success : function(result) {
+				removeLoad('loadData');
+				$('#chapter,#festival').html('');
+				var optionTemplate = "<option value='{0}' {2}>{1}</option>";
+				var html='';
+				html += optionTemplate.format(0,'请选择');
+				if('undefined' != typeof(result.data)) {
+					$(result.data).each(function (i, n) {
+						if(n.id == gradeTerm)
+						html += optionTemplate.format(n.id, n.name,'selected');
+						else
+						html += optionTemplate.format(n.id, n.name,'');
+					})
+					$('#gradeTerm').html(html);
+				}
+			},
+			error : function(msg) {
+				removeLoad('loadData');
+			}
+		});
+	}
+	$('#knowledgePoint').bind('input propertychange',function(){});
+	$('#versionList').change(function(){$("#knowledgePoint").val('');bindKeywordQuery();loadGradeTerm()});
+
+	$('#gradeTerm').change(function(event,gradeTerm){
+	   var treeId = $(this).val();
+		loading('loadData');
+		$.ajax({
+			url : "{:U('KnowledgeIndexing/queryChapterByKeywordAndTree')}",
+			data : {treeId:treeId,keyword:keyword},
+			type : 'post',
+			dataType : 'json',
+			success : function(result) {
+				$('#chapter').html('');
+				removeLoad('loadData');
+				var optionTemplate = "<option value='{0}' {2}>{1}</option>";
+				var html='';
+				html += optionTemplate.format(0,'请选择');
+				if('undefined' != typeof(result.data)) {
+					$(result.data).each(function (i, n) {
+						if(gradeTerm == n.id)
+						html += optionTemplate.format(n.id, n.name,'selected');
+						else
+						html += optionTemplate.format(n.id, n.name,'');
+					})
+					$('#chapter').html(html);
+				}
+			},
+			error : function(msg) {
+				removeLoad('loadData');
+			}
+		});
+	})
+
+	$('#chapter').change(function(event,festival){
+		var chapterId = $(this).val();
+		loading('loadData');
+		$('#festival').html('');
+		$.ajax({
+			url : "{:U('KnowledgeIndexing/queryFestivalByKeywordAndChapter')}",
+			data : {chapterId:chapterId,keyword:keyword},
+			type : 'post',
+			dataType : 'json',
+			success : function(result) {
+				$('#festival').html('');
+				removeLoad('loadData');
+				var optionTemplate = "<option value='{0}' {2}>{1}</option>";
+				var html='';
+				html += optionTemplate.format(0,'请选择');
+				if('undefined' != typeof(result.data)) {
+					$(result.data).each(function (i, n) {
+						if(n.id == festival)
+						html += optionTemplate.format(n.id, n.name,'selected');
+						else
+					    html += optionTemplate.format(n.id, n.name,'');
+					})
+					$('#festival').html(html);
+				}
+			},
+			error : function(msg) {
+				removeLoad('loadData');
+			}
+		});
+	})
+
+	function saveDifficulty(callback)
+	{
+		var difficulty = $('#difficulty').val();
+		if(currentQuestionId == 0)
+		{$.NotifyBox.NotifyOneCall('错误','请在页面左方选择习题','确定');return;}
+		loading('loadData');
+		$('#festival').html('');
+		$.ajax({
+			url : "{:U('KnowledgeIndexing/saveDifficulty')}",
+			data : {difficulty:difficulty,id:currentQuestionId},
+			type : 'post',
+			dataType : 'json',
+			success : function(result) {
+				removeLoad('loadData');
+				if(result.status == 200) {
+					if (callback)
+						callback();
+					else
+						$.NotifyBox.NotifyOneCall('提示','保存成功','确定');
+				}
+				else
+					$.NotifyBox.NotifyOneCall('错误',result.message,'确定');
+			},
+			error : function(msg) {
+				removeLoad('loadData');
+			}
+		});
+	}
+
+	function modifyKnowledge(obj,id)
+	{
+	currentModifyKnowledgeId = id;
+	$(obj).parent().parent().siblings().removeClass('selected');
+	$(obj).parent().parent().addClass('selected');
+		loading('loadData');
+		$('.tishi').show()
+		$.ajax({
+			url : "{:U('KnowledgeIndexing/getExerciseKnowledge')}",
+			data : {id:id,questionId:currentQuestionId},
+			type : 'post',
+			dataType : 'json',
+			success : function(result) {
+                if(result.status == 200) {
+					$.ajaxSetup({
+						async: false
+					});
+					//set version keyword
+					currentKnowledgeId = result.data.knowledge_id;
+					$('#knowledgePoint').val(result.data.knowledge_name);
+					$('#versionList').val(result.data.versionid);
+					loadGradeTerm(result.data.gradeterm);
+					$('#gradeTerm').trigger('change', result.data.chapter);
+					$('#chapter').trigger('change', result.data.festival);
+					$.ajaxSetup({
+						async: true
+					});
+				}
+				removeLoad('loadData');
+			},
+			error : function(msg) {
+				removeLoad('loadData');
+			}
+		});
+
+	}
+   function saveCurrentPoint(callback) {
+	   if(0 == currentQuestionId)
+	   {
+		   $.NotifyBox.NotifyOneCall('提示','请选择习题','确定');
+		   return;
+	   }
+	   var knowledgeData = {};
+	   knowledgeData.versionId = $('#versionList').val();
+	   knowledgeData.gradeTerm = $('#gradeTerm').val();
+	   if(knowledgeData.gradeTerm == null || knowledgeData.gradeTerm == 0)
+	   {
+		   $.NotifyBox.NotifyOneCall('提示','请选择年级分册','确定');
+		   return;
+	   }
+	   knowledgeData.chapter = $('#chapter').val();
+	   if(knowledgeData.chapter == null || knowledgeData.chapter == 0)
+	   {
+		   $.NotifyBox.NotifyOneCall('提示','请选择章','确定');
+		   return;
+	   }
+	   knowledgeData.festival = $('#festival').val();
+	   if(knowledgeData.festival == null || knowledgeData.festival == 0)
+	   {
+		   $.NotifyBox.NotifyOneCall('提示','请选择节','确定');
+		   return;
+	   }
+	   knowledgeData.id = currentModifyKnowledgeId;
+	   knowledgeData.questionId = currentQuestionId;
+	   knowledgeData.knowledgeId = currentKnowledgeId;
+	   loading('loadData');
+	   $.ajax({
+		   url : "{:U('KnowledgeIndexing/saveExerciseKnowledge')}",
+		   data : knowledgeData,
+		   type : 'post',
+		   dataType : 'json',
+		   success : function(result) {
+			   if(result.status == 200) {
+
+				   currentModifyKnowledgeId = 0;
+				   oKnowledgeTable.api().draw(false);
+				   if(typeof(callback) == "function")callback();
+				   else if(typeof(callback) == "string")eval(callback);
+				   else {
+					   $.NotifyBox.NotifyOneCall('提示', '操作成功', '确定');
+					   removeLoad('loadData');
+				   }
+				$('.tishi').hide()
+			   }
+			   else
+			   {
+				   removeLoad('loadData');
+				   $.NotifyBox.NotifyOne('错误',result.message,'确定');
+			   }
+		   },
+		   error : function(msg) {
+			   removeLoad('loadData');
+		   }
+	   });
+   }
+   function deleteKnowledge(id)
+   {
+	   $.NotifyBox.NotifyTwoCallTwo('确定','确定删除该知识点？','确定','取消',function(){
+		   loading('loadData');
+		   $.ajax({
+			   url : "{:U('KnowledgeIndexing/deleteKnowledge')}",//这个就是请求地址对应sAjaxSource
+			   data : {ids:id},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			   type : 'post',
+			   dataType : 'json',
+			   async : true,
+			   success : function(result) {
+				   removeLoad('loadData');
+				   if(result.status == 200)
+					   $.NotifyBox.NotifyOneCall('成功','删除成功','确定',function(){if(oKnowledgeTable.fnSettings().fnRecordsDisplay()-oKnowledgeTable.fnSettings()._iDisplayStart == 1)oKnowledgeTable.fnPageChange('previous',true); else oKnowledgeTable.api().draw(false);currentModifyKnowledgeId=0});
+				   else
+					   $.NotifyBox.NotifyOne('错误',result.message,'确定');
+
+			   },
+			   error : function(msg) {
+				   removeLoad('loadData');
+				   $.NotifyBox.NotifyOneCall('错误','删除失败','确定');
+			   }
+		   });
+	   })
+	}
+	function getUnMarkExerciseCount()
+	{
+			$.ajax({
+				url : "{:U('KnowledgeIndexing/getUnMarkCount')}",//这个就是请求地址对应sAjaxSource
+				type : 'post',
+				dataType : 'json',
+				async : true,
+				success : function(result) {
+					if(result.status == 200)
+					{
+                       $('#unMarkCount').text(result.message);
+					}
+					else
+						$.NotifyBox.NotifyOne('错误',result.message,'确定');
+
+				},
+				error : function(msg) {
+					$.NotifyBox.NotifyOneCall('错误','获取未标引数目失败','确定');
+				}
+			});
+	}
+	getUnMarkExerciseCount();
+   function setFinishState(callback)
+   {
+
+	   if(currentQuestionId == 0)
+	{
+		$.NotifyBox.NotifyOneCall('提示','请选择习题','确定');
+		return;
+	}
+	      $.ajax({
+		   url : "{:U('ExerciseState/setExerciseState')}",
+		   data : {ids:currentQuestionId,state:<?= EXERCISE_STATE_FINISH ?>},
+		   type : 'post',
+		   dataType : 'json',
+		   success : function(result) {
+			   if(result.status == 200) {
+				   saveDifficulty();
+				   if(callback){callback()}
+				   else{
+					   $.NotifyBox.NotifyOneCall('提示','操作成功','确定');
+					   needShowExerciseId = currentQuestionId;
+					   oTable.api().draw(false);
+					   removeLoad('loadData');
+				   }
+				$('.tishi').hide()
+				   currentModifyKnowledgeId = 0;
+				   getUnMarkExerciseCount();
+			   }
+	           else{
+			   removeLoad('loadData');
+			   $.NotifyBox.NotifyOne('错误',result.message,'确定');
+			}
+		   },
+		   error : function(msg) {
+			   removeLoad('loadData');
+		   }
+	   });
+   }
+   function resetKnowledge()
+   {
+	   currentModifyKnowledgeId = 0;
+	   oKnowledgeTable.api().draw(false);
+	   $('#know input,#know select').val('')
+	   removeLoad('loadData');
+   }
+   function getNextExercise(callback)
+   {
+	   currentQuestionId = 0;
+	   resetKnowledge();
+	   $.ajax({
+		   url : "{:U('KnowledgeIndexing/getNextUnMarkExerciseId')}",//这个就是请求地址对应sAjaxSource
+		   type : 'post',
+		   dataType : 'json',
+		   async : true,
+		   success : function(result) {
+			   if(result.status == 200)
+			   {
+				   currentModifyKnowledgeId = 0;
+				   if(0 == result.data.length)
+					{
+						$.NotifyBox.NotifyOneCall('提示','所有习题标记完成','确定');
+					}
+
+				   //load knowledgea
+				   isFirstIn = 1;
+				   needShowExerciseId = 0;
+				   oTable.api().draw(false);
+			   }
+			   else
+				   $.NotifyBox.NotifyOne('错误',result.message,'确定');
+
+		   },
+		   error : function(msg) {
+			   $.NotifyBox.NotifyOneCall('错误','获取未标引题目失败','确定');
+		   }
+	   });
+   }
+
+</script>
+
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/jquery.bigautocomplete.js"></script>
+<script>
+	var currentKnowledgeId = 0;
+	function bindKeywordQuery(){
+	$("#knowledgePoint").bigAutocomplete({
+		width:543,
+		url:'{:U('KnowledgeIndexing/knowledgeWordList')}&versionId='+$('#versionList').val(),
+		callback:function(data){
+		currentKnowledgeId = data.id;
+		loadGradeTerm();
+		}
+	});
+	}
+	bindKeywordQuery();
+</script>

@@ -1,0 +1,59 @@
+<layout name="teacher_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/oaPublish')}" title="发布消息" class="button {:session('btntheme')}">发布消息</a>
+</div>
+<table class="table striped hovered border">
+    <thead>
+    <tr>
+        <th>发布单位/人</th>
+        <th>标题</th>
+        <th class="text-center">发布时间</th>
+        <th class="text-center">是否需要回执</th>
+        <th class="text-center">回执时间</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="暂时没有信息">
+        <tr id="l_{$data.id}">
+            <td>
+                <img class="list_avatar" src="__ROOT__/Uploads/Avatars/{$data.publisher_id}_t.jpg">
+                {$data.publisher}
+            </td>
+            <td>
+                <h3 class="list_title">
+                    <a href="{:U('Teach/oaMessageDetails?id=')}{$data.id}">{$data.title}</a>
+                </h3>
+
+                <div class="list_sub_title">{$data.brief_content}</div>
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                <if condition="$data.is_need_receipt eq 0">不需要回执
+                    <elseif condition="$data.reply_at neq 0"/>
+                    <span class="tag success">已经回执</span>
+                    <else/>
+                    <button onclick="reply('{$data.id}')" class="button">回执</button>
+                </if>
+            </td>
+            <td>
+                {$data.reply_at|date="Y-m-d H:i",###}
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+
+<script>
+
+    function reply(id) {
+        $.get('index.php?m=Home&c=Teach&a=oaReply', {message_id: id}, function (res) {
+            if (res == 'success') {
+                alert('回执成功')
+                window.location.reload();
+            } else {
+                alert('回执失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+</script>

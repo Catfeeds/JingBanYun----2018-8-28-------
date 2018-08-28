@@ -1,0 +1,99 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		管理员管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('SchoolAdmin/adminList')}">管理员账号</a>>>
+			<a href="javascript:;">查看管理员信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<div class="blueBox">
+	<span class="blueText left fs16">查看管理员信息</span>
+	<a href="{:U('SchoolAdmin/adminModify')}&id={$data.id}" class="blackText right" id="">
+		<img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="mr10">
+		修改信息
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+
+<div class="grid condensed">
+	<div class="row cells3 infoBox">
+		<div class="cell">省份：{$data.province}</div>
+		<div class="cell">市区：{$data.city}</div>
+		<div class="cell">区县：{$data.district}</div>
+		<div class="cell">学校名称：{$data.school_name}</div>
+		<div class="cell">学校代码：{$data.school_code}</div>
+		<div class="cell">管理员账号：{$data.account}</div>
+		<div class="cell">管理员姓名：{$data.real_name}</div>
+		<div class="cell">管理员手机号：{$data.telephone}</div>
+		<div class="cell">&nbsp;</div>
+		<div class="cell">管理员邮箱地址：{$data.email}</div>
+		<div class="cell">账号类型：
+                    <if condition="$data['parent_id'] neq 0">
+                        学校管理员
+                    <else />    
+                        学校子级管理员
+                    </if>
+                </div>
+		<div class="cell">账号状态：
+                    <if condition="$data['admin_flag'] eq 1">
+                        正常
+                    <else />    
+                        停用
+                    </if> 
+                </div>
+	</div>
+</div>
+
+<if condition="$data['parent_id'] neq 0">
+    <p class="blueText fs16 mt20">管理员已有的权限</p>
+    <hr class="thin bg-grayLighter">
+
+    <table id="listWrapper" class="table striped hovered border">
+            <thead>
+            <tr>
+                <th class="text-center">可查看的页面</th>
+                <th class="text-center">可操作的功能</th>
+            </tr>
+            </thead>
+            <tbody id="body">
+                <volist name="permissions_list" id="permissions_item">
+                    <tr>
+                            <td class="text-center">
+                                    {$permissions_item.module_name}
+                            </td>
+                            <td class="text-center">
+                                    <ul class="tdUl">
+                                        <volist name="permissions_item.child" id="permissions_child_item">
+                                            <li class="tdLi">{$permissions_child_item.module_name}</li> 
+                                        </volist>
+                                    </ul>
+                            </td>
+                    </tr> 
+                </volist>
+            </tbody>
+    </table>
+</if>
+
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"20%"},
+                {"width":"80%"}
+            ]
+        });
+    });
+</script>

@@ -1,0 +1,711 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<script src="__PUBLIC__/highcharts/code/highcharts.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/exporting.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/export-data.js"></script>
+
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+
+	.exerciseOutter.exerciseOutterNoBorder .exerciseOutterTop .nameImg {
+	    display: inline-block;
+	}
+</style>
+
+<a href="{:U('TeacherHomework/homeworkList')}" title="返回" class="btn btnReturn1" style="position: absolute;">返回</a>
+
+<div class="main_opr">
+    <a href="{:U('TeacherHomework/homeworkList')}" title="作业列表" class="btn btn-main-opr btn-main-opr-active">作业列表</a>
+    <a href="{:U('TeacherHomework/publishHomework')}" title="布置作业" class="btn btn-main-opr">布置作业</a>
+    <a href="{:U('TeacherHomework/myCollectionList')}" title="我的收藏" class="btn btn-main-opr">我的收藏</a>
+    <a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+    <a href="{:U('TeacherHomework/testPaperList')}" title="试卷库" class="btn btn-main-opr">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="homeworkWrapper">
+		<div class="exerciseOutter exerciseOutterNoBorder">
+			<div class="exerciseOutterTop">
+				<div class="exerciseBigTitle">
+					<span class="beforeName">{{NameData.fname}}{{NameData.name}}</span>
+					<img src="__PUBLIC__/img/homeworkV1/zuoyebaogao.png" alt="" class="nameImg">
+				</div>
+				<div class="exerciseRemark">
+					共<span class="num">{{ exerciseNumLength }}</span>题 分数<span class="num">{{ exerciseNumScore }}</span>分
+				</div>
+			</div>
+
+			<div class="dashOutter">
+				<div class="gradeDate">
+					<div>班&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：{{ classIno.grade }}{{ classIno.name }}</div>
+					<div>开始时间：{{ NameData.release_time}}</div>
+					<div>收作业时间：{{ NameData.deadline}}</div>
+				</div>
+				<a href="javascript:;" class="btnCommon btnCommonBig checkHomeworkBtn">查看作业题</a>
+			</div>
+
+			<div class="dashOutter">
+				<div class="dashTitle">数据统计</div>
+				<div class="chartBtnBox">
+					<button class="btnCommon btnBorder accuracyBtn active" @click="changeChart($event)">正确率统计</button>
+					<button class="btnCommon btnBorder" @click="changeChart($event)">完成率统计</button>
+					<button class="btnCommon btnBorder" @click="changeChart($event)">提高速度统计</button>
+					<button class="btnCommon btnBorder" @click="changeChart($event)">总得分统计</button>
+				</div>
+				<!-- 正确率 -->
+				<div class="chartOutter accuracy active">
+					<div class="chartBox">
+						<div id="accuracyChart" class="lineDiv chartDiv"></div>
+						<div class="whiteCover"></div>
+					</div>
+					<div class="chartRight">
+						<div class="tableTop">
+							<span class="wrongSort" @click="clickOrderExerciseList($event)">按错误率排序</span>
+						</div>
+						<div class="tableOutter">
+							<table class="exerciseTable">
+								<tr v-for="(edata, i) in correctRateCountdata.exercise_list">
+									<td> {{ edata.name }} </td>
+									<td>{{ edata.percent }}%</td>
+									<td style="width: 100px">
+										<a :href="'/index.php?m=Home&c=TeacherHomework&a=checkOneExercise&homeworkId='+homeworkId+'&classId='+classId+'&exercisesId='+edata.exercises_id" class="btnCommon btnCommonSmall wrongHomeworkBtn" :exerciseId="edata.exercises_id">查看</a>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<!-- 完成率统计 -->
+				<div class="chartOutter complete">
+					<div class="chartBox">
+						<div id="completeChart" class="pieDiv chartDiv"></div>
+						<div class="whiteCover"></div>
+					</div>
+					<div class="chartRight" v-if="completionRateCountdata.count_unsubmit_student_list != '' && completionRateCountdata.count_unsubmit_student_list != null">
+						<span class="studentTitle">未完成作业清单：</span>
+						<span class="studentName" v-for="(sData, index) in completionRateCountdata.count_unsubmit_student_list">{{ sData.student_name }}</span>
+					</div>
+				</div>
+
+				<!-- 提交速度统计 -->
+				<div class="chartOutter chartCommon toSubmit">
+					<div class="chartBox">
+						<div id="toSubmitChart" class="lineDiv chartDiv"></div>
+						<div class="whiteCover"></div>
+					</div>
+					<div class="chartRight">
+						<div class="rightText">平均速度：{{ submitPeedCountdata.avgpeed }}秒</div>
+						<div class="rightText">最快速度：{{ submitPeedCountdata.fastest }}秒</div>
+						<div class="rightText">最慢速度：{{ submitPeedCountdata.slowest }}秒</div>
+					</div>
+				</div>
+
+				<!-- 总得分统计 -->
+				<div class="chartOutter chartCommon allScore">
+					<div class="chartBox">
+						<div id="allScoreChart" class="lineDiv chartDiv"></div>
+						<div class="whiteCover"></div>
+					</div>
+					<div class="chartRight">
+						<div class="rightText">平均得分：{{ totalScoredata.avg_total}}分</div>
+						<div class="rightText">最高得分：{{ totalScoredata.highest}}分</div>
+						<div class="rightText">最低得分：{{ totalScoredata.minimum}}分</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="dashOutter">
+				<div class="dashTitle">待批改试题</div>
+				<table class="tableCorrect">
+					<thead>
+						<tr>
+							<th>题目名字</th>
+							<th>类型</th>
+							<th>待批改学生数量</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-if="exerciseList == ''">
+                            <td colspan="4">暂无数据</td>
+                        </tr>
+						<tr v-for="(edata, index) in exerciseList" v-else>
+							<td class="text-left" v-html="edata.subject_name"></td>
+							<td style="width: 215px">{{ edata.type_name }}</td>
+							<td style="width: 215px">{{ edata.student_count }}</td>
+							<td style="width: 215px">
+								<a :href="'/index.php?m=Home&c=TeacherHomework&a=correctStudentHomework&homeworkId={$homeworkId}&classId={$classId}&exerciseId='+edata.exercises_id" class="btnCommon btnCommonSmall correctHomeworkBtn">批改</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="dashOutter">
+				<div class="dashTitle">提交情况 （{{ SAllNum }}/{{ AllNum }}）</div>
+
+				<div class="studentOutter" v-if="YList != ''">
+					<div class="dashTitleGray">已批改</div>
+					<div class="studentInner">
+						<!-- 循环这里 -->
+						<a :href="'/index.php?m=Home&c=TeacherHomework&a=studentHomework&homeworkId='+homeworkId+'&classId='+classId+'&submitId='+Ydata.submitid+'&studentId='+Ydata.id" class="studentBox" v-for="(Ydata, index) in YList">
+							<div class="avatarBox">
+								<img :src="Ydata.avatar" alt="" class="avatarImg">
+							</div>
+							<div class="studentName">{{ Ydata.student_name }}</div>
+							<div class="studentScore">{{ Ydata.total_score }}分</div>
+						</a>
+					</div>
+				</div>
+
+				<div class="studentOutter" v-if="WList != ''">
+					<div class="dashTitleGray">待批改</div>
+					<div class="studentInner">
+						<!-- 循环这里 -->
+						<a href="javascript:;" class="studentBox" v-for="(Ydata, index) in WList">
+							<div class="avatarBox">
+								<img :src="Ydata.avatar" alt="" class="avatarImg">
+							</div>
+							<div class="studentName">{{ Ydata.student_name }}</div>
+						</a>
+					</div>
+				</div>
+
+				<div class="studentOutter" v-if="NList != ''">
+					<div class="dashTitleRed">未提交</div>
+					<div class="studentInner">
+						<!-- 循环这里 -->
+						<a href="javascript:;" class="studentBox" v-for="(Ydata, index) in NList">
+							<div class="avatarBox">
+								<img :src="Ydata.avatar" alt="" class="avatarImg">
+							</div>
+							<div class="studentName">{{ Ydata.student_name }}</div>
+						</a>
+					</div>
+				</div>
+
+				<button class="btnCommon btnCommonBig" @click="push($event)" id="urgeBtn" v-if="NList != ''">催作业</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+    var userId = "{:session('teacher.id')}";
+    var homeworkId = "{$homeworkId}";
+    var classId = "{$classId}";
+
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+            url: '',
+            // 这些地方应该都用ID，用姓名不准确，暂时先这么写
+            subject: '',
+            volume: '',
+            NameData:{},
+            exerciseListVocieData:{},
+            exerciseListData:{},
+            DataInfo:[],
+            delexerciseId:0,
+            modelId:0,
+            topicType:0,
+            exerciseScore:0,
+            exerciseNumLength:0,
+            exerciseNumScore:0,
+            DanData:[],
+            classData:[],
+            getHomeworkDetailUrl:"/index.php?m=Home&c=TeacherHomework&a=getHomeworkDetail",
+            homeworkId:homeworkId,
+            classId:classId,
+            classIno:{},
+            Url:"/index.php/ApiInterface/Version1_3/TeacherHomework/getCorrectHomeWorkListEx",
+            selectExerciseIdList:"",
+            selectExerciseIdArr:[],
+            exerciseListData:[],
+            exerciseListVocieData:[],
+            courseId:0,
+            userId:0,
+            exerciseCollectUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/IWantToCollect',
+            iscancel: '',
+            exerciseId: '',
+            exerciseList:[],
+            studentUrl : "/index.php?m=Home&c=TeacherHomework&a=getAllCorrectedExerciseList",
+            studentList:{},
+            AllNum:0,
+            SAllNum:0,
+            YList:[],
+            WList:[],
+            NList:[],
+
+			totalScoreCountUrl:"/index.php/ApiInterface/Version1_3/TeacherHomework/totalScoreCount",
+			totalScoredata:[],
+
+			submitPeedCountUrl:"/index.php/ApiInterface/Version1_3/TeacherHomework/submitPeedCount",
+            submitPeedCountdata:[],
+
+            completionRateCountUrl:"/index.php/ApiInterface/Version1_3/TeacherHomework/completionRateCount",
+            completionRateCountdata:[],
+
+            correctRateCountUrl:"/index.php/ApiInterface/Version1_3/TeacherHomework/correctRateCount",
+            correctRateCountdata:[],
+            lastDatasetX:[],
+            lastDatasetY:[],
+            workData:{},
+            copyt_exerciseListData:[],
+            order_exercise_list:[],
+
+		},
+		created: function () {
+            this.userId = userId;
+            this.homeworkId = homeworkId;
+            this.classId = classId;
+            this.getHomeworkDetail();
+            this.getCorrectHomeWorkListEx();
+            this.getstudentList();
+            this.gettotalScoredata();
+            this.getsubmitPeedCountdata();
+            this.getcompletionRateCountdata();
+            this.getcorrectRateCountdata();
+		},
+		methods: {
+
+		    //催作业
+            push:function(){
+                this.$http.post("/index.php/ApiInterface/Version1_3/TeacherHomework/push", {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.data.status == 200){
+                       //console.log("成功");
+						// alert("催作业成功");
+                        $.NotifyBox.NotifyPromptOne('提示', '已给未提交作业的学生发送作业提醒', '确定');
+                    } else {
+                        // alert("催作业失败");
+                        $.NotifyBox.NotifyPromptOne('提示', '已催过作业了', '确定');
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+			},
+
+		    //点击排序
+			clickOrderExerciseList:function(){
+                if($(event.target).hasClass('active')) {
+                    $(event.target).removeClass('active').text('按错误率排序');
+                    this.correctRateCountdata.exercise_list = this.copyt_exerciseListData;
+                } else {
+                    $(event.target).addClass('active').text('按题目排序');
+                    this.correctRateCountdata.exercise_list = this.order_exercise_list;
+                }
+
+
+			},
+
+
+            getcorrectRateCountdata: function(){
+                this.$http.post(this.correctRateCountUrl, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.correctRateCountdata = $.parseJSON(response.body).data;
+						this.copyt_exerciseListData = this.correctRateCountdata.exercise_list;
+						this.order_exercise_list = this.correctRateCountdata.order_exercise_list;
+                        this.lastDatasetX = this.correctRateCountdata.setX;
+                        this.lastDatasetY = this.correctRateCountdata.setY;
+                        this.firstChart();
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            getcompletionRateCountdata: function(){
+                this.$http.post(this.completionRateCountUrl, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.completionRateCountdata = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            getsubmitPeedCountdata: function(){
+                this.$http.post(this.submitPeedCountUrl, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.submitPeedCountdata = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            gettotalScoredata: function(){
+                this.$http.post(this.totalScoreCountUrl, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                       	this.totalScoredata = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            getHomeworkDetail: function(){
+                this.$http.post(this.getHomeworkDetailUrl, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.NameData = response.data.data;
+                        this.courseId = this.NameData.course_id;
+                        this.exerciseNumLength = this.NameData.exerciseList.length;
+                        this.exerciseNumScore = this.NameData.total_score;
+                        this.classIno = this.NameData.class_ino;
+                        for (var i=0;i<this.NameData.exerciseList.length;i++) {
+                            this.selectExerciseIdArr.push(this.NameData.exerciseList[i].exercises_id);
+                        }
+                        this.selectExerciseIdList = this.selectExerciseIdArr.join(',');
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            getCorrectHomeWorkListEx: function(){
+                this.$http.post(this.Url, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.exerciseList = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            getstudentList: function(){
+                this.$http.post(this.studentUrl, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.studentList = response.data.data;
+                        this.SAllNum = this.studentList.Slist.length;
+                        this.AllNum = this.studentList.Alist.length;
+                        this.YList =  this.studentList.Ylist;
+                        this.WList =  this.studentList.Wlist;
+                        this.NList =  this.studentList.Nlist;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+			// 点击排序
+			sortTable: function(event){
+				if($(event.target).hasClass('active')) {
+					$(event.target).removeClass('active').text('按错误率排序');
+					alert('按题目排序')
+				} else {
+					$(event.target).addClass('active').text('按题目排序');
+					alert('按错误率排序')
+				}
+			},
+			firstChart: function(){
+				// 折线图-正确率统计
+				Highcharts.chart('accuracyChart', {
+					title: {
+						text: '正确率统计'
+					},
+					subtitle: {
+						text: ''
+					},
+					colors: ['#f89203'],
+					yAxis: {
+						title: {
+							text: '正确率',
+							align: 'middle',
+							style: {
+								"font-weight": "bold"
+							}
+						},
+						labels: {
+							formatter: function() {
+					            return this.value + '%';
+					        }
+						},
+						lineWidth: 1,
+						endOnTick: false
+					},
+					xAxis: {
+						title: {
+							text: '题目',
+							align: 'high',
+							style: {
+								"font-weight": "bold"
+							}
+						},
+						allowDecimals:false,
+						categories: this.lastDatasetX
+					},
+					tooltip: {
+						headerFormat: '题{point.x}<br>',
+						pointFormat: '{series.name}: {point.y}%'
+					},
+					plotOptions: {
+						series: {
+							label: {
+								connectorAllowed: false
+							}
+						}
+					},
+					exporting: {
+						enabled: false,
+					},
+					legend: {
+						enabled: false,
+					},
+					series: [{
+						name: '正确率',
+						data: this.lastDatasetY
+					}],
+					responsive: {
+						rules: [{
+							condition: {
+								maxWidth: 500
+							},
+							chartOptions: {
+								legend: {
+									layout: 'horizontal',
+									align: 'center',
+									verticalAlign: 'bottom'
+								}
+							}
+						}]
+					}
+				});
+			},
+			// 改变统计
+			changeChart: function(event){
+				console.log(event)
+				var index = $(event.target).index();
+				$(event.target).addClass('active').siblings().removeClass('active');
+				if(index == 0) {
+					// 正确率统计
+					$('.accuracy').show().siblings('.chartOutter').hide();
+					 this.firstChart();
+
+				} else if(index == 1) {
+					// 完成率统计
+					$('.complete').show().siblings('.chartOutter').hide();
+
+					// 饼图-完成率统计
+					Highcharts.chart('completeChart', {
+						colors: ['#e2efff', '#6cb1fe'],
+						title: {
+								text: '完成率统计'
+						},
+						exporting: {
+							enabled: false,
+						},
+						tooltip: {
+								headerFormat: '{point.percentage:.1f}%<br>',
+								pointFormat: '{point.name}: {point.number} '
+						},
+						plotOptions: {
+							pie: {
+								allowPointSelect: true,  // 可以被选择
+								cursor: 'pointer',       // 鼠标样式
+								dataLabels: {
+									enabled: true,
+									format: '{point.percentage:.1f}% <br>{point.name} {point.number}',
+									style: {
+										color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+									}
+								}
+							}
+						},
+						series: [{
+							type: 'pie',
+							borderWidth: 2,
+							name: '',
+							data: [
+								{
+									name: '未完成学生',
+									number: this.completionRateCountdata.count_unsubmit_student+'人',
+									y: this.completionRateCountdata.count_unsubmit_student/this.completionRateCountdata.count_student
+								},
+								{
+									name: '已完成学生',
+									number: this.completionRateCountdata.count_submit_student+'人',
+									y: this.completionRateCountdata.count_submit_student/this.completionRateCountdata.count_student
+								}
+							]
+						}]
+					});
+
+				} else if(index == 2) {
+					// 提交速度统计
+					$('.toSubmit').show().siblings('.chartOutter').hide();
+
+					// 折线图-提交速度统计
+					Highcharts.chart('toSubmitChart', {
+						title: {
+							text: '提交速度统计'
+						},
+						subtitle: {
+							text: ''
+						},
+						colors: ['#28c8f9'],
+						yAxis: {
+							title: {
+								text: '时间(分)',
+								align: 'middle',
+								style: { 
+									"font-weight": "bold"
+								}
+							},
+							lineWidth: 1,
+							endOnTick: false
+						},
+						xAxis: {
+							title: {
+								text: '学生',
+								align: 'high',
+								style: { 
+									"font-weight": "bold"
+								}
+							},
+							allowDecimals: false,
+							categories: this.submitPeedCountdata.setX
+						},
+						tooltip: {
+							headerFormat: '{point.x}<br>',
+							pointFormat: '{series.name}: {point.y}秒'
+						},
+						exporting: {
+							enabled: false,
+						},
+						legend: {
+							enabled: false,
+						},
+						series: [{
+							name: '提交时间', 
+							data: this.submitPeedCountdata.setY
+						}]
+					});
+
+				} else if(index == 3) {
+					// 总得分统计
+					$('.allScore').show().siblings('.chartOutter').hide();
+
+					// 折线图-总得分统计
+					Highcharts.chart('allScoreChart', {
+						title: {
+							text: '总得分统计'
+						},
+						subtitle: {
+							text: ''
+						},
+						colors: ['#f9501c'],
+						yAxis: {
+							title: {
+								text: '得分(分)',
+								align: 'middle',
+								style: { 
+									"font-weight": "bold"
+								}
+							},
+							lineWidth: 1,
+							endOnTick: false
+						},
+						xAxis: {
+							title: {
+								text: '学生',
+								align: 'high',
+								style: { 
+									"font-weight": "bold"
+								}
+							},
+							allowDecimals: false,
+							categories: this.totalScoredata.setX,
+						},
+						tooltip: {
+							headerFormat: '{point.x}<br>',
+							pointFormat: '{series.name}: {point.y}分'
+						},
+						exporting: {
+							enabled: false,
+						},
+						legend: {
+							enabled: false,
+						},
+						series: [{
+							name: '得分',
+							data: this.totalScoredata.setY,
+						}]
+					});
+
+				}
+			}
+		}
+	})
+
+    $(document).on('click','.checkHomeworkBtn',function(){
+        window.location.href = "/index.php?m=Home&c=TeacherHomework&a=lookHomeWorkExercise&status=作业报告&homeworkId="+homeworkId+"&classId="+classId;
+    })
+</script>
+
+<script>
+	$(function(){
+		var contentHeight = $('#contentWrapper').height();
+		$('.exerciseOutter').css('min-height', contentHeight-20);
+	})
+</script>

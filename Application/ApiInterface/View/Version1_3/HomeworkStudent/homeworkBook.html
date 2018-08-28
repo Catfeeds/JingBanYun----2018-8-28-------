@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>作业册</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/app/Version1_3/studentHomeworkElse.css?v=2">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<style>
+			[v-cloak]{
+				display: none;
+			}
+			.appTop {
+			    height: 44px;
+			    width: 100%;
+			    border-bottom: 1px solid #eee;
+			    position: fixed;
+			    top: 0;
+			    background: #fff;
+			    z-index: 100;
+			    box-sizing: content-box;
+			}
+			.appTop .appTopTitle {
+			    height: 44px;
+			    line-height: 44px;
+			    font-size: 20px;
+			    margin: 0 60px;
+			    text-align: center;
+			}
+			.appTop .returnBox {
+			    width: 44px;
+			    height: 100%;
+			    background: url(__PUBLIC__/img/Apphomework/fanhui.png) no-repeat center;
+			    background-size: 10px 16px;
+			    position: absolute;
+			    top: 0;
+			    left: 0;
+			}
+			.selectOutter{
+				top:45px
+			}
+			.listTop{
+				padding-top: 95px
+			}
+			.jiazai{
+				text-align: center;
+				margin: 5px 0;
+				display: none
+			}
+		</style>
+	</head>
+	<body>
+		<!-- 作业列表 -->
+		<div id="app" v-cloak>
+			<div class="appTop">
+				<div class="returnBox"  @click="goindex"></div>
+				<div class="appTopTitle">
+					全部作业列表
+				</div>
+			</div>
+			<div class="fullBack" v-on:click="filterHide"></div>
+			<div class="selectOutter selectOutter2">
+			    <div class="selectInner" id="" v-on:click="filterList($event)">
+			        <div class="selectBox">
+			            <span class="selectName">学科</span>
+			            <img src="__PUBLIC__/img/Apphomework/xialaBlack.png" alt="" class="downUp">
+			        </div>
+			    </div>
+			    <div class="selectInner" id="" v-on:click="filterList($event)">
+			        <div class="selectBox">
+			            <span class="selectName">状态</span>
+			            <img src="__PUBLIC__/img/Apphomework/xialaBlack.png" alt="" class="downUp">
+			        </div>
+			    </div>
+
+			    <ul class="selectFilter" id="">
+			        <li class="active" typeId="" v-on:click="filterCourse($event)">不限</li>
+			        <li v-for="(courseList, index) in courseData" :courseId="courseList.course_id" v-on:click="filterCourse($event)">{{ courseList.course_name }}</li>
+			    </ul>
+
+			    <ul class="selectFilter" id="">
+			        <li class="active" status="" v-on:click="filterCourse($event)">不限</li>
+			        <li status="1" v-on:click="filterCourse($event)">做作业</li>
+			        <li status="2" v-on:click="filterCourse($event)">已提交</li>
+			        <li status="3" v-on:click="filterCourse($event)">逾期未交</li>
+			        <li status="4" v-on:click="filterCourse($event)">已完成</li>
+			    </ul>
+			</div>
+
+			<div class="listTop">
+				<!-- 如果没有信息 -->
+				<img src="__PUBLIC__/img/Apphomework/res_empty_bg.png" alt="" class="emptyImg centerEmpty" v-if='works == ""'>
+				<div class="homeworkList" v-for="(workinfo,index) in works">
+					<div class="dateDiv" v-if="index === 0">{{ workinfo.date }}</div>
+					<div class="dateDiv" v-else-if="workinfo.date!=dateArr[index-1]&&index>0">{{ workinfo.date }}</div>
+					<!-- 已做 -->
+					<a :href="'/index.php/ApiInterface/Version1_3/HomeworkStudent/homeworkResult?userId='+userId+'&role='+role+'&id='+workinfo.homeworkId+'&classId='+workinfo.classId+'&submitId='+workinfo.submitId+'&name='+workinfo.content1+'&statue=3'" class="homeworkItem" v-if="(workinfo.submitId != 0)">
+						<div class="homeworkIntro">
+							<div class="homeName textHidden">{{ workinfo.content1 }}</div>
+							<div class="homeScore" v-if=" workinfo.content4=='待批改'">待批改<span style="color:#f2b81a">{{workinfo.subjectNum}}</span>题</div>
+								<div class="homeScore" v-if=" workinfo.content4=='作业报告'">得分：<span style="color:red">{{workinfo.content2 }}</span>/{{workinfo.content11}}分   错题数<span style="color:red">{{workinfo.wrongNum}}</span>题</div>
+							<div class="homeTime textHidden">{{ workinfo.content3 }}</div>
+							<div class="homeClass textHidden">{{ workinfo.content5 }} {{ workinfo.content6 }}</div>
+						</div>
+						<div class="homeworkDo">
+							<img src="{$oss_path}public/web_img/APPHomework/yingyu.png" alt="" class="courseImg" v-if="workinfo.content9 == '英语'">
+							<img src="{$oss_path}public/web_img/APPHomework/yuwen.png" alt="" class="courseImg" v-if="workinfo.content9 == '语文'">
+							<img src="{$oss_path}public/web_img/APPHomework/shuxue.png" alt="" class="courseImg" v-if="workinfo.content9 == '数学'">
+
+							<div class="scoreBox">
+								<img src="__PUBLIC__/img/Apphomework/yiwancheng.png" alt="" class="doImg" v-if=" workinfo.content4=='作业报告'">
+								<img src="__PUBLIC__/img/Apphomework/yitijiao.png" alt="" class="doImg" v-if=" workinfo.content4=='待批改'">
+								<!-- <div class="scoreNum" v-if=" workinfo.content4=='作业报告'"><span class="num">{{ workinfo.content2 }}</span>分</div> -->
+							</div>
+							<!-- <div>{{ workinfo.content8 }}</div> -->
+						</div>
+					</a>
+					<!-- 未做 -->
+					<a :href="'/index.php/ApiInterface/Version1_3/HomeworkStudent/homeworkList?isEnd=0&userId='+userId+'&role='+role+'&id='+workinfo.homeworkId+'&classId='+workinfo.classId+'&submitId='+workinfo.submitId+'&name='+workinfo.content1+'&statue=1'" class="homeworkItem" v-else>
+						<div class="homeworkIntro">
+							<div class="homeName textHidden">{{ workinfo.content1 }}</div>
+							<div class="homeScore">{{ workinfo.content7 }}</div>
+							<div class="homeTime textHidden">{{ workinfo.content3 }}</div>
+							<div class="homeClass textHidden">{{ workinfo.content5 }} {{ workinfo.content6 }}</div>
+						</div>
+						<div class="homeworkDo">
+							<img src="{$oss_path}public/web_img/APPHomework/yingyu.png" alt="" class="courseImg" v-if="workinfo.content9 == '英语'">
+							<img src="{$oss_path}public/web_img/APPHomework/yuwen.png" alt="" class="courseImg" v-if="workinfo.content9 == '语文'">
+							<img src="{$oss_path}public/web_img/APPHomework/shuxue.png" alt="" class="courseImg" v-if="workinfo.content9 == '数学'">
+
+							<div class="scoreBox">
+								<img src="{$oss_path}public/web_img/APPHomework/doHomework.png" v-if="workinfo.content4 == '做作业'" alt="" class="doImg">
+								<img src="__PUBLIC__/img/Apphomework/weijiao.png" v-if="workinfo.content4 == '已过期'" alt="" class="doImg">
+							</div>
+							<!-- <div>{{ workinfo.content8 }}</div> -->
+						</div>
+					</a>
+				</div>
+				<p class="jiazai">
+					加载中
+				</p>
+			</div>
+		</div>
+
+	</body>
+	<script>
+		var userId = getQueryString('userId');
+		var role = getQueryString('role');
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId: userId,
+				role: role,
+				urlHomeworkList: '/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkList',
+				works: '',
+				dataArr:[],
+				courseId: '',
+				status: '',
+				pageIndex: 1,
+				pageSize: 10,
+
+				urlCourseList: '/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkAvailableCourse',
+				courseData: ''
+			},
+			created: function () { //应用初始化完毕加载
+				// 获取学生作业列表
+				this.getHomeworkList();
+				// 分页
+				this.scroll();
+				// 获取学科
+				this.getCourseList();
+			},
+			methods: {
+				// 获取学生作业列表
+				getHomeworkList: function(){
+					this.$http.post(this.urlHomeworkList, {
+						userId : this.userId,
+						role: this.role,
+						courseId : this.courseId,
+						status : this.status,
+						pageIndex : this.pageIndex,
+						pageSize: this.pageSize
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.works = response.data.data;
+	    					this.dateArr = [];
+							for(var i=0;i<this.works.length;i++){
+								this.dateArr.push(this.works[i].date)
+							}
+							$('.jiazai').hide()
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				goindex:function(){
+				window.location.replace('/index.php/ApiInterface/Version1_3/HomeworkStudent/index?&userId='+this.userId+'&user_id='+this.userId+'&role=3');
+				},
+				scroll: function(){
+					var that = this
+					$(window).scroll(function () {
+						//已经滚动到上面的页面高度
+						var scrollTop = $(this).scrollTop();
+						//页面高度
+						var scrollHeight = $(document).height();
+						//浏览器窗口高度
+						var windowHeight = $(this).height();
+						$('.jiazai').show()
+						//此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+						if (scrollTop + windowHeight == scrollHeight) {
+							that.pageIndex++;
+
+							that.$http.post(that.urlHomeworkList,{
+								userId: that.userId,
+								role: that.role,
+								status : that.status,
+								courseId: that.courseId,
+								pageIndex: that.pageIndex,
+								pageSize: that.pageSize
+							},{
+								emulateJSON:'application/x-www-form-urlencoded'
+							}).then(function(response){ //发送http请求
+								if(response.status == '200'){
+									for(var a=0;a<response.data.data.length;a++){
+										that.works.push(response.data.data[a]);
+									}
+									if(response.data.data == ''){
+										$('.jiazai').text('已全部加载完成')
+									}
+									for(var i=0;i<response.data.data.length;i++){
+										this.dateArr.push(response.data.data[i].date)
+									}
+								}
+							}, function(response){
+								// 响应错误回调
+								console.log('初始化学科错误');
+							});
+						}
+					});
+				},
+				// 获取学科
+				getCourseList: function(){
+					this.$http.post(this.urlCourseList, {
+						userId: this.userId,
+						role: this.role,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.courseData = response.data.data;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				//筛选列表
+				filterList: function(e){
+					var that = $(e.currentTarget);
+					filterIndex = that.index();//点击的位置
+			        // 判断点击的是否已经点击过
+			        if (that.hasClass('active')) {
+			            $('.selectFilter').eq(filterIndex).slideUp('fast', function () {
+			                that.removeClass('active');//点击的元素去掉背景颜色
+			                that.find('img').attr('src', '__PUBLIC__/img/Apphomework/xialaBlack.png');//点击的元素图片朝下
+			                $('.fullBack').hide();//黑透明背景
+							$('html,body').css({
+								'height':'auto',
+								'overflow-y': 'auto',
+							});//页面可以滑动
+			            });//点击相应的列表收起
+			        } else {
+			            that.addClass('active').siblings('.selectInner').removeClass('active');//点击的元素添加背景颜色
+			            that.find('img').attr('src', '__PUBLIC__/img/Apphomework/huishouYellow.png').end().siblings('.selectInner').find('img').attr('src', '__PUBLIC__/img/Apphomework/xialaBlack.png');//点击的元素图片朝上
+			            $('.fullBack').show();//黑透明背景
+			            $('html,body').css({
+							'height':$(window).height(),
+							'overflow-y':'hidden',
+						});//页面禁止滑动
+			            $('.selectFilter').hide().eq(filterIndex).slideDown('fast');//点击相应的列表展开
+			        }
+				},
+				//点击黑背景隐藏
+				filterHide: function(){
+					$('.selectFilter').eq(filterIndex).slideUp('fast', function () {
+			            $('.selectInner').eq(filterIndex).removeClass('active');//点击的元素去掉背景颜色
+			            $('.selectInner').eq(filterIndex).find('img').attr('src', '__PUBLIC__/img/Apphomework/xialaBlack.png');//点击的元素图片朝下
+			            $('.fullBack').hide();//黑透明背景
+			            $('body').css('overflow-y', 'auto');//页面可以滑动
+			        });//点击相应的列表收起
+				},
+				//点击筛选
+				filterCourse: function(e){
+					this.pageIndex=1;
+					$(document).scrollTop(0)
+					if(filterIndex == 0) {
+						// 这是学科筛选
+						this.courseId = $(e.currentTarget).attr('courseId');
+						$('.selectName').eq(0).text($(e.currentTarget).html())
+					} else if(filterIndex == 1) {
+						// 这是状态筛选
+						this.status = $(e.currentTarget).attr('status');
+						$('.selectName').eq(1).text($(e.currentTarget).html())
+					}
+
+					$(e.currentTarget).addClass('active').siblings().removeClass('active');
+					this.filterHide();
+					// 获取学生作业列表
+					this.getHomeworkList();
+				},
+			}
+		})
+
+		$('.fullBack').bind('touchmove', function(e) {
+           e.preventDefault();
+        });
+		function showWebNav(){}//显示web导航
+	</script>
+</html>

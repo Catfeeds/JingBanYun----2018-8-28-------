@@ -1,0 +1,764 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<style>
+    /*-------------导入框----------------*/
+    #import_outer{display:none;}
+    .import{width:800px;height:400px;position:fixed;left:50%;top:50%;margin-left:-400px;margin-top:-200px;background: url(__PUBLIC__/img/home/44.png) no-repeat left top;background-size:100% 100%;z-index:9999}
+    .close_btn{float:right;margin:10px 15px 0 0;cursor:pointer;}
+    .close_btn img { width:20px;}
+    .info .title_content{width: 115px;}
+    .item{width:28%;}
+    .download_form {width:100%;margin:80px 0 50px 55px;}
+    .browse{width:100%;margin-left:70px;}
+    .browse input{width:500px;}
+    .file{width:100%;margin:30px 0 0 70px;}
+    .outer{width:500px;height:17px;border:1px solid #ccc;float:left;margin-top:8px;}
+    .inner{width:2%;height:15px;background:#E9C232;}
+/*-----------------导入成功-------------------*/
+    .import_success,.import_fail,.export_success,.export_fail{display:none;width:500px;height:300px;position:fixed; top:50%;left:35%;z-index:9999;background:url(/Public/img/home/30.png) no-repeat center;background-size: 100% 100%;}
+    .success_top,.fail_top{overflow:hidden;padding:50px 0 0 80px;}
+    .success_top img,.fail_top img{width:30%;float:left;}
+    .success_top p,.fail_top p{float:left;font-size:40px;color:#666;padding-top:35px;}
+    .success_bottom,.fail_bottom{text-align: center;}
+    .success_bottom button,.fail_bottom button{width:120px;height: 50px;border:none;background: url(__PUBLIC__/img/home/15.png) no-repeat left top;background-size:100% 100%;color:#fff;font-size:20px;}
+</style>
+<style>
+    .check_child,.check_all {
+        width: 20px;
+        height: 20px;
+    }
+    
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+	
+    .notice_message{
+        display:none;
+    }
+	
+    .back_class{
+        display: none;
+    }
+        
+	#classChoice {
+		width: 70%;
+		position: absolute;
+		left: 0;
+		right: 0;
+		margin: 0 auto;
+	}
+</style>
+<div style="margin-bottom: 12px;float:left;" class="create_class">
+	<a href="{:U('Admin/createClass')}" title="创建班级" class="button {:session('btntheme')}">创建班级</a>
+</div> 
+
+<in name="Think.session.admin.role" value="1,2,3">
+   <div class="grid condensed searchbar" id="classChoice">
+            <div class="row cells3">
+    <in name="Think.session.admin.role" value="1,2">
+    <div id="province_div" class="class_class cell"> 
+            <select id="province" time="" class="input-control">
+                <option value="0">-请选择省份-</option>
+                <volist name="province_result" id="province_item" empty="暂时没有省份">
+                    <option value={$province_item.id} <if condition="$province_item['id']==$province"> selected="true"</if>  >{$province_item.name}</option>
+                </volist>
+            </select> 
+        </div>
+        <div id="city_div" class="class_class cell"> 
+            <select id="city" class="input-control">
+                <option value="0">-请选择城市-</option> 
+                <volist name="city_result" id="city_item" empty="暂时没有城市">
+                    <option value={$city_item.id}  <if condition="$city_item['id']==$city"> selected="true"</if> >{$city_item.name}</option> 
+                </volist>
+            </select>
+        </div>
+        <div id="district_div" class="class_class cell"> 
+            <select id="district" class="input-control">
+                <option value="0">-请选择区县-</option>
+                <volist name="district_result" id="district_item" empty="暂时没有区域">
+                    <option value={$district_item.id} <if condition="$district_item['id']==$district"> selected="true"</if>  >{$district_item.name}</option>
+                </volist>
+            </select>
+        </div>
+        <div id="school_div" class="class_class cell"> 
+            <select id="school" class="input-control">
+                <option value="0">-请选择学校-</option>
+                <volist name="school_result" id="school_item" empty="暂时没有学校">
+                    <option  value={$school_item.id} <if condition="$school_item['id']==$school"> selected="true"</if>  >{$school_item.school_name}</option>
+                </volist>
+            </select>
+        </div>
+    </in>
+<input type="hidden" id="unique_class" value="{$class}"/>
+    <div class="grade_class cell">
+        <select id="grade" class="input-control">
+            <option value="0">-请选择年级-</option>
+            <volist name="grade_data" id="class_data" empty="">
+                <option value={$class_data.id} <if condition="$class_data['id']==$grade">selected</if>>{$class_data.grade}</option>
+            </volist>
+        </select>
+    </div >
+    
+    <div class="class_class cell">
+        <select id="class" class="input-control">
+            <option value="0">-请选择班级-</option>  
+            <volist name="class_list" id="class_item" empty="">
+                <option value={$class_item.id} <if condition="$class_item['name']==$class">selected</if>>{$class_item.name}</option>
+            </volist>
+        </select>
+    </div>
+</div></div>
+</in>
+
+<div style="text-align: right;" class="search_class">
+    <div class="input-control text" data-role="input" style="width: 320px;">
+        <input type="text" id="keyword" value="{$keyword}" name="keyword" placeholder="班主任名称">
+        <in name="Think.session.admin.role" value="1,2">
+            <button onclick="manager_search()" class="button"><span class="mif-search"></span></button>
+        </in>
+        <in name="Think.session.admin.role" value="3">
+            <button onclick="search()" class="button"><span class="mif-search"></span></button>
+        </in>
+    </div>
+</div>
+<div class="back_class">
+    <a href="{:U('Admin/classMgmt')}" attr="" class="button">返回</a>
+</div>
+
+<div style="padding-top: 15px;width: 894px;" class="notice_message">
+    <div style="margin-bottom: 6px;">异常消息：你有5条数据导入失败,以下是导入失败的信息。</div> 
+</div>
+
+<div style="margin-bottom: 12px;float:right;" class="import_class">
+	<a href="javascript:;" id="import_btn" class="button">批量导入</a>
+	<a href="javascript:;" id="export_btn" class="button" style="">批量导出</a> 
+        <a href="{:U('Admin/exportedClassAll')}{$condition_str}" id="exportAll_btn" class="button" style="">全部导出</a>
+</div>
+<table id="listWrapper" class="table striped hovered border">
+    <thead class="class_thead">
+    <tr class="tr_head_info">
+        <th><input type="checkbox" class="check_all">全选</th>
+        <th class="text-center">年级</th>
+        <th class="text-center">班级</th>
+        <th class="text-center">所属学校</th>
+        <th class="text-center">班主任姓名</th>
+        <th class="text-center">班主任邮箱</th>
+        <th class="text-center">班主任手机号</th>
+        <th class="text-center">学生总数</th>
+        <th class="text-center">操作</th> 
+    </tr>
+    </thead>
+    <tbody id="body">
+    <volist name="list" id="data" empty="">
+        <tr id="l_{$data.id}" style="line-height:30px;" class="tr_body_info">
+            <td ><input type="checkbox" class="check_child" name='checkbox' attr="{$data.id}"></td>
+            <td class="text-center"> 
+                {$data.grade}
+            </td>
+            <td class="text-center">
+                {$data.name}
+            </td>
+            <td class="text-center">
+                {$data.school_name}
+            </td>
+            <td class="text-center">
+                {$data.teacher_name}
+            </td>
+            <td class="text-center">
+                {$data.teacher_email}
+                <!--{$data.create_at|date="Y-m-d H:i",###}-->
+            </td>
+            <td class="text-center">
+                {$data.teacher_phone}
+            </td>
+            <td class="text-center">
+                {$data.student_count}
+            </td> 
+            <td class="text-center">
+                <!---->
+                <in name="Think.session.admin.role" value="1,2,3">
+                    <input type="hidden" value="{$data.id}" class="hidden_id"/>
+                    
+                    <a href="{:U('Admin/classStudentMgmt?id=')}{$data.id}" class="button">查看学生</a>
+                    <a href="{:U('Admin/modifyClass?id=')}{$data.id}" class="button">修改</a> 
+                    <a href="##" attr="{$data.id}" class="button delete_button">删除</a>
+                </in>
+                
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+<in name="Think.session.admin.role" value="1,2,3">
+   
+<!--------------------批量导入----------------------------->
+<div id="import_outer" style="background:#fff;">
+    <div class="import">
+        <div class="close_btn">
+            <img src="__PUBLIC__/img/home/close.png" alt="">
+        </div>
+        <div class="download_form">
+            <a href="{:U('Admin/downloadClassFile')}" target="_blank" title="下载" class="button">下载示例表格</a>
+        </div>
+        <div class="browse">
+            <input type="text" id="address" placeholder="链接地址" >
+            <a href="javascript:;" title="浏览" class="button browse_button">浏览</a>
+            <input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+            <a href="javascript:;" title="上传" class="button upload_file">上传</a>
+        </div>
+<!--
+        <div class="file">
+            <div class="outer">
+                <div class="inner">
+                
+                </div>
+            </div>
+            <a href="javascript:;" style="float:left;margin-left:5px;" title="请选择上传文件" class="button">请选择上传文件</a>
+        </div>
+-->
+    </div>
+</div>
+
+<!-------------------导入成功---------------------->
+<div class="import_success">
+    <div class="success_top">
+        <img src="__PUBLIC__/img/home/32.png" alt="">
+        <p>导入成功！</p>
+    </div>
+    <div class="success_bottom">
+        <button type="submit" class="im_success_sure">确定</button>
+    </div>
+</div>
+<!-------------------导入失败---------------------->
+<div class="import_fail">
+    <div class="fail_top">
+        <img src="__PUBLIC__/img/home/31.png" alt="">
+        <p>导入失败！</p>
+    </div>
+    <div class="fail_bottom">
+        <button type="submit" class="im_fail_sure">确定</button>
+    </div>
+</div>
+
+<!-------------------导出成功---------------------->
+<div class="export_success">
+    <div class="success_top">
+        <img src="__PUBLIC__/img/home/32.png" alt="">
+        <p>导出成功！</p>
+    </div>
+    <div class="success_bottom">
+        <button type="submit" class="ex_success_sure">确定</button>
+    </div>
+</div>
+<!-------------------导出失败---------------------->
+<div class="export_fail">
+    <div class="fail_top">
+        <img src="__PUBLIC__/img/home/31.png" alt="">
+        <p>导出失败！</p>
+    </div>
+    <div class="fail_bottom">
+        <button type="submit" class="ex_fail_sure">确定</button>
+    </div>
+</div>
+</in>
+    <script>
+        $("#province").change(function(){
+            var request_url;
+            var provice_id=$("#province").val(); 
+            request_url="{:U('Teach/getCityByProvince')}"; 
+            $('#city').children('option:not(:eq(0))').remove();
+            $('#district').children('option:not(:eq(0))').remove(); 
+            $('#school').children('option:not(:eq(0))').remove();  
+            $('#grade').children('option:not(:eq(0))').remove();
+            $('#class').children('option:not(:eq(0))').remove();
+            
+            if(provice_id==0){
+                return false;
+            }
+            $.ajax({
+                type: 'get', 
+                url: request_url, 
+                data: {id:provice_id},
+                cache: false,
+                dataType:'json',
+                success: function(msg){ 
+                    var clone_obj=$("#city").find('option').eq(0).clone(true); 
+                    for(var i=0;i<msg.length;i++){
+                        var temp_option=$(clone_obj).clone(true);
+                        $(temp_option).val(msg[i].id);
+                        $(temp_option).text(msg[i].name);
+                        $("#city").append(temp_option);
+                    }
+                }
+            });
+        });
+        
+        $("#city").change(function(){
+            var city_id=$("#city").val(); 
+            request_url="{:U('Teach/getDistrictByCity')}"; 
+            $('#district').children('option:not(:eq(0))').remove(); 
+            $('#school').children('option:not(:eq(0))').remove(); 
+            $('#grade').children('option:not(:eq(0))').remove();
+            $('#class').children('option:not(:eq(0))').remove();
+            if(city_id==0){
+                return false;
+            }
+            $.ajax({
+                type: 'get', 
+                url: request_url, 
+                data: {id:city_id},
+                cache: false,
+                dataType:'json',
+                success: function(msg){ 
+                    var clone_obj=$("#district").find('option').eq(0).clone(true); 
+                    for(var i=0;i<msg.length;i++){
+                        var temp_option=$(clone_obj).clone(true);
+                        $(temp_option).val(msg[i].id);
+                        $(temp_option).text(msg[i].name);
+                        $("#district").append(temp_option);
+                    }
+                }
+            });
+        });
+        
+        $("#district").change(function(){
+            var district_id=$("#district").val(); 
+            request_url="{:U('Teach/getSchoolByDistrict')}";  
+            $('#school').children('option:not(:eq(0))').remove();
+            $('#grade').children('option:not(:eq(0))').remove();
+            $('#class').children('option:not(:eq(0))').remove();
+            if(district_id==0){
+                return false;
+            }
+            $.ajax({
+                type: 'get', 
+                url: request_url, 
+                data: {id:district_id},
+                cache: false,
+                dataType:'json',
+                success: function(msg){ 
+                    var clone_obj=$("#school").find('option').eq(0).clone(true); 
+                    for(var i=0;i<msg.length;i++){
+                        var temp_option=$(clone_obj).clone(true);
+                        $(temp_option).val(msg[i].id);
+                        $(temp_option).text(msg[i].name);
+                        $("#school").append(temp_option);
+                    }
+                }
+            });
+        });
+        
+        $("#school").change(function(){
+            var school_id=$("#school").val(); 
+            request_url="{:U('Admin/getSchoolGrade')}";  
+            $('#grade').children('option:not(:eq(0))').remove(); 
+            $('#class').children('option:not(:eq(0))').remove();
+            if(school_id==0){
+                return false;
+            }
+            $.ajax({
+                type: 'get', 
+                url: request_url, 
+                data: {id:school_id},
+                cache: false,
+                dataType:'json',
+                success: function(msg){ 
+                    var clone_obj=$("#grade").find('option').eq(0).clone(true); 
+                    for(var i=0;i<msg.length;i++){
+                        var temp_option=$(clone_obj).clone(true);
+                        $(temp_option).val(msg[i].id);
+                        $(temp_option).text(msg[i].grade);
+                        $("#grade").append(temp_option);
+                    }
+                }
+            });
+        });
+        
+        //班级发生变化
+        /*$('#class').change(function(){
+            var class_val=$("#class").val();
+            var grade_val=$("#grade").val();
+            if(class_val==0 && grade_val){
+                location.href="index.php?m=Home&c=Admin&a=classMgmt&status=2&grade="+grade_val;
+                return false;
+            }else{
+                
+                location.href="index.php?m=Home&c=Admin&a=classMgmt&status=2&grade="+grade_val+"&class="+class_val;
+            }
+        });*/
+        
+        //年级发生变化
+        $('#grade').change(function(){
+            var curren_val=$('#grade').val();  
+            $('#class').find('option:not(:eq(0))').remove(); 
+             request(curren_val); 
+        });
+         
+        /*//页面加载完毕,请求班级数据
+        if($('#grade').val()){
+            request($('#grade').val());
+            var class_val=$('#unique_class').val();
+            $("#class").find("option[value="+class_val+"]").attr('selected',true);
+        }*/
+        
+        /**/
+        //请求班级数据 
+        function request(grade_value){
+            var data; 
+            if($("#school").length==0){
+                data={'id':grade_value};
+            }else{
+                var school_id=$("#school").val(); 
+                data={'id':grade_value,'school_id':school_id};
+            }
+            $.ajax({
+                type: "GET",
+                url: "index.php?m=Home&c=Admin&a=getClass",
+                data: data,
+                dataType: "json",
+                async:false,
+                success: function(msg){
+                    if(msg.status=='success'){
+                        $('#class').find('option:not(:eq(0))').remove();
+                        var temp_element=$('#class').find('option').eq(0).clone(true);
+                        for(var i=0;i<msg.data.length;i++){
+                            var temp=$(temp_element).clone(true);
+                            $(temp).val(msg.data[i].id);
+                            $(temp).text(msg.data[i].name);
+                            $('#class').append(temp);
+                        }
+                    }else{
+                        $.Notify({
+                            caption: '提示',
+                            content: '参数错误',
+                            type: 'warning'
+                        });
+                    }
+                }
+            });
+        }
+        
+        //点击批量导出
+        $('#export_btn').click(function(){
+            var check_input=$('#body').find("[name='checkbox']:checked");
+            if(check_input.length<1){
+                $.Notify({
+                    caption: '提示',
+                    content: '请勾选您要导出的班级信息',
+                    type: 'warning'
+                });
+                return false;
+            }
+            var string="",form="";
+            form = $("<form></form>");
+            form.attr('action',"index.php?m=Home&c=Admin&a=exportedClass");
+            form.attr('method','post');
+            
+            for(var i=0;i<check_input.length;i++){ 
+                var temp_val=$(check_input[i]).attr('attr'); 
+                var temp= $("<input type='hidden' name='hid[]'/>")
+                $(temp).attr('value',temp_val);
+                form.append(temp);
+            } 
+            form.appendTo("body");
+            form.css('display','none');
+            form.submit();
+        }); 
+var role="{$role}";   
+
+if(role==3){
+    var thead="<tr class='tr_head_info'><th class='text-center'>年级</th>"+
+                        "<th class='text-center'>班级</th>"+ 
+                        "<th class='text-center'>班主任姓名</th>"+
+
+                        "<th class='text-center'>班主任邮箱</th>"+ 
+                        "<th class='text-center'>班主任手机号</th>"+
+                        "<th class='text-center'>异常原因</th></tr>";
+
+    var tbody="<tr style='line-height:30px;' class='tr_body_info'>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+ 
+                    "<td class='text-center'>123</td>"+
+
+                    "<td class='text-center'>123</td>"+ 
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "</tr>";
+}else{
+    var thead="<tr class='tr_head_info'>"+
+                        "<th class='text-center'>省份</th>"+
+                        "<th class='text-center'>城市</th>"+
+                        "<th class='text-center'>区县</th>"+
+                        "<th class='text-center'>学校</th>"+
+                        "<th class='text-center'>年级</th>"+
+                        "<th class='text-center'>班级</th>"+ 
+                        "<th class='text-center'>班主任姓名</th>"+
+
+                        "<th class='text-center'>班主任邮箱</th>"+ 
+                        "<th class='text-center'>班主任手机号</th>"+
+                        "<th class='text-center'>异常原因</th></tr>";
+        
+    var tbody="<tr style='line-height:30px;' class='tr_body_info'>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+ 
+                    "<td class='text-center'>123</td>"+
+
+                    "<td class='text-center'>123</td>"+ 
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "</tr>"; 
+}
+        
+        //点击文件上传
+        $('.upload_file').click(function(){
+            if($('#file_csv').val()=='' || !$('#file_csv').val()){
+                $.Notify({
+                    caption: '提示',
+                    content: '请选择需要上传的csv格式文件',
+                    type: 'warning'
+                });
+            }else{
+                $.ajaxFileUpload
+                (
+                    {
+                        url: 'index.php?m=Home&c=Admin&a=importClass', //用于文件上传的服务器端请求地址
+                        secureuri: false, //是否需要安全协议，一般设置为false
+                        fileElementId: 'file_csv', //文件上传域的ID
+                        dataType: 'json', //返回值类型 一般设置为json
+                        success: function (data)  //服务器成功响应处理函数
+                        { 
+                            $('#address').val('');
+                            $('#import_outer').css('display','none');
+                            if(data.status==1001){
+                                $('.notice_message').children('div').text('异常消息：没有上传文件');
+                                $(".notice_message").show();
+                                
+                            }else if(data.status==1002){
+                                $('.notice_message').children('div').text('异常消息：上传文件没有信息');
+                                $(".notice_message").show();
+                                
+                            } else if(data.status==1003){
+                                $(".striped").hide();
+                                $('.notice_message').children('div').text('异常消息：总共有'+data.all_number+'条数据,导入成功'+data.success_number+'条,导入失败'+data.notice_data.length+'条,以下是导入失败的信息。');
+                                 
+                                //清空id为body下的所有tr,和thead下的tr,并隐藏所有
+                                $(".tr_body_info").remove();
+                                $(".tr_head_info").remove();
+                                $(".odd").remove();
+                                
+                                $('.dataTables_scrollHead').remove()
+                                $('.search_class').hide();
+                                $('.create_class').hide();
+                                $('.grade_class').hide();
+                                $('.class_class').hide();
+                                $('.import_class').hide();
+                                //这个大的table类名
+                                //$(".striped").hide();
+                                for(var i=0;i<data.notice_data.length;i++){
+                                    var temp_tbody=$(tbody).clone(true);
+                                    $(temp_tbody).find('.text-center').eq(0).text(data.notice_data[i][0]);
+                                    $(temp_tbody).find('.text-center').eq(1).text(data.notice_data[i][1]);
+                                    $(temp_tbody).find('.text-center').eq(2).text(data.notice_data[i][2]);
+                                    $(temp_tbody).find('.text-center').eq(3).text(data.notice_data[i][3]);
+                                    $(temp_tbody).find('.text-center').eq(4).text(data.notice_data[i][4]);
+                                    $(temp_tbody).find('.text-center').eq(5).text(data.notice_data[i][5]);
+                                    $(temp_tbody).find('.text-center').eq(5).attr('title',data.notice_data[i][5])
+                                    if(role!=3){
+                                        $(temp_tbody).find('.text-center').eq(6).text(data.notice_data[i][6]);
+                                        $(temp_tbody).find('.text-center').eq(7).text(data.notice_data[i][7]);
+                                        $(temp_tbody).find('.text-center').eq(8).text(data.notice_data[i][8]);
+                                        $(temp_tbody).find('.text-center').eq(9).text(data.notice_data[i][9]);
+                                        $(temp_tbody).find('.text-center').eq(9).attr('title',data.notice_data[i][9]);
+                                    }
+                                    $("#body").append(temp_tbody);
+                                }
+                                var temp_head=$(thead).clone(true);
+                                $(".class_thead").append(temp_head);
+                                $(".striped").show();
+                                $(".notice_message").show();
+                                $(".back_class").show();
+                                $(".Pagination").hide();
+                                
+                            }else{
+                                $(".notice_message").hide();  
+                                $('.import_success').show();
+                            }
+                            
+                        },
+                        error: function (data, status, e)//服务器响应失败处理函数
+                        {
+                            alert('导入失败,请刷新页面后重试');
+                        }
+                    }
+                )
+            }
+        });
+        //input file发生变化
+        $('.file_csv').live('change',function(){
+            var filepath = $('.file_csv').val();
+            var extStart = filepath.lastIndexOf(".");
+            var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+            if(ext=='.CSV'){
+                $('#address').val(filepath);
+            }else{
+                $.Notify({
+                    caption: '提示',
+                    content: '只支持csv文件上传',
+                    type: 'warning'
+                });
+                $('.file_csv').val('');
+            }
+        }); 
+        
+        function join_condition(){
+            var string='';
+            var keyword = $('#keyword').val();
+            var grade=$("#grade").val();
+            if($('#class').val() != 0)
+            var class_name=$('#class option:selected').text();
+            if (keyword != '') {
+                string='&keyword='+keyword;
+            }
+            if(grade!=0){
+                string=string+'&grade='+grade;
+            }
+            if( typeof(class_name) != 'undefined'){
+                string=string+'&class='+class_name;
+            }
+            return string;
+        }
+
+        function search() { 
+            var str=join_condition();
+            var url = 'index.php?m=Home&c=Admin&a=classMgmt' + str;
+            window.location.href = url;
+        }
+        
+        function manager_search(){
+            var string='';
+            var province = $('#province').val();
+            var city=$("#city").val();
+            var district=$("#district").val();
+            var school=$("#school").val();
+            
+            if (province != '') {
+                string='&province='+province;
+            }
+            if(city!=0){
+                string=string+'&city='+city;
+            }
+            if(district!=0){
+                string=string+'&district='+district;
+            }
+            if(school!=0){
+                string=string+'&school='+school;
+            }
+            string=string+join_condition();
+            var url = 'index.php?m=Home&c=Admin&a=classMgmt' + string;
+            window.location.href = url;
+        }
+        
+        
+        //全选和反选中
+        $('.check_all').click(function(){
+            var all_checkbox=$('.check_child');
+            var length=all_checkbox.length;
+            var temp_status=true;
+            if($(this)[0].checked==true){
+                //本次选中
+                temp_status=true;
+            }else{
+                //本次取消
+                temp_status=false;
+            }
+            for(var i=0;i<length;i++){
+                all_checkbox[i].checked=temp_status
+            }
+        });
+        
+        //点击删除
+        $('.delete_button').click(function(){
+            var obj=this;
+            if(confirm('您确定删除吗')){
+                var id=$(this).attr('attr');
+                $.get('index.php?m=Home&c=Admin&a=deleteClass',{'id':id},function(msg){
+                    if(msg=='success'){
+                        $(obj).parent().parent().remove();
+                    }else{
+                        alert('删除失败,请刷新页面后重试');
+                    }
+                });
+            } 
+        });
+        
+        //点击浏览按钮
+        $('.browse_button').click(function(){
+            //清空input框
+            $("#address").val('');
+            $('.file_csv').trigger('click');
+        });
+    </script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"5%"},
+                {"width":"5%"},
+                {"width":"13%"},
+                {"width":"8%"},
+                {"width":"8%"},
+                {"width":"13%"},
+                {"width":"13%"},
+                {"width":"8%"},
+                {"width":"15%"}
+            ]
+        });
+    });
+</script>
+
+
+<!---------------------导入文件-------------------------->
+<script>
+    $('#import_btn').on('click',function(){
+        $('#import_outer').css('display','block');
+    });
+    $('.close_btn').on('click',function(){
+        $('#import_outer').css('display','none');
+    });
+</script>
+<!---------------------导入-------------------------->
+<script>
+    $('.im_success_sure').on('click',function(){
+        $('.import_success').css('display','none');
+        location.reload();
+    });
+    
+    $('.im_fail_sure').on('click',function(){
+        $('.import_fail').css('display','none');
+    });
+</script>
+<!---------------------导出-------------------------->
+<script>
+    $('.ex_success_sure').on('click',function(){
+        $('.export_success').css('display','none');
+    });
+    
+    $('.ex_fail_sure').on('click',function(){
+        $('.export_fail').css('display','none');
+    });
+</script>

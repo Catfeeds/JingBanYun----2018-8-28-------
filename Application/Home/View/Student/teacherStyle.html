@@ -1,0 +1,294 @@
+﻿<layout name="student_layout_1" />
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<style>
+	.list {
+		position: relative;
+		height: 50px;
+		margin-bottom: 30px;
+	}
+
+	.list_avatar {
+		position: absolute;
+		left: 0;
+		top: -13px;
+		width: 80px;
+		height: 80px;
+		border-radius: 50%;
+		z-index: 10;
+	}
+
+	.infoWrapper {
+		background-color: #F9EDED;
+		height: 60px;
+		margin-left: 50px;
+		padding-left: 30px;
+		padding-top: 7px;
+	}
+
+	.nowrap {
+		vertical-align: middle !important;
+		word-break: keep-all;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		width: 200px;
+	}
+
+	.points {
+		color: #E08A00;
+		font-size: 30px;
+		position: absolute;
+		right: 15px;
+		top: 8px;
+	}
+
+	.topWrapper li {
+		display: inline-block;
+		text-align: center;
+		width: 400px;
+		margin-bottom: 40px;
+	}
+
+	.top_avatar {
+		width: 90px;
+		height: 90px;
+		border-radius: 50%;
+	}
+
+	.topWrapper .first {
+		width: 350px;
+	}
+
+	.topWrapper .second {
+		width: 175px;
+	}
+
+	.topWrapper .third {
+		width: 110px;
+	}
+
+	.huangguan {
+		position: absolute;
+		left: 184px;
+		top: 53px;
+		width: 60px;
+	}
+
+	.benzhouzhixing {
+		position: absolute;
+		left: 163px;
+		top: 137px;
+		width: 100px;
+	}
+
+	.first .name {
+		position: absolute;
+		left: 280px;
+		top: 63px;
+		font-weight: 600;
+		font-size: 16px;
+		width: 10px;
+	}
+
+	a {
+		color: #000 !important;
+	}
+
+	a:hover {
+		text-decoration: none;
+	}
+</style>
+<style>
+	.modal-dialog {
+		margin-top: 180px;
+	}
+
+
+
+	.first_div {
+		overflow: hidden;
+		width: 172px;
+		height: 136px;
+		background: url(__PUBLIC__/img/first_background.png) no-repeat center;
+		background-size: contain;
+		margin: 0 auto;
+	}
+
+	.topWrapper .first {
+		margin-bottom: 0;
+	}
+
+	.topWrapper .first .top_avatar {
+		margin-top: 13px;
+	}
+	
+	.active {
+		background-color: #CB5F61;
+        color: white !important;
+	}
+	
+
+</style>
+<div class="main_opr">
+	<a href="{:U('Student/teacherStyle')}" title="全部" class="btn btn-main-opr btn-main-opr-active">全部</a>
+	&nbsp;
+	<button onclick="showCourseDialog()" title="学科" class="btn btn-main-opr">学科</button>
+</div>
+<div>
+	<div id="leftWrapper" style="width: 400px;float: left;position: relative;padding-top: 80px;display: none;">
+		<ul class="topWrapper">
+			<volist name="list" id="data" key="k">
+				<in name="k" value="1">
+					<li class="first">
+						<a target="_blank" href="{:U('Student/teacherDetails?id=')}{$data.id}">
+							<!--
+                            <img class="huangguan" src="__PUBLIC__/img/huangguan.png">
+                            <img class="benzhouzhixing" src="__PUBLIC__/img/benzhouzhixing.png">
+-->
+							<div class="first_div">
+								<?php if (preg_match('/Resources/', $data['avatar'])): ?>
+									<img onerror="img_teacher(this)" class="top_avatar" src=<?=C('oss_path').$data['avatar'] ?> >
+
+								<?php else: ?>
+									<img onerror="img_teacher(this)" class="top_avatar" src="__ROOT__/Uploads/Avatars/{$data.avatar}_t.jpg">
+								<?php endif; ?>
+
+							</div>
+							<br>
+							<span id="firstPositionName" class="name" style="display: none;">{$data.name}</span>
+						</a>
+
+					</li>
+				</in>
+				<in name="k" value="2,3">
+					<li class="second">
+						<a target="_blank" href="{:U('Student/teacherDetails?id=')}{$data.id}">
+							<?php if (preg_match('/Resources/', $data['avatar'])): ?>
+							<img onerror="img_teacher(this)" class="top_avatar" src=<?=C('oss_path').$data['avatar'] ?> >
+
+							<?php else: ?>
+							<img onerror="img_teacher(this)" class="top_avatar" src="__ROOT__/Uploads/Avatars/{$data.avatar}_t.jpg">
+							<?php endif; ?>
+							<br>
+							<span>{$data.name}</span>
+						</a>
+					</li>
+				</in>
+				<in name="k" value="4,5,6">
+					<li class="third">
+						<a target="_blank" href="{:U('Student/teacherDetails?id=')}{$data.id}">
+							<?php if (preg_match('/Resources/', $data['avatar'])): ?>
+							<img onerror="img_teacher(this)" class="top_avatar" src=<?=C('oss_path').$data['avatar'] ?> >
+
+							<?php else: ?>
+							<img onerror="img_teacher(this)" class="top_avatar" src="__ROOT__/Uploads/Avatars/{$data.avatar}_t.jpg">
+							<?php endif; ?>
+							<br>
+							<span>{$data.name}</span>
+						</a>
+					</li>
+				</in>
+
+			</volist>
+		</ul>
+	</div>
+	<div id="rightWrapper" style="width: 650px;float: right;position: relative;display: none;">
+		<volist name="list" id="data" key="k" empty="暂时没有教师信息">
+			<div class="list">
+				<?php if (preg_match('/Resources/', $data['avatar'])): ?>
+
+				<img onerror="img_teacher(this)" class="list_avatar" src=<?=C('oss_path').$data['avatar'] ?> >
+				<?php else: ?>
+				<img onerror="img_teacher(this)" class="list_avatar" src="__ROOT__/Uploads/Avatars/{$data.avatar}_t.jpg">
+				<?php endif; ?>
+
+
+
+				<div class="infoWrapper">
+					<div>
+						<a target="_blank" href="{:U('Student/teacherDetails?id=')}{$data.id}">{$data.name}
+							{$data.school_name}</a>
+					</div>
+					<div class="nowrap" style="color: #919090;margin-top: 6px;">
+						{$data.brief_intro}
+					</div>
+					<div class="points">
+						<img height="40" src="__PUBLIC__/img/jifen.png"> {$data.points}
+					</div>
+				</div>
+			</div>
+		</volist>
+	</div>
+</div>
+<div class="modal fade" id="courseDialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">根据任教学科查看教师风采</h4>
+			</div>
+			<div class="modal-body">
+				<volist name="courses" id="dataCourse" empty="">
+<!--					<a href="{:U('Student/teacherStyle?course_id=')}{$dataCourse.id}" class="courseTeacher" onclick="showTeachersWithCourse()">{$dataCourse.course_name}</a>-->
+					<a href="{:U('Student/teacherStyle?course_id=')}{$dataCourse.id}" class="courseTeacher <?php if ($_GET['course_id'] == $dataCourse['id']) echo 'active'; ?>"
+						   onclick="showTeachersWithCourse()">{$dataCourse.course_name}</a>
+				</volist>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--获取url，如果有course_id,学科按钮被选中；如果没有，全部按钮被选中-->
+<script>
+	
+	var obj = {};
+	var sp_arr = window.location.search.substr(1).split("&");
+	for (var i = 0; i < sp_arr.length; i++) {
+		var arr2 = sp_arr[i].split("=");
+		obj[arr2[0]] = arr2[1];
+	}
+	console.log(obj.course_id)
+	if(obj.course_id == undefined ) {
+		$('.main_opr').children('a').addClass('btn-main-opr-active')
+		$('.main_opr').children('button').removeClass('btn-main-opr-active')
+	}else {
+		$('.main_opr').children('a').removeClass('btn-main-opr-active')
+		$('.main_opr').children('button').addClass('btn-main-opr-active')
+	}
+</script>
+<script>
+	function adjustTeacherName() {
+		var firstPositionName = $('#firstPositionName').text();
+		if (firstPositionName.length > 5) $('#firstPositionName').html(firstPositionName.substring(0, 4) + '<br>..')
+		$('#firstPositionName').show();
+	}
+	adjustTeacherName();
+
+	$(function () {
+//        window.setTimeout(function () {
+            adjustSubPageStyle();
+//        }, 300);
+
+			var aaa = $.trim($('#rightWrapper').html())
+			if(aaa=='暂时没有教师信息'){
+				$('#leftWrapper').hide();
+				$('#rightWrapper').width('100%');
+				$('#rightWrapper').css('text-align','center');
+			}else {
+				var width = $('#contentWrapper').width();
+				$('#leftWrapper').show();
+        		$('#rightWrapper').width(width - 480);
+				$('#rightWrapper').css('text-align','inherit');
+			}
+	})
+
+	function adjustSubPageStyle() {
+		var width = $('#contentWrapper').width();
+		$('#rightWrapper').width(width - 480);
+		$('#leftWrapper,#rightWrapper').show();
+	}
+
+	function showCourseDialog() {
+		$('#courseDialog').modal('show')
+	}
+</script>

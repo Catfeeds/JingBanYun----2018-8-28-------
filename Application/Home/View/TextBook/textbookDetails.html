@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{$subnav}:{$nav} :: 京版云教育平台</title>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/pctextbook/ebook.css"/>
+    <script src="__PUBLIC__/js/external/jquery-1.10.1.min.js"></script>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+    <script src="__PUBLIC__/jplayer/dist/jplayer/jquery.jplayer.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/pctextbook/kalaokstyle.css"/>
+    <link href="__PUBLIC__/airView/airView.css?v=1" rel="stylesheet" type="text/css"/>
+    <style>
+        #shadow{position: absolute;right: -33px;z-index: 9;top: 0;}
+        #pageTable{overflow: hidden;}
+
+		.magBox {
+			position: fixed;
+			right: 60px;
+			top: 10px;
+		}
+
+		.magClose {
+			width: 19px;
+			height: 19px;
+			position: absolute;
+			right: 10px;
+			top: 10px;
+			cursor: pointer;
+			background: url({$oss_path}public/web_img/Textbook/magClose2.png) no-repeat center;
+		}
+
+		.magClose:hover {
+			background: url({$oss_path}public/web_img/Textbook/magClose.png) no-repeat center;
+		}
+
+        .halfMask{
+            background: #808080;
+            z-index:999999;
+            width:100%;
+            height:100%;
+            opacity:0.4;
+            position: absolute;
+            top:0px;
+        }
+        #btn_tuya_textbook_wrapper, #btn_tuya_lesson_wrapper, #btn_tuya_homework_wrapper {
+            position: absolute;
+            z-index: 999999999;
+            right: 20px;
+            top: 60px;
+        }
+        #btn_tuya_textbook_wrapper img, #btn_tuya_lesson_wrapper img, #btn_tuya_homework_wrapper img {
+            display: block;
+            width: 50px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .colorPickerWrapper {
+            text-align: center;
+            border-top: 1px solid #ccc;
+            padding-top: 15px;
+        }
+        .colorPicker.selected {
+            border: 3px solid #F2CB2A;
+        }
+
+        .colorPicker_red {
+            background: #ff0000;
+        }
+        .colorPicker {
+            display: inline-block;
+            width: 26px;
+            height: 26px;
+            border: 3px solid #CCCCCC;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        .colorPicker_yellow {
+            background: #D8A209;
+        }
+        .colorPicker_green {
+            background: green;
+        }
+        .colorPicker_black {
+            background: #000;
+        }
+        .whiteboard {
+            display: none;
+            position: absolute;
+            z-index: 999999998;
+            left: 0;
+            top:0;
+            width: 100%;
+            background-color: transparent;
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+<div id="coverLayer"></div>
+<div id="wrapper">
+    <div id="btn_tuya_textbook_wrapper">
+        <img onclick="toggleTuYaForTextbook()" id="btn_tuya_textbook_ctrl" width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png" title="启用/禁用白板">
+        <img onclick="beginTuYaTextbook()" id="btn_tuya_textbook_ctrl_pen" class="btn_tuya_sub_ctrl" width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_deactive.png" style="display: none;" title="绘制">
+        <img onclick="clearTextbookTuYa()" id="btn_tuya_textbook_ctrl_eraser" class="btn_tuya_sub_ctrl" width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_deactive.png" style="display: none;"
+             title="擦除">
+        <img onclick="clearAllTextbookTuYa()" id="btn_tuya_textbook_ctrl_clear" class="btn_tuya_sub_ctrl" width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_blank_deactive.png" style="display: none;"
+             title="清空">
+        <img onclick="toggleTuYaForTextbookOpacity()" id="btn_tuya_textbook_ctrl_opacity" class="btn_tuya_sub_ctrl"
+             width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_deactive.png" style="display: none;"
+             title="透明控制">
+
+        <div id="textbookColorPickerWrapper" class="colorPickerWrapper btn_tuya_sub_ctrl" style="display: none;">
+            <span onclick="changeTextbookTuyaLineColor('#ff0000')" class="colorPicker colorPicker_red selected" data-color="#ff0000"></span>
+            <br>
+            <span onclick="changeTextbookTuyaLineColor('#D8A209')" class="colorPicker colorPicker_yellow" data-color="#D8A209"></span>
+            <br>
+            <span onclick="changeTextbookTuyaLineColor('green')" class="colorPicker colorPicker_green" data-color="green"></span>
+            <br>
+            <span onclick="changeTextbookTuyaLineColor('#000000')" class="colorPicker colorPicker_black" data-color="#000000"></span>
+            <br>
+        </div>
+    </div>
+    <table id="pageTable" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="right" style="position:relative" class="book_left">
+                <div class="pageWrapper pageindex" id="page1Wrapper" style="text-align: right" >
+                    <img class="page"  onerror="imageError(this)" id="page1">
+                </div>
+                 <div id="shadow">
+                   <img src="__PUBLIC_METRO__/img/boolshow.png" alt="" style="height:919px">
+                </div>
+
+            </td>
+
+            <td align="left">
+                <div class="pageWrapper pageindex" id="page2Wrapper" style="text-align: left;">
+                    <img class="page " onerror="imageError(this)"  id="page2">
+                </div>
+
+            </td>
+        </tr>
+    </table>
+    <div id="rectClickImgWrapper" style="margin: 0 auto;">
+        <table cellpadding="0" cellspacing="0" style="width: 100%; table-layout: fixed">
+            <tr>
+                <td id="rectClickImgCell" valign="middle" align="center">
+                    <img id="rectClickImg" style="min-width:auto;">
+                    <audio id="rectClickAudio" src=""></audio>
+                </td>
+            </tr>
+        </table>
+    </div>
+ <div id="actionCell" style="vertical-align:middle;position:absolute;top:0;left:0;bottom:0;right:0;margin:auto;display:none;z-index:99999;" valign="middle" align="center">
+
+            </div>
+
+    <table id="actionWrapper" cellpadding="0" cellspacing="0">
+        <tr>
+        </tr>
+    </table>
+
+</div>
+<div id="whiteboard_etextbook" class="whiteboard">
+    <canvas id="etextbook_canvas">
+        您的浏览器不支持白板功能
+    </canvas>
+</div>
+<div id="footer">
+    <table cellspacing="0" cellpadding="0">
+        <tr>
+
+            <td align="center" valign="middle" style="position:relative">
+                <div id="footerTableCell" width="100" align="center">
+                <if condition="$book['course_id'] eq 3">
+                <span id="speedCtrl" tapmode onclick="switchSpeed()">正常语速</span>
+                </if>
+                </div>
+                <img class="f-content" tapmode src="__PUBLIC_METRO__/img/ebook/icon_content.png"
+                     onclick="turnToContentPage()">
+                <img class="f-pre" tapmode src="__PUBLIC_METRO__/img/ebook/icon_pre.png" onclick="turnToPreviousPage()">
+                <img class="f-nex" tapmode src="__PUBLIC_METRO__/img/ebook/icon_next.png" onclick="turnToNextPage()">
+
+
+
+            </td>
+        </tr>
+    </table>
+     <div class="page_div">
+		    <span class="page_span">
+				跳转到:<input type="text" class="page_input"   onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+    onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" onblur="numlength()"/>  页 <span ></span>
+			</span>
+			 <img src="" alt="" class="page_img">
+     </div>
+</div>
+<div id="kalaok">
+    <div class="text" id="text">
+    </div>
+</div>
+<div id="jplayer"></div>
+<div class="magBox">
+	<div class="magClose"></div>
+	<img src="{$oss_path}public/web_img/Textbook/magnify.png" alt="" class="magnifyImg">
+</div>
+
+<!-- 右下角的返回 二维码 分享 -->
+<ul class="bottomRightUl">
+    <li class="bottomRightShare">
+        <div class="bottomRightShareOutter">
+            <div class="bdsharebuttonbox">
+                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/bottomRightCorner.png" alt="" class="bottomRightCorner">
+                <span class="bottomRightSpan">分享到</span>
+                <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+                <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+                <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+            </div>
+        </div>
+    </li>
+    <li class="bottomRightQRcode">
+        <div class="bottomRightQRcodeOutter">
+            <div class="bottomRightQRcodeBox">
+                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/bottomRightCode.png" alt="" class="bottomRightCode">
+                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/bottomRightCorner.png" alt="" class="bottomRightCorner">
+            </div>
+        </div>
+    </li>
+    <li class="bottomRightTop"></li>
+</ul>
+
+</body>
+<script type="text/javascript" src="__PUBLIC__/js/textbook_kalaok.js"></script>
+<script src="__PUBLIC__/airView/airView.js"></script>
+
+<script type="text/javascript">
+    var bookId = '{$book.id}';
+    var bookName = '{$book.name}';
+    var currentPageId = [1, 2];
+    var contentPage1Id = 0;
+    var contentPage2Id = 0;
+    var serverPath = '{$book.server_path}';
+    var speed = 'normal';//语速 normal 正常 slow 缓慢
+    var book = null;
+    var pageWidth = 512;//每一页的宽度
+
+    var PUBLIC_METRO = '__PUBLIC_METRO__';
+    var PUBLIC_PATH = '__PUBLIC__';
+
+    var bookInfo = {
+        width: 512,
+        height: 713,
+        pages: []
+    };
+
+    var currentPage1Info = null;
+    var currentPage2Info = null;
+
+    var currentPage1KalaOKInfo = [];
+    var currentPage2KalaOKInfo = [];
+
+    var contentsPage = 5;
+    var pagePos = {
+        paddingTop: 0,
+        paddingBottom: 0
+    };
+
+    var audio = null;
+    var video = null;
+
+    $(function () {
+        adjustPage();
+        loadBookInfo();
+    })
+
+    var flashSwf = ['<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="800" height="600"',
+        '                        codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=20,0,0,0" id="swf">',
+        '                    <param name="movie" value="images/zf03320.swf">',
+        '                    <param name="quality" value="high">',
+        '                    <param name="bgcolor" value="#F0F0F0">',
+        '                    <param name="menu" value="false">',
+        '                    <param name="wmode" value="opaque">',
+        '                    <param name="FlashVars" value="">',
+        '                    <param name="allowScriptAccess" value="always">',
+        '                    <param name="allowNetworking" value="all">',
+        '                    <param name="loop" value="false">',
+        '                    <param name="play" value="true">',
+        '                    <embed name="swf" src="{0}"',
+        '                           width="800" height="600"',
+        '                           align="middle"',
+        '                           quality="high"',
+        '                           menu="false"',
+        '                           play="true"',
+        '                           loop="false"',
+        '                           FlashVars=""',
+        '                           allowScriptAccess="always"',
+        '                           type="application/x-shockwave-flash"',
+        '                           pluginspage="http://www.adobe.com/go/getflashplayer">',
+        '                    </embed>',
+        '                </object>'].join("");
+
+    var flvPlay = '<div style="color:red;">系统识别出该视频格flv格式,因大部分浏览器都不支持该格式，如果播放有问题，请联系管理员将其转换为mp4格式</div><video src="{0}" style="width: 500px;height: 500px;" controls="controls"></video>';
+    var swfVideoPlay = '<embed width="800" height="600" name="plugin" src="{0}" type="application/x-shockwave-flash">';
+    var mp4VideoPlay = '<video  controls="controls" width="600px" height="500px" ><source src="{0}" type="video/mp4" ></video>';
+    var flvVideoPlay = '<div id="flvPlayer"></div>';
+    var mp3AudioPlay = '<audio src="{0}" controls="controls"></audio>';
+    var jPlayer = $("#jplayer");
+    jPlayer.jPlayer({
+        swfPath: "__PUBLIC__/jplayer/dist/jplayer",
+        supplied: "mp3",
+        wmode: "window"
+    });
+
+</script>
+<script src="__PUBLIC__/flvPlayer/swfobject.js"></script>
+<script type="text/javascript" src="__PUBLIC__/pctextbook/bookhelper.js?v=8"></script>
+<script>
+    $(function () {
+		$.support.cors = true;
+		var p ;
+		var l ;
+        $(window).resize(function () {
+            adjustPage();
+        });
+		console.log(serverPath)
+		$.ajax({
+			url:serverPath +'/index.xml',
+			dataType:'xml',
+			success:function(res){
+//
+		    var content = $(res).find('content');
+				p = $($(res).children().children()[0]).attr('GoPage');
+                if($($(res).children().children()[0]).attr('contents') != undefined)
+                 contentsPage = $($(res).children().children()[0]).attr('contents')
+		}
+		})
+		$.ajax({
+			url :serverPath +'/Pages.xml',
+			datatype:'xml',
+			success :function(res){
+			     var content1 = $(res).find('content');
+				 console.log(content1);
+				 l = $($(res).children().children()).length;
+
+			}
+		})
+	    $('.page_img').click(function(){
+
+		var pagevalue = parseInt($('.page_input').val());
+			if(pagevalue >parseInt(l-p)+3){
+				// alert('请输入正确页码');
+				$.NotifyBox.NotifyPromptOne('提示','请输入正确页码','确定');
+				return false
+			}
+			if($('.page_input').val() != ''){
+				$('.pageWrapper').removeClass('pageindex')
+			}else if($('.page_input').val() == ''){
+				return false
+			}
+
+
+		if(pagevalue%2 == 0){
+			   onClickContent(parseInt(p)+pagevalue)
+		}else{
+			 onClickContent(parseInt(p)-1+pagevalue)
+		}
+		if(pagevalue == 1 ){
+		 onClickContent(parseInt(p))
+		}
+
+	})
+    })
+
+    var hei = $('#page2')
+    var a = hei.height;
+    function numlength(){
+		var nl = parseInt($('.page_input').val());
+		if(nl > '250'){
+			// alert('请输入正确的页码');
+			$.NotifyBox.NotifyPromptOne('提示','请输入正确页码','确定');
+		          $('.page_input').val('')
+			}
+	}
+
+</script>
+
+<script>
+	//右上角提示关闭
+	$('.magClose').click(function(){
+		$('.magBox').hide()
+	})
+
+	var course_id = {$book.course_id};
+    var grade_id = {$book.grade_id};
+	switch(course_id){
+	    case 1://语文
+			$('#wrapper,#footer').css('background','#f6b297');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/muluyuwen.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyuwen.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyuwen.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/goyuwen.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/muluyuwen2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/muluyuwen.png')
+			})
+			$('.f-pre').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyuwen2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyuwen.png')
+			})
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyuwen2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyuwen.png')
+			})
+			$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/goyuwen2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/goyuwen.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/yuwen.png')
+			break;
+		case 2://数学
+            if(grade_id<=6){
+                var sub_name = 's_shuxue'
+                $('#wrapper,#footer').css('background','#3D6B41');
+                imgSrc(sub_name)
+    			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/shuxue.png')
+            }else {
+                var sub_name = 'z_shuxue'
+                $('#wrapper,#footer').css('background','#036F75');
+    	         imgSrc(sub_name)
+    			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/shuxue.png')
+            }
+
+			break;
+		case 3://英语
+			$('#wrapper,#footer').css('background','#ffc85a');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/muluyingyu.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyingyu.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyingyu.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/go-yingyu.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/muluyingyu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/muluyingyu.png')
+			})
+			$('.f-pre').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyingyu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeyingyu.png')
+			})
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyingyu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeyingyu.png')
+			})
+			$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/go-yingyu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/go-yingyu.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/yingyu.png')
+			break;
+		case 5://化学
+			 $('#wrapper,#footer').css('background','#5081b9');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/muluhuaxue.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyehuaxue.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyehuaxue.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/gohuaxue.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/muluhuaxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/muluhuaxue.png')
+			})
+			$('.f-pre').hover(function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyehuaxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyehuaxue.png')
+
+			})
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyehuaxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyehuaxue.png')
+			})
+			$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/gohuaxue2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/gohuaxue.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/huaxue.png')
+
+
+			break;
+		case 7://历史
+			$('#wrapper,#footer').css('background','#91c5a7');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/mululishi.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyelishi.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyelishi.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/golishi.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/mululishi2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/mululishi.png')
+			})
+			$('.f-pre').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyelishi2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyelishi.png')
+			})
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyelishi2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyelishi.png')
+			})
+			$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/golishi2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/golishi.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/lishi.png')
+
+			break;
+		case 9://生物
+		    $('#wrapper,#footer').css('background','#d2a6c7');
+			$('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/mulushengwu.png');
+			$('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeshengwu.png');
+			$('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeshengwu.png');
+			$('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/goshengwu.png')
+			$('.f-content').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/mulushengwu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/mulushengwu.png')
+			})
+			$('.f-pre').hover(function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeshengwu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/shangyiyeshengwu.png')
+
+			})
+			$('.f-nex').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeshengwu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/xiayiyeshengwu.png')
+			})
+				$('.page_img').hover(function(){
+			    $(this).attr('src','__PUBLIC_METRO__/img/ebook/goshengwu2.png')
+			},function(){
+				$(this).attr('src','__PUBLIC_METRO__/img/ebook/goshengwu.png')
+			})
+			$('.magnifyImg').attr('src','__PUBLIC_METRO__/img/ebook/shengwu.png')
+			break;
+	}
+	   $('body').on('contextmenu','video',function(){
+        return false
+    })
+    function imgSrc(s){
+        $('.f-content').attr('src','__PUBLIC_METRO__/img/ebook/'+s+'1.png');
+        $('.f-pre').attr('src','__PUBLIC_METRO__/img/ebook/'+s+'3.png');
+        $('.f-nex').attr('src','__PUBLIC_METRO__/img/ebook/'+s+'5.png');
+        $('.page_img').attr('src','__PUBLIC_METRO__/img/ebook/'+s+'7.png')
+        $('.f-content').hover(function(){
+            $(this).attr('src','__PUBLIC_METRO__/img/ebook/'+s+'2.png')
+        },function(){
+            $(this).attr('src','__PUBLIC_METRO__/img/ebook/'+s+'1.png')
+        })
+        $('.f-pre').hover(function(){
+            $(this).attr('src','__PUBLIC_METRO__/img/ebook/'+s+'4.png')
+        },function(){
+            $(this).attr('src','__PUBLIC_METRO__/img/ebook/'+s+'3.png')
+        })
+        $('.f-nex').hover(function(){
+            $(this).attr('src','__PUBLIC_METRO__/img/ebook/'+s+'6.png')
+        },function(){
+            $(this).attr('src','__PUBLIC_METRO__/img/ebook/'+s+'5.png')
+        })
+        $('.page_img').hover(function(){
+            $(this).attr('src','__PUBLIC_METRO__/img/ebook/'+s+'8.png')
+        },function(){
+            $(this).attr('src','__PUBLIC_METRO__/img/ebook/'+s+'7.png')
+        })
+    }
+
+</script>
+<script>
+    var classId = '384';
+     var classroomId = '241';
+     var courseId = '3';
+     var gradeId = '1';
+     var textbookId = '5';
+     var isTeacher = 'true';
+     var studentId = '';
+     var studentName = '';
+     var teacherId = '5758';
+     var platform = 'pc';
+     var isLocked = false;
+    var startDraw = false, startClear = false;
+    var isShowingTextbookWhiteboard = false, isShowingLessonWhiteboard = false, isShowingHomeworkWhiteboard = false;//白板是否打开
+    var isTextbookWhiteboardOpacity = true, isLessonWhiteboardOpacity = true, isHomeworkWhiteboardOpacity = true;//是否透明
+    var etextbookWhiteboardSocketData = '', lessonWhiteboardSocketData = '', homeworkWhiteboardSocketData = '';//画图数据
+    var textbookWhiteboardLineColor = '#ff0000', lessonWhiteboardLineColor = '#ff0000', homeworkWhiteboardLineColor = '#ff0000';
+    var currentClassroomState = {
+        tab: 'box_etextbook',
+        textbookPage: [1, 2],
+        is_showing_lesson_list: 'true',//当前状态是否显示的是备课资料的列表
+        the_opening_lesson: '',//当前状态显示的备课资料的编号
+        the_opening_lesson_type: 'ppt', //当前状态显示的备课资料的类型
+        the_opening_lesson_index: 1, //当前状态显示的备课资料的具体那一页面
+        is_showing_textbook_whiteboard: 'false', //白板的显示与否
+        is_showing_homework_whiteboard: 'false',
+        is_showing_lesson_whiteboard: 'false'
+    };
+    $('#etextbook_canvas,#lesson_canvas,#homework_canvas').attr({
+        width: $(window).width(),
+        height: $(window).height()-10
+    });
+    //电子课本的白板开关
+    function toggleTuYaForTextbook() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+            $('#btn_tuya_textbook_ctrl_pen,#btn_tuya_lesson_ctrl_pen,#btn_tuya_homework_ctrl_pen').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_active.png');
+                    $('#btn_tuya_textbook_ctrl_eraser,#btn_tuya_lesson_ctrl_eraser,#btn_tuya_homework_ctrl_eraser').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_deactive.png')
+        if (isShowingTextbookWhiteboard) {
+            isShowingTextbookWhiteboard = false;
+            $('#btn_tuya_textbook_wrapper .btn_tuya_sub_ctrl').hide();
+            $('#whiteboard_etextbook').hide();
+            $('#btn_tuya_textbook_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png');
+            currentClassroomState.is_showing_textbook_whiteboard = 'false';
+
+            sendSocket("textbookwb|switch|false");
+        } else {
+            isShowingTextbookWhiteboard = true;
+            $('#btn_tuya_textbook_wrapper .btn_tuya_sub_ctrl').show();
+            $('#whiteboard_etextbook').show();
+            beginTuYaTextbook();
+            $('#btn_tuya_textbook_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1_opened.png');
+            currentClassroomState.is_showing_textbook_whiteboard = 'true';
+            sendSocket("textbookwb|switch|true");
+        }
+    }
+    //开始电子课本的涂鸦
+    function beginTuYaTextbook() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+        var ele = document.getElementById("etextbook_canvas");
+        var context = ele.getContext("2d");
+        var position = $('#etextbook_canvas').offset();
+
+        $("#etextbook_canvas").unbind('mousedown touchstart').bind('mousedown touchstart', function (e) {
+            e.preventDefault();
+            startDraw = true;
+            etextbookWhiteboardSocketData = 'textbookwb|draw|';
+            context.beginPath();
+        }).unbind('mousemove touchmove').bind('mousemove touchmove', function (e) {
+            if (startDraw) {
+                //debugger
+                context.strokeStyle = textbookWhiteboardLineColor;
+                context.lineWidth = 6;
+                var clientX = e.clientX ? e.clientX : e.originalEvent.targetTouches[0].pageX;
+                var clientY = e.clientY ? e.clientY : e.originalEvent.targetTouches[0].pageY;
+                context.lineTo((clientX - position.left), (clientY - position.top));
+                etextbookWhiteboardSocketData += "#" + (clientX - position.left) + "," + (clientY - position.top);
+                context.stroke();
+            }
+        }).unbind('mouseup touchend').bind('mouseup touchend', function () {
+            startDraw = false;
+            //var datas = getClientWidthHeight();
+            sendSocket(etextbookWhiteboardSocketData);
+        });
+    }
+    //清除电子课本的涂鸦
+    function clearTextbookTuYa() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        var canvas = document.getElementById("etextbook_canvas");
+        var c = canvas.getContext("2d");
+        var position = $('#etextbook_canvas').offset();
+
+        $("#etextbook_canvas").unbind('mousedown touchstart').bind('mousedown touchstart', function (e) {
+            e.preventDefault();
+            startClear = true;
+            etextbookWhiteboardSocketData = 'textbookwb|eraser|';
+        }).unbind('mousemove touchmove').bind('mousemove touchmove', function (e) {
+            if (startClear) {
+                var clientX = e.clientX ? e.clientX : e.originalEvent.targetTouches[0].pageX;
+                var clientY = e.clientY ? e.clientY : e.originalEvent.targetTouches[0].pageY;
+                c.clearRect(clientX - position.left - 20, clientY - position.top - 20, 40, 40);
+                etextbookWhiteboardSocketData += "#" + (clientX - position.left - 20) + "," + (clientY - position.top - 20);
+            }
+        }).unbind('mouseup touchend').bind('mouseup touchend', function () {
+            startClear = false;
+            sendSocket(etextbookWhiteboardSocketData);
+        });
+    }
+    //全清
+    function clearAllTextbookTuYa() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+        var canvas = document.getElementById("etextbook_canvas");
+        var c = canvas.getContext("2d");
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        sendSocket("textbookwb|clear|");
+    }
+    //电子课本白板透明度
+    function toggleTuYaForTextbookOpacity() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        if (isTextbookWhiteboardOpacity) {
+            isTextbookWhiteboardOpacity = false;
+            $('#whiteboard_etextbook').css('background-color', '#ffffff');
+            sendSocket("textbookwb|opacity|false");
+        } else {
+            isTextbookWhiteboardOpacity = true;
+            $('#whiteboard_etextbook').css('background-color', 'transparent');
+            sendSocket("textbookwb|opacity|true");
+        }
+    }
+    //改变涂鸦线条颜色
+    function changeTextbookTuyaLineColor(rgb) {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        $('#textbookColorPickerWrapper .colorPicker').each(function (i, n) {
+            var c = $(n).attr('data-color');
+            if (c == rgb) {
+                $(n).addClass('selected');
+            } else {
+                $(n).removeClass('selected');
+            }
+        });
+        textbookWhiteboardLineColor = rgb;
+        sendSocket("textbookwb|changeColor|" + rgb);
+    }
+</script>
+
+<script>
+    function getClientWidthHeight()
+    {
+        var canvas = document.getElementById("etextbook_canvas");
+        return {
+            "height": $("#tab_class_3",parent.document).height()-65,
+            "width": $("#tab_class_3",parent.document).width()
+        };
+
+    }
+    function resizePath(strPath,remoteWidth,remoteHeight)
+    {
+        var obj = eval(strPath);
+        var objSeg = obj[1].segments;
+        if(undefined != objSeg)
+        {
+            var clientWidthHeight = getClientWidthHeight();
+            if(null == remoteWidth)
+            {
+                remoteWidth = 800;
+                remoteHeight = 600;
+            }
+            if(null == clientWidthHeight.width || 0 == clientWidthHeight.width)
+            {
+                clientWidthHeight.width = 800;
+                clientWidthHeight.height = 600;
+            }
+            var xCoefficient = clientWidthHeight.width / remoteWidth;
+            var yCoefficient = clientWidthHeight.height / remoteHeight;
+
+            var i;
+            for(i=0;i<objSeg.length;i++)
+            {
+                objSeg[i][0] *= xCoefficient;//x
+                objSeg[i][1] *= yCoefficient;//y
+            }
+            return JSON.stringify(obj);
+        }
+    }
+</script>
+<script>
+
+    var curSessionId = guid();
+    var my_room = '{$classroomId}';
+
+    function sendSocket(str) {
+        var obj = {
+            "my_room": my_room,
+            "my_name": curSessionId,
+            "my_content": 'msg|' + str,
+            "current_state": JSON.stringify(currentClassroomState),
+            "user_data":my_room + '|' + isTeacher + '|' + studentId,
+        };
+
+    }
+
+    $('#btn_tuya_textbook_ctrl_pen,#btn_tuya_lesson_ctrl_pen,#btn_tuya_homework_ctrl_pen').click(function () {
+
+        $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_active.png');
+        $('#btn_tuya_textbook_ctrl_eraser,#btn_tuya_lesson_ctrl_eraser,#btn_tuya_homework_ctrl_eraser').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_deactive.png')
+
+    })
+
+    $('#btn_tuya_textbook_ctrl_eraser,#btn_tuya_lesson_ctrl_eraser,#btn_tuya_homework_ctrl_eraser').click(function () {
+        $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_active.png');
+        $('#btn_tuya_textbook_ctrl_pen,#btn_tuya_lesson_ctrl_pen,#btn_tuya_homework_ctrl_pen').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_deactive.png');
+
+    })
+
+    $('#btn_tuya_textbook_ctrl_opacity,#btn_tuya_lesson_ctrl_opacity,#btn_tuya_homework_ctrl_opacity').click(function () {
+        if($(this).attr('src') =='/Public/DigitalClassroom/images/tuya/tuya_switch_deactive.png'){
+            $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_active.png');
+        }else{
+            $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_deactive.png');
+        }
+
+
+    })
+</script>
+</html>

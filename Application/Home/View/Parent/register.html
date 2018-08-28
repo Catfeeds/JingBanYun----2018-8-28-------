@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html class='no-js'>
+
+<head>
+    <meta charset='utf-8'>
+    <meta name="renderer" content="webkit">
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <title>家长注册 :: 京版云教育平台</title>
+    <meta content='' name='description'>
+    <meta content='' name='keywords'>
+    <link href="__PUBLIC_THEME__/stylesheets/application-a07755f5.css" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC_THEME__/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC__/css/layout.css?v=7" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC__/css/register.css" rel="stylesheet" type="text/css" />
+    <script src="__PUBLIC__/js/external/jquery.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/common.js?v=4.0" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/external/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/jquery.validate.msg.js" type="text/javascript"></script>
+</head>
+
+<body>
+   <div class="regMain">
+		<img src="__PUBLIC__/img/register/regLeft.png" alt="" class="left regLeft">
+		<div class="right regRight">
+			<form id="info-list" action="__URL__/register" method="post">
+				<table class="form_table" style="width: 100%">
+					<tr>
+						<td width="130"></td>
+						<td width="300" align="left" style="font-size: 22px;">
+							<div class="p10">家长注册<span style="color:red; font-size:14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;为必填选项</span></div>
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td class="f_title">真实姓名</td>
+						<td class="f_input">
+							<input type="text" name="name" id="parent_name" placeholder="请输入姓名" maxlength="20" onblur="return pname();" required>
+							<span class="red">*</span>
+						</td>
+						<td>
+							<div class="warning" id="register_error_name">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入您的姓名</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</td>
+						<td class="sexTd">
+							<input name="sex" type="radio" id="man" value="男" checked>
+							<label for="man">
+								<img src="__PUBLIC__/img/register/boy.png" alt="" class="sexImg" id="manImg">男
+							</label>
+							<input name="sex" type="radio" id="woman" value="女">
+							<label for="woman">
+								<img src="__PUBLIC__/img/register/girl1.png" alt="" class="sexImg" id="womanImg">女
+							</label>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td class="f_title">手机号</td>
+						<td class="f_input">
+							<input type="text" name="telephone" id="telephone" placeholder="请输入手机号" autocorrect="" maxlength="11" autocomplete="off" onblur="return tel();" required>
+							<span class="red">*</span>
+						</td>
+						<td>
+							<div class="warning" id="register_error_phone">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">手机号码输入错误</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">手机验证码</td>
+						<td class="f_input">
+							<input style="width: 162px;" type="text" name="valid_code" id="valid_code" placeholder="验证码" maxlength="6" onblur="return code();" required>
+							<span class="red">*</span>
+							<a href="javascript:void(0);return false;" onclick="sendPhoneCode();" id="sendcodebutton">发送验证码</a>
+						</td>
+						<td>
+							<div class="warning" id="register_error_code">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请输入验证码</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">登录密码</td>
+						<td class="f_input">
+							<input onfocus="this.type='password'" type="text" name="password" id="password" placeholder="请输入6-16位密码" maxlength="16" required autocomplete="off" onblur="return pas1();">
+							<span class="red">*</span>
+						</td>
+						<td>
+							<div class="warning" id="register_error_pwd1">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">密码长度不少于6位</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">确认密码</td>
+						<td class="f_input">
+							<input onfocus="this.type='password'" type="text" name="confirm_password" id="confirm_password" placeholder="请输入6-16位密码" maxlength="16" required autocomplete="off" onblur="return pas2();">
+							<span class="red">*</span>
+						</td>
+						<td>
+							<div class="warning" id="register_error_pwd2">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">两次密码输入不一致</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="f_title">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱</td>
+						<td class="f_input">
+							<input type="email" name="email" id="parent_email" placeholder="选填" onblur="return pemail();">
+						</td>
+						<td>
+							<div class="warning" id="register_error_email">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">邮箱输入错误</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							<input type="checkbox" id="yes" onclick="ckbox_clone()" checked="checked">我已阅读并同意<a target="_blank" href="{:U('Index/ServiceAgreement')}">《京版云服务协议》</a>
+						</td>
+						<td>
+							<div class="warning" id="register_error_yes">
+								<img style="width:15%" src="/Public/img/home/warning.png">
+								<span style="color:red; font-size:12px;">请勾选京版云服务协议</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td class="text-center">
+							<button class="btn" type="submit" onclick="return check();" id="loginbtn"></button>
+						</td>
+						</td>
+						<td></td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+   
+   <div id="bg"></div>
+   <div id="bg2"></div>
+    <!--【弹窗】服务器繁忙-->
+   <div class="regNotify" id="serverBusy">
+   		<div class="regTop">
+   			<img src="__PUBLIC__/img/register/notify2.png" alt="" class="regTopImg">
+   			<span class="regTopTitle">提示！</span>
+   			<img src="__PUBLIC__/img/register/regTopClose.png" alt="" class="right regTopClose close_img">
+   		</div>
+   		<div class="regMiddle">
+           <div class="serverCon">
+           		<img src="__PUBLIC__/img/register/serverBusy.png" alt="" class="serverImg">
+           		<h3>服务器繁忙，请稍候再试！</h3>
+           </div>
+   		</div>
+   		<div class="regBottom">
+   			 <a id="serverSure" class="regSureBtn" href="javascript:;" onclick="$(this).hide();">确定</a>
+   		</div>
+   </div>
+   
+    <!--【弹窗】注册成功-->
+   <div class="regNotify" id="regSuccess">
+   		<div class="regTop">
+   			<img src="__PUBLIC__/img/register/notify3.png" alt="" class="regTopImg" style="height: 32px">
+   			<img src="__PUBLIC__/img/register/regTopClose.png" alt="" class="right regTopClose close_img">
+   		</div>
+   		<div class="regMiddle">
+           <div class="regCon">
+           		<img src="__PUBLIC__/img/register/regSuccess.png" alt="" class="serverImg">
+           		<h3>恭喜您已注册成功！</h3>
+           		<div>
+           			您登录的手机号码是：<span class="loginPhone">15912345678</span><br>（如果忘记密码或是丢失账号，可以通过此手机找回）<br>系统将在<span class="time">5</span>秒后返回首页页面，如果没有请<a href="{:U('Index/index')}">点击手动跳转</a>。
+           		</div>
+           </div>
+   		</div>
+   		<div class="regBottom">
+   			 <a id="regSucSure" class="regSureBtn" href="{:U('Index/index')}">登录</a>
+   		</div>
+   </div>
+   
+    <script src="__PUBLIC__/js/external/jquery-ui-1.10.1.min.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/external/modernizr.min.js" type="text/javascript"></script>
+    <script src="__PUBLIC_THEME__/javascripts/application-985b892b.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/bootstrap-notify.js" type="text/javascript"></script>
+    <script>
+        function isValidPhone(str) {
+            var re = /^1\d{10}$/
+            if (re.test(str)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        var hasSentPhoneCode = false;
+        var isinerval, times;
+
+        function sendPhoneCode() {
+
+            if (hasSentPhoneCode == true) {
+                return;
+            }
+			hasSentPhoneCode = true;
+            var telephone = $('#telephone').val();
+            if (!isValidPhone(telephone)) {
+                //            alert('手机号格式不正确');
+                $('#register_error_phone').css('display', 'block');
+                return false;
+            }
+
+            $.ajax({
+                url: "__URL__/sendRegisterPhoneCode", //请求的url地址
+                dataType: "json", //返回格式为json
+                //async: true, //请求是否异步，默认为异步，这也是ajax重要特性
+                data: {
+                    'telephone': telephone
+                }, //参数值
+                type: "GET", //请求方式
+                beforeSend: function () {
+                    //请求前的处理
+                },
+                success: function (req) {
+                    var res = eval(req);
+                    if (res.status < 0) {
+						$.NotifyBox.NotifyRegisterOne("提示！", res.msg, "确定");
+						hasSentPhoneCode = false;
+                    } else {
+                        
+                        $("#sendcodebutton").html('<span id="GetVerify">60</span>秒后重发');
+                        times = 59;
+                        isinerval = setInterval(CountDown, 1000);
+                    }
+                },
+                complete: function () {
+                    //请求完成的处理
+                },
+                error: function () {
+                    //请求出错处理
+                }
+            });
+        }
+
+        function tel() {
+            var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+            var tel = $("#telephone").val()
+            if (regTel.test(tel) == true) {
+                $('#register_error_phone').hide();
+                return true
+            } else if (tel == '') {
+                $('#register_error_phone').show();
+                return false;
+            } else {
+                $('#register_error_phone').show();
+                return false;
+            }
+        }
+		
+		function code() {
+            if ($('#valid_code').val() != '') {
+                $('#register_error_code').hide();
+                return true;
+            }
+        }
+
+        function pname() {
+            var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+            var name = $('#parent_name').val()
+            if (regName.test(name) == true) {
+                $('#register_error_name').hide();
+                return true
+            } else if (name == '') {
+                $('#register_error_name').show();
+                return false;
+            } else {
+                $('#register_error_name').show();
+                return false;
+            }
+        }
+
+		function pemail() {
+			var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+			var pemail = $('#parent_email').val()
+            if (regEmail.test(pemail) == true) {
+                $('#register_error_email').hide();
+                return true
+            } else if (pemail == '') {
+                $('#register_error_email').hide();
+                return true;
+            } else {
+                $('#register_error_email').show();
+                return false;
+            }
+		}
+		
+        function pas1() {
+            var pas1 = $('#password').val();
+
+            if (pas1 == '') {
+                $('#register_error_pwd1').show();
+                return false;
+            } else if (pas1.length < 6) {
+                $('#register_error_pwd1').show();
+                return false;
+            } else {
+                $('#register_error_pwd1').hide();
+                return true;
+            }
+        }
+
+        function pas2() {
+            var pas1 = $('#password').val();
+            var pas2 = $('#confirm_password').val();
+            if (pas2 == '') {
+                $('#register_error_pwd2').show();
+                return false;
+            } else if (pas1 != pas2) {
+                $('#register_error_pwd2').show();
+                return false;
+            } else {
+                $('#register_error_pwd2').hide();
+                return true;
+            }
+        }
+
+        function ckbox_clone() {
+            $('#register_error_yes').hide();
+        }
+        
+        function ckbox() {
+            var ck = $("#yes").prop("checked");
+            if (ck == true) {
+                return true
+            } else {
+                return false
+            }
+        }
+
+        function check() {
+			$('.warning').hide();
+			if (pname() == false) {
+//                $('#register_error_name').show();
+                return false
+            } else if (tel() == false) {
+//                $('#register_error_phone').show();
+                return false
+            } else if ($('#valid_code').val() == '') {
+			    $('#register_error_code').show();
+                return false
+            } else if (pas1() == false) {
+//                $('#register_error_pwd1').show();
+                return false
+            } else if (pas2() == false) {
+//                $('#register_error_pwd2').show();
+                return false
+            } else if (pemail() == false) {
+//                $('#register_error_email').show();
+                return false
+            } else if (ckbox() == false) {
+//                $('#register_error_yes').show();
+                return false
+            } else {
+                return true
+            }
+        }
+    </script>
+    <script>
+        String.prototype.format = function (args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if (args[key] != undefined) {
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            var reg = new RegExp("({)" + i + "(})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+    </script>
+
+    <script>
+        function CountDown() {
+            if (times < 1) {
+                hasSentPhoneCode = false;
+                clearInterval(isinerval);
+                $('#sendcodebutton').html('重新发送');
+                return;
+            }
+            $('#GetVerify').html(times);
+            times--;
+        }
+    </script>
+    
+    <script>
+		$('.close_img').on('click', function () {
+            $('#bg').css('display', 'none');
+            $('.regNotify').css('display', 'none');
+        })
+		
+		$('#serverSure').click(function(){
+			$('#bg').css('display', 'none');
+            $('.regNotify').css('display', 'none');
+		})
+	</script>
+	
+	<script>
+		function time() {
+			var s = 5;
+			var timer = setInterval(function () {
+				s--;
+				$('.time').html(s);
+				if (s <= 0) {
+					clearInterval(timer);
+					location.href = "{:U('Index/index')}"
+				}
+			}, 1000);
+		}
+    </script>
+    
+    <script>
+		$('#man').click(function(){
+			$('#manImg').attr('src','__PUBLIC__/img/register/boy.png');	
+			$('#womanImg').attr('src','__PUBLIC__/img/register/girl1.png')	
+		})
+		
+		$('#woman').click(function(){
+			$('#manImg').attr('src','__PUBLIC__/img/register/boy1.png');	
+			$('#womanImg').attr('src','__PUBLIC__/img/register/girl.png')	
+		})
+	</script>
+   <script src="__PUBLIC__/js/jquery.form.js"></script>
+   <script src="__PUBLIC__/js/notify/notifyRegister.js"></script>
+   <script>
+	   $(function(){
+		   var options = {
+			   success:    showResponse,  // post-submit callback
+			   resetForm:  false,
+			   dataType:  'json'
+		   };
+
+		   // bind to the form's submit event
+		   $('#info-list').submit(function() {
+			   $(this).ajaxSubmit(options);
+			   $('#loginbtn').attr('disabled',true);
+			   return false;
+		   });
+	   });
+	   function showResponse(responseText, statusText) {
+		   $('#loginbtn').attr('disabled',false);
+		   switch(responseText.status)
+		   {
+			   case 200: //success
+				   $('.loginPhone').text($("#telephone").val());
+				   $('#bg,#regSuccess').show();
+				   time();
+				   break;
+			   case 500:
+				   $.NotifyBox.NotifyRegisterOne("提示！", responseText.message, "确定");
+				   break;
+			   default: $('#bg2,#serverBusy').show();
+				   break;
+		   }
+	   }
+
+   </script>
+</body>
+
+</html>

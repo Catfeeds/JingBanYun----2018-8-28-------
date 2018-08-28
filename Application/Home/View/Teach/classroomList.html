@@ -1,0 +1,275 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<style>
+	#contentWrapper {
+		overflow-x: auto;
+		padding-bottom: 40px;
+	}
+	
+	#dialog .modal-dialog {
+		width: 700px
+	}
+	
+	#dialog .modal-content {
+/*		background: #fff url({$oss_path}public/web_img/Class/classListBack1.png) no-repeat top right;*/
+		background-color: rgba(255,255,255,0);
+		border: none;
+		box-shadow: none
+	}
+	
+	#dialog .modal-body, #dialog .modal-footer {
+		background-color: #fff
+	}
+	
+	#dialog .modal-footer {
+		border-radius:0 0 6px 6px;
+	}
+	
+	#dialog .modal-header {
+		border-bottom: none;
+		background: url({$oss_path}public/web_img/Class/classListBack1.png) no-repeat top right;
+		background-size: 100%
+	}
+	
+	#dialog .modal-header .close {
+		display: none;
+	}
+	
+	#dialog .modal-title {
+		text-align: center;
+		background: url({$oss_path}public/web_img/Class/classListBack2.png) no-repeat center;
+		background-size: contain;
+		line-height: 50px;
+		color: #fff;
+	}
+	
+	#dialog #lessonWrapper p {
+		margin: 5px 0;
+		padding-left: 20px;
+	}
+	
+	#dialog #lessonWrapper .active {
+		background: rgba(208,192,125,0.2);
+	}
+	
+	#dialog .line {
+		display: block;
+		height: 1px;
+		border-bottom: 1px dashed #DCC89F;
+	}
+	
+	#dialog input[type="radio"], input[type="checkbox"] {
+		margin: 4px 0 0;
+		line-height: normal;
+		width: 15px;
+		height: 15px;
+		position: relative;
+		top: 3px;
+	}
+</style>
+<div class="main_opr">
+	<a href="{:U('Teach/createClassroom')}" title="创建课堂" class="btn btn-main-opr">创建课堂</a>
+<!--	<a href="{:U('help/classroomListVideo')}" class="inf_video" target="_blank">操作视频</a>-->
+</div>
+<empty name="list">
+    <div class="emptyDiv">
+        <img src="{$oss_path}public/web_img/Empty/classroomList.png" alt="">
+        <p class="pl30">您还没有创建自己的教室哦！</p>
+    </div>
+</empty>
+<notempty name="list">
+<table class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center" nowrap>课堂编号</th>
+			<th class="text-center" nowrap>班级</th>
+			<th class="text-center" nowrap>学科</th>
+			<th class="text-center" width="15%" nowrap>分册</th>
+			<th class="text-center" width="10%" nowrap>创建时间</th>
+			<th class="text-center" nowrap>任课教师</th>
+			<th class="text-center" nowrap>上课教室</th>
+			<th class="text-center" nowrap>操作</th>
+		</tr>
+	</thead>
+	<tbody>
+		<volist name="list" id="data" empty="">
+			<tr id="l_{$data.id}">
+				<td class="text-center">
+					{$data.id}
+				</td>
+				<td class="text-center">
+					{$data.grade}&nbsp;{$data.class_name}
+				</td>
+				<td class="text-center">
+					{$data.course_name}
+				</td>
+				<td class="text-center">
+					{$data.textbook}
+				</td>
+				<td class="text-center">
+					{$data.time|date="Y-m-d",###}
+				</td>
+				<td class="text-center">
+					{$data.teacher_name}
+				</td>
+				<td class="text-center" title="{$data.classroom}">
+					{$data.classroom}
+				</td>
+				<td class="text-center" nowrap>
+					<?php if ($data['flag']!=0): ?>
+						<button onclick="showLessonPlanningDlg('{$data.id}')" title="关联课件" class="button">关联课件</button>
+						<a target="_blank" href="{:U('DigitalClassroom/index?isTeacher=true&classroomId=')}{$data.id}" title="进入数字课堂" class="button" style="display:inline-block;">进入数字课堂</a>
+						<a href="{:U('Teach/editClassroom?id=')}{$data.id}" title="修改" class="button" style="display:inline-block;">修改</a>
+					<?php endif ?>
+					<button onclick="showDeleteDialogs('{$data.id}')" title="删除" class="button">删除</button>
+				</td>
+			</tr>
+		</volist>
+	</tbody>
+</table>
+</notempty>
+<div class="Pagination">{$page}</div>
+<div class="modal fade" id="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">请在下表您的课件中选择一些进行关联</h4>
+			</div>
+			<div class="modal-body">
+				<div id="lessonWrapper"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="match()">关联</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="deleteDialogs">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">删除前确认</h4>
+			</div>
+			<div class="modal-body">
+				<p>请再次确定您要将此条数据删除</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="deleteItem()">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	var currentClassroomId = 0;
+	getLessonPlannings();
+
+	function showLessonPlanningDlg(classroomId) {
+		currentClassroomId = classroomId;
+		$('#dialog').modal('show');
+		$('input[name="lesson"]').removeAttr('checked');
+		$('input[name="lesson"]').parent().parent('p').css('background','inherit')
+	}
+
+	function getLessonPlannings() {
+		$.get('__URL__/getMyLessonPlannings', function (res) {
+			var html = [];
+			var tpl = '<p><label><input type="checkbox" name="lesson" class="checkcheck" value="{0}"> {1}</label></p><div class="line"></div>';
+			$.each(res, function (i, n) {
+				html.push(tpl.format(n.id, n.name));
+			});
+			$('#lessonWrapper').html(html.join(''));
+			if (html.length == 0) {
+				$('#lessonWrapper').html('您还没有创建任何课件');
+			}
+			
+			$('.checkcheck').click(function(){
+				var c = typeof($(this).attr('checked'));
+				if(c == 'undefined'){
+					$(this).attr('checked','checked');
+					$(this).parent().parent('p').css('background','rgba(208,192,125,0.2)')
+				}else{
+					$(this).removeAttr('checked','checked');
+					$(this).parent().parent('p').css('background','inherit')
+				}
+
+			})
+			
+		});
+	}
+
+	function match() {
+		if (currentClassroomId == 0) return false;
+		var chk_value = [];
+		$('input[name="lesson"]:checked').each(function () {
+			chk_value.push($(this).val());
+		});
+		if (chk_value.length == 0) {
+			alert('请至少选择一个课件');
+			return false;
+		}
+		//
+		var parms = {
+			classroom_id: currentClassroomId,
+			lesson_planning_ids: chk_value.join(',')
+		};
+		$.get('__URL__/matchLessonWithClassroom', parms, function (res) {
+			if (res == 'success') {
+				$.notify({
+					title: '提示',
+					message: '关联成功'
+				}, {
+					type: 'success',
+					placement: {
+						from: "top",
+						align: "center"
+					}
+				});
+				$('#dialog').modal('hide');
+			} else {
+				$.notify({
+					title: '提示',
+					message: '关联失败，请重试'
+				}, {
+					type: 'danger',
+					placement: {
+						from: "top",
+						align: "center"
+					}
+				});
+			}
+		});
+
+
+	}
+
+	function showDeleteDialogs(id) {
+		$('#deleteDialogs').modal('show')
+		currentClassroomId = id;
+	}
+
+	function deleteItem(id) {
+		$.get('index.php?m=Home&c=Teach&a=deleteClassroom', {
+			id: currentClassroomId
+		}, function (res) {
+			if (res == 'success') {
+				hideDeleteDialog();
+				window.location.reload();
+			} else {
+				alert('删除失败，请刷新页面后重新尝试');
+			}
+		})
+	}
+
+	function hideDeleteDialog() {
+		$('#deleteDialogs').modal('hide')
+		currentClassroomId = 0;
+	}
+	
+</script>

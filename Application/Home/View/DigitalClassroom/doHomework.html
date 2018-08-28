@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <script>
+        //var getHomeworkInfoUrl = "{:U('Teach/getHomeworkInfo')}";//getHomeworkExercise
+        var getHomeworkInfoUrl = "{:U('Teach/getHomeworkInfo')}";//
+    </script>
+    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/common.js?v=4.0" type="text/javascript"></script>
+    <link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css"/>
+    <link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css"/>
+    <script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.js"></script>
+    <script src='https://player.polyv.net/script/polyvplayer.min.js'></script>
+    <!--<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/4.0/1/MicrosoftAjax.js"></script>-->
+    <script type="text/javascript" src="__PUBLIC__/js/MicrosoftAjax.js"></script>
+    <script src="__PUBLIC__/js/exercise/sha1.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/DigitalClassroom/render_1.js?" type="text/javascript"></script>
+
+    <style>
+        .main_head {
+            padding: 17px;
+        }
+
+        .btn-primary {
+            color: #2F2F30 !important;
+            background-color: #fff !important;
+            border: 1px solid #E9C232 !important;
+            font-weight: 600;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<div style="margin-top: 30px">
+    <form id="info-list" action="{:U('DigitalClassroom/submitHomework')}" method="post">
+        <input type="hidden" name="homework_id" id="homework_id" value="{$homeworkId}">
+        <input type="hidden" name="answers" id="answers" value="">
+        <input type="hidden" name="duration" id="duration" value="">
+        <input type="hidden" name="studentId" id="studentId" value="{$studentId}">
+
+        <div id="exerciseWrapper">
+        </div>
+    </form>
+</div>
+
+<div style="padding-left:17px;">
+    <input id="submitHomework" type="button" class="btn btn-primary" value="提交作业" onclick="submitHomework()"/>
+</div>
+
+
+<script>
+    String.prototype.format = function (args) {
+        if (arguments.length > 0) {
+            var result = this;
+            if (arguments.length == 1 && typeof (args) == "object") {
+                for (var key in args) {
+                    var reg = new RegExp("({" + key + "})", "g");
+                    result = result.replace(reg, args[key]);
+                }
+            }
+            else {
+                for (var i = 0; i < arguments.length; i++) {
+                    if (arguments[i] == undefined) {
+                        return "";
+                    }
+                    else {
+                        var reg = new RegExp("({[" + i + "]})", "g");
+                        result = result.replace(reg, arguments[i]);
+                    }
+                }
+            }
+            return result;
+        } else {
+            return this;
+        }
+        return result;
+    }
+
+    var homeworkId = '{$homeworkId}';
+    //var chapterId = '{$currentHomework.exercise_chapter_id}';
+    var exercises = [];
+
+    var startTime = 1;
+    var isShowCorrectAnswer = false;
+
+
+    $(function () {
+        loadHomework();
+        window.setTimeout(function () {
+            setInterval(function () {
+                startTime = startTime + 1;
+            }, 60000);
+        }, 5000);//5秒后开始计时
+    });
+    function loadHomework() {
+        //renderExerciseLibraryChapter(chapterId, exercises, null);
+        createExerciseLibraryChapter(homeworkId, exercises, null);
+    }
+</script>
+
+<script type="text/javascript">
+    function submitHomework() {
+        if (confirm('确定要提交作业吗?')) {
+            var d = getStructuredData();
+            $('#answers').val(d);
+            $('#duration').val(startTime);
+            $('form').submit();
+        }
+    }
+    function getStructuredData() {
+        var data = {};
+        var fields = $('#exerciseWrapper input,#exerciseWrapper select,#exerciseWrapper textarea');
+        $.each(fields, function (i, n) {
+            if (n.type == 'radio' && !n.checked) return true;
+            if (n.type == 'checkbox' && !n.checked) return true;
+            var name = $(n).attr('name');
+            var fieldId = $(n).attr('id');
+            var val = $(n).val();
+            if (val != 'undefined' && val != null && val.length > 1000) {
+                val = val.substring(0, 999);
+            }
+            //data[name] = $(n).val();
+            data[fieldId] = $(n).val();
+        });
+        //return JSON.stringify(data);
+        return Sys.Serialization.JavaScriptSerializer.serialize(data);
+    }
+
+</script>
+</body>
+</html>

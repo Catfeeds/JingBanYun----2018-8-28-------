@@ -1,0 +1,255 @@
+<layout name="teacher_layout_1" />
+<link href="__PUBLIC__/css/directTrainList.css" rel="stylesheet" type="text/css"/>
+<link href="__PUBLIC__/css/directTrainDetails.css?v=3" rel="stylesheet" type="text/css"/>
+<link href="__PUBLIC__/css/rotate.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.all.js"></script>
+
+<div>
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>
+<div class="standardBox">
+	<div class="pubTitle">发布问题:</div>
+	<div class="titleCommon">
+		问题标题：
+		<span class="titleDim">简短一些让授教人能快速了解您的问题 （不超过25个字）</span>
+	</div>
+	<textarea name="title" id="problemTitle" cols="30" rows="10" placeholder="写下您想说的问题" maxlength="25"></textarea>
+
+	<div class="titleCommon">
+		选择教材：
+		<span class="titleDim">只提供京版教材的解答</span>
+	</div>
+	<div class="courseList">
+		<div class="courseBox">
+			<div class="left title">学科：</div>
+			<div class="main" id="course">
+				<?php foreach($courseList as $itemList){?>
+				<span courseid="<?php echo $itemList['id']?>"><?php echo $itemList['name']?></span>
+				<?php }?>
+			</div>
+		</div>
+		<div class="gradeBox" style="border-bottom: none">
+			<div class="left title">年级：</div>
+			<div class="main" id="grade">
+				<?php foreach($gradeList as $itemGradeList){?>
+				<span gradeid="<?php echo $itemGradeList['id']?>"><?php echo $itemGradeList['name']?></span>
+				<?php }?>
+			</div>
+		</div>
+		<div class="volumeBox m0">
+			<div class="left title">分册：</div>
+			<div class="main" id="fascicule">
+				<span volumeid="1">上册</span>
+				<span volumeid="2">下册</span>
+				<span volumeid="3">全一册</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="titleCommon">
+		选择标签：
+		<span class="titleDim">（可选择多个标签）</span>
+	</div>
+	<div class="labelBox">
+		<?php foreach($tagsList as $k=>$itemTags){?>
+		<div class="labelCheck">
+			<label for="<?php echo $k?>"><img src="__PUBLIC__/img/directTrain/weixuanzhong.png" alt="" class=""><?php echo $itemTags['tags_name']?></label>
+			<input type="checkbox" class="checkBox childid" name="childid[]" id="<?php echo $k?>"  value="<?php echo $itemTags['id']?>">
+		</div>
+		<?php }?>
+	</div>
+
+	<div class="titleCommon">
+		问题内容：
+		<span class="titleDim">（问题内容限制1000字）</span>
+	</div>
+	<div style="width: 100%; margin: 10px 0">
+		<script type="text/plain" id="message" name="message" style="width:100%;height:340px;"></script>
+	</div>
+	<div class="redNotify">*后台管理员会在24小时内审核，审核通过后即会发布。</div>
+
+	<button type="" class="btnRed" id="saveButton">发布问题</button>
+
+	<hr>
+	<div class="historyTitle">暂未公布问题
+        </div>
+
+	<div class="searchList of">
+		<ul>
+			<?php foreach($questionList as $itemList){?>
+			<li>
+				<a href="index.php?m=Home&c=DirectTrain&a=questionsDetails&id=<?php echo $itemList['id']?>" class="searchBoxList">
+					<p class="searchTitle mt20">
+        <?php if($itemList['code'] == 'YW'){?>
+        <img src="__PUBLIC__/img/directTrain/yuwen.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'SX'){?>
+        <img src="__PUBLIC__/img/directTrain/shuxue.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'YY'){?>
+        <img src="__PUBLIC__/img/directTrain/yingyu.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'WL'){?>
+        <img src="__PUBLIC__/img/directTrain/wuli.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'HX'){?>
+        <img src="__PUBLIC__/img/directTrain/huaxue.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'ZZ'){?>
+        <img src="__PUBLIC__/img/directTrain/sixiangzhengzhi.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'LS'){?>
+        <img src="__PUBLIC__/img/directTrain/lishi.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'DL'){?>
+        <img src="__PUBLIC__/img/directTrain/di.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'SW'){?>
+        <img src="__PUBLIC__/img/directTrain/shengwu.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'MS'){?>
+        <img src="__PUBLIC__/img/directTrain/meishu.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'TYJK'){?>
+        <img src="__PUBLIC__/img/directTrain/tiyujiankang.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'LDJS'){?>
+
+        <?php }elseif($itemList['code'] == 'XXJS'){?>
+
+        <?php }elseif($itemList['code'] == 'YJPJ'){?>
+
+        <?php }elseif($itemList['code'] == 'kx'){?>
+        <img src="__PUBLIC__/img/directTrain/kexue.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'QXK'){?>
+
+        <?php }elseif($itemList['code'] == 'PDYSH'){?>
+
+        <?php }elseif($itemList['code'] == 'SXPD'){?>
+
+        <?php }elseif($itemList['code'] == 'SXZZ'){?>
+        <img src="__PUBLIC__/img/directTrain/sixiangzhengzhi.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'YX'){?>
+        <img src="__PUBLIC__/img/directTrain/yin.png" alt="" /class="mr5 top1">
+            <?php }elseif($itemList['code'] == 'SF'){?>
+
+        <?php }elseif($itemList['code'] == 'TYJS'){?>
+        <img src="__PUBLIC__/img/directTrain/tongyongjishu.png" alt="" /class="mr5 top1">
+            <?php }?>
+						<b><?php echo $itemList['special_column_question_title']?></b>
+					</p>
+					<p class="text-center ">
+        			<?php echo $itemList['course_name'].$itemList['grade'];?>
+					<?php if($itemList['fascicule_id'] == 1){?>
+						上册
+						<?php }elseif($itemList['fascicule_id'] == 2){?>
+						下册
+						<?php }else{?>
+						全一册
+						<?php }?>
+					</p>
+					<p class="color666 text-center">
+						提交审核时间：<?php echo $itemList['creat_time']?>
+					</p>
+					<p class="text-center headPortrait">
+						<img src="<?php echo !empty($itemList['avatar']) ?  $oss_path.$itemList['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" / >
+					</p>
+
+					<p class="text-center color666">
+						<img src="__PUBLIC__/img/directTrain/wenda2.png" alt="" />  提问者:<?php echo $itemList['name']?>
+					</p>
+					<p class="watch of">
+						<span><?php if($itemList['status'] == 1){?>
+            					审核通过
+								<?php }elseif($itemList['status'] == 2){?>
+            					审核不通过
+								<?php }else{?>
+            					待审核
+								<?php }?>
+						</span>
+					</p>
+				</a>
+			</li>
+			<?php }?>
+		</ul>
+	</div>
+</div>
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script>
+	var ue = UE.getEditor('message',{
+        toolbars:[['fullscreen', 'source', '|', 'undo', 'redo', '|',
+            'bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+            'paragraph', 'fontfamily', 'fontsize', '|',
+            'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 
+            'insertimage', 'emotion', '|',
+            'horizontal', 'date', 'time', 'spechars', '|',
+            'preview']],
+        maximumWords: 1000
+    });
+</script>
+
+<script>
+	// 选择学科年级分册
+	$('.main').children('span').click(function(){
+		$(this).addClass('active').siblings().removeClass('active')
+	})
+
+	// 选择标签
+	$('.labelBox').find('label').click(function(){
+		if($(this).siblings('input').attr('checked') == 'checked') {
+			$(this).children('img').attr('src','__PUBLIC__/img/directTrain/weixuanzhong.png')
+		} else {
+			$(this).children('img').attr('src','__PUBLIC__/img/directTrain/xuanzhong.png')
+		}
+	})
+
+	// 如果历史提问是空的
+	$(function(){
+		if($.trim($('.searchList').text()) == '') {
+			$('.historyTitle').hide().prev('hr').hide().siblings('.searchList').hide();
+		}
+	})
+</script>
+<script>
+	$('#saveButton').click(function () {
+        var arr = new Array();
+        $('input:checkbox[name=childid[]]:checked').each(function(k){
+            arr.push($(this).val());
+        });
+        var title = $('#problemTitle').val();
+	    var course_id = $('#course').children('.active').attr('courseid');
+	    var course_name = $('#course').children('.active').text();
+	    var grade_id = $('#grade').children('.active').attr('gradeid');
+	    var grade_name = $('#grade').children('.active').text();
+	    var fascicule_id = $('#fascicule').children('.active').attr('volumeid');
+	    var fascicule_name = $('#fascicule').children('.active').text();
+//	    var tags = JSON.stringify(arr);
+	    var special_column_question_reply_description = ue.getContent();
+	    var special_column_editor_quizzer_id = "<?php echo $userId?>";
+
+	    if($.trim(title) == '') {
+	    	$.NotifyBox.NotifyPromptOne('提示', '请输入问题标题', '确定');
+	    	return false
+	    } else if($.trim(course_id) == '') {
+	    	$.NotifyBox.NotifyPromptOne('提示', '请选择学科', '确定');
+	    	return false
+	    } else if($.trim(grade_id) == '') {
+	    	$.NotifyBox.NotifyPromptOne('提示', '请选择年级', '确定');
+	    	return false
+	    } else if($.trim(fascicule_id) == '') {
+	    	$.NotifyBox.NotifyPromptOne('提示', '请选择分册', '确定');
+	    	return false
+	    // } else if(arr == '') {
+	    // 	$.NotifyBox.NotifyPromptOne('提示', '请选择标签', '确定');
+	    // 	return false
+	    } else if($.trim(special_column_question_reply_description) == '') {
+	    	$.NotifyBox.NotifyPromptOne('提示', '请填写问题', '确定');
+	    	return false
+	    }  
+
+        $.ajax({
+            data:{'title':title,'course_id':course_id,'grade_id':grade_id,'fascicule_id':fascicule_id,'tags':arr,'special_column_question_reply_description':special_column_question_reply_description,'special_column_editor_quizzer_id':special_column_editor_quizzer_id,'grade_name':grade_name,'fascicule_name':fascicule_name,'course_name':course_name},
+            url:"index.php?m=Home&c=DirectTrain&a=addQuestion",
+            dataType:"JSON",
+            type:"POST",
+            success:function (data) {
+                if(data.status == 200){
+                    alert(data.message);
+                    window.location.href= "index.php?m=Home&c=DirectTrain&a=directTrainIndexList"
+                }else{
+                    alert(data.message);
+                }
+            }
+        })
+    })
+</script>

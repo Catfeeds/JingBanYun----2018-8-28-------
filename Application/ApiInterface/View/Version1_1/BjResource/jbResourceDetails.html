@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>{$data.name}</title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC_THEME__/stylesheets/app.css?v=3" />
+	<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+	<script src="https://lkme.cc/js/linkedme.min.js" ></script>
+	<style>
+		html {
+			width: 100%;
+			height: 100%;
+		}
+
+		body {
+			width: 100%;
+			position: relative;
+			height: 100%;
+			padding-bottom: 5rem;
+		}
+
+		#name {
+			color: #333;
+			font-size: 1.2rem;
+			display: block;
+			width: 50%;
+			float: left;
+			line-height: 2.5rem;
+		}
+
+		#date {
+			color: #999;
+			font-size: 1.2rem;
+			display: block;
+			width: 50%;
+			float: left;
+			text-align: right;
+			line-height: 2.5rem;
+		}
+
+		.section {
+			color: #666;
+			font-size: 1.2rem;
+		}
+
+		.section img {
+			width: 20px;
+		}
+
+		;
+		#content {
+			font-size: 1.2rem;
+			color: #666
+		}
+
+		#enteredjby {
+			text-align: center;
+			word-break: break-all;
+/*			margin: 5rem*/
+		}
+
+		#enteredjby a {
+			background: #46cfdd;
+			color: #fff;
+			margin: 3rem auto;
+			padding: 1rem 2rem;
+			border-radius: 10px;
+			text-decoration: none
+		}
+
+		#Mask {
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			z-index: 20160929;
+			top: 0;
+			left: 0;
+			text-align: center;
+			background: rgba(0, 0, 0, 0.8);
+			display: none;
+		}
+
+		#enteredjby,
+		#enteredjbytwo {
+
+			text-align: center;
+			margin-bottom : 5rem
+		}
+
+		#enteredjby a,
+		#enteredjbytwo a {
+			background: #46cfdd;
+			color: #fff;
+			margin: 3rem auto;
+			padding: 1rem 2rem;
+			border-radius: 10px;
+			text-decoration: none
+		}
+
+		.resource_class {
+			padding-top: 12px;
+			color: #666;
+			font-size: 1.2rem;
+			text-align: justify;
+			position: relative;
+			margin-bottom: 2rem
+		}
+
+		.resource_div {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 2
+		}
+
+		.fullscreen {
+			display: none;
+			width: 100%;
+			height: 100%;
+			background: rgba(0,0,0,0.3);
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 3;
+		}
+
+		.notifyBox {
+			display: none;
+			width: 280px;
+			height: 200px;
+			background: #fff;
+			border-radius: 10px;
+			position: fixed;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			margin: auto;
+			z-index: 4;
+		}
+
+		.notifyTitle {
+			text-align: center;
+			font-size: 2rem;
+		}
+
+		.btnBox {
+			text-align: center;
+		}
+
+		.notifyBtn {
+			display: inline-block;
+			background-color: #28D0C1;
+			border: 1px solid transparent;
+			border-radius: 6px;
+			color: white;
+			font-size: 16px;
+			padding: 6px 22px;
+		}
+
+		.notifyMain {
+			width: 180px;
+			text-align: center;
+			margin: 0 auto 20px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		<h3 style="text-align: center;font-size:2rem">{$data.name}</h3>
+
+		<div class="brief" style="overflow:hidden;">
+			<span id="name">北京出版集团</span> <span id="date"> {$data.create_at|date="Y-m-d H:i",###}</span>
+			<div class="section" style="display:inline-blcok;float:left">{$data.course_name}/{$data.grade}/{$data.textbook}</div>
+			<div class="section" style="display:inline-blcok;float:right"><img src="{$oss_path}public/web_img/App/icon_dianzan_nor.png" alt="">{$data.zan_count}&nbsp;&nbsp;&nbsp;<img src="{$oss_path}public/web_img/App/icon_shoucang_nor.png" alt="">{$data.favorite_count}&nbsp;&nbsp;&nbsp;<img src="{$oss_path}public/web_img/App/icon_liulan_nor.png" alt="">{$data.follow_count}</div>
+
+		</div>
+		<div id="content" style="font-size: 1.2rem;color: #666;margin-top:-10px">
+			资源描述：{$data.description}
+		</div>
+		<div class="resource_class">
+			<div class="resource_div"></div>
+			{$data.content}
+		</div>
+
+	</div>
+	<div id="Mask">
+		<img src="{$oss_path}public/web_img/App/arrows.png" alt="" style="margin-top:2rem">
+	</div>
+
+	<div>
+		<div id="enteredjby">
+			<a href="javascript:" class="openadd linkedme">打开京版云</a>
+			<input type="hidden" value="{$urldata}" class="url">
+		</div>
+
+		<!--<div id="enteredjbytwo">
+			<a href="javascript:" id="openApptwo">进入京版云</a>
+
+		</div>-->
+	</div>
+
+	<div class="fullscreen"></div>
+	<div class="notifyBox">
+		<p class="notifyTitle">提示</p>
+		<div class="notifyMain">请进入或下载京版云APP后观看资源 !</div>
+		<div class="btnBox">
+			<span class="notifyBtn">好的</span>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+            $('.resource_div').click(function(){
+				$('.fullscreen,.notifyBox').show();
+			})
+			$('.notifyBtn').click(function(){
+				$('.fullscreen,.notifyBox').hide();
+			})
+
+
+		function CheckIsAndroid() {
+			var browser = {
+					versions: function () {
+						var u = navigator.userAgent,
+							app = navigator.appVersion;
+						return { //移动终端浏览器版本信息
+							ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+							android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+							iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+							iPad: u.indexOf('iPad') > -1, //是否iPad
+						};
+					}(),
+				}
+				//if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+				//    return false;
+				//}
+			if (browser.versions.android)
+				return true;
+			return false;
+		}
+
+
+		function CheckIsIOS() {
+			var browser = {
+				versions: function () {
+					var u = navigator.userAgent,
+						app = navigator.appVersion;
+					return { //移动终端浏览器版本信息
+						ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+						android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+						iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+						iPad: u.indexOf('iPad') > -1, //是否iPad
+					};
+				}(),
+			}
+			if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+				return true;
+			}
+		}
+
+
+		function isWeiXin() {
+			var ua = window.navigator.userAgent.toLowerCase();
+			if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		function isQQ() {
+			var ua = window.navigator.userAgent.toLowerCase();
+			if (ua.match(/mobile mqqbrowser/i) == "mobile mqqbrowser" || ua.match(/qq/i) == "qq" ) {
+				return true;
+			} else {
+				return false;
+			}
+
+		}
+
+
+                var resource_title="{$data.name_uion}";
+		document.getElementById('openApp').onclick = function (e) {
+			// 通过iframe的方式试图打开APP，如果能正常打开，会直接切换到APP，并自动阻止a标签的默认行为
+			// 否则打开a标签的href链接
+
+			/*if (isQQ()) {
+				$('#enteredjby').click(function () {
+					$('#Mask').show()
+					$('#Mask').click(function () {
+						$(this).hide()
+					})
+				})
+			}*/
+
+			if (isWeiXin()) {
+
+				$('#enteredjby').click(function () {
+					$('#Mask').show()
+					$('#Mask').click(function () {
+						$(this).hide()
+					})
+				})
+			}
+
+			if (CheckIsIOS()) {
+
+				/* var el = document.getElementById('openApp');
+				 el.setAttribute('href','JingBanYun://');
+
+				 window.setTimeout(function(){
+				 window.location.href = "https://itunes.apple.com/us/app/jin-ri-ke-tang-bei-jing-chu/id1060492678?l=zh&ls=1&mt=8";
+				 },5000);*/
+
+				var appFailUrl = 'https://itunes.apple.com/us/app/jin-ri-ke-tang-bei-jing-chu/id1060492678?l=zh&ls=1&mt=8',
+					appUrlScheme = 'JingBanYun://';
+				window.location = appFailUrl;
+				//Try launching the app using URL schemes
+			}
+
+			if (CheckIsAndroid()) {
+				window.location.href = "{$apkurl}";
+			}
+
+		};
+
+		document.getElementById('openApptwo').onclick = function (e) {
+			// 通过iframe的方式试图打开APP，如果能正常打开，会直接切换到APP，并自动阻止a标签的默认行为
+			// 否则打开a标签的href链接
+
+			if (isQQ()) {
+				$('#enteredjby').click(function () {
+					$('#Mask').show()
+					$('#Mask').click(function () {
+						$(this).hide()
+					})
+				})
+
+				$('#enteredjbytwo').click(function () {
+					$('#Mask').show()
+					$('#Mask').click(function () {
+						$(this).hide()
+					})
+				})
+			}
+
+			if (isWeiXin()) {
+				$('#enteredjby').click(function () {
+					$('#Mask').show()
+					$('#Mask').click(function () {
+						$(this).hide()
+					})
+				})
+
+                $('#enteredjbytwo').click(function () {
+                    $('#Mask').show()
+                    $('#Mask').click(function () {
+                        $(this).hide()
+                    })
+                })
+			}
+
+			if (CheckIsIOS()) {
+
+				/* var el = document.getElementById('openApp');
+				 el.setAttribute('href','JingBanYun://');
+
+				 window.setTimeout(function(){
+				 window.location.href = "https://itunes.apple.com/us/app/jin-ri-ke-tang-bei-jing-chu/id1060492678?l=zh&ls=1&mt=8";
+				 },5000);*/
+
+				var appFailUrl = 'JingBanYun://'+"<?='id='.$jb_id.'&type=BeijingRes' ?>"+'&title='+resource_title;
+
+				window.location.href = appFailUrl;
+				//Try launching the app using URL schemes
+			}
+
+			if (CheckIsAndroid()) {
+				window.location = "jingbanyun://jingbanyun.com?"+"<?='id='.$jb_id.'&type=BeijingRes' ?>"+'&title='+resource_title;
+			}
+
+		};
+
+
+		(function (doc, win) {
+			var docEl = doc.documentElement,
+				resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+				recalc = function () {
+					var clientWidth = docEl.clientWidth;
+					if (!clientWidth) return;
+					docEl.style.fontSize = 10 * (clientWidth / 320) + 'px';
+				};
+
+			if (!doc.addEventListener) return;
+			win.addEventListener(resizeEvt, recalc, false);
+			doc.addEventListener('DOMContentLoaded', recalc, false);
+		})(document, window);
+	</script>
+	<script type="text/javascript">
+		$('.resource_class').children('img').hide();
+	</script>
+
+
+	<script>
+
+		$('.openadd').click(function(){
+			var url = $(this).attr('url-data');
+			window.location.href = url;//跳到生成的深度链接的url
+		});
+	</script>
+
+	<script>
+		var url = $('.url').val();
+		console.log(url);
+		linkedme.init("fd65bd508366dff5336015e5db872def", {type: "live"}, null);
+		var data = {};
+		data.type = "live";  //表示现在使用线上模式,如果填写"test", 表示测试模式.【可选】
+		data.feature = "功能名称"; // 自定义深度链接功能，多个用逗号分隔，【可选】
+		data.stage = "阶段名称"; // 自定义深度链接阶段，多个用逗号分隔，【可选】
+		data.channel = "渠道名称"; // 自定义深度链接渠道，多个用逗号分隔，【可选】
+		data.tags = "标签名称"; // 自定义深度链接标签，多个用逗号分隔，【可选】
+		data.ios_custom_url = ""; // 自定义iOS平台下App的下载地址，如果是AppStore的下载地址可以不用填写，【可选】
+		data.android_custom_url = "";// 自定义安卓平台下App的下载地址，【可选】
+		// 下面是自定义深度链接参数，用户点击深度链接打开app之后，params参数将被带入app
+		// 比如详情页面的参数，可以写进去，这样唤起app后可直接跳转到详情页【可选】
+		var value1 = 1;
+		var value2 = 2;
+		data.params = '{"url":"'+url+'","key2":"'+value2+'"}'; //注意单引号和双引号的位置
+
+		linkedme.link(data, function(err, data){
+			if(err){
+				// 生成深度链接失败，返回错误对象err
+				alert('生成错误');
+			} else {
+				/*
+				 生成深度链接成功，深度链接可以通过data.url得到，
+				 将深度链接绑定到<a>标签，这样当用户点击这
+				 个深度链接，如果是在pc上，那么跳转到深度链接二维
+				 码页面，用户用手机扫描该二维码就会打开app；如果
+				 在移动端，深度链接直接会根据手机设备类型打开ios
+				 或者安卓app
+				 */
+				$('.openadd').attr('url-data',data.url);
+				//document.body.innerHTML += '<a class="linkedme" href="'+data.url+'">打开app</a>'
+			}
+		},false);
+	</script>
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="__PUBLIC__/js/share.js"></script>
+<script>
+	var appId = '{$signPackage.appId}';
+	var timestamp = '{$signPackage.timestamp}';
+	var nonceStr = '{$signPackage.nonceStr}';
+	var signature = '{$signPackage.signature}';
+	var title = "{$data.name}";
+	var content = " <?php echo mb_substr(str_replace(array("\r\n", "\r", "\n"),'',strip_tags($data['description'])),0,40); ?>";
+	var linkimgUrl = 'http://{$WEB_URL}/Public/img/sharelogo.png';
+	share_weixin(appId, timestamp, nonceStr, signature, title, content, linkimgUrl);
+	</script>
+</body>
+
+
+</html>

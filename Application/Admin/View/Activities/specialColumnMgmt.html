@@ -1,0 +1,296 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+	.saveImg {
+		width: 18px;
+	}
+</style>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		专栏管理
+		<span class="blueSpan">
+			<a href="{:U('Activities/activitiesMgmt')}">京版活动管理</a>>>
+			<a href="javascript:;">专栏管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+<!--
+<div class="searchBtnBox">
+<button class="blueBtn" id="addBtn">创建专栏</button>
+</div>
+-->
+
+<div class="fullscr1" id="addCon">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">新增专栏</div>
+		<div class="adminNotifyContent">
+
+			<div class="adminSelect pt20">
+
+				<div class="selectBox mb10">
+					<label for="">名称：</label>
+					<input type="text" class="input-control" name="" id="names" value="" placeholder="请输入专栏名称">
+				</div>
+
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureCon">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelCon">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+<form id="form_submit" action="{:U('Activities/specialColumnMgmt')}" method="post">
+	<p class="blueText fs16">专栏查询</p>
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>专栏名称：</label>
+				<input type="text" value="{$keyword}" id="keyword" class="input-control" name="keyword" placeholder="请输入专栏名称">
+            </div>
+			<div class="cell">
+				<label>状态：</label>
+				<select name='status' id="lock_status" class="input-control" style="">
+					<option value='0'>-请选择-</option>
+					<option value="1" <if condition="$status==1">selected</if> >审核未通过</option>
+					<option value="2" <if condition="$status==2">selected</if> >审核已通过</option>
+					<option value="3" <if condition="$status==3">selected</if> >审核已拒绝</option>
+					<option value="4" <if condition="$status==4">selected</if> >已上架</option>
+					<option value="5" <if condition="$status==5">selected</if> >已下架</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<input type='submit' value='查询' class='blueBtn'/>
+		<input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+<form id="info-list" action="{:U('Activities/saveSpecialColumnSort')}" method="post">
+<!--
+<div class="right">
+
+		<label for="submitSave"><img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="saveImg"></label>
+		<input type='submit' class="submitInput" id="" onclick="return check()" value='保存排序'/>
+</div>
+-->
+
+<div class="grayBox">
+	<div class="left">
+		<span class="btns" id="addBtn">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt=""> 
+			<a href="javascript:;">新增专栏</a> 
+		</span>
+	</div>
+
+	<div class="right">
+		<label for="submitSave"><img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="saveImg"></label>
+		<input type='submit' class="submitInput submitInputSpecial" id="" onclick="return check()" value='保存排序'/>
+	</div>
+</div>
+	
+<p class="blueText fs16">专栏列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+        <tr>
+            <th class="text-center">序号</th>
+            <th class="text-center">专栏名称</th>
+            <th class="text-center">创建时间</th>
+			<th class="text-center">所在位置</th>
+			<th class="text-center">状态</th>
+            <th class="text-center">操作</th>
+        </tr>
+	</thead>
+	<tbody id="body">
+	<volist name="list" id="data">
+		<tr>
+			<td class="text-center">
+				{$i}
+			</td>
+			<td class="text-center">
+				{$data.name}
+			</td>
+			<td class="text-center">
+				{$data.create_at|date="Y-m-d",###}
+			</td>
+			<td class="text-center">
+				<input type="hidden" value="{$data.id}" name="ids[]">
+				<input type="text" value="{$data.sort}" name="values[]" class="input-control numInput">
+			</td>
+			<td class="text-center">
+				<?php if($data['flag'] == 1) : ?>
+				 未审核
+				<?php elseif($data['flag'] == 2) : ?>
+				 通过审核
+				<?php elseif($data['flag'] == 3) : ?>
+				 拒绝审核
+				<?php elseif($data['flag'] == 4) : ?>
+				 已上架
+				<?php elseif($data['flag'] == 5) : ?>
+				 已下架
+				<?php endif ?>
+			</td>
+			<td>
+				<a href="{:U('Activities/editSpecialColumn')}&id={$data.id}" class="operBtn" id="">修改</a>
+				<?php if($data['flag'] == 1 || $data['flag'] == 3 ) : ?>
+				  <a href="javascript:void(0)" onclick="setSpecialColumnStatus({$data.id},2)" class="operBtn" id="">通过</a>
+				<?php endif ?>
+				<?php if($data['flag'] == 1 || $data['flag'] == 2 || $data['flag'] == 5) : ?>
+				 <a href="javascript:void(0)" onclick="setSpecialColumnStatus({$data.id},3)" class="operBtn" id="">拒绝</a>
+				<?php endif ?>
+				<?php if($data['flag'] == 2 || $data['flag'] == 5) : ?>
+				 <a href="javascript:void(0)" onclick="setSpecialColumnStatus({$data.id},4)" class="operBtn" id="">上架</a>
+				<?php endif ?>
+				<?php if($data['flag'] == 4) : ?>
+				 <a href="javascript:void(0)" onclick="setSpecialColumnStatus({$data.id},5)" class="operBtn" id="">下架</a>
+				<?php endif ?>
+				<?php if($data['flag'] != 4) : ?>
+				 <a href="javascript:void(0)" onclick="deleteSpecialColumn({$data.id})" class="operBtn" id="">删除</a>
+				<?php endif ?>
+			</td>
+		</tr>
+	</volist>
+	</tbody>
+</table>
+</form>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"15%"},
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"},
+				{"width":"10%"},
+                {"width":"15%"}
+            ]
+        });
+    });
+	// bind to the form's submit event
+	var options = {
+		success: showResponse, // post-submit callback
+		resetForm: false,
+		dataType: 'json'
+	};
+	$('#info-list').submit(function () {
+		$(this).ajaxSubmit(options);
+		return false;
+	});
+
+
+	function showResponse(responseText, statusText) {
+		switch (responseText.status) {
+			case "200": //failed
+//                alert('更新成功');
+				$.NotifyBox.NotifyOneCall('注意','更新成功','确定',function(){
+					history.go();
+				});
+				break;
+			default:
+//                alert(responseText.message);
+				$.NotifyBox.NotifyOne('注意',responseText.message,'确定');
+				break;
+		}
+	}
+
+	function setSpecialColumnStatus(id,status)
+	{
+		$.post("/index.php?m=Admin&c=Activities&a=setSpecialColumnStatus", {
+			'id': id ,'status':status
+	    }, function (res) {
+		res = eval('('+ res + ')');
+		if(res.status == 200)
+		{
+			$.NotifyBox.NotifyOneCall('成功','设置成功','确定',function()
+			{
+				window.location.reload()
+			})
+		}
+		else
+		{
+			$.NotifyBox.NotifyOne('失败',res.message,'确定');
+		}
+	});
+	}
+	$('.resetButton').click(function(){
+	   $('#form_submit').find('input, select').each(function(i,n){
+		   if($(n).attr('name'))
+		   	$(n).val('');
+	   })
+	   $('#form_submit').submit()
+	})
+	function deleteSpecialColumn(id) {
+		if (confirm('确定要删除吗？')) {
+			$.get('index.php?m=Admin&c=Activities&a=deleteSpecialColumn', {id: id}, function (res) {
+				res = eval('('+res+')');
+				if (res.status == 200) {
+					history.go();
+				} else {
+//					alert('删除失败，请刷新页面后重新尝试');
+					$.NotifyBox.NotifyOne('注意','删除失败，请刷新页面后重新尝试','确定');
+				}
+			})
+		}
+	}
+	function check() {
+		var arr = new Array();
+		$('.numInput').each(function (k,v) {
+			arr[k] = $(this).val();
+		});
+		//console.log(arr);return false;
+		var nary=arr.sort();
+
+		for(var i=0;i<arr.length;i++){
+
+			if (nary[i]==nary[i+1]){
+
+//				alert("数组重复内容："+nary[i]);
+				$.NotifyBox.NotifyOne('注意','排序标号重复：'+nary[i],'确定');
+				return false;
+
+			}
+
+		}
+
+	}
+	$('#addBtn').click(function(){
+		$('#names').val('');
+		$('#addCon').show();
+	})
+	$('#sureCon').click(function(){
+		$('#sureCon').attr('disabled',true);
+		var name = $('#names').val();
+		if('' == name) {
+			$.NotifyBox.NotifyOne('注意', '请输入栏目名称', '确定');
+			return;
+		}
+		$.post('index.php?m=Admin&c=Activities&a=addSpecialColumn', {name: name}, function (res) {
+			res = eval('('+res+')');
+			if (res.status == 200) {
+				$.NotifyBox.NotifyTwoCallTwo('成功','专栏创建成功,是否添加内容','确定','取消',function()
+				{
+					window.location.href = "{:U('Activities/editSpecialColumn')}&id="+res.message;
+				},function(){$('#addCon').hide();history.go();})
+
+			} else {
+//				alert(res.message);
+				$.NotifyBox.NotifyOne('注意',res.message,'确定');
+			}
+		})
+	})
+	
+	$('#cancelCon').click(function(){
+		$('#addCon').hide()
+	})
+</script>

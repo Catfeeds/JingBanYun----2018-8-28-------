@@ -1,0 +1,408 @@
+<meta name="viewport" content="width=device-width, initial-scale=0.9,  user-scalable=no" id="bzd"/>
+   <empty name="students">
+    <div class="emptyResult">该班级尚未有任何学生加入</div>
+</empty>
+<notempty name="students">
+    <style>
+        #student_list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        #student_list li {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            float: left;
+            margin: 15px;
+            position: relative;
+            text-align: center;
+            width: 120px;
+            height: 119px;
+            cursor: pointer;
+        }
+
+        .student_avatar {
+            width: 80px;
+            width: 80px;
+            z-index: 100;
+            position: absolute;
+            top: 2px !important;
+            left: 20px;
+        }
+
+        .kezhuo {
+            display: block;
+            width: 120px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 10;
+        }
+		
+				.student_kezhuo_name1 {
+				    position: absolute;
+				    bottom:3px !important;
+				    left: 17px;
+    z-index: 20;
+    display: inline-block;
+    width: 64px;
+    text-align: center;
+font-size: 12px !important;
+                    margin: 0 !important;
+                    line-height: 20px !important;
+}
+
+        .kezhuo_lock {
+            position: absolute;
+            width: 13px;
+            bottom: 5px;
+            right: 21px;
+            z-index: 20;
+        }
+		#studentGroup{
+			min-height:  200px;
+            margin-top: 20px;
+			border-top: 2px solid #ccc;
+			padding-top: 15px;
+			padding-left: 20px;
+			padding-right: 20px;
+
+		}
+		#Groupname{
+			width: 300px;
+			height: 150px;
+			position: absolute;
+			z-index: 200;
+	        left: 58%;
+			display: none;
+		}
+		.group_name{
+			line-height: 22px;
+			font-size: 16px;
+			width:120px;
+			text-align: center;
+			background: rgb(234,195,28);
+			margin-left: -1px;
+			opacity: 0.9
+		}
+		#groupbtn{
+			background: rgb(234,195,28);
+			width: 100%;
+			height: 100px;
+			text-align: center;
+			margin: -1px;
+			opacity: 0.9
+		}
+		#groupbtn input{
+			margin-top: 20px;
+			width: 95%;
+		}
+		#groupbtn button{
+			    border: 1px solid #fff;
+				padding: 5px 10px;
+				border-radius: 5px;
+				margin-top: 20px;
+				background-color: inherit;
+			outline: none;
+		}
+		#cancel{
+			margin-left: 30px;
+		}
+
+		.groupbtn{
+			float: right;
+			margin-top: 0;
+		}
+		.groupbtn:hover{
+			margin-top: 0;
+		}
+		.group-name{
+			float: left;
+			line-height: 36px;
+		}
+		.student-names{
+			display: inline-block;float: left;
+			width:13%;
+			line-height: 30px;
+		}
+		.student-names input{
+	width: 18px;
+    height: 18px;
+    position: relative;
+    top: 3px
+}
+		.activeli{
+			background:#FBF1C0}
+		.grouplist{
+			overflow: hidden;
+		}
+		.student_a{
+			float: left;
+            height: 160px;
+
+		}
+    </style>
+    <div style="text-align: center;padding-top: 30px;">
+        <button class="sub_opr" onclick="lockAllStudents()">锁定全体学生</button>
+        <button class="sub_opr" onclick="unlockAllStudents()">解锁全体学生</button>
+        <if condition="$platform neq 'pc'">
+        <button class="sub_opr student_group">学生分组</button>
+        </if>
+        <div id="Groupname">
+    	<div class="group_name">分组命名</div><div id="groupbtn">
+    		<input type="text" placeholder="请输入分组名称" id="group_input" required>
+    		<button id="sure">确定</button><button id="cancel">取消</button>
+
+    	</div>
+        </div>
+    </div>
+
+    <div id="student_list_wrapper"
+         style="width: 915px;margin: 0 auto;border: 4px solid #EBC121;border-radius: 10px;margin-top: 30px;overflow-y: auto;">
+        <ul id="student_list">
+            <volist name="students" id="data_student">
+               <div class="student_a">
+                <li id="student_{$data_student.id}" onclick="toggleLockStudent('{$data_student.id}')" class="student_active">
+                    <?php if (preg_match('/Resources/', $data_student['avatar'])): ?>
+                       <img class="student_avatar" src=<?=C('oss_path').$data_student['avatar']?> />
+                    <?php else: ?>
+                    <?php if ( $data_student['sex']=='男' ): ?>
+                    <img class="avatar" width="90" height="90" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_m.png">
+                    <?php else: ?>
+                    <img class="avatar" width="90" height="90" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_w.png">
+                    <?php endif; ?>
+                    <?php endif; ?>
+
+
+                    <img class="kezhuo" src="__PUBLIC__/DigitalClassroom/images/2kezhuo.gif">
+                    <span class="student_kezhuo_name1 cut-off">{$data_student.student_name}</span>
+                    <img class="kezhuo_lock" src="__PUBLIC__/DigitalClassroom/images/lock.png" style="display: none;">
+
+                </li>
+                   <if condition="$platform neq 'pc'">
+                <p style="text-align:center; <?php if (in_array($data_student['id'],$is_show_group)): ?>display:none; <?php endif ?>" >学生分组
+                    <input type="checkbox" class="stuidcheck" id="{$data_student.id}" stu_name="{$data_student.student_name}"></p>
+                   </if>
+                </div>
+            </volist>
+            <div style="clear: both;"></div>
+        </ul>
+        <if condition="$platform neq 'pc'">
+          <div id="studentGroup">
+              <?php if (!empty($row_group)): ?>
+                  <?php foreach ($row_group as $gk => $gv): ?>
+                      <div class="grouplist">
+                          <div style="overflow:hidden">
+                              <span class="group-name"><?=$gv['group_name']?></span>
+                              <button class="sub_opr groupbtn delategroup" attr=<?=$gv['id']?> >删除本组</button>
+                              <button class="sub_opr groupbtn removegroupStudent" attr=<?=$gv['id']?> >移除本组</button>
+                              <button class="sub_opr groupbtn addgroup" attr=<?=$gv['id']?> >添加到本组</button>
+                          </div>
+
+                          <?php foreach ($gv['child'] as $gck => $gcv): ?>
+                              <div class="student-names" id=<?=$gcv['sid']?> >
+                                  <input type="checkbox" class="delgroupstu">
+                                  <span class="studen-name"><?=$gcv['student_name']?></span>
+                              </div>
+                          <?php endforeach; ?>
+                      </div>
+                  <?php endforeach; ?>
+
+              <?php endif ?>
+          </div>
+        </if>
+    </div>
+
+
+    <script type="text/javascript">
+        var arrstuid = new Array();
+
+        //索引查询到要删除的元素
+        Array.prototype.removeByValue = function(id) {
+            var id = parseInt( id );
+            for(var i=0; i<this.length; i++) {
+                if(this[i] == id) {
+                    this.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
+		$('.student_group').click(function(){
+			if($('#Groupname').is(':hidden')){
+				$('#Groupname').show()
+			}else{
+				$('#Groupname').hide()
+			}
+
+		})
+		$('#sure').click(function(){
+            $('#Groupname').hide();
+            var fenzuleng = $('#group_input').val();
+
+            if (fenzuleng.length > 15) {
+                alert('分组名称过长');
+                return false;
+            }
+
+			if($('#group_input').val() != ''){
+                var groupname = $('#group_input').val();
+
+                $.get("__URL__/addGroup",{'groupname':groupname,'teacherId':teacherId,'classroomId':classroomId},function(msg){
+                    if(msg.info=='success'){
+                        $('#Groupname').hide();
+                        $('#studentGroup').show();
+                        var groupname = $('#group_input').val();
+
+                        $('#studentGroup').append('<div class="grouplist"><div style="overflow:hidden"><span class="group-name">'+groupname+'</span><button class="sub_opr groupbtn delategroup" attr="'+msg.id+'">删除本组</button> <button class="sub_opr groupbtn removegroupStudent" attr="'+msg.id+'" >移除本组</button><button class="sub_opr groupbtn addgroup" attr="'+msg.id+'" >添加到本组</button> </div></div>');
+                        $('#group_input').val('');
+                    }else{
+                        alert('添加分组失败');
+                    }
+                });
+
+			} else{
+			    alert('分组名不能为空')
+			}
+		})
+
+        //删除本组
+        $(document).on('click','.delategroup',function(){
+            $(this).parent().parent().remove();
+            var id=$(this).attr('attr');
+            var obj=this;
+
+            var stuid = '';
+            $(this).parents('.grouplist').find('.student-names').each(function(){
+
+                $(this).remove();
+                var stu_id = $(this).attr('id');
+                arrstuid.removeByValue(stu_id);//从数组中删除
+                $('.stuidcheck').each(function(){
+                    if (stu_id== $(this).attr('id')) {
+                        $(this).parent().css('display','block');
+                    }
+                })
+
+            })
+
+
+            $.get("__URL__/delGroup",{'id':id},function(msg){
+                if(msg=='success'){
+                    $(obj).parent().parent().remove();
+                }else{
+                   // alert('删除失败,请刷新页面后重试');
+                }
+            });
+
+        });
+
+        //移除本组
+        $(document).on('click','.removegroupStudent',function(){
+            var id=$(this).attr('attr');
+            var obj=$(this);
+
+            var stuid = '';
+            $(this).parents('.grouplist').find('.student-names').each(function(){
+                if ($(this).find('.delgroupstu').is(':checked') == true) {
+                    stuid+=','+$(this).attr('id');
+                    $(this).remove();
+                    var stu_id = $(this).attr('id');
+                    arrstuid.removeByValue(stu_id);//从数组中删除
+                    $('.stuidcheck').each(function(){
+                        if (stu_id== $(this).attr('id')) {
+                            $(this).parent().css('display','block');
+                        }
+                    })
+                }
+            })
+            if (stuid.substr(0,1)==',')
+            stuid=stuid.substr(1);
+
+            $.get("__URL__/delGroupStu",{'stuid':stuid,'gid':id},function(msg){
+                if(msg=='success'){
+                    //$(obj).parent().parent().remove();
+                }else{
+                    //alert('删除失败,请刷新页面后重试');
+                }
+            });
+
+        });
+
+
+        //点击添加到分组
+        $(document).on('click','.addgroup',function(){
+
+            var id=$(this).attr('attr');
+            var obj=$(this);
+            var stuid = '';
+
+            $('.stuidcheck').each(function(){ //获取所有选中的学生
+                if ($(this).is(':checked') == true) {
+                    stuid+=','+$(this).attr('id');
+                    var stu_name_info = $(this).attr('stu_name');
+                    var ssid = $(this).attr('id');
+                    if(! (arrstuid.indexOf(ssid)>-1) ) {
+                        arrstuid.push(ssid);
+                        obj.parents('.grouplist').append('<div class="student-names" id="'+$(this).attr('id')+'"><input type="checkbox" class="delgroupstu"><span class="studen-name">'+stu_name_info+'</span></div>');
+                        $(this).parent().css('display','none');
+                        $(this).attr("checked", false);
+                    }
+
+                }
+
+            });
+            if (stuid.substr(0,1)==',')
+            stuid=stuid.substr(1);
+
+            $.get("__URL__/addGroupStu",{'stuid':stuid,'gid':id},function(msg){
+                if(msg=='success'){
+                    //$(obj).parent().parent().remove();
+                }else{
+                    //alert('删除失败,请刷新页面后重试');
+                }
+            });
+
+        });
+
+
+		$('.student_active').click(function(){
+			 if($('#studentGroup').css('display') === 'block'){
+		//$(this).addClass('activeli')
+		}
+		})
+
+		$('#cancel').click(function(){
+			$('#Groupname').hide()
+		})
+        function lockAllStudents() {
+            $('#student_list .kezhuo_lock').show();
+            operateAllLockInfo('true');
+        }
+
+        function unlockAllStudents() {
+            $('#student_list .kezhuo_lock').hide();
+            operateAllLockInfo('false');
+        }
+
+        function toggleLockStudent(studentId) {
+            var obj = $('#student_' + studentId + ' .kezhuo_lock');
+            if (obj[0].style.display == 'none') {
+                operateSpecLockInfo(studentId, 'true');
+                obj.show();
+            } else {
+                operateSpecLockInfo(studentId, 'false');
+                obj.hide();
+            }
+        }
+        function adjustAuthMgmtLayout() {
+            $('#student_list_wrapper').height($(window).height() - 200);
+        }
+        $(function(){
+            adjustAuthMgmtLayout();
+            $(window).on('resize',adjustAuthMgmtLayout);
+        });
+    </script>
+</notempty>

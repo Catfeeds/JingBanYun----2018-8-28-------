@@ -1,0 +1,87 @@
+<div id="contentTable">
+    <table id="listWrapper" class="table striped hovered border" >
+        <thead>
+        <tr>
+            <th><input type="checkbox" class="check_all">全选</th>
+            <th class="text-center">学校名称</th>
+            <th class="text-center">负责人</th>
+            <th class="text-center">负责人邮箱</th>
+            <th class="text-center">负责人联系方式</th>
+            <th class="text-center">管理员名称</th>
+            <th class="text-center">管理员账号</th>
+            <!--<th class="text-center">管理员密码</th>-->
+            <th class="text-center">权限类型</th>
+            <th class="text-center">到期时间</th>
+            <th class="text-center">状态</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody id="body">
+        <volist name="list" id="data" empty="">
+            <tr id="l_{$data.id}">
+                <td><input type="checkbox" class="check_child" name='checkbox' attr="{$data.id}"></td>
+                <td>
+                    {$data.school_name}
+                </td >
+                <td class="text-center">
+                    {$data.obligation_person}
+                </td>
+                <td class="text-center">
+                    {$data.obligation_email}
+                </td>
+                <td class="text-center">
+                    {$data.obligation_tel}
+                </td>
+                <td class="text-center">
+                    {$data.real_name}
+                </td>
+                <td class="text-center">
+                    {$data.name}
+                </td>
+                <!--<td class="text-center">123456</td>-->
+                <td class="text-center">
+                    <?php if ($data['user_auth'] == 3): ?>
+                    团体VIP
+                    <?php else: ?>
+                    普通权限
+                    <?php endif ?>
+
+                </td>
+                <td class="text-center">
+                    <?php if ($data['auth_end_time'] < time() ): ?>
+                    已到期VIP
+                    <?php else: ?>
+                    <?php if (!empty($data['auth_end_time'])): ?>
+                    <?=date("Y-m-d",$data['auth_end_time'])?>
+                    <?php endif ?>
+                    <?php endif ?>
+                </td>
+                <td class="text-center fg_lock">
+                    <if condition="$data['status'] eq 1">
+                        <span class="fg-red">未认证</span>
+                        <elseif condition="$data['status'] eq 2"/>
+                        <span class="fg-green">已认证</span>
+                        <else/>
+                        <span class="fg-red">已拒绝</span>
+                    </if>
+                </td>
+                <td class="text-center">
+                    <if condition="$data['status'] eq 1">
+                        <button onclick="reviewed({$data.id},this)" class="button info">认证</button>
+                        <button onclick="reviewed({$data.id},this)" class="button danger">拒绝</button>
+                    </if>
+                    <a href="{:U('Admin/modifySchool?id=')}{$data.id}" class="button">修改</a>
+                    <!--<if condition="$data['flag']==1">
+                        <a href="##" attr="{$data.id}" class="button delete_button">删除</a>
+                    </if>
+                    -->
+                    <in name="Think.session.admin.role" value="1">
+                        <!--<a href="##" attr="{$data.id}" class="button delete_button">删除</a>-->
+                    </in>
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</div>

@@ -1,0 +1,128 @@
+<layout name="admin_layout_back" />
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		教师管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('Teacher/teacherList')}">教师管理</a>>>
+			<a href="javascript:;">查看教师信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<div class="blueBox">
+	<span class="blueText left fs16">创建教师</span>
+	<a href="{:U('Teacher/updateTeacher')}&id={$data.id}" class="blackText right" id="">
+		<img src="{$oss_path}public/web_img/Admin/icon-modify.png" alt="" class="mr10">
+                修改信息
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+
+<div class="grid condensed">
+	<div class="row cells3 infoBox">
+		<div class="cell">省份：{$data.province}</div>
+		<div class="cell">市区：{$data.city}</div>
+		<div class="cell">区县：{$data.district}</div>
+		<div class="cell">学校名称：
+                     {$data.school_name}
+                
+                </div>
+		<div class="cell">学校代码：{$data.school_code}</div>
+		<div class="cell">教师姓名：{$data.teacher_name}</div>
+		<div class="cell">教师手机号：{$data.telephone}</div>
+		<div class="cell">性别：{$data.sex}</div>
+		<div class="cell">邮箱：{$data.email}</div>
+		<div class="cell">
+			账号状态：
+			<if condition="$data['flag'] eq 1">
+				正常
+				<else /> 禁用
+			</if>
+		</div>
+		<div class="cell">
+			加入学校审核状态：
+			<if condition="$data['apply_school_status'] eq 1">
+				已审核
+				<else /> 待审核
+			</if>
+		</div>
+		<div class="cell">
+			教师审核状态：
+			<if condition="$data['auth_status'] eq 1">
+				已认证
+                        <elseif condition="$data['auth_status'] eq 2"/>
+				已拒绝
+                        <else /> 
+                            待审核
+			</if>
+		</div>
+
+		
+
+	</div>
+
+	<if condition="$data['permissions_status'] eq 1">
+		<div class="row cells3 infoBox">
+			<div class="cell">权限类型：vip权限</div>
+			<div class="cell">开始时间：{$data['auth_start_time']|date="Y-m-d",###}</div>
+			<div class="cell">结束时间：{$data['auth_end_time']|date="Y-m-d",###}</div>
+		</div>
+	<else />
+		<?php if ( $data['auth_end_time']>time() ): ?>
+		<div class="row cells3 infoBox">
+			<div class="cell">权限类型：普通权限</div>
+			<div class="cell">VIP开始时间：{$data['auth_start_time']|date="Y-m-d",###}</div>
+			<div class="cell">VIP结束时间：{$data['auth_end_time']|date="Y-m-d",###}</div>
+		</div>
+		<?php else: ?>
+		<div class="row cells1 infoBox">
+			<div class="cell">权限类型：普通权限</div>
+		</div>
+		<?php endif; ?>
+
+	</if>
+
+	<div class="row cells1 infoBox">
+		<div class="cell">简介：{$data.brief_intro}</div>
+	</div>
+</div>
+
+<div class="tabBox">
+	<ul class="left tabUl" id="tabUl">
+		<li class="tabLi tabActive">任教年级学科</li>
+		<li class="tabLi">教师任教的班级</li>
+	</ul>
+	<div class="tabCon" id="tabCon">
+		<iframe class="tabConActive" id="courseFrame" style="width: 100%;" frameborder="0" src="{:U('Teacher/teacherCourseList')}&id={$data.id}"></iframe>
+		<iframe id="classFrame" style="width: 100%;" frameborder="0" src="{:U('Teacher/teacherClassList')}&id={$data.id}"></iframe>
+	</div>
+</div>
+
+<script>
+	window.onload = function () {
+		var tabs = document.getElementById("tabUl").getElementsByTagName("li");
+		var divs = document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for (var i = 0; i < tabs.length; i++) {
+			tabs[i].onclick = function () {
+				change(this);
+			}
+		}
+
+		function change(obj) {
+			for (var i = 0; i < tabs.length; i++) {
+				if (tabs[i] == obj) {
+					tabs[i].className = "tabLi tabActive";
+					divs[i].className = "tabConActive";
+				} else {
+					tabs[i].className = "tabLi";
+					divs[i].className = "";
+				}
+			}
+		}
+	}
+</script>

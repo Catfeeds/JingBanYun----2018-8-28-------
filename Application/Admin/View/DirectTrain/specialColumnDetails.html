@@ -1,0 +1,143 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/adminDirectTrain.css?v=2">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+<div class="trainDetailsBox">
+	<div class="trainDetailsTitle">
+		<div class="authorInfo">
+			<img src="<?php echo !empty($specialColumnDetails['avatar']) ? $oss_path.$specialColumnDetails['avatar'] : '/Public/img/classManage/teacher_m.png';?>" alt="" class="authorAvatar">
+			<div class="authorName"><?php echo $specialColumnDetails['teacher_name']?>&nbsp;&nbsp;<?php echo $phase_of_studying_id.$editors_details['course_name']?>编者</div>
+		</div>
+        <?php if($specialColumnDetails['status'] == 3){?>
+		<button class="blueBtn passBtn yes" data-attr="1">审核通过</button>
+		<button class="blueBtn refuseBtn no" data-attr="2">审核拒绝</button>
+        <?php }?>
+	</div>
+    <div class="blueDashed">
+        <div class="blueTitle">
+            基本信息
+        </div>
+        <div class="grid condensed cellBox blueBox">
+            <div class="listview selectHide">
+                <div class="padding10">
+                    专栏标题：{$specialColumnDetails['special_column_question_title']}
+                </div>
+                <div class="padding10">
+                    专栏作者：<select id="" class="input-control" name="special_column_editor_quizzer_id" disabled>
+                        <option value=''>-请选择-</option>
+                        <volist name="editors_list" id="editors">
+                            <option value={$editors['teacher_id']} {$specialColumnDetails['special_column_editor_quizzer_id'] == $editors['teacher_id'] ?'selected':''}>{$editors['name']}</option>
+                        </volist>
+                    </select>
+                </div>
+                <div class="padding10">
+                    所属学段：{$specialColumnDetails['phase_of_studying_id'] =='1' ?'小学':''}
+                            {$specialColumnDetails['phase_of_studying_id'] =='2' ?'初中':''}
+                            {$specialColumnDetails['phase_of_studying_id'] =='3' ?'高中':''}
+                </div>
+                <div class="padding10">
+                   学科：<select id="" class="input-control" name="course_id" disabled>
+                            <option value=''>-请选择-</option>
+                            <volist name="course_list" id="dataCourse">
+                                <option value="{$dataCourse.id}" {$specialColumnDetails['course_id']==$dataCourse['id']?'selected':''}>
+                                {$dataCourse.name}
+                                </option>
+                            </volist>
+                        </select>
+                </div>
+                <div class="padding10">
+                   年级：<select id="" class="input-control" name="grade_id" disabled>
+                        <option value=""></option>
+                        <volist name="grade_list" id="dataGrade">
+                            <option value="{$dataGrade.id}" {$specialColumnDetails['grade_id']==$dataGrade['id']?'selected':''}>
+                            {$dataGrade.name}
+                            </option>
+                        </volist>
+                    </select>
+                </div>
+                <div class="padding10">
+                    分册：{$specialColumnDetails['fascicule_id'] == 1 ? '上册':''}
+                        {$specialColumnDetails['fascicule_id'] == 2 ? '下册':''}
+                        {$specialColumnDetails['fascicule_id'] == 3 ? '全一册':''}
+                </div>
+                <div class="padding10">
+                    观看价格：{$specialColumnDetails['special_column_price']}
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php if($specialColumnDetails['special_column_type'] == ARTICLE){?>
+	<!-- 文章 -->
+	<div class="articleBox">
+		<div class="articleTitle"><?php echo $specialColumnDetails['special_column_question_title']?></div>
+		<div class="articleMain"><?php echo html_entity_decode($specialColumnDetails['special_column_article'])?></div>
+        <div class="articleMain"><?php echo html_entity_decode($specialColumnDetails['special_column_article_show'])?></div>
+	</div>
+    <?php }else{?>
+	<!-- 视频/音频 -->
+    <div class="resourceDisplayFrame videoAudio dn">
+        <div id='plv'>
+
+        </div>
+        <div id="imgs"  style="display:none"><img src="__PUBLIC__/img/sinology/paypc.png" style="width:100%"></div>
+    </div>
+    <!-- 视频/音频介绍区域 -->
+    <div class="trainDetailsIntro">
+        <div class="trainRecommend">
+            <img src="__PUBLIC__/img/resource/jingpinziyuan.png" alt="">
+            培训课程名称
+        </div>
+        <div class="introTitle"><?php echo $specialColumnDetails['special_column_question_title']?></div>
+        <div class="introMain"><?php echo $specialColumnDetails['special_column_question_reply_description']?></div>
+    </div>
+    <?php }?>
+</div>
+<script src='//player.polyv.net/script/polyvplayer.min.js'></script>
+<script>
+    $('.yes,.no').click(function () {
+        var id = "<?php echo $id?>";
+        var columnStatusNumber = $(this).attr('data-attr');
+        $.ajax({
+            data:{'id':id,'columnStatusNumber':columnStatusNumber},
+            url:'{:U("DirectTrain/updateColumnPutawayStatus")}',
+            type:'post',
+            dataType:'json',
+            success:function () {
+                window.location.href = 'index.php?m=&&m=Admin&c=DirectTrain&a=editorColumnList';
+            }
+        })
+    });
+
+    $(function () {
+        var type = "<?php echo $specialColumnDetails['special_column_type']?>";
+        //       $(".browse_resource").click(function () {
+        $('.resourceDisplayFrame').addClass('dn');
+        var subType = type;
+        switch (subType) {
+            case '1':
+            case '3':
+                $('.videoAudio').removeClass('dn');
+                var vid = "<?php echo $specialColumnDetails['vid'];?>";
+                    $('#plv').show();
+                    $('#imgs').hide();
+                    var player = polyvObject('#plv').videoPlayer({
+                        'width': '100%',
+                        'height': '500',
+                        'vid': vid
+                    });
+                break;
+        }
+        //       });
+        window.onresize = function () {
+            for (var i = 0; i < $('.resourceNameDiv').length; i++) {
+                if ($('.resourceNameDiv').eq(i).height() == '56' && $(document).width() > '1221' || $('.resourceNameDiv').eq(i).height() == '56' && $(document).width() <= '992') {
+                    $('.resourceNameDiv').eq(i).addClass('mt22')
+                } else if ($('.resourceNameDiv').eq(i).height() == '56' && $(document).width() <= '1220') {
+                    $('.resourceNameDiv').eq(i).removeClass('mt22')
+                }
+            }
+        };
+    });
+</script>

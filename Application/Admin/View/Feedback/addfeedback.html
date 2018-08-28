@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class='no-js'>
+
+<head>
+    <meta charset='utf-8'>
+    <meta name="renderer" content="webkit">
+    <title>用户反馈 :: 京版云教育平台</title>
+    <meta content='' name='description'>
+    <meta content='' name='keywords'>
+    <link href="__PUBLIC_THEME__/stylesheets/application-a07755f5.css" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC_THEME__/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="__PUBLIC__/css/layout.css?v=7" rel="stylesheet" type="text/css" />
+
+    <style>
+		* {
+			padding: 0;
+			margin: 0;
+		}
+        
+		body {
+			display: block;
+			background-color: #d0e6f4;
+		}
+		
+		#total {
+			min-height: 950px;
+			width: 1200px;
+			margin: 0 auto;
+			position: relative;
+			background-color: #d0e6f4;
+			background: url(__PUBLIC__/img/feedback.png) no-repeat top left;
+		}
+  		
+		.form-control {
+			border: 2px solid #fff;
+		}
+		
+		.feedback_text {
+			width: 1000px;
+			margin: 10px auto 0;
+			background-color: rgba(255,255,255,0);
+			font-size: 16px;
+		}
+		
+		.feedback_btn {
+			background-color: #28D0C1;
+			border: 1px solid transparent;
+			border-radius: 6px;
+			color: white;
+			font-size: 22px;
+			padding: 6px 18px;
+		}
+		
+		.feedback_btn:hover {
+            background-color: #209994;
+            color: white;
+        }
+		
+		.total_top {
+			width: 850px;
+			min-height: 550px;
+			margin-left: 350px;
+			overflow: hidden;
+		}
+		
+		.feedback_btn {
+			display: block;
+			margin: 10px auto;
+			text-align: center;
+		}
+		
+		.total_content {
+			font-size: 16px;
+			color: #fff;
+			font-family: "微软雅黑";
+			overflow: hidden;
+		}
+		
+		.content_left {
+			float: left;
+			width: 100px;
+			font-size: 20px;
+			text-align: center;
+			line-height: 96px;
+		}
+		
+		.content_right {
+			float: left;
+			width: 410px;
+			padding-left: 10px;
+			border-left: 2px solid rgba(255,255,255,0.4);
+		}
+		
+		.cont {
+			float: left;
+			width: 80px;
+			height: 80px;
+			margin: 8px;
+			border: 1px solid #fff;
+			border-radius: 10px;
+			text-align: center;
+			vertical-align:middle;
+			cursor: pointer;
+		}
+		
+		.ub {
+			display: -webkit-box !important;
+			display: box !important;
+			position:relative;
+		}
+		
+		.ub-ac {
+			-webkit-box-align:center;
+			box-align:center;
+		}
+		
+		.ub-pc {
+			-webkit-box-pack:center;
+			box-pack:center;
+		}
+		
+		.choice {
+			background-color: #4a9caf;
+		}
+		
+		#points4 {
+            display: none;
+            background: url(__PUBLIC__/img/tishi4.png);
+            width: 450px;
+            height: 260px;
+            position: absolute;
+            top: 0;
+            background-size: 100% 100%;
+            text-align: center;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            z-index: 10;
+        }
+        
+        #points4 a {
+            text-align: center;
+            margin-top: 200px;
+            color: #fff;
+            font-size: 14px;
+            background: #3BCEC2;
+            border-radius: 5px;
+            padding: 10px 20px;
+            display: inline-block;
+        }
+        
+        #points4 a:nth-child(1) {
+            margin-right: 5px;
+        }
+        
+        #points4 a:nth-child(2) {
+            padding: 10px 27px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="total">
+    	<div class="total_top">
+    		<div class="total_content" style="margin-top:20px;">
+    			<div class="content_left">
+    				&nbsp;
+    			</div>
+    			<div class="content_right" style="text-align:center;line-height:100px;font-size:20px;border-left:0;">
+    				所属模块
+				</div>
+			</div>
+			
+			<!---循环以下------>
+			<?php foreach ($node_list as $key => $value): ?>
+				<div class="total_content">
+	    			<div class="content_left">
+	    				<?=$value['node_name']?>
+	    			</div>
+	    			<div class="content_right">
+	    				<?php if (!empty($value['child_data'])): ?>
+		    				<?php foreach ($value['child_data'] as $k => $v): ?>
+		    					<div class="cont ub ub-ac ub-pc" id="<?=$v['id']?>">
+			    					<?=$v['node_name']?>
+			    				</div>
+		    				<?php endforeach ?>
+
+							<?php if ($value['node_name']=='班级行'): ?>
+								<div class="cont ub ub-ac ub-pc" id="qita">
+									其他反馈
+								</div>
+							<?php endif; ?>
+	    				<?php endif; ?>
+	    			</div>
+	    		</div>
+			<?php endforeach ?>
+    	</div>
+		<textarea class="form-control feedback_text" name="content" rows="15" placeholder="填写您的反馈意见"></textarea>
+		<input type="hidden" class="token" value="{$_token}">
+    	<button type="submit" class="feedback_btn">提交</button>
+    </div>
+    
+    <div id="points4">
+		<a href="javascript:;" onclick="refresh()">继续反馈</a>
+		<a href="javascript:;" class="fanhui">去逛逛</a>
+    </div>
+    
+    <script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+    <script>
+    	function refresh() {
+    		window.location.reload();//刷新当前页面
+    	}
+		$('.cont').on('click',function(){
+			$(this).toggleClass('choice');
+		})
+
+		$('.feedback_btn').click(function(){
+			$(this).attr("disabled", "disabled");
+			$('.fanhui').attr('href','javascript:;');
+			var content = $('.feedback_text').val();
+			if (content == null || content == undefined || content == '') { 
+				alert("请填写意见反馈内容");
+				return;
+			}
+
+			var ids = '';
+			$('.choice').each(function(){
+				ids += ','+$(this).attr('id');
+			})
+
+			var _token = $('.token').val();
+
+			$.post('index.php?m=Admin&c=Feedback&a=savefeedback', {content: content,id:ids,_token:_token}, function (res) {
+	           if (res.code == 'success') { 
+	                //添加成功后进行跳转
+	                $('#points4').show();
+	                $('.fanhui').attr('href',res.url);
+	            } else {
+	                alert(res.url);
+	            }
+	        })
+			
+		})
+
+	</script>
+	<script>
+		function myBrowser(){
+			var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+			var isOpera = userAgent.indexOf("Opera") > -1;
+			if (isOpera) {
+				return "Opera"
+			} //判断是否Opera浏览器
+			else if (userAgent.indexOf("Firefox") > -1) {
+				return "FF";
+			} //判断是否Firefox浏览器
+			else if (userAgent.indexOf("Chrome") > -1){
+			  return "Chrome";
+			 }
+			else if (userAgent.indexOf("Safari") > -1) {
+				return "Safari";
+			} //判断是否Safari浏览器
+			else if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+				return "IE";
+			} //判断是否IE浏览器
+			else{
+				return "IE";
+			}
+		}
+		//以下是调用上面的函数
+		var mb = myBrowser();
+		if ("IE" == mb) {
+			console.log("我是 IE")
+			$('#4,#5,#6,#7,#8,#9,#10,#12,#13,#14,#15,#19,#22,#qita').css('line-height','78px')
+			$('#11,#16').css('padding-top','18px')
+		}
+		if ("FF" == mb) {
+			console.log("我是 Firefox");
+		}
+		if ("Chrome" == mb) {
+			console.log("我是 Chrome");
+		}
+		if ("Opera" == mb) {
+			console.log("我是 Opera");
+		}
+		if ("Safari" == mb) {
+			console.log("我是 Safari");
+		}
+	</script>
+</body>
+
+</html>

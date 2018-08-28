@@ -1,0 +1,185 @@
+<layout name="student_layout_3"/>
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<style>
+    .class_item {
+        margin: 10px;
+        padding: 6px;
+        border: 1px solid #ccc;
+    }
+
+    .class_item span {
+
+    }
+
+    .class_item button {
+        float: right;
+        border: none;
+        background-color: transparent;
+        color: green;
+    }
+    .row {
+        margin: 0 !important;
+    }
+</style>
+<div class="main_opr">
+    <a href="{:U('Student/learningPath')}" title="我的活动表现" class="btn btn-main-opr">我的活动表现</a>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <h3>加入新班级:</h3>
+
+        <div class="form_section">
+            <label for="telephone">&nbsp;</label>
+
+            <div class="input-control text full-size">
+                <input type="text" name="telephone" id="telephone" class="form-control" required
+                       placeholder="请输入教师手机号...">
+            </div>
+            <div style="text-align: right;margin-top: 10px;">
+                <button type="submit" class="btn btn-primary" onclick="queryClassByTeacherId(this)">查询</button>
+            </div>
+            <div id="classList" style="margin-top: 20px;">
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <h3>已经加入的班级:</h3>
+
+        <empty name="list">
+            <div class="emptyResult">您还没有加入任何班级</div>
+        </empty>
+        <notempty name="list">
+            <table class="table striped hovered border">
+                <thead>
+                <tr>
+                    <th width="25%">班级名称</th>
+                    <th width="40%">所在学校</th>
+                    <th class="text-center">年级</th>
+                    <th class="text-center">班主任</th>
+                    <th class="text-center"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <volist name="list" id="data">
+                    <tr id="l_{$data.id}">
+                        <td>
+                            {$data.grade}&nbsp;{$data.name}
+                        </td>
+                        <td>
+                            {$data.school_name}
+                        </td>
+                        <td class="text-center">
+                            {$data.grade}
+                        </td>
+                        <td class="text-center">
+                            {$data.class_teacher}
+                        </td>
+                        <td class="text-center">
+                            <if condition="$data['instatus'] eq 1">
+                                等待审核
+                                <elseif condition="$data['instatus'] eq 2"/>
+
+                                <a href="{:U('Student/classTimetable?classId=')}{$data.id}" title="班级课表"
+                                   class="button">班级课表</a>
+
+                                <a href="javascript:" id-data="{$data.id}" title="班级课表"
+                                   class="button outClass">退出班级</a>
+
+                                <elseif condition="$data['instatus'] eq 3"/>
+                                    已拒绝
+                                <else/>
+                            </if>
+
+                        </td>
+                    </tr>
+                </volist>
+                </tbody>
+            </table>
+        </notempty>
+    </div>
+</div>
+<script>
+    function isValidPhone(str) {
+        var re = /^1[34578]\d{9}$/
+        if (re.test(str)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    function queryClassByTeacherId(objthis) {       
+        var objthis = $(objthis)
+        var telephone = $('#telephone').val();
+        //objthis.text("正在查询...");
+        
+        if (!isValidPhone(telephone)) {
+            $('#classList').html('手机格式不正确');
+            return false;
+        }
+
+        
+        if (telephone != '') {
+            $.get('index.php?m=Home&c=Student&a=getClassesByTeacherTelephone', {
+                telephone: telephone
+            }, function (res) {
+
+                var tpl = '<div class="class_item"><span>{2}&nbsp;{0}</span><button onclick="add({1})">申请加入</button></div>';
+
+                var tplone = '<div class="class_item"><span>{2}&nbsp;{0}</span><button>等待审核</button></div>';
+
+                var tpltwo = '<div class="class_item"><span>{2}&nbsp;{0}</span><button>已加入</button></div>';
+
+
+                var html = [];
+                $(res).each(function (i, n) {
+                    if(n.status==1) {
+                        html.push(tplone.format(n.name, n.id,n.grade));
+                    } else if(n.status==2){
+                        html.push(tpltwo.format(n.name, n.id,n.grade));
+                    } else{
+                        html.push(tpl.format(n.name, n.id,n.grade));
+                    }
+                });
+                $('#classList').html(html.join(''));
+                objthis.text("查询");
+                if (res.length == 0) {
+                    $('#classList').html('该教师尚未创建班级');
+                }
+            });
+        }
+    }
+
+    function add(classId) {
+        $.get('index.php?m=Home&c=Student&a=applyIntoClass', {
+            id: classId
+        }, function (res) {
+            if (res == 'success') {
+                alert('申请加入成功，等待教师审核');
+                window.location.reload();
+            } else {
+                alert(res);
+            }
+        });
+    }
+
+    $(function(){
+        $('.outClass').click(function(){
+            var classId = $(this).attr('id-data');
+            if(confirm('确定退出班级吗?')) {
+                $.get('index.php?m=Home&c=Student&a=delClassData', {
+                    classId: classId
+                }, function (res) {
+                    if (res == 'success') {
+                        //alert('申请加入成功，等待教师审核');
+                        window.location.reload();
+                    } else {
+                        alert('退出班级失败,请刷新重试');
+                    }
+                });
+            }
+        })
+
+    })
+</script>

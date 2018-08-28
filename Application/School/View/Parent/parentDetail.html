@@ -1,0 +1,110 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+	<div class="standardMain hrefContent">
+		<a href="{:U('Parent/parentList')}" class="returnBack">家长列表</a>
+		>
+		<span class="thePage">查看家长信息</span>
+	</div>
+	<div class="standardMain classContent tableContent mt0">
+		<div class="blueBox">
+			<span class="left blueTitle">查看家长信息</span>
+		</div>
+
+		<div class="grid condensed infoOutter">
+			<div class="row cells3 infoBox">
+				<div class="cell">家长姓名：{$parent_data.parent_name}</div>
+				<div class="cell">家长手机号：{$parent_data.telephone}</div>
+				<div class="cell">权限类型： 
+                    <if condition="$parent_data['permissions_status'] eq 1">
+                        vip权限
+                    <else />
+                        普通权限
+                    </if>
+                </div>
+				<div class="cell">账号状态： 
+                    <if condition="$parent_data['flag'] eq 1">
+                        正常
+                    <else />
+                        禁用
+                    </if>
+                </div>
+			<div class="cell">&nbsp;</div>
+			<div class="cell">&nbsp;</div>
+		</div>
+	</div>
+
+	<div class="tableOutter">
+		<p class="tableTitle">学生列表</p>
+		<table id="listWrapper" class="table striped hovered border newTable">
+			<thead>
+		        <tr>
+		            <th>序号</th>
+		            <th>学生姓名</th>
+		            <th>性别</th>
+		            <th>所在年级</th>
+		            <th>所在班级</th>
+		        </tr>
+			</thead>
+			<tbody id="body">
+				<empty name="student_list">
+				   	<tr>
+		                <td colspan="5" style="color: #999">
+							暂无信息
+						</td>
+					</tr>
+				</empty>
+				<notempty name="student_list">
+		            <volist name="student_list" id="item" key="key">
+		                <tr>
+							<td>
+								{$key}
+							</td>
+							<td>
+								{$item.student_name}
+							</td>
+							<td>
+								{$item.sex}
+							</td>
+							<td>
+								{$item.grade}
+							</td>
+							<td>
+								{$item.class_name}
+							</td>
+						</tr> 
+		            </volist>
+		        </notempty>
+			</tbody>
+		</table>
+		<div class="Pagination">{$page}</div>
+	</div>
+</div>
+
+<script>
+	/*window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="";
+				}
+			}
+		} 
+	}*/
+	
+</script>
+

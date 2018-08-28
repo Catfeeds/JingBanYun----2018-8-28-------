@@ -1,0 +1,556 @@
+
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=3.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/newActivity.css?v=5" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/leftTimer.js"></script>
+<style>
+	.glyphicon-chevron-left:before, .glyphicon-chevron-right:before {
+		content: none;
+	}
+	
+	.glyphicon-chevron-left {
+		background: url(__PUBLIC__/img/activity/left.png) no-repeat center
+	}
+	
+	.glyphicon-chevron-right {
+		background: url(__PUBLIC__/img/activity/right.png) no-repeat center
+	}
+	
+	@media screen and (max-width: 1400px) and (min-width: 0) {
+		.mainbody {
+			width: 100%;
+		}
+		
+		.nav {
+			width: 99%;
+			margin: 0 auto;
+		}
+		
+		.fullscreen_ctrl {
+			right: 2px;
+		}
+		
+		.fullscreen_ctrl.fullscreen {
+			right: -2px;
+		}
+	}
+</style>
+
+<div class="newActivity_main">
+
+	<div class="newActivity_top">
+		<form method="post" action="{:U('Activity/search')}" id="myForms">
+			<div class="selectType">
+				<img src="__PUBLIC__/img/activity/selectType.png" alt="">
+				<select name="type" id="types">
+					<option value="">按类型搜索</option>
+					<option value="1">赛事</option>
+					<option value="2">培训</option>
+				</select>
+			</div>
+			<div class="search">
+				<select name="time_status" id="time_status">
+					<option value="">--请选择--</option>
+					<option value="1">活动未开始</option>
+					<option value="2">活动进行中</option>
+					<option value="3">历史活动</option>
+
+				 </select>
+				<button class="search_btn">搜索</button>
+				<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="关键字搜索" maxlength="28">
+			</div>
+		</form>
+	</div>
+
+	<hr>
+	<div class="newActivity_con">
+		<div class="newActivity_left">
+			<?php if($status == '1' && !empty($list)) { ?>
+				<?php if(count($list) == 1){ ?>
+					<?php for($i=0;$i<count($list);$i++){?>
+						<ul class="newActBox_ul mb20" id="preheat_ul">
+							<?php if($list[$i]['content_type'] == '2'){ ?>
+										<!--资讯-->
+								<li class="preheat_li newActBox_li_one">
+									<a href="<?php echo 'index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id='.$list[$i]['id']?>" style="background: url(<?php echo $oss.$list[$i]['img']?>) no-repeat center; background-size: 100%">
+										<div class="actLi_main_one">
+											<div class="actLi_title_one" title="<?php echo $list[$i]['title'] ?>"><?php echo $list[$i]['title'] ?></div>
+											<div class="actLi_text_one" title=""><?php echo mb_substr(strip_tags(html_entity_decode($list[$i]['content'])),0,20,'utf-8') ?></div>
+										</div>
+									</a>
+								</li>
+
+							<?php }elseif($list[$i]['content_type'] == '1'){ ?>
+									<!--立即报名-->
+								<li class="preheat_li newActBox_li_one">
+									<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$list[$i]['id']?>" style="background: url(Resources/socialactivity/<?php echo $list[$i]['img']?>) no-repeat center; background-size: 100%">
+										<div class="actLi_main_one">
+											<div class="actLi_title_one" title="<?php echo $list[$i]['title'] ?>"><?php echo $list[$i]['title'] ?></div>
+											<div class="actLi_text_one" title="">参与对象：<?php echo $list[$i]['content'] ?></div>
+											<div class="actLi_text_one" title="">活动时间：<?php echo $list[$i]['time'] ?></div>
+										</div>
+									</a>
+								</li>
+
+							<?php }else if($list[$i]['content_type'] == '3'){ ?>
+									<!--我要投票-->
+
+								<li class="preheat_li newActBox_li_one">
+									<a href="<?php echo 'index.php?m=Home&c=Activity&a=vote_details&id='.$list[$i]['id']?>" style="background: url(<?php echo $oss.$list[$i]['img']?>) no-repeat center; background-size: 100%">
+										<div class="actLi_main_one">
+										  <div class="actLi_title_one" title="<?php echo $list[$i]['title'] ?>"><?php echo $list[$i]['title'] ?></div>
+											<div class="actLi_text_one" title="">投票时间：<?php echo $list[$i]['time'] ?></div>
+											<div class="actLi_text_one" title="">投票规则：<?php echo mb_substr($list[$i]['content'],0,20,'utf-8') ?></div>
+										</div>
+									</a>
+								</li>
+
+							<?php }?>
+						</ul>
+					<?php }?>
+				<?php }elseif(count($list) > 1){ ?>
+					<div class="newActBox newActBoxGray" id="preheatAct">
+						<div class="newActBox_name" id="preheatName">
+							<div class="newActBox_left">预热活动</div>
+							<div class="newActBox_right" id="preheatMore">
+								<a href="<?php echo 'index.php?m=Home&c=Activity&a=activity_history_more&type=4'?>" class="">更多>></a>
+							</div>
+						</div>
+						<ul class="newActBox_ul" id="preheat_ul">
+							<?php for($i=0;$i<count($list);$i++){?>
+								<?php if($list[$i]['content_type'] == '2'){ ?>
+									<!--资讯-->
+									<li class="<?php if(count($list) == 2){ echo 'preheat_li newActBox_li_two';}else{ echo 'preheat_li newActBox_li' ;}?>">
+									<a href="<?php echo 'index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id='.$list[$i]['id']?>">
+										<div class="actLi_top" style="background: url(<?php echo $oss.$list[$i]['img']?>) no-repeat center; background-size: 100%">
+			                            </div>
+										<div class="actLi_title" title="<?php echo $list[$i]['title'] ?>">
+											<p><?php echo $list[$i]['title'] ?></p>
+										</div>
+										<div class="actLi_main" title="">
+											<p><?php echo mb_substr(strip_tags(html_entity_decode($list[$i]['content'])),0,20,'utf-8') ?></p>
+										</div>
+									</a>
+								</li>
+								<?php }elseif($list[$i]['content_type'] == '1'){ ?>
+									<!--立即报名-->
+									<li class="<?php if(count($list) == 2){ echo 'preheat_li newActBox_li_two';}else{ echo 'preheat_li newActBox_li' ;}?>">
+									<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$list[$i]['id']?>">
+										<div class="actLi_top" style="background: url(Resources/socialactivity/<?php echo $list[$i]['img']?>) no-repeat center; background-size: 100%">
+			                            </div>
+										<div class="actLi_title" title="<?php echo $list[$i]['title'] ?>">
+											<p><?php echo $list[$i]['title'] ?></p>
+										</div>
+										<div class="actLi_object" title="">
+											参与对象：<?php echo $list[$i]['content'] ?>
+										</div>
+										<div class="actLi_time" title="">
+											活动时间：<?php echo $list[$i]['time'] ?>
+										</div>
+									</a>
+								</li>
+								<?php }else if($list[$i]['content_type'] == '3'){ ?>
+									<!--我要投票-->
+									<li class="<?php if(count($list) == 2){ echo 'preheat_li newActBox_li_two';}else{ echo 'preheat_li newActBox_li' ;}?>">
+									<a href="<?php echo 'index.php?m=Home&c=Activity&a=vote_details&id='.$list[$i]['id']?>">
+										<div class="actLi_top" style="background: url(<?php echo $oss.$list[$i]['img']?>) no-repeat center; background-size: 100%">
+			                            </div>
+										<div class="actLi_title" title="<?php echo $list[$i]['title'] ?>">
+											<p><?php echo $list[$i]['title'] ?></p>
+										</div>
+										<div class="actLi_time" title="">
+											投票时间：<?php echo $list[$i]['time'] ?>
+										</div>
+										<div class="actLi_rule" title="">
+											投票规则：<?php echo mb_substr($list[$i]['content'],0,20,'utf-8') ?>
+										</div>
+									</a>
+								</li>
+								<?php }?>
+							<?php }?>
+
+						</ul>
+					</div>
+				<?php }?>
+				<!-- </div> -->
+			<?php }?>
+
+
+			<?php if($status1 == '1' && !empty($list1)){?>
+				<?php if(count($list1) == 1){?>
+					<ul class="newActBox_ul mb20" id="hot_ul">
+						<?php for($i=0;$i<count($list1);$i++){?>
+							<?php if($list1[$i]['content_type'] == '1'){ ?>
+								<!--立即报名-->
+						         <?php if($list1[$i]['is_live'] == '0'){ ?>
+								 <li class="hot_li newActBox_li_one">
+									 <a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$list1[$i]['id']?>" style="background: url(Resources/socialactivity/<?php echo $list1[$i]['img']?>) no-repeat center; background-size: 100%">
+										 <div class="actLi_main_one">
+											 <div class="actLi_title_one" title="<?php echo $list[$i]['title'] ?>"><?php echo $list1[$i]['title'] ?></div>
+											 <div class="actLi_text_one" title="">参与对象：<?php echo $list1[$i]['content'] ?></div>
+											 <div class="actLi_text_one" title="">活动时间：<?php echo $list1[$i]['time'] ?></div>
+										 </div>
+									 </a>
+								</li>
+						        <?php } else { ?>
+								<!--直播活动-->
+								 <li class="hot_li newActBox_li_one">
+									 <a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$list1[$i]['id']?>" style="background: url(Resources/socialactivity/<?php echo $list1[$i]['img']?>) no-repeat center; background-size: 100%" class="liveA">
+									 	<div class="blackLive"></div>
+									 	<div class="liveBtn" id="playText_{$list1[$i]['id']}"></div>
+										 <script>
+											 (function(){
+												 var currentTime = '<?= date('Y-m-d H:i:s',time()) ?>';
+												 var liveStartTime = '<?= date('Y-m-d H:i:s',$list1[$i]['activitystart']) ?>';
+												 var liveEndTime = '<?= date('Y-m-d H:i:s',$list1[$i]['activityend']) ?>';
+												 var timer = new leftTimer(currentTime,liveStartTime,liveEndTime,
+														 function(){
+															 $("#playText_{$list1[$i]['id']}").removeClass('active').text('未直播').parent('.liveA').removeAttr('target')
+														 },
+														 function(){
+															 $("#playText_{$list1[$i]['id']}").addClass('active').text('进行中').parent('.liveA').attr('target', '_blank')
+														 },
+														 function(){
+															 $("#playText_{$list1[$i]['id']}").removeClass('active').text('看回放').parent('.liveA').removeAttr('target')
+														 });
+												 timer.timerStart();
+											 })();
+										 </script>
+										 <div class="actLi_main_one">
+											 <div class="actLi_title_one" title="<?php echo $list[$i]['title'] ?>"><?php echo $list1[$i]['title'] ?></div>
+											 <div class="actLi_text_one" title="">参与对象：<?php echo $list1[$i]['content'] ?></div>
+											 <div class="actLi_text_one" title="">活动时间：<?php echo $list1[$i]['time'] ?></div>
+										 </div>
+									 </a>
+								</li>
+						        <?php } ?>
+							<?php }else if($list1[$i]['content_type'] == '3'){ ?>
+								<!--我要投票-->
+								<li class="hot_li newActBox_li_one">
+									<a href="<?php echo 'index.php?m=Home&c=Activity&a=vote_details&id='.$list1[$i]['id']?>" style="background: url(<?php echo $oss.$list1[$i]['img']?>) no-repeat center; background-size: 100%">
+										<div class="actLi_main_one">
+													<div class="actLi_title_one" title="<?php echo $list1[$i]['title'] ?>"><?php echo $list1[$i]['title'] ?></div>
+													<div class="actLi_text_one" title="">投票时间：<?php echo $list1[$i]['time'] ?></div>
+													<div class="actLi_text_one" title="">投票规则：<?php echo mb_substr($list1[$i]['content'],0,20,'utf-8') ?></div>
+										 </div>
+									</a>
+								</li>
+							<?php }?>
+						<?php }?>
+					</ul>
+				<?php }elseif(count($list1) > 1){?>
+						<div class="newActBox" id="hotAct">
+							<div class="newActBox_name" id="hotName">
+								<div class="newActBox_left">火热进行</div>
+								<div class="newActBox_right" id="hotMore">
+									<a href="<?php echo 'index.php?m=Home&c=Activity&a=activity_history_more&type=5'?>" class="">更多>></a>
+								</div>
+							</div>
+
+							<ul class="newActBox_ul" id="hot_ul">
+								<?php for($i=0;$i<count($list1);$i++){?>
+										<?php if($list1[$i]['content_type'] == '1'){ ?>
+											<!--立即报名-->
+								            <?php if($list1[$i]['is_live'] == '0'){ ?>
+											<li class="<?php if(count($list1) == 2){ echo 'hot_li newActBox_li_two' ;}else{echo 'hot_li newActBox_li' ;}?>">
+												<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$list1[$i]['id']?>">
+													<div class="actLi_top" style="background:  url(Resources/socialactivity/<?php echo $list1[$i]['img']?>) no-repeat center; background-size: 100%">
+													</div>
+													<div class="actLi_title" title="<?php echo$list1[$i]['title'] ?>"><?php echo$list1[$i]['title'] ?></div>
+													<div class="actLi_object">
+														参与对象：<?php echo $list1[$i]['content'] ?>
+													</div>
+													<div class="actLi_time">
+														活动时间：<?php echo $list1[$i]['time'] ?>
+													</div>
+												</a>
+											</li>
+								            <?php } else { ?>
+											<!-- 这里是直播 -->
+											<li class="<?php if(count($list1) == 2){ echo 'hot_li newActBox_li_two' ;}else{echo 'hot_li newActBox_li' ;}?>">
+												<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$list1[$i]['id']?>" class="liveA">
+													<div class="liveBtn" id="playText_{$list1[$i]['id']}"></div>
+													<script>
+														(function(){
+															var currentTime = '<?= date('Y-m-d H:i:s',time()) ?>';
+															var liveStartTime = '<?= date('Y-m-d H:i:s',$list1[$i]['activitystart']) ?>';
+															var liveEndTime = '<?= date('Y-m-d H:i:s',$list1[$i]['activityend']) ?>';
+															var timer = new leftTimer(currentTime,liveStartTime,liveEndTime,
+																	function(){
+																		$("#playText_{$list1[$i]['id']}").removeClass('active').text('未直播').parent('.liveA').removeAttr('target')
+																	},
+																	function(){
+																		$("#playText_{$list1[$i]['id']}").addClass('active').text('进行中').parent('.liveA').attr('target', '_blank')
+																	},
+																	function(){
+																		$("#playText_{$list1[$i]['id']}").removeClass('active').text('看回放').parent('.liveA').removeAttr('target')
+																	});
+															timer.timerStart();
+														})();
+													</script>
+													<div class="actLi_top" style="background:  url(Resources/socialactivity/<?php echo $list1[$i]['img']?>) no-repeat center; background-size: 100%">
+														<div class="blackLive"></div>
+													</div>
+													<div class="actLi_title" title="<?php echo$list1[$i]['title'] ?>"><?php echo$list1[$i]['title'] ?></div>
+													<div class="actLi_object">
+														参与对象：<?php echo $list1[$i]['content'] ?>
+													</div>
+													<div class="actLi_time">
+														活动时间：<?php echo $list1[$i]['time'] ?>
+													</div>
+												</a>
+											</li>
+								            <?php } ?>
+										<?php }else if($list1[$i]['content_type'] == '3'){ ?>
+											<!--我要投票-->
+											<li class="<?php if(count($list1) == 2){ echo 'hot_li newActBox_li_two' ;}else{echo 'hot_li newActBox_li' ;}?>">
+									<a href="<?php echo 'index.php?m=Home&c=Activity&a=vote_details&id='.$list1[$i]['id']?>">
+										<div class="actLi_top" style="background:  url(<?php echo $oss.$list1[$i]['img']?>) no-repeat center; background-size: 100%">
+										</div>
+										<div class="actLi_title" title="<?php echo $list1[$i]['title'] ?>"><?php echo $list1[$i]['title'] ?></div>
+										<div class="actLi_time">
+											投票时间：<?php echo $list1[$i]['time'] ?>
+										</div>
+										<div class="actLi_rule" title="">
+											<p>
+												投票规则：<?php echo mb_substr($list1[$i]['content'],0,20,'utf-8') ?>
+											</p>
+										</div>
+									</a>
+								</li>
+										<?php }?>
+								<?php }?>
+							</ul>
+						</div>
+				<?php }?>
+			<?php }?>
+		<div class="newActBox newActBoxGray" id="historyAct">
+			<div class="newActBox_name" id="historyName">
+				<div class="newActBox_left">历史活动</div>
+				<div class="newActBox_right" id="historyMore">
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=activity_history_more'?>" class="">更多>></a>
+				</div>
+			</div>
+			<ul class="hisory_ul" id="hisory_ul">
+				<?php foreach($history as $v){?>
+				<li class="hisory_li">
+					<div class="history_box">
+						<?php if($v['works_show_status'] == 1){?>
+							<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityWorks&id='.$v['id']?>" class="actLi_top" style="background: url(Resources/socialactivity/<?php echo $v['short_content']?>) no-repeat center; background-size: 100%; display: block;">
+							</a>
+						<?php }else{?>
+							<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$v['id']?>" class="actLi_top" style="background: url(Resources/socialactivity/<?php echo $v['short_content']?>) no-repeat center; background-size: 100%; display: block;">
+							</a>
+						<?php }?>
+						<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$v['id']?>" class="history_title" title="<?php echo $v['title']?>">
+							<?php echo $v['title']?>
+						</a>
+					</div>
+				</li>
+				<?php }?>
+			</ul>
+		</div>
+	</div>
+		<div class="newActivity_right">
+		<div class="actRightTitle">
+			专栏
+		</div>
+		<div class="actRightMain">
+			<!--循环已下-->
+			<?php foreach($column as $k=>$v){ //var_dump($column_list[$v['id']]);
+			if(!empty($column_list[$v['id']])){ ?>
+			<div class="columnBox">
+				<div class="columnBoxTop"><?php echo $v['name']?></div>
+				<ul class="columnUl">
+					<?php foreach($column_list[$v['id']] as $val){?>
+					<?php if($val['content_type'] == 3) {?>
+					<!--投票-->
+					<li class="columnLi voteLi">
+						<a href="<?php echo 'index.php?m=Home&c=Activity&a=vote_details&id='.$val['ids']?>" title="<?php echo $val['title']?>">
+							<?php echo $val['title']?>
+						</a>
+					</li>
+					<?php }elseif($val['content_type'] == 2){ ?>
+					<?php if($val['type'] == 9){?>
+					<!--资讯-->
+					<li class="columnLi infoLi">
+						<a href="<?php echo 'index.php?m=Home&c=ExpertInformation&a=winningWorksDetails&id='.$val['ids']?>" title="<?php echo $val['title']?>">
+							<?php echo $val['title']?>
+						</a>
+					</li>
+					<?php }else{?>
+					<!--资讯-->
+					<li class="columnLi infoLi">
+						<a href="<?php echo 'index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id='.$val['ids']?>" title="<?php echo $val['title']?>">
+							<?php echo $val['title']?>
+						</a>
+					</li>
+					<?php }?>
+					<?php }elseif($val['content_type'] == 1){?>
+					<!--报名-->
+					<li class="columnLi applyLi">
+						<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$val['ids']?>" title="<?php echo $val['title']?>">
+							<?php echo $val['title']?>
+						</a>
+					</li>
+					<?php }}?>
+				</ul>
+				<div class="columnMore">
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=get_column_more&id='.$v['id']?>">更多>></a>
+				</div>
+			</div>
+			<?php }}?>
+		</div>
+	</div>
+	</div>
+</div>
+<!--多行显示...-->
+<script>
+	function clamp() {
+		$(".actLi_title,.actLi_main,.actLi_rule").each(function(i){
+			var divH = $(this).height();
+			var $p = $("p", $(this)).eq(0);
+			while ($p.outerHeight() > divH) {
+				$p.text($p.text().replace(/(\s)*([a-zA-Z0-9]+|\W)(\.\.\.)?$/, "..."));
+			};
+		});
+	}
+
+	$(function(){
+		clamp()
+	})
+
+	$('.carousel-control.left, .carousel-control.right').click(function(){
+		clamp()
+	})
+</script>
+
+<!--底部剩下六个活动-->
+<script>
+    function show(id_, class_, num_) {
+        var ul = document.getElementById(id_);
+        var li = ul.getElementsByClassName(class_);
+        for (var i = 0; i < li.length; i++) {
+            li[i].index = i;
+            if (i >= num_) {
+                li[i].style.display = 'none';
+            }
+        }
+    }
+
+	if($('#hisory_ul').length != 0) {
+    	show('hisory_ul', 'hisory_li', 6);
+    }
+    if($('#preheat_ul').length != 0) {
+    	show('preheat_ul', 'preheat_li', 3);
+    }
+    if($('#hot_ul').length != 0) {
+    	show('hot_ul', 'hot_li', 3);
+    }
+</script>
+<!--底部少于六个活动或者没有活动的时候-->
+<script>
+	 function hide(num, Uul, Lli, Nname, Ttop, Rright) {
+        var ul = document.getElementById(Uul);
+        var li_length = ul.getElementsByClassName(Lli).length;
+		var name = document.getElementById(Nname);
+        var top = document.getElementById(Ttop);
+        var right = document.getElementById(Rright);
+    	if (li_length <= num && li_length > 0) {
+            right.style.visibility = 'hidden';
+			name.style.background = 'none';
+        } else if (li_length == 0) {
+            top.style.display = 'none'
+        }
+    }
+
+    if($('#hisory_ul').length != 0) {
+    	hide(6, 'hisory_ul', 'hisory_li', 'historyName', 'historyAct', 'historyMore');
+    }
+	if($('#preheat_ul').length != 0 && $('#preheatMore').length != 0) {
+		hide(3, 'preheat_ul', 'preheat_li', 'preheatName', 'preheatAct', 'preheatMore');
+	}
+	if($('#hot_ul').length != 0 && $('#hotMore').length != 0) {
+		hide(3, 'hot_ul', 'hot_li', 'hotName', 'hotAct', 'hotMore');
+	}
+    
+</script>
+
+
+<!--鼠标滑过放大-->
+<!-- <script>
+	$('.item').find('.actLi_top').hover(function(){
+		$(this).stop().animate({
+			'background-size':'150%'
+		})
+	},function(){
+		$(this).stop().animate({
+			'background-size':'100%'
+		})
+	})
+</script> -->
+
+<!--右侧一个专栏中只有五个-->
+<script>
+	$(function(){
+		var columnMore = $('.columnMore');
+		var columnul = $('.columnUl');
+		for(i=0;i<columnul.length;i++){
+			var columnli = columnul[i].children;
+			if(columnli.length<=5) {
+				columnMore[i].style.display = 'none'
+			}
+			var _this =  columnul[i].children;
+			for(j=0;j<columnli.length;j++) {
+				if(j>=5) {
+					columnli[j].style.display = 'none'
+				}
+			}
+		}
+	})
+
+</script>
+<!--点击类型就提交表单-->
+<script>
+    function submits(type_values,tip) {
+        var str = '';
+        var keyword = $('.search_text').val();
+        var time_status = $('#time_status').val();
+        if(type_values != undefined){
+            str += '&type='+type_values;
+        }
+        if(time_status != 0){
+            str += '&time_status='+time_status;
+        }
+        if(keyword != ''){
+            str += '&keyword='+keyword;
+        }
+        if(tip != undefined){
+            str += '&tip='+tip;
+        }
+        str = "index.php?m=Home&c=Activity&a=search" + str;
+        location.href = str;
+    }
+
+	$('.search_btn').click(function () {
+        submits();
+        return false;
+    })
+	$('#types').change(function () {
+		var type_values = $(this).val();
+        var tip = 1;
+        submits(type_values,tip);
+	})
+</script>
+
+<script>
+	$('.hot_li').hover(function(){
+		if($(this).find('.blackLive')) {
+			$(this).find('.blackLive').show()
+		}
+	},function(){
+		if($(this).find('.blackLive')) {
+			$(this).find('.blackLive').hide()
+		}
+	})
+</script>
+

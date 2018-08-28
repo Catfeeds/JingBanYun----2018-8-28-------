@@ -1,0 +1,671 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/bootstrap/css/bootstrap.css">
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script src="__PUBLIC__/js/jquery-2.1.1.min.js"></script>
+<script src="__PUBLIC__/bootstrap/js/bootstrap.js"></script>
+
+
+<style> 
+	ul {
+		list-style: none;
+	}
+	
+    .form_section {
+        margin-bottom: 12px;
+    }
+    html, body, * {
+        box-sizing: inherit;
+    }
+
+    .exampl{
+        content: attr(data-text);
+        text-transform: lowercase;
+        left: 1.5rem;
+        top: 11.875rem;
+        color: gray;
+        display: block;
+        font-size: 1rem;
+        line-height: 1rem;
+        height: 2rem;
+        text-align: right;
+        white-space: nowrap;
+        direction: ltr;
+        width: 1.5rem;
+    }
+	
+	.moreImg {
+		height: 1.75rem
+	}
+	
+	.infoContent {
+		border: 1px solid #333;
+	}
+	
+	.infoP {
+		margin: 0 !important;
+		margin-bottom: 5px !important;
+	}
+	
+	.infoCheckbox {
+		width: 18px;
+		height: 18px;
+		margin-right: 5px;
+	}
+	
+	.infoRole {
+		margin-bottom: 10px;
+	}
+	
+	#myTab {
+		margin: 0;
+	}
+	
+	#myTabContent {
+		background: #fff
+	}
+	
+	.listview {
+		box-sizing: border-box;
+	}
+	
+	.fs14 {
+		font-size: 14px
+	}
+	
+	.num {
+		margin: 0;
+		padding: 0;
+		margin: 10px 0 0 10px
+	}
+	
+	.tabContent {
+		background: #eee;
+	}
+	
+	.roleButton {
+		box-sizing: border-box;
+	}
+	
+	.infoRole span {
+		font-size: 16px;
+		display: inline-block;
+		margin-right: 10px;
+	}
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}" style="box-sizing:border-box;">&lt; 返回 消息列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+	<div class="example" >
+		<span class="exampl">消息接收人</span>
+		<div class="infoRole">
+			<span>教师</span>
+			<span>学生</span>
+			<span>家长</span>
+			<a href="javascript:;" class="detail">查看详细>></a>
+<!--
+			<a href="javascript:;" class="button roleButton">教师</a>
+			<a href="javascript:;" class="button roleButton">学生</a>
+			<a href="javascript:;" class="button roleButton">家长</a>
+-->
+<!--			<img src="{$oss_path}public/web_img/Icons/more_666.png" alt="" class="moreImg">-->
+		</div>
+		<div class="listview set-border padding20 tabContent" style="display: none">
+			<ul id="myTab" class="nav nav-tabs">
+				<li class="active">
+					<a href="#teacherTab" data-toggle="tab">
+						教师
+					</a>
+				</li>
+				<li>
+					<a href="#studentTab" data-toggle="tab">
+						学生
+					</a>
+				</li>
+				<li>
+					<a href="#parentTab" data-toggle="tab">
+						家长
+					</a>
+				</li>
+			</ul>
+			<div id="myTabContent" class="tab-content padding10">
+				<!--教师教师教师-->
+				<div class="tab-pane fade in active" id="teacherTab">
+					<p class="num">已选择 <span>1000</span> 人</p>
+					<div class="padding10">
+						<form action="" method="post">
+							<div class="grid condensed searchbar">
+								<div class="row cells5">
+									<div class="cell">
+										<label>姓名：</label>
+										<input type="text" class="input-control" name="" value="" placeholder="请输入姓名">
+									</div>
+									<div class="cell">
+										<label>手机：</label>
+										<input type="text" class="input-control" name="" value="" placeholder="请输入手机号">
+									</div>
+									<div class="cell">
+										<label>所在学校：</label>
+										<select id="school_id" class="input-control" name="school_id">
+											<option value="">-请选择-</option>
+											<volist name="school_result" id="school_item" empty="暂时没有学校">
+												<option  value={$school_item.id} <if condition="$school_item['id']==$school"> selected="true"</if>  >{$school_item.school_name}</option>
+											</volist>
+										</select>
+									</div>
+									<div class="cell">
+										<label>学科：</label>
+										<select id="course_id" class="input-control" name="course_id" onchange="getTextbooks()">
+											<option value="">-请选择-</option>
+											<volist name="courses" id="dataCourse">
+												<option value="{$dataCourse.id}" {$dataCourse['id']==$course_id?'selected':''}>
+													{$dataCourse.code} : {$dataCourse.course_name}
+												</option>
+											</volist>
+										</select>
+									</div>
+									<div class="cell">
+										<label>年级：</label>
+										<select id="grade_id" class="input-control" name="grade_id" onchange="getTextbooks()">
+											<option value="">-请选择-</option>
+											<volist name="grades" id="dataGrade">
+												<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+													{$dataGrade.grade}
+												</option>
+											</volist>
+										</select>
+									</div>
+									<div class="cell">
+										<label>账户状态：</label>
+										<select id="" class="input-control" name="">
+											<option value="">-请选择-</option>
+											<option value="1">未发送</option>
+											<option value="2">发送成功</option>
+											<option value="3">发送失败</option>
+											<option value="4">已撤回</option>
+											<option value="5">撤回失败</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>权限类型：</label>
+										<select id="type" class="input-control" name="type">
+											<option value="">-请选择-</option>
+											<option value="1">普通用户</option>
+											<option value="2">个人VIP</option>
+											<option value="3">团体VIP</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>到期时间：</label>
+										<input type="text" name="time_id" class="input-control time_id" id="datepicker_t" class="datepicker" placeholder="到期时间" autocomplete="off">
+									</div>
+									<div class="cell">
+										<button type="submit" class="button fs14" onclick="" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+									</div>
+								</div>
+							</div>
+						</form>
+						
+						<table id="listWrapper" class="table striped hovered border">
+							<thead>
+							<tr>
+								<th style="text-indent:15px;">教师姓名</th> 
+								<th class="text-center">性别</th> 
+								<th class="text-center">手机号</th>
+								<th class="text-center">注册时间</th> 
+								<th class="text-center">所在学校</th> 
+								<th class="text-center">权限类型</th> 
+								<th class="text-center">到期时间</th>
+								<th class="text-center">邮箱</th>
+								<th class="text-center">积分</th>
+								<th class="text-center">状态</th>
+							</tr>
+							</thead>
+							<tbody id="body">
+							<volist name="list" id="data" empty="">
+								<tr id="l_{$data.id}">
+									<td> 
+										{$data.teacher_name} 教师姓名
+									</td>
+									<td class="text-center">
+										{$data.sex} 性别
+									</td>
+									<td class="text-center">
+										手机号
+									</td>
+									<td class="text-center" title="{$data.create_at|date='Y-m-d H:i',###}">
+										{$data.create_at|date="Y-m-d H:i",###} 注册时间
+									</td>
+									<td class="text-center" title=" {$data.school_name}">
+										{$data.school_name} 所在学校
+									</td>  
+									<td class="text-center">
+										<?php if ($data['vipinfo']['is_vip'] == 1): ?>
+										<?php if ($data['vipinfo']['is_auth'] == 4): ?>
+										个人VIP
+										<?php else: ?>
+										团体VIP
+										<?php endif ?>
+										<?php else: ?>
+										普通权限
+										<?php endif ?>
+									</td>
+									<td class="text-center">
+										<?php foreach ($data['vipinfo']['vip_data'] as $kt => $vt): ?>
+											<?php if (!empty($vt['auth_end_time'])): ?>
+												<?=date('Y-m-d',$vt['auth_end_time'])?>
+											<?php endif ?>
+										<?php endforeach ?>
+									</td>
+									<td class="text-center" title="{$data.email}">
+										{$data.email} 邮箱
+									</td>
+									<td class="text-center" title="{$data.email}">
+										积分
+									</td>
+									<td class="text-center fg_lock">
+										<if condition="$data['lock'] eq 1">
+											<span class="fg-red">锁定</span>
+											<else/>
+											<span class="fg-green">正常</span>
+										</if>
+									</td>
+								</tr>
+							</volist>
+							</tbody>
+						</table>
+						<input type="hidden" value="{$role}" id="role_id" />
+						<div class="Pagination">{$page}</div>
+					</div>
+				</div>
+				<!--学生学生学生-->
+				<div class="tab-pane fade" id="studentTab">
+					<p class="num">已选择 <span>2000</span> 人</p>
+					<div class="padding10">
+						<form action="" method="post">
+							<div class="grid condensed searchbar">
+								<div class="row cells4">
+									<div class="cell">
+										<label>姓名：</label>
+										<input type="text" class="input-control" name="" value="" placeholder="请输入姓名">
+									</div>
+									<div class="cell">
+										<label>家长手机号：</label>
+										<input type="text" class="input-control" name="" value="" placeholder="请输入手机号">
+									</div>
+									<div class="cell">
+										<label>所在学校：</label>
+										<select id="school_id" class="input-control" name="school_id">
+											<option value="">-请选择-</option>
+											<volist name="school_result" id="school_item" empty="暂时没有学校">
+												<option  value={$school_item.id} <if condition="$school_item['id']==$school"> selected="true"</if>  >{$school_item.school_name}</option>
+											</volist>
+										</select>
+									</div>
+									<div class="cell">
+										<label>年级：</label>
+										<select id="grade_id" class="input-control" name="grade_id" onchange="getTextbooks()">
+											<option value="">-请选择-</option>
+											<volist name="grades" id="dataGrade">
+												<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+													{$dataGrade.grade}
+												</option>
+											</volist>
+										</select>
+									</div>
+									<div class="cell">
+										<label>权限类型：</label>
+										<select id="type" class="input-control" name="type">
+											<option value="">-请选择-</option>
+											<option value="1">普通用户</option>
+											<option value="2">个人VIP</option>
+											<option value="3">团体VIP</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>到期时间：</label>
+										<input type="text" name="time_id" class="input-control time_id" id="datepicker_s" class="datepicker" placeholder="到期时间" autocomplete="off">
+									</div>
+									<div class="cell">
+										<label>账户状态：</label>
+										<select id="" class="input-control" name="">
+											<option value="">-请选择-</option>
+											<option value="1">未发送</option>
+											<option value="2">发送成功</option>
+											<option value="3">发送失败</option>
+											<option value="4">已撤回</option>
+											<option value="5">撤回失败</option>
+										</select>
+									</div>
+									<div class="cell">
+										<button type="submit" class="button fs14" onclick="" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+									</div>
+								</div>
+							</div>
+						</form>
+						
+						<table id="listWrapper" class="table striped hovered border">
+							<thead>
+							<tr>
+								<th style="text-indent:15px;">学生姓名</th> 
+								<th class="text-center">性别</th> 
+								<th class="text-center">家长姓名</th>
+								<th class="text-center">学生编号</th> 
+								<th class="text-center">出生年月</th> 
+								<th class="text-center">所在学校</th> 
+								<th class="text-center">注册时间</th>
+								<th class="text-center">邮箱</th>
+								<th class="text-center">家长手机号</th>
+								<th class="text-center">权限类型</th>
+								<th class="text-center">到期时间</th>
+								<th class="text-center">状态</th>
+							</tr>
+							</thead>
+							<tbody id="body">
+							<volist name="list" id="data" empty="">
+								<tr id="l_{$data.id}">
+									<td> 
+										<if condition="$data['avatar'] eq NULL">
+											<div class="avatarDiv" title="{$data.student_name|mb_substr=0,1,'utf-8'}">{$data.student_name|mb_substr=0,1,"utf-8"}</div>
+											<else/>
+											<img class="list_avatar" src='<?php if(is_file($_root."Uploads/StudentAvatars/".$data['id'].".jpg"))
+											{echo $_root."Uploads/StudentAvatars/".$data['id'].".jpg";}
+											else {echo "__DEFAULT_STUDENT_HEAD_IMAGE__";} ?>' />
+										</if>
+
+										{$data.student_name}
+									</td>
+									<td class="text-center">
+										{$data.sex}
+									</td>
+									<td class="text-center" title=" {$data.parent_name} ({$data.parent_tel})">
+										<if condition="$data['parent_name'] eq NULL">
+											没有关联家长
+											<else/>
+											{$data.parent_name} ({$data.parent_tel})
+										</if>
+									</td>
+									<td class="text-center" title=" {$data.school_name}">
+										{$data.student_id}
+									</td>  
+									<td class="text-center" title=" {$data.birth_date|date="Y-m-d",###}">
+										{$data.birth_date|date="Y-m-d",###}
+									</td>
+									<td class="text-center" title=" {$data.school_name}">
+										<if condition="$data['status'] eq 2">
+											{$data.school_name}
+										<else />
+											学校审核中
+										</if>
+									</td>  
+									<td class="text-center" title="   {$data.create_at|date='Y-m-d H:i',###}">
+										{$data.create_at|date="Y-m-d H:i",###}
+									</td>
+									<td class="text-center" title="{$data.email}">
+										{$data.email}
+									</td>
+									<td class="text-center" title="{$data.parent_tel}">
+										{$data.parent_tel}
+									</td>
+									<!--<td class="text-center">1</td>-->
+									<td class="text-center">
+										<?php if ($data['vipinfo']['is_vip'] == 1): ?>
+										<?php if ($data['vipinfo']['is_auth'] == 4): ?>
+										个人VIP
+										<?php else: ?>
+										团体VIP
+										<?php endif ?>
+										<?php else: ?>
+										普通权限
+										<?php endif ?>
+									</td>
+									<td class="text-center">
+										<?php foreach ($data['vipinfo']['vip_data'] as $kt => $vt): ?>
+											<?php if (!empty($vt['auth_end_time'])): ?>
+												<?=date('Y-m-d',$vt['auth_end_time'])?>
+											<?php endif ?>
+										<?php endforeach ?>
+									</td>
+									<td class="text-center fg_lock">
+										<if condition="$data['lock'] eq 1">
+											<span class="fg-red">锁定</span>
+											<else/>
+											<span class="fg-green">正常</span>
+										</if>
+									</td>
+								</tr>
+							</volist>
+							</tbody>
+						</table>
+						<input type="hidden" value="{$role}" id="role_id" />
+						<div class="Pagination">{$page}</div>
+					</div>
+				</div>
+				<!--家长家长家长-->
+				<div class="tab-pane fade" id="parentTab">
+					<p class="num">已选择 <span>3000</span> 人</p>
+					<div class="padding10">
+						<form action="" method="post">
+							<div class="grid condensed searchbar">
+								<div class="row cells4">
+									<div class="cell">
+										<label>姓名：</label>
+										<input type="text" class="input-control" name="" value="" placeholder="请输入姓名">
+									</div>
+									<div class="cell">
+										<label>手机：</label>
+										<input type="text" class="input-control" name="" value="" placeholder="请输入手机号">
+									</div>
+									<div class="cell">
+										<label>账户状态：</label>
+										<select id="" class="input-control" name="">
+											<option value="">-请选择-</option>
+											<option value="1">未发送</option>
+											<option value="2">发送成功</option>
+											<option value="3">发送失败</option>
+											<option value="4">已撤回</option>
+											<option value="5">撤回失败</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>权限类型：</label>
+										<select id="type" class="input-control" name="type">
+											<option value="">-请选择-</option>
+											<option value="1">普通用户</option>
+											<option value="2">个人VIP</option>
+											<option value="3">团体VIP</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>到期时间：</label>
+										<input type="text" name="time_id" class="input-control time_id" id="datepicker_p" class="datepicker" placeholder="到期时间" autocomplete="off">
+									</div>
+									<div class="cell">
+										<button type="submit" class="button fs14" onclick="" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+									</div>
+								</div>
+							</div>
+						</form>
+						
+						<table id="listWrapper" class="table striped hovered border">
+							<thead>
+								<tr>
+									<th style="text-indent:15px;">姓名</th>
+									<th class="text-center">性别</th>
+									<th class="text-center">学生姓名</th>
+									<th class="text-center">手机号</th>
+									<th class="text-center">注册时间</th>
+									<th class="text-center">邮箱</th>
+									<th class="text-center">权限类型</th>
+									<th class="text-center">到期时间</th>
+									<th class="text-center">状态</th>
+								</tr>
+							</thead>
+							<tbody id="body">
+							<volist name="list" id="data" empty="">
+								<tr id="l_{$data.id}">
+									<td>
+										<if condition="$data['avatar'] eq NULL">
+											<div class="avatarDiv">{$data.parent_name|mb_substr=0,1,"utf-8"}</div>
+											<else/>
+											<img class="list_avatar" src='<?php if(is_file($_root."Uploads/StudentAvatars/".$data[' id '].".jpg"))
+										{echo $_root."Uploads/StudentAvatars/".$data['id '].".jpg";}
+										else {echo "__DEFAULT_PARENT_HEAD_IMAGE__";} ?>' />
+										</if>
+
+										{$data.parent_name}
+									</td>
+									<td class="text-center" title="{$data.sex}">
+										{$data.sex}
+									</td>
+									<td class="text-center" title=" {$data.student_name}">
+										{$data.student_name}
+									</td>
+									<td class="text-center" title=" {$data.telephone}">
+										{$data.telephone}
+									</td>
+									<td class="text-center" title=" {$data.create_at|date="Y-m-d H:i",###}">
+										{$data.create_at|date="Y-m-d H:i",###}
+									</td>
+									<td class="text-center" title="{$data.email}">
+										{$data.email}
+									</td>
+									<!--<td class="text-center">1</td>-->
+									<td class="text-center">
+										<?php if ($data['vipinfo']['is_vip'] == 1): ?>
+											<?php if ($data['vipinfo']['is_auth'] == 4): ?>
+												个人VIP
+											<?php else: ?>
+												团体VIP
+											<?php endif ?>
+											<?php else: ?>
+											普通权限
+										<?php endif ?>
+
+									</td>
+									<td class="text-center">
+										<?php foreach ($data['vipinfo']['vip_data'] as $kt => $vt): ?>
+											<?php if (!empty($vt['auth_end_time'])): ?>
+												<?=date('Y-m-d',$vt['auth_end_time'])?>
+											<?php endif ?>
+										<?php endforeach ?>
+									</td>
+									<td class="text-center fg_status">
+										<if condition="$data['lock'] eq 1">
+											<span class="fg-red">锁定</span>
+											<else/>
+											<span class="fg-green">正常</span>
+										</if>
+									</td>
+								</tr>
+							</volist>
+							</tbody>
+						</table>
+						<input type="hidden" value="{$role}" id="role_id" />
+						<div class="Pagination">{$page}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br> 
+	<div class="example" >
+		<span class="exampl">消息内容</span>
+		<div class="listview set-border padding10">
+			消息内容消息内容
+		</div>
+	</div>
+	<br>
+	<div class="example" >
+		<span class="exampl">消息接收方式</span>
+		<p class="infoP"><input type="checkbox" class="infoCheckbox" checked disabled>APP推送</label></p>
+		<p class="infoP"><input type="checkbox" class="infoCheckbox" checked disabled>个人中心--我的消息</label></p>
+	</div>
+</div>
+
+
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<script>
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+</script>
+
+
+<!--------------日历----------------->
+<script>
+	$(function () {
+		$("#datepicker_t,#datepicker_s,#datepicker_p").datepicker({
+			showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+//			maxDate: '0',
+			yearRange: "1950:2050"
+		});
+	});
+</script>
+<script>
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+</script>
+
+<script>
+//	$('.roleButton').click(function(){
+//		$('.tabContent').show();
+//		$('.moreImg').attr('src','{$oss_path}public/web_img/Icons/more_unfold_red.png')
+//	})
+	
+	$('.detail').click(function(){
+		if($('.tabContent').is(':hidden')){
+			$('.tabContent').show();
+			$('.detail').html('收起')
+		} else {
+			$('.tabContent').hide();
+			$('.detail').html('查看详细>>')
+		}
+		
+	})
+</script>

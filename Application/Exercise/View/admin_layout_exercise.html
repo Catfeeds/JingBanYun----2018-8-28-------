@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{$subnav}:{$nav} :: 京版云教育平台</title>
+    <link href="__PUBLIC__/adminExercise/css/common.css?ver=5" rel="stylesheet">
+    <link rel="stylesheet" href="__PUBLIC__/adminExercise/css/loading.css">
+    <link rel="stylesheet" href="__PUBLIC__/adminExercise/css/render.css" >
+    <script src="__PUBLIC__/js/jquery-1.8.3.js"></script>
+    <script>
+        //为所有AJAX加入TOKEN参数
+        var ajax = $.ajax;
+        //  修改ajax方法的默认实现
+        $.ajax = function(options) {
+            if(options.data != undefined)
+            if(options.data.ids != undefined)
+            {
+                var statusStr = '';
+                function getStatusString(ids,str)
+                {
+                    var idArray = (ids+'').split(',');
+                    var statusArray = [];
+                    if(str==undefined)
+                    {
+                        if( undefined == $('#exercise_status_'+idArray[0]).val())
+                            str = "paper";
+                        else
+                            str = "exercise";
+                    }
+                    for(var i=0;i<idArray.length;i++) {
+                        statusArray.push($('#'+str+'_status_' + idArray[i]).val())
+                    }
+                    if(str == "paper")
+                        return '{\"paper\":'+statusArray.join(',')+"}"
+                    else
+                        return '{\"exercise\":'+statusArray.join(',')+"}"
+                }
+                if(typeof(cat) != "undefined") //发布资源页
+                {
+                   if(cat.value == 2) //试卷
+                       statusStr = getStatusString(options.data.ids,"paper");
+                    else
+                       statusStr = getStatusString(options.data.ids,"exercise");
+                }
+                else
+                {
+                    statusStr = getStatusString(options.data.ids);
+                }
+                options.data = $.extend(options.data,{"statusList":statusStr});
+            }
+            return ajax(options);
+        }
+    </script>
+    <script type="text/javascript" src="__PUBLIC__/js/layer/layer.js"></script>
+    <style>
+        .inputTime {
+            background: url("{$oss_path}public/web_img/adminExercise/timeInput.png") no-repeat 106px center;
+        }
+    </style>
+</head>
+
+<body>
+    <?php if ( $isPaper != 1 ): ?>
+        <div class="titleLogo">
+            <div class="box1200">
+                <span class="title">习题录入系统</span>
+            </div>
+        </div>
+
+        <div class="topNav">
+            <div class="box1200">
+                <div class="navLeft">
+                    <a href="javascript:;" class="indexBtn">系统菜单</a>
+                    <div class="navDiv">
+                        <a href="index.php?m=Exercise&c=Index&a=index" class="navBtn">首页</a>
+                        <?php if(in_array('CreateExercise/exerciseEntering',session('exercises_permissions'))){ ?>
+                        <a href="index.php?m=Exercise&c=CreateExercise&a=exerciseEntering#eyJjYXQiOiIxIiwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" class="navBtn">试题录入管理</a>
+                        <?php }?>
+                        <?php if(in_array('CreateExercise/testEntering',session('exercises_permissions'))){ ?>
+                        <a href="index.php?m=Exercise&c=CreateExercise&a=testEntering#eyJjYXQiOiIxIiwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" class="navBtn">试卷录入管理</a>
+                        <?php }?>
+                        <?php if(in_array('ExerciseIndexing/exerciseIndexingMgmt',session('exercises_permissions'))){ ?>
+                        <a href="{:U('ExerciseIndexing/exerciseIndexingMgmt')}#eyJzdGFydEluZGV4IjowLCJwYWdlU2l6ZSI6MTB9" class="navBtn">待标引试题管理</a>
+                        <?php }?>
+                        <?php if(in_array('KnowledgeIndexing/knowledgeMgmt',session('exercises_permissions'))){ ?>
+                        <a href="{:U('KnowledgeIndexing/knowledgeMgmt')}#eyJzdGFydEluZGV4IjowLCJwYWdlU2l6ZSI6MTB9" class="navBtn">知识标引管理</a>
+                        <?php }?>
+                        <?php if(in_array('ExerciseCheck/exerciseCheckMgmt',session('exercises_permissions'))){ ?>
+                        <a href="{:U('ExerciseCheck/exerciseCheckMgmt')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" class="navBtn">试题审核管理</a>
+                        <?php }?>
+                        <?php if(in_array('ExerciseMgmt/exerciseMgmt',session('exercises_permissions'))){ ?>
+                        <a href="{:U('ExerciseMgmt/exerciseMgmt')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" class="navBtn">试题管理</a>
+                        <?php }?>
+                        <?php if(in_array('TestMgmt/testMgmt',session('exercises_permissions'))){ ?>
+                        <a href="{:U('testMgmt/testMgmt')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" class="navBtn">试卷管理</a>
+                        <?php }?>
+                        <?php if(in_array('PublishPlatform/platformMgmt',session('exercises_permissions'))){ ?>
+                        <a href="{:U('PublishPlatform/platformMgmt')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" class="navBtn">发布平台管理</a>
+                        <?php }?>
+                        <?php if(in_array('KnowledgeBaseManagement/subjectManagement',session('exercises_permissions'))){ ?>
+                        <a href="{:U('KnowledgeBaseManagement/subjectManagement')}" class="navBtn">知识库学科管理</a>
+                        <?php }?>
+                        <?php if(in_array('KnowledgeBaseManagement/fasciculeManagement',session('exercises_permissions'))){ ?>
+                        <a href="{:U('KnowledgeBaseManagement/fasciculeManagement')}" class="navBtn">知识库分册管理</a>
+                        <?php }?>
+                        <?php if(in_array('KnowledgeBaseManagement/versionManagement',session('exercises_permissions'))){ ?>
+                        <a href="{:U('KnowledgeBaseManagement/versionManagement')}" class="navBtn">知识库版本管理</a>
+                        <?php }?>
+                        <?php if(in_array('CurriculumTree/curriculumTreeList',session('exercises_permissions'))){ ?>
+                        <a href="{:U('CurriculumTree/curriculumTreeList')}" class="navBtn">课标知识树管理</a>
+                        <?php }?>
+                        <?php if(in_array('TextbookTree/textbookList',session('exercises_permissions'))){ ?>
+                        <a href="{:U('TextbookTree/textbookList')}&vid=1" class="navBtn">教材知识树管理</a>
+                        <?php }?>
+                        <?php if(in_array('QueryStatistics/testQuestions',session('exercises_permissions'))){ ?>
+                        <a href="{:U('QueryStatistics/testQuestions')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" class="navBtn">查询与统计</a>
+                        <?php }?>
+                       <?php if(in_array('UserManagement/userManagement',session('exercises_permissions'))){ ?>
+                        <a href="{:U('UserManagement/userManagement')}" class="navBtn">用户管理</a>
+                        <?php }?>
+
+                        <?php if(in_array('QueryStatistics/testQuestions',session('exercises_permissions'))){ ?>
+                        <!--<a href="{:U('Multimedia/homeworkQuery')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" class="navBtn">多媒体作业查询与统计</a>-->
+                        <?php }?>
+                        <?php if(in_array('Multimedia/homeworkEntering',session('exercises_permissions'))){ ?>
+                        <a href="{:U('Multimedia/homeworkEntering')}" class="navBtn">多媒体作业录入管理</a>
+                        <?php }?>
+                        <?php if(in_array('Multimedia/homeworkCheckMgmt',session('exercises_permissions'))){ ?>
+                        <a href="{:U('Multimedia/homeworkCheckMgmt')}" class="navBtn">多媒体作业审核管理</a>
+                        <?php }?>
+                    </div>
+                </div>
+                <div class="navName">
+                    <div class="parentName"><a href="{$parentHref}" class="">{$parent}</a></div>
+                    <div class="ownName">
+                        <a href="{$parentHref}" class="">{$parent}</a>
+                        <a href="{$parentTwoHref}" class="">{$parentTwo}</a>
+                        {$own}
+                    </div>
+                </div>
+                <div class="navRight">
+                    <span class="adminName mr10">{:session('admin.role_name')}</span>
+                    <span class="adminName mr10">{:session('admin.user_name')}</span>
+                    <a href="{:U('Login/logout')}" class="fg-white3 exitBtn">退出</a>
+                </div>
+                <div class="clearBoth">
+
+                </div>
+            </div>
+        </div>
+    <?php endif ?>
+    <script>
+
+        var lastHash =  '';
+        var isBrowser = false;
+        function refreshPage() {
+            if (window.location.href.indexOf('#') != -1 && lastHash != window.location.href.split('#')[1]) {
+                lastHash = window.location.href.split('#')[1];
+                parameters = JSON.parse(base64decode(lastHash));
+                $('.borderBottom').children('button').removeClass('active');
+                $('.borderBottom').children('button').eq(parseInt(parameters.cat) - 1).addClass('active');
+                isBrowser = true;
+                oTable.fnPageChange(parameters.startIndex / parameters.pageSize);
+                isBrowser = false;
+                delete parameters['startIndex'];
+                delete parameters['pageSize'];
+                //oTable.api().draw(false);
+            }
+        }
+        window.onhashchange = refreshPage;
+        if (!!document.getBoxObjectFor || window.mozInnerScreenX != null) {
+            HTMLElement.prototype.__defineSetter__("outerText", function(sText) {
+                var parsedText = document.createTextNode(sText);
+                this.parentNode.replaceChild(parsedText, this);
+                return parsedText;
+            });
+            HTMLElement.prototype.__defineGetter__("outerText", function() {
+                var r = this.ownerDocument.createRange();
+                r.selectNodeContents(this);
+                return r.toString();
+            });
+        }
+    </script>
+    <div class="page-content">
+        <div class="flex-grid no-responsive-future">
+            <div class="cell auto-size padding20 bg-white" id="cell-content">
+            	{__CONTENT__}
+            </div>
+        </div>
+    </div>
+
+    <script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+    <script src="__PUBLIC__/adminExercise/js/exerciseNotify.js?v=1" type="text/javascript"></script>
+    <script>
+    	$(function(){
+    		var boxHeight = $(window).height() - 180;
+    		$('.boxOutter').css('min-height',boxHeight)
+            // $('.navDiv').click(function(){$('.navDiv').hide();});
+            // $(".navDiv").mouseleave(function(){
+            //     $(".navDiv").css("display","");
+            // });
+            $('#form input,'+'#form select').each(function(i,n){
+                var name = $(n).attr('name');
+                if(parameters[name] != '' && parameters[name] != undefined)
+                    $(n).val(parameters[name])
+            })
+    	})
+
+        $('.navLeft').click(function(){
+            if($(".navDiv").is(":hidden")) {
+                $('.indexBtn').addClass('active');
+                $(".navDiv").slideDown();
+            } else {
+                $(".navDiv").slideUp("normal",function(){
+                    $('.indexBtn').removeClass('active');
+                });
+            }
+        })
+
+        $("body").bind("click",function(e){
+            if($(e.target).closest(".navLeft").length == 0){
+                if(!$(".navDiv").is(":hidden")){
+                    $(".navDiv").slideUp("normal",function(){
+                        $('.indexBtn').removeClass('active');
+                    });
+                }
+            }
+        });
+
+        $('.inputTime').click(function(){
+            if(!$(".navDiv").is(":hidden")){
+                $(".navDiv").slideUp("normal",function(){
+                    $('.indexBtn').removeClass('active');
+                });
+            }
+        })
+
+
+    </script>
+</body>
+</html>

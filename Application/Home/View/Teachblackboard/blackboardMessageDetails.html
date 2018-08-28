@@ -1,0 +1,66 @@
+<layout name="teacher_layout_3"/>
+<link href="__PUBLIC__/css/blackboard.css" type="text/css" rel="stylesheet">
+
+<style>
+	#contentWrapper {
+		padding-top: 0;
+		min-height: initial !important;
+		  height: initial !important;
+	}
+
+	.list_avatar {
+		width: 140px;
+		height: 140px;
+		border: 1px solid #eee;
+	}
+
+	.msgBottom {
+		width: 100%;
+		height: 50px;
+		background: url({$oss_path}public/web_img/Blackboard/msgBottom.png) no-repeat left center;
+		background-size: cover;
+		position: absolute;
+		left: 0;
+	
+	}
+</style>
+
+<script>
+	$(function(){
+		var newHeight = $(window).height()-300;
+		$('.messageRight').height(newHeight)
+//		$('.messageRight').minHeight(newHeight);
+		var conHeight = $('.msgContent').height();
+		if(conHeight>=newHeight) {
+			$('.msgBottom').css('position','static')
+		} else {
+			$('.msgBottom').css('position','absolute')
+		}
+	})
+</script>
+
+<div class="main_opr">
+	<a href="javascript:;" title="" class="btn btn-main-opr btn-main-opr-active" title="详情">详情</a>
+</div>
+
+<div>
+    <a href="javascript:window.history.go(-1)" title="返回 消息列表" class="btn btnReturn3">返回</a>
+</div>
+
+<div class="messageMain">
+	<div class="messageLeft left">
+		<p class="mb5">观看数&nbsp;{$read_person_number}人</p>
+		<p class="fs16 mb5">发布班级：</p>
+
+		<?php foreach ($data['cgname'] as $key => $value): ?>
+			<p class="classGrade"><?=$value?></p>
+		<?php endforeach ?>
+
+		<p class="mt5">{$data.create_at|date="Y-m-d H:i",###}发布</p>
+	</div>
+	<div class="messageRight">
+		<h3>{$data.message_title}</h3>
+		<div class="msgContent">{$data.message}</div>
+		<div class="msgBottom"></div>
+	</div>
+</div>

@@ -1,0 +1,537 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+
+	.unPreviewOutter {
+		display: block !important;
+	}
+
+	.previewOutter {
+		display: none !important;
+	}
+</style>
+
+<div class="main_opr">
+    <a href="{:U('TeacherHomework/homeworkList')}" title="作业列表" class="btn btn-main-opr">作业列表</a>
+    <a href="{:U('TeacherHomework/publishHomework')}" title="布置作业" class="btn btn-main-opr">布置作业</a>
+    <a href="javascript:;" title="我的收藏" class="btn btn-main-opr btn-main-opr-active">我的收藏</a>
+    <a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+    <a href="{:U('TeacherHomework/testPaperList')}" title="试卷库" class="btn btn-main-opr">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="p30">
+		<div class="tileFilterOutter">
+			<div class="tileFilterBox">
+				<div class="tileFilterTitle">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：</div>
+				<div class="tileFilterMain">
+					<span class="tileFilterOne"  :typeId="cData.id" v-for="(cData, cindex) in getCourseList" :class="{active:cindex==0}" :courseId="cData.id" @click=tileFilter($event)>{{ cData.course_name }}</span>
+
+				</div>
+			</div>
+		</div>
+		<include file="./Application/Home/View/TeacherHomework/exerciseOutter.html"/>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/store.js"></script>
+<script>
+    var userId = "{:session('teacher.id')}";
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+			url: '',
+            exerciseData:[],
+            voiceData:[],
+            exerciseNumLength:0,
+            exerciseNumScore:0,
+            selectExerciseGroupList:{},
+			getCourseList:[],
+			getCourseType:[],
+            CourseTypeUrl:"/index.php/ApiInterface/Version1_3/TeacherHomework/getMyExerciseCollectionCourseGroup",
+            userId:0,
+			getListUrl:"/index.php/ApiInterface/Version1_3/TeacherHomework/getMyExerciseCollectionList",
+
+            selectExerciseList:[],
+            selectExerciseListMap:{},
+            exerciseScore:0,
+            topicType:0,
+			whereCourseId:0,
+
+            exerciseCollectUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/IWantToCollect',
+            iscancel: '',
+            exerciseId: '',
+            workData:{},
+            errorContent:"",
+            courseId:0,
+            pageIndex: 1, 
+            pageSize: 20,
+            scrollAllow: false
+		},
+		created: function () {
+		    this.userId = userId;
+			this.getCourseTypeList();
+            //初始化缓存
+            if(store.get(this.userId+"selectExerciseList")!= '' && store.get(this.userId+"selectExerciseList") != undefined) {
+                this.selectExerciseList = store.get(this.userId+"selectExerciseList");
+            }
+
+            if(store.get(this.userId+"selectExerciseGroupList")!= '' && store.get(this.userId+"selectExerciseGroupList") != undefined) {
+                this.selectExerciseGroupList = store.get(this.userId+"selectExerciseGroupList");
+            }
+
+            console.log(store.get(this.userId+"exerciseNumLength"));
+
+            if(store.get(this.userId+"exerciseNumLength")!= '' && store.get(this.userId+"exerciseNumLength") != undefined) {
+                this.exerciseNumLength = store.get(this.userId+"exerciseNumLength");
+            }
+
+            if(store.get(this.userId+"exerciseNumScore")!= '' && store.get(this.userId+"exerciseNumScore") != undefined) {
+                this.exerciseNumScore = store.get(this.userId+"exerciseNumScore");
+            }
+
+            if(store.get(this.userId+"selectExerciseListMap")!= '' && store.get(this.userId+"selectExerciseListMap") != undefined) {
+                this.selectExerciseListMap = store.get(this.userId+"selectExerciseListMap");
+            }
+
+            if(store.get(this.userId+"selectcourseId")!= '' && store.get(this.userId+"selectcourseId") != undefined) {
+                console.log("测试"+store.get(this.userId+"selectcourseId"));
+				this.courseId = store.get(this.userId+"selectcourseId");
+			}
+
+            // 右侧的布置习题框
+            this.$nextTick(function(){
+                this.changeRightBox();
+            })
+		},
+		methods: {
+
+            //纠错
+            errorCorrection:function(){
+                this.errorExerciseId = $(event.target).attr("exerciseId");
+            },
+
+            //发送纠错
+            sendErrorCorrection:function(){
+                var id_array=new Array();
+                $('input[name="checkbox"]:checked').each(function(){
+                    id_array.push($(this).val());//向数组中添加元素
+                });
+
+                var flagt = id_array.join(",");
+                 this.errorContent = $.trim($('.errorRecoveryFixed').find('.textareaCommon').val());
+
+                if(flagt=="") {
+                    $('.homeworkFixedError').show().text('* 请选择错误模块');
+                    return;
+                }
+
+                if (this.errorContent=="") {
+                    $('.homeworkFixedError').show().text('* 请输入您的错误描述');
+                    return;
+                }
+
+                this.$http.post("/index.php?m=Home&c=TeacherHomework&a=errorCorrection", {
+                    exerciseId:this.errorExerciseId,
+                    userId:this.userId,
+                    role:2,
+                    content:this.errorContent,
+                    flag_type:flagt
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        $('.homeworkBlack, .errorRecoveryFixed').hide();
+                        $.NotifyBox.NotifyPromptOne('提示', '纠错成功,感谢您！', '确定');
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+			// 筛选
+			tileFilter: function(event){
+				if(!$(event.target).hasClass('active')) {
+					$(event.target).addClass('active').siblings().removeClass('active')
+				}
+                // 查看解析框隐藏
+                $('.showAnalysis ').removeClass('active').text('查看解析').siblings('.analysisOutter').stop(false,true).slideUp();
+                
+                this.whereCourseId = $(event.target).attr('typeId');
+                this.getList(this.whereCourseId);
+			},
+            // 获取题型
+            getCourseTypeList: function(){
+                this.$http.post(this.CourseTypeUrl, {
+                    userId : this.userId,
+					role:2,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.getCourseList = response.data.data;
+                        if (this.getCourseList[0].id!="") {
+                            this.getList(this.getCourseList[0].id);
+                            this.whereCourseId = this.getCourseList[0].id
+						}
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+			//获取题型
+            getList: function( id ){
+                this.pageIndex = 1;
+                this.scrollAllow = true;
+
+                this.$http.post(this.getListUrl, {
+                    userId : this.userId,
+                    role:2,
+                    courseId:id,
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.exerciseData = response.data.data;
+
+                        this.scrollAllow = true;
+                        this.scroll();
+
+                        if(response.data.data.length < this.pageSize) {
+                            this.scrollAllow = false
+                        }
+
+                        var imgArr = [];
+                        for( var i = 0; i < this.exerciseData.length; i++) {
+                            if(this.exerciseData[i].eid != null) {
+                                // shoucang
+                                imgArr.push('0')
+                            } else {
+                                imgArr.push('1')
+                            }
+                        }
+
+                        this.$nextTick(function(){
+                            for( var i = 0; i < imgArr.length; i++) {
+                                if(imgArr[i]=='0') {
+                                    $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/shoucang.png').addClass('active');
+                                } else {
+                                    $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/2shoucang.png').removeClass('active');
+                                }
+                            }
+                        })
+
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            selectExercise : function(event){
+                //selectExerciseList
+                //selectExerciseGroupList
+                var eventTarget = $(event.target);
+                var istrue = $(event.target).is(':checked');
+                var exerciseId = $(event.target).attr('exerciseId');
+                var topicType = $(event.target).attr('topicType');
+                var topic_type_name = $(event.target).attr('topic_type_name');
+                var exerciseScore = $(event.target).attr('exerciseScore');
+                exerciseScore = parseInt(exerciseScore);
+
+                var exercisecourseid = $(event.target).attr('exercisecourseid');
+
+
+                if (istrue == true) { //选中
+
+                    if (this.courseId!= exercisecourseid && this.courseId!=0 && this.selectExerciseList.length>0) {
+                        var that = this;
+
+                        $.NotifyBox.NotifyPromptTwoCtNc('提示', '还有试题未布置，确认更换学科吗？', '确定', '取消', function(){
+
+							store.set(that.userId+"selectExerciseList",[]);
+							store.set(that.userId+"selectExerciseGroupList",{});
+							store.set(that.userId+"exerciseNumLength",0);
+							store.set(that.userId+"exerciseNumScore",0);
+							store.set(that.userId+"selectExerciseListMap",{});
+
+                            that.selectExerciseList=[];
+                            that.selectExerciseGroupList={};
+                            that.exerciseNumLength=0;
+                            that.exerciseNumScore=0;
+                            that.selectExerciseListMap={};
+                            that.courseId = exercisecourseid;
+                            console.log(that.userId+"selectcourseId");
+                            store.set(that.userId+"selectcourseId",that.courseId);
+
+                            that.addExerciseList(exerciseId);
+                            that.selectExerciseListMap[exerciseId] = that.modelId;
+                            //判断key是否存在
+                            if(that.selectExerciseGroupList[topicType] == undefined) {
+                                var map = {}
+                                map["typename"] = topic_type_name;
+                                map["num"] = 1;
+                                map["score"] = exerciseScore;
+                                that.selectExerciseGroupList[topicType] = map;
+                            } else {
+                                that.selectExerciseGroupList[topicType]["num"] += 1;
+                                that.selectExerciseGroupList[topicType]["score"] += parseInt(exerciseScore);
+                            }
+
+                            console.log(that.selectExerciseList);
+                            console.log(that.selectExerciseGroupList);
+
+                            store.set(that.userId+"selectExerciseList",that.selectExerciseList);
+                            store.set(that.userId+"selectExerciseGroupList",that.selectExerciseGroupList);
+                            store.set(that.userId+"selectExerciseListMap",that.selectExerciseListMap);
+
+                            that.exerciseNumScore += exerciseScore;
+
+                            that.exerciseNumLength = that.selectExerciseList.length;
+
+                            console.log(that.exerciseNumLength);
+                            console.log(that.exerciseNumScore);
+                            store.set(that.userId+"exerciseNumLength",that.exerciseNumLength);
+                            store.set(that.userId+"exerciseNumScore",that.exerciseNumScore);
+
+                        },function(){
+                            eventTarget.click();
+                        })
+                    } else {
+                        this.courseId = exercisecourseid;
+                        console.log(this.userId+"selectcourseId");
+                        store.set(this.userId+"selectcourseId",this.courseId);
+
+                        this.addExerciseList(exerciseId);
+                        this.selectExerciseListMap[exerciseId] = this.modelId;
+                        //判断key是否存在
+                        if(this.selectExerciseGroupList[topicType] == undefined) {
+                            var map = {}
+                            map["typename"] = topic_type_name;
+                            map["num"] = 1;
+                            map["score"] = exerciseScore;
+                            this.selectExerciseGroupList[topicType] = map;
+                        } else {
+                            this.selectExerciseGroupList[topicType]["num"] += 1;
+                            this.selectExerciseGroupList[topicType]["score"] += parseInt(exerciseScore);
+                        }
+
+                        console.log(this.selectExerciseList);
+                        console.log(this.selectExerciseGroupList);
+
+                        store.set(this.userId+"selectExerciseList",this.selectExerciseList);
+                        store.set(this.userId+"selectExerciseGroupList",this.selectExerciseGroupList);
+                        store.set(this.userId+"selectExerciseListMap",this.selectExerciseListMap);
+
+                        this.exerciseNumScore += exerciseScore;
+                        this.exerciseNumLength = this.selectExerciseList.length;
+
+                        console.log(this.exerciseNumLength);
+                        console.log(this.exerciseNumScore);
+                        store.set(this.userId+"exerciseNumLength",this.exerciseNumLength);
+                        store.set(this.userId+"exerciseNumScore",this.exerciseNumScore);
+
+					}
+
+                } else { //取消
+                    this.selectExerciseList.removeByValue(exerciseId);
+                    delete this.selectExerciseListMap[exerciseId]
+                    //删除key
+                    if (this.selectExerciseGroupList[topicType]["num"] ==1) { //就一个习题的时候
+                        delete this.selectExerciseGroupList[topicType];
+                    } else {
+                        this.selectExerciseGroupList[topicType]["num"] -= 1;
+                        this.selectExerciseGroupList[topicType]["score"] -= parseInt(exerciseScore);
+                    }
+
+                    store.set(this.userId+"selectExerciseList",this.selectExerciseList);
+                    store.set(this.userId+"selectExerciseGroupList",this.selectExerciseGroupList);
+                    store.set(this.userId+"selectExerciseListMap",this.selectExerciseListMap);
+                    this.exerciseNumScore -= exerciseScore;
+                }
+
+                this.exerciseNumLength = this.selectExerciseList.length;
+
+                console.log(this.exerciseNumLength);
+                console.log(this.exerciseNumScore);
+                store.set(this.userId+"exerciseNumLength",this.exerciseNumLength);
+                store.set(this.userId+"exerciseNumScore",this.exerciseNumScore);
+
+                this.$nextTick(function(){
+                    this.changeRightBox()
+                })
+                //store.clear();
+            },
+            addExerciseList : function(exerciseId){
+                console.log(this.selectExerciseList);
+                if(! (this.selectExerciseList.indexOf(exerciseId)>-1) ) {
+                    this.selectExerciseList.push(exerciseId);
+                }
+            },
+            //收藏图片
+            favorExercise: function(event){
+                var that = $(event.target);
+                if(that.hasClass('active')) {
+                    this.iscancel = 1;
+                    that.removeClass('active').attr('src','__PUBLIC__/img/resource/2shoucang.png');
+                } else {
+                    this.iscancel = 2;
+                	that.addClass('active').attr('src','__PUBLIC__/img/resource/shoucang.png');
+                }
+
+                this.exerciseId = that.parents('.exerciseBox').attr('id');
+
+                this.$http.post(this.exerciseCollectUrl, {
+                    iscancel : this.iscancel,
+                    exercise_id : this.exerciseId,
+                    userId:this.userId,
+                    role:2,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        console.log('成功')
+						//this.getList();
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            // 右侧的固定框
+            changeRightBox : function(){
+                var typeLength = $('.chooseBox').length;
+                var newHeight = 276 + ($('.chooseBox').length - 3) * 32;
+                var winHeight = $(window).height();
+
+                if(newHeight >= winHeight ) {
+                    $('.publishBoxFixed').height(winHeight - 100);
+                    $('.publishBoxFixed .chooseOutter').css('overflow-y', 'scroll')
+                } else if(newHeight < 276 ) {
+                    $('.publishBoxFixed').height(276);
+                } else {
+                    $('.publishBoxFixed').height(newHeight);
+                }
+            },
+            // 播放音频
+            play: function(e){
+                var that = $(e.currentTarget);
+                var player = that.parent('.wordMain').siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if (player.paused){
+                    // 其余音频停止播放
+                    $('audio').trigger('pause');
+                    // 其余去掉背景颜色
+                    $('.wordMain').removeClass('active');
+                    // 所有音频图标重置
+                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                    that.parent('.wordMain').siblings('.audioHide').attr('src', newUrl);
+                    player.play();
+                    that.parent('.wordMain').addClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoYellow36×30.gif');
+                    player.loop = false;
+                    player.addEventListener('ended', function () {
+                        that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                    }, false);
+                } else {
+                    player.pause();//暂停
+                    that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                }
+            },
+            scroll:function(){
+                var that = this
+                $(window).scroll(function () {
+                    //已经滚动到上面的页面高度
+                    var scrollTop = $(this).scrollTop();
+                    //页面高度
+                    var scrollHeight = $(document).height();
+                    //浏览器窗口高度
+                    var windowHeight = $(this).height();
+
+                    //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+                    if (scrollTop + windowHeight == scrollHeight) {
+                        if(that.scrollAllow == true) {
+                            $('.downLoading').show();
+                            that.pageIndex++;
+
+                            console.log(that.pageIndex)
+                            that.$http.post(that.getListUrl, {
+                                userId : that.userId,
+                                role:2,
+                                courseId: that.whereCourseId,
+                                pageIndex: that.pageIndex,
+                                pageSize: that.pageSize
+                            }, {
+                                emulateJSON: 'application/x-www-form-urlencoded'
+                            }).then(function (response) {
+                                if(response.status == '200'){
+                                    for(var a=0;a<response.data.data.length;a++){
+                                        that.exerciseData.push(response.data.data[a]);
+                                    }
+
+                                    $('.downLoading').hide();
+
+                                    if(response.data.data == '') {
+                                        that.scrollAllow = false
+                                    }
+
+                                    var imgArr = [];
+                                    for( var i = 0; i < that.exerciseData.length; i++) {
+                                        if(that.exerciseData[i].eid != null) {
+                                            // shoucang
+                                            imgArr.push('0')
+                                        } else {
+                                            imgArr.push('1')
+                                        }
+                                    }
+
+                                    that.$nextTick(function(){
+                                        for( var i = 0; i < imgArr.length; i++) {
+                                            if(imgArr[i]=='0') {
+                                                $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/shoucang.png').addClass('active');
+                                            } else {
+                                                $('.exerciseBox').eq(i).find('.favorImg ').attr('src','__PUBLIC__/img/resource/2shoucang.png').removeClass('active');
+                                            }
+                                        }
+                                    })
+
+                                } else {
+                                    console.log('错误1')
+                                }
+                            }, function (response) {
+                                console.log('错误2')
+                            })
+                        }
+                    }
+                });
+            }
+		}
+	})
+
+    Array.prototype.removeByValue = function(id) {
+        var id = parseInt( id );
+        for(var i=0; i<this.length; i++) {
+            if(this[i] == id) {
+                this.splice(i, 1);
+                break;
+            }
+        }
+    }
+</script>

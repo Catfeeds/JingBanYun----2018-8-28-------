@@ -1,0 +1,313 @@
+<layout name="admin_layout_back_iframe"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<form id='form_submit' action="/index.php/Admin/School/school_iframe_class" method="get">
+	<input type="hidden" value="{$school_id}" name="id"/>
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>班级代码：</label>
+				<input type="text" class="input-control class_code" name="class_code" value="{$class_code}" placeholder="请输入班级代码">
+			</div>
+			<div class="cell">
+				<label>年级：</label>
+				<select id="grade_list" class="input-control" name="grade_id">
+					<option value="0">-请选择-</option>
+				    <volist name="grade_list" id="grade_item">
+					<option value="{$grade_item.id}" <if condition="$grade_item['id']==$grade_id">selected="true"</if> >{$grade_item.name}</option>
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>班级：</label>
+				<select id="class_list" class="input-control" name="class_name">
+                                    <option value="0">-请选择-</option> 
+                                    <volist name="class_list" id="class_item">
+					<option value="{$class_item.class_name}" <if condition="$class_item['class_name']==$class_name">selected="true"</if> >{$class_item.class_name}</option>
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>班级状态：</label>
+				<select id="class_flag" class="input-control" name="class_flag">
+					<option value="">-请选择-</option>
+                                        <option value="1" <if condition="$class_flag==='1'">selected="true"</if> >正常</option>
+                                        <option value="0" <if condition="$class_flag==='0'">selected="true"</if> >停用</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>班级类型：</label>
+				<select id="class_status" class="input-control" name="class_status">
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$class_status=='1'">selected="true"</if> >校建班</option>
+                                        <option value="2" <if condition="$class_status=='2'">selected="true"</if> >个人班</option>
+				</select>
+			</div>
+		</div>
+	</div>
+        <input type="hidden" value="0" name="order" class='order_class'/>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>--> 
+                <input type='submit' value='查询' class='blueBtn'/>
+                <input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+
+<div class="grayBox">
+	<div class="left">
+                <span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt=""> 
+			<a href="javascript:;" attr="{:U('School/schoolCreateClass')}&school_id={$school_id}" class="add_class">添加</a>
+		</span>
+                <span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-import.png" alt="">
+			<a target="_blank" href="{:U('School/importSchoolClass')}&id={$school_id}">导入</a>
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt=""> 
+                        <a href="javascript:;" class="export_btn">批量导出</a>
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt=""> 
+                        <a href="{:U('School/exportedSchoolClassAll')}&{$condition_str}">导出全部</a>
+		</span>
+	</div>
+	<div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue--> 
+                        <if condition="$order=='asc'">
+                            <button class="upBtn upBtnBlue"></button>
+                            <button class="downBtn "></button>
+                        <else />
+                            <button class="upBtn "></button>
+                            <button class="downBtn downBtnBlue"></button>
+                        </if>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>
+</div>
+
+<empty name="list">
+    <div class="emptyResult">没有相关信息</div>
+</empty>
+<notempty name="list">
+	<table id="listWrapper" class="table striped hovered border">
+		<thead>
+			<tr>
+				<th class="text-center" style="width: 10%"><input type="checkbox" class="check_all mr5">全选</th>
+				<th class="text-center" style="width: 10%">序号</th>
+				<th class="text-center" style="width: 10%">年级</th>
+				<th class="text-center" style="width: 10%">班级</th>
+				<th class="text-center" style="width: 10%">班级代码</th>
+				<th class="text-center" style="width: 15%">班级类型</th>
+				<th class="text-center" style="width: 15%">班级状态</th>
+				<th class="text-center" style="width: 20%">操作</th>
+			</tr>
+		</thead>
+		<tbody id="body">
+			<volist name="list" id="item" key="key">
+				<tr>
+					<td class="text-center">
+						<input type="checkbox" attr="{$item.id}" class="check_child" name="checkbox">
+					</td>
+					<td class="text-center">
+						{$key}
+					</td>
+					<td class="text-center">
+						{$item.grade}
+					</td>
+					<td class="text-center">
+						{$item.class_name}
+					</td>
+					<td class="text-center">
+						{$item.class_code}
+					</td>
+					<td class="text-center">
+										<if condition="$item['class_status'] eq 1">
+						校建班
+										<else />
+											个人班
+										</if>
+					</td>
+					<td class="text-center">
+										<if condition="$item['flag'] eq 1">
+						正常
+										<else />
+											停用
+										</if>  
+					</td>
+					<td class="text-center">
+						<a href="javascript:;" attr="{:U('Class/classDetail')}&id={$item.id}" class="operBtn browse_class">查看</a> 
+						<a href="javascript:;" attr="{:U('Class/updateClass')}&id={$item.id}" class="operBtn update_class">修改</a>
+						<a href="javascript:;" attr="" class="operBtn delete_class">删除</a>
+						<input type='hidden' class='class_id' value="{$item.id}" />
+					</td>
+				</tr>
+			</volist>
+		</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+</notempty>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    //点击批量导出
+    $(".export_btn").click(function(){
+        var check_input=$('#body').find("[name='checkbox']:checked");
+        if(check_input.length<1){
+            $.Notify({
+                caption: '提示',
+                content: '请勾选您要导出的账号',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('School/exportedSchoolClass')}");
+        form.attr('method','post');
+
+        for(var i=0;i<check_input.length;i++){ 
+            var temp_val=$(check_input[i]).attr('attr'); 
+            var temp= $("<input type='hidden' name='hid[]'/>")
+            $(temp).attr('value',temp_val);
+            form.append(temp);
+        } 
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+
+     //删除班级 
+    $('.delete_class').click(function(){ 
+        var id=$(this).siblings('.class_id').val();    
+        $.ajax({
+            type:"post",
+            url:"{:U('Class/deleteClass')}",
+            dataType:"json",
+            data:{'id':id},
+            success: function(msg){
+                if(msg.status==200){  
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    
+    var school_id="{$school_id}";
+    var temp_class_span="<option value='0'>-请选择-</option>";
+    //年级发生改变
+    $("#grade_list").change(function(){
+        $("#class_list option:not(:eq(0))").remove();
+        var grade_id=$("#grade_list").val();
+        if(grade_id==false){
+            return false;
+        }
+        //class_type 代表不限制班级类型
+        $.ajax({
+            type:"post",
+            dataType:"json",
+            url:"{:U('Common/getClassByGrade')}",
+            data:{'grade_id':grade_id,'school_id':school_id,'group_class_flag':1},
+            success: function(msg){
+                if(msg.status==200){  
+                    for(var i=0;i<msg.data.length;i++){
+                        var temp_span=$(temp_class_span).clone(true);
+                        $(temp_span).val(msg['data'][i].class_name);
+                        $(temp_span).text(msg['data'][i].class_name);
+                        $("#class_list").append(temp_span);
+                    }
+                } 
+            }
+        });
+    });
+    
+    //点击重置 
+    $('.resetButton').click(function(){ 
+        $('.class_code').val('');  
+        $('#grade_list').find('option:eq(0)').attr('selected',true);
+        $('#class_list').find('option:eq(0)').attr('selected',true); 
+        $('#class_flag').find('option:eq(0)').attr('selected',true);
+        $('#class_status').find('option:eq(0)').attr('selected',true);
+    });
+    
+    //点击排序
+    $('.upBtn').click(function(){
+        if(!$(this).hasClass('upBtnBlue')){
+            $(this).addClass('upBtnBlue');
+        }
+        $('.downBtn').removeClass('downBtnBlue');
+        $('.order_class').val(1);
+        $('#form_submit').submit();
+    });
+
+    $('.downBtn').click(function(){
+        if(!$(this).hasClass('downBtnBlue')){
+            $(this).addClass('downBtnBlue');
+        }
+        $('.upBtn').removeClass('upBtnBlue');
+        $('.order_class').val(0);
+        $('#form_submit').submit();
+    });
+    
+    //全选
+    $('.check_all').click(function(){
+        var childCheck=$('.check_child');
+        var temp_status=true;
+        if($(this)[0].checked==true){
+            //本次选中
+            temp_status=true;
+        }else{
+            //本次取消
+            temp_status=false;
+        }
+        for(var i=0;i<childCheck.length;i++){
+            childCheck[i].checked=temp_status
+        }
+    });
+	
+    //取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				 $('.check_all').removeAttr('checked','checked');
+				 $('.check_all').removeProp('checked','checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $("[name='checkbox']:checked").length) {
+					$('.check_all').attr('checked','checked');
+					$('.check_all').prop('checked','checked');
+				};
+			}
+		}
+	};
+
+</script>
+
+<!--iframe跳转-->
+<script>
+	$('.browse_class').click(function(){
+            var url=$(this).attr('attr');
+            parent.location.href=url;
+	})
+	$('.update_class').click(function(){
+            var url=$(this).attr('attr');
+            parent.location.href=url;
+	})
+        //添加班级
+        $('.add_class').click(function(){
+            var url=$(this).attr('attr');
+            parent.location.href=url;
+        });
+</script>

@@ -1,0 +1,327 @@
+<layout name="teacher_layout_3"/>
+<link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css"/>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css"/>
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<style>
+    .main_head {
+        padding: 17px;
+    }
+    #scoreWrapper td {
+        padding: 8px;
+    }
+    
+</style>
+<div class="main_opr">
+    <a href="{:U('Teach/homework')}" title="作业详情" class="btn btn-main-opr" style="background:#fff;">作业详情</a>
+    <a href="{:U('Teach/wrongHomeworkList')}" title="错题集" class="btn btn-main-opr">错题集</a>
+</div>
+
+<div>
+    <a href="{:U('Teach/homework')}" title="返回" class="btn btnReturn3">返回</a>
+</div>
+
+<div class="main_head">
+    <a href="####" title="作业列表" class="btn btn-primary" style="background:#eac31c !important;">作业列表</a>
+    <a href="{:U('Teach/assignHomework')}" title="布置作业" class="btn btn-primary">布置作业</a>
+</div>
+
+<div style="padding-left: 17px;font-size:16px;">
+    <p>作业名称：<span class="homework_name">111</span></p>
+    <p>作业要求：<span class="homework_claim">222</span></p>
+</div>
+
+<div id="scoreWrapper" style="overflow: hidden;">
+    <form action="{:U('Teach/doGrade')}" method="post" onsubmit="return doGrade();">
+       
+        <input type="hidden" name="details_id" id="details_id" value="{$id}">
+        <input type="hidden" name="score_details" id="score_details" value="">
+        <input type="hidden" name="total_score" id="total_score" value="">
+        <input type="hidden" name="homework_id" id="homework_id" value="{$homework.homework_id}">
+        <table id="scoreDetails" cellspacing="0" cellpadding="0" style="table-layout:fixed;float:left;">
+            <tr id="scoreDetails_row1">
+            </tr>
+            <tr id="scoreDetails_row2">
+            </tr>
+        </table>
+    </form>
+</div>
+<div style="margin-top: 30px">
+    <div id="exerciseWrapper">
+    </div>
+</div>
+<script>
+    String.prototype.replaceAll = function (s1, s2) {
+        return this.replace(new RegExp(s1, "gm"), s2);
+    }
+</script>
+<script>
+    var studentId = '{$homework.student_id}';
+    var homeworkId = '{$homework.homework_id}';
+    var homeworkAnswers = '';
+    var global_score_details = '{$homework.score_details}';
+    var totalScore = '{$homework.points}';
+    var doStatus = '{$homework.status}';
+
+    var chapterId = '{$exerciseChapter.exercise_chapter_id}';
+    var exercises = [];
+    var isShowCorrectAnswer = false;
+
+    var exerciseCount = parseInt('{$exerciseCount}');
+
+    $(function () {
+        loadHomework();
+    })
+    function loadHomework() {
+        isShowCorrectAnswerAfterQuestion = true;
+        renderExerciseLibraryChapter(chapterId, exercises, loadData);
+    }
+
+    function renderScoreController() {
+        var html_row1 = [], html_row2 = [];
+        html_row1.push('<td>题号</td>');
+        html_row2.push('<td>得分</td>');
+
+
+        for (var i = 0; i < exercises.length; i++) {
+            html_row1.push('<td>{0}</td>'.format(exercises[i].question_id));
+            html_row2.push('<td><input class="scoreInput" type="number" questionid="{2}" id="s_{0}" name="s_{0}" value="0" data-points="{1}"/></td>'.format(exercises[i].question_id, exercises[i].points, exercises[i].id));
+        }
+
+        html_row1.push('<td>总分</td>');
+        html_row2.push('<td id="totalScore" style="font-weight: 600;padding: 0 10px;">0</td>');
+
+        $('#scoreDetails_row1').html(html_row1.join(''));
+        $('#scoreDetails_row2').html(html_row2.join(''));
+        $('#totalScore').html(totalScore)
+        $('#scoreDetails').width(80 * (exercises.length + 2));
+        //
+        try {
+            var score_details = JSON.parse(global_score_details);
+            var fields = $('#scoreDetails_row2 input');
+
+            $.each(fields, function (i, n) {
+                var name = $(n).attr('name');
+                if (typeof score_details[name] != 'undefined') {
+                    $(n).val(score_details[name]);
+                }
+            });
+        } catch (ex) {
+        }
+
+
+        $('#scoreDetails_row2 input').blur(function () {
+            getTotalScore();
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    function doGrade() {
+        var score_details = getScoreDetails();
+        getTotalScore();
+        $('#score_details').val(score_details);
+        var t = $('#totalScore').text();
+        $('#total_score').val(t);
+        var scoreDetails = getScoreDetailsObject();
+        if ("" == scoreDetails)
+            return false;
+        //每个题的打分录入 todo
+        $.ajax({
+            url: 'index.php?m=Home&c=Teach&a=addScoreDetailsIntoDb',
+            async: false,
+            type: "POST",
+            data: {
+                'student_id': studentId,
+                'homework_id': homeworkId,
+                'details': scoreDetails
+            },
+            success: function (res) {
+                if (res == 'success') {
+                    //$('form').submit();
+                } else {
+                    alert('打分失败,请重新尝试');
+                    return false;
+                }
+            }
+        });
+        return true;
+    }
+    function loadData() {
+        renderScoreController();
+        var url = "{:U('Student/getHomeworkAnswers?id=')}{$homework.id}";
+        $.get(url, function (res) {
+            if (res == null) return;
+            homeworkAnswers = res;
+            answers = homeworkAnswers;
+            //赋值
+            var fields = $('#exerciseWrapper input,#exerciseWrapper select,#exerciseWrapper textarea');
+            $.each(fields, function (i, n) {
+                var inputType = $(n).attr('type');
+                var inputFieldId = $(n).attr('id');
+                var questionName = $(n).attr('name');
+                var questionId = $(n).attr('questionid');
+                var isAnswer = $(n).attr('isanswer');
+                var points = $(n).attr('points');
+                switch (inputType) {
+                    case 'radio':
+                    case 'checkbox':
+                        if (typeof answers[inputFieldId] != 'undefined') {
+                            var correctEle = $('#' + questionName + '_' + answers[questionName]);
+                            //$('input[name=' + questionName + '][value=' + answers[questionName] + ']').attr('checked', 'true');
+                            $('#' + inputFieldId).attr('checked', 'true');
+                            //这是帮老师自动评分客观题，请不要删除
+                            //if (doStatus != 2 && isAnswer == 'true' && $(n).attr('id') == correctEle.attr('id')) {
+                            if (doStatus != 2) {
+                                autoScore();
+                            }
+                        }
+                        break;
+                    case 'text':
+                    case 'textarea':
+                        if (typeof answers[questionName] != 'undefined') {
+                            $('#' + questionName).val(answers[questionName]);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            //打分程序
+
+
+        });
+    }
+
+    function autoScore() {
+        $(exercises).each(function (i, n) {
+            var questionId = n.question_id;
+            var points = n.points;
+            var templateName = n.template_name;
+            var inputs = $('input[questionid=' + questionId + ']');
+            var score = 0;
+            switch (templateName) {
+                case '单项文字选择题':
+                case '判断题':
+                    $(inputs).each(function (j, m) {
+                        if ($(m).attr('isanswer') == 'true' && m.checked) {
+                            score = points;
+                            return false;
+                        }
+                    });
+                    break;
+                case '多项文字选择题':
+                    var flag = true;
+                    $(inputs).each(function (j, m) {
+                        if ($(m).attr('isanswer') == 'true' && !m.checked) {
+                            flag = false;
+                            return false;
+                        }
+                        if ($(m).attr('isanswer') != 'true' && m.checked) {
+                            flag = false;
+                            return false;
+                        }
+                    });
+                    if (flag)score = points;
+                    break;
+                case '判断题[含多个小题]':
+                case '单项选择题[含多个小题]':
+                    var subQuestions = [];
+                    $(inputs).each(function (j, m) {
+                        var subQuestionId = $(m).attr('name');
+                        if ($.inArray(subQuestionId, subQuestions) == -1) {
+                            subQuestions.push(subQuestionId);
+                        }
+                    });
+                    $(subQuestions).each(function (k, o) {
+                        var subInputs = $('input[name=' + o + ']');
+                        $(subInputs).each(function (j, m) {
+                            if ($(m).attr('isanswer') == 'true' && m.checked) {
+                                score = score + parseInt($(m).attr('points'));
+                                return false;
+                            }
+                        });
+                    });
+                    break;
+                case '多项选择题[含多个小题]':
+                    var subQuestions = [];
+                    $(inputs).each(function (j, m) {
+                        var subQuestionId = $(m).attr('name');
+                        if ($.inArray(subQuestionId, subQuestions) == -1) {
+                            subQuestions.push(subQuestionId);
+                        }
+                    });
+                    $(subQuestions).each(function (k, o) {
+                        var subInputs = $('input[name=' + o + ']');
+                        var flag = true;
+                        var subQuestionScore = 0;
+                        $(subInputs).each(function (j, m) {
+                            subQuestionScore = parseInt($(m).attr('points'));
+                            if ($(m).attr('isanswer') == 'true' && !m.checked) {
+                                flag = false;
+                                return false;
+                            }
+                            if ($(m).attr('isanswer') != 'true' && m.checked) {
+                                flag = false;
+                                return false;
+                            }
+                        });
+                        if (flag) {
+                            score = score + subQuestionScore;
+                        }
+                    });
+                    break;
+            }
+            $('#s_' + questionId).val(score);
+        });
+    }
+
+    function getScoreDetails() {
+        var data = {};
+        var fields = $('#scoreDetails input');
+        $.each(fields, function (i, n) {
+            var name = $(n).attr('name');
+            data[name] = $(n).val();
+        });
+        data['total'] = $('#totalScore').text();
+        return JSON.stringify(data);
+    }
+
+    function getScoreDetailsObject() {
+        var data = [];
+        var fields = $('#scoreDetails input');
+        var pointError = 0;
+        $.each(fields, function (i, n) {
+            var points = parseInt($(n).attr('data-points'));
+            var score = parseInt($(n).val());
+            var questionId = parseInt($(n).attr('id').replace('s_', ''));
+            var questionOrgId = parseInt($(n).attr('questionid'));
+            var flag = 2;
+            if (points == score && score != 0)flag = 1;
+            if (points < score && score != 0) {
+                alert("第" + questionId + "题得分超过总分，请重新修改得分!");
+                flag = 3;
+                pointError = 1;
+                return false;
+            }
+            var item = questionId + '|' + score + '|' + points + '|' + flag + '|' + questionOrgId;
+            data.push(item);
+        });
+        if (1 == pointError)
+            return "";
+        return data.join('#');
+    }
+
+    function getTotalScore() {
+        var inputs = $('#scoreDetails_row2 input');
+        var score = 0;
+        $(inputs).each(function (i, n) {
+            var s = parseInt($(n).val());
+            score = score + s;
+        });
+        $('#totalScore').html(score);
+    }
+
+
+</script>

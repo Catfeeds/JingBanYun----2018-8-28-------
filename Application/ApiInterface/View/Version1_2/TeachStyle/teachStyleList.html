@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>教师风采</title>
+    <script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+    <script src="__PUBLIC__/js/rem.js"></script>
+    <style media="screen">
+      *{
+        margin: 0;
+        padding: 0;
+        font-family: "微软雅黑"
+      }
+      ul li{
+        list-style: none
+      }
+      .banner{
+        position: relative;
+      }
+      .bannerBg{
+        width: 100%
+      }
+      .me{
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom:20%;
+        margin: auto ;
+      }
+      .mename{
+        font-size: 1.6rem;
+        color: #fff;
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        bottom: 15%;
+      }
+      a,a:hover,a:active,a:visited,a:link,a:focus{
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
+        -webkit-tap-highlight-color: transparent;
+        outline:none;
+        background: none;
+        text-decoration: none;
+        color: #999
+      }
+
+      .teacherImg{
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+      }
+      .of{
+        overflow: hidden;
+      }
+      .left{
+        float: left;
+      }
+      .right{
+        float: right;
+      }
+      .teacherList li{
+        margin-left: 10px;
+        border-bottom: 1px solid #eee;
+        padding: 10px 0
+      }
+      .lh60{
+        line-height: 60px
+      }
+      .fz26{
+        font-size: 26px;
+        font-weight: bold;
+      }
+      .ml10{
+        margin:0 10px
+      }
+      .teacherNum{
+          width: 25px;
+          height: 60px
+      }
+      .text-center{
+        text-align: center;
+      }
+      .lh30{
+        line-height: 30px
+      }
+      .fz18{
+        font-size: 1.4rem
+      }
+      .color999{
+        color: #666
+      }
+
+      .fz12{
+        font-size: 1.2rem;
+        line-height: 24px
+      }
+      .colorf85f03{
+        color: #f85f03;
+        line-height: 36px;
+        font-size: 2.5rem
+      }
+      .w70{
+        width: 100px
+      }
+      .db{
+        display: block;
+      }
+      .lh20{
+        line-height: 20px
+      }
+      .school,.subject,.mediv2{
+        width: 100px;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .subject ,.school{
+        font-size: 1.3rem
+      }
+      .paiImg{
+        position: relative;
+        top:5px;
+        width: 25px
+      }
+      @media screen and (min-width: 359px){
+        .school,.subject,.mediv2{
+          width: 140px
+        }
+      }
+      @media screen and (min-width: 370px){
+        .school,.subject,.mediv2{
+          width: 150px
+        }
+      }
+      @media screen and (min-width: 400px){
+        .school,.subject,.mediv2{
+          width: 170px
+        }
+      }
+
+      .styleEmpty {
+        display: block;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        width: 50%;
+      }
+
+    </style>
+  </head>
+  <body>
+
+<?php if(empty($list)){ ?>
+<img src="{$oss_path}public/web_img/TeacherStyle/teacherStyle.png" alt="" class="styleEmpty"/>
+<?php }else{ ?>
+    <div class="banner">
+      <img src="__PUBLIC__/img/teacherstyle/banner.png" alt=""  class="bannerBg" />
+      <img src="<?php  if(!empty($list[0]['avatar']) && $list[0]['avatar'] != 'default'){echo $oss_path.$list[0]['avatar'];}else{ if($list[0]['sex'] == '男'){echo '__PUBLIC__/img/classManage/teacher_m.png';}else{echo '__PUBLIC__/img/classManage/teacher_w.png';}}?>" alt="" class="me"/>
+      <span class="mename"><?php echo $list[0]['name']?>老师占领了封面</span>
+    </div>
+    <div class="teacherList">
+      <ul>
+          <?php if(!empty($teacherInfo)){ ?>
+         <li class="of">
+           <a href="/index.php/ApiInterface/Version1_2/TeachStyle/teacherDetails?id=<?php echo $teacherInfo['id']?>&userId=<?php echo $userId?>&role=<?php echo $role?>" class="db of">
+             <div class="left lh60 fz26 teacherNum text-center">
+
+             </div>
+             <div class="left ml10">
+                 <img src="<?php  if(!empty($teacherInfo['avatar']) && $teacherInfo['avatar'] != 'default'){echo $oss_path.$teacherInfo['avatar'];}else{ if($teacherInfo['sex'] == '男'){echo '__PUBLIC__/img/classManage/teacher_m.png';}else{echo '__PUBLIC__/img/classManage/teacher_w.png';}}?>" alt="" class="teacherImg"/>
+             </div>
+            <div class="left lh30 fz18 ml0 mediv2">
+              <span class="color999"><?php echo $teacherInfo['name']?></span>
+              <br>
+              <span>击败了<?php echo $percentage?>%的老师</span>
+            </div>
+            <div class="right w70">
+              <span class="fz12 db text-center">积分</span>
+
+              <span class="colorf85f03 db text-center"><?php echo $teacherInfo['points']?></span>
+            </div>
+           </a>
+         </li>
+          <?php } ?>
+          <?php foreach($list as $key=>$item){ ?>
+            <?php if($key == 0) { ?>
+         <li class="of">
+           <a href="/index.php/ApiInterface/Version1_2/TeachStyle/teacherDetails?id=<?php echo $item['id']?>&userId=<?php echo $userId?>&role=<?php echo $role?>" class="db of">
+             <div class="left lh60 fz26 teacherNum text-center">
+               <img src="__PUBLIC__/img/teacherstyle/icon_jinpai.png" alt="" / class="paiImg">
+             </div>
+             <div class="left ml10">
+                 <img src="<?php  if(!empty($item['avatar']) && $item['avatar'] != 'default'){echo $oss_path.$item['avatar'];}else{ if($item['sex'] == '男'){echo '__PUBLIC__/img/classManage/teacher_m.png';}else{echo '__PUBLIC__/img/classManage/teacher_w.png';}}?>" alt="" class="teacherImg"/>
+             </div>
+            <div class="left lh20 fz18 ml0">
+              <span class="color999 db"><?php echo $item['name']?></span>
+              <span class="db school"><?php echo $item['school_name']?></span>
+              <span class="db subject"><?php echo $item['course_name']?></span>
+            </div>
+            <div class="right w70">
+              <span class="fz12 db text-center">积分</span>
+
+              <span class="colorf85f03 db text-center"><?php echo $item['points']?></span>
+            </div>
+           </a>
+         </li>
+            <?php }elseif($key == 1){ ?>
+         <li class="of">
+           <a href="/index.php/ApiInterface/Version1_2/TeachStyle/teacherDetails?id=<?php echo $item['id']?>&userId=<?php echo $userId?>&role=<?php echo $role?>" class="db of">
+             <div class="left lh60 fz26 teacherNum text-center">
+               <img src="__PUBLIC__/img/teacherstyle/icon_yinpai.png" alt="" / class="paiImg">
+             </div>
+             <div class="left ml10">
+                 <img src="<?php  if(!empty($item['avatar']) && $item['avatar'] != 'default'){echo $oss_path.$item['avatar'];}else{ if($item['sex'] == '男'){echo '__PUBLIC__/img/classManage/teacher_m.png';}else{echo '__PUBLIC__/img/classManage/teacher_w.png';}}?>" alt="" class="teacherImg"/>
+             </div>
+            <div class="left lh20 fz18 ml0">
+              <span class="color999 db"><?php echo $item['name']?></span>
+              <span class="db school"><?php echo $item['school_name']?></span>
+              <span class="db subject"><?php echo $item['course_name']?></span>
+            </div>
+            <div class="right w70">
+              <span class="fz12 db text-center">积分</span>
+
+              <span class="colorf85f03 db text-center"><?php echo $item['points']?></span>
+            </div>
+           </a>
+         </li>
+            <?php }elseif($key == 2){ ?>
+         <li class="of">
+           <a href="/index.php/ApiInterface/Version1_2/TeachStyle/teacherDetails?id=<?php echo $item['id']?>&userId=<?php echo $userId?>&role=<?php echo $role?>" class="db of">
+             <div class="left lh60 fz26 teacherNum text-center">
+               <img src="__PUBLIC__/img/teacherstyle/icon_tongpai.png" alt="" / class="paiImg">
+             </div>
+             <div class="left ml10">
+                 <img src="<?php  if(!empty($item['avatar']) && $item['avatar'] != 'default'){echo $oss_path.$item['avatar'];}else{ if($item['sex'] == '男'){echo '__PUBLIC__/img/classManage/teacher_m.png';}else{echo '__PUBLIC__/img/classManage/teacher_w.png';}}?>" alt="" class="teacherImg"/>
+             </div>
+            <div class="left lh20 fz18 ml0">
+              <span class="color999 db"><?php echo $item['name']?></span>
+              <span class="db school"><?php echo $item['school_name']?></span>
+              <span class="db subject"><?php echo $item['course_name']?></span>
+            </div>
+            <div class="right w70">
+              <span class="fz12 db text-center">积分</span>
+
+              <span class="colorf85f03 db text-center"><?php echo $item['points']?></span>
+            </div>
+           </a>
+         </li>
+            <?php }else{ ?>
+         <li class="of">
+           <a href="/index.php/ApiInterface/Version1_2/TeachStyle/teacherDetails?id=<?php echo $item['id']?>&userId=<?php echo $userId?>&role=<?php echo $role?>" class="db of">
+             <div class="left lh60 fz26 teacherNum text-center">
+                <?php echo $key+1;?>
+             </div>
+             <div class="left ml10">
+                 <img src="<?php  if(!empty($item['avatar']) && $item['avatar'] != 'default'){echo $oss_path.$item['avatar'];}else{ if($item['sex'] == '男'){echo '__PUBLIC__/img/classManage/teacher_m.png';}else{echo '__PUBLIC__/img/classManage/teacher_w.png';}}?>" alt="" class="teacherImg"/>
+             </div>
+            <div class="left lh20 fz18 ml0">
+              <span class="color999 db"><?php echo $item['name']?></span>
+              <span class="db school"><?php echo $item['school_name']?></span>
+              <span class="db subject"><?php echo $item['course_name']?></span>
+            </div>
+            <div class="right w70">
+              <span class="fz12 db text-center">积分</span>
+
+              <span class="colorf85f03 db text-center"><?php echo $item['points']?></span>
+            </div>
+           </a>
+         </li>
+          <?php }}?>
+      </ul>
+    </div>
+  <?php }?>
+  </body>
+</html>

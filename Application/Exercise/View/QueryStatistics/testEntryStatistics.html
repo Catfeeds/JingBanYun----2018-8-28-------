@@ -1,0 +1,244 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<!--<link href="__PUBLIC__/dataTable/css/jquery.dataTables.min.css"/>-->
+<link href="__PUBLIC__/dataTable/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/js/Base64.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter').css('min-height',boxHeight)
+	})
+</script>
+
+<div class="boxOutter">
+	<div class="tableTop borderBottom pb20 orangeBox">
+		<div class="tableTitle mr0">查询类型</div>
+		<span class="color333 ml15"><a    href="{:U('QueryStatistics/testQuestions')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">试题</a></span>
+		<span class="ml15"><a  href="{:U('QueryStatistics/queryQuestions')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==" >试卷</a></span>
+		<span class="color333 ml15"><a href="{:U('QueryStatistics/curriculumSystemList')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">课标知识体系</a></span>
+		<span class="color333 ml15"><a  href="{:U('QueryStatistics/textbookKnowledgeList')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">教材知识体系</a></span>
+		<span class="color333 ml15"><a  href="{:U('QueryStatistics/userList')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">用户</a></span>
+		<span class="color333 ml15"><a  class="color3baeab " href="{:U('QueryStatistics/testEntryStatistics')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">试题录入统计</a></span>
+		<span class="color333 ml15"><a  href="{:U('QueryStatistics/testAssignmentStatistics')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">试题分配统计</a></span>
+		<span class="color333 ml15"><a  href="{:U('QueryStatistics/itemIndexingStatistics')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">试题标引统计</a></span>
+		<span class="color333 ml15"><a href="{:U('Multimedia/homeworkQuery')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">多媒体作业查询</a></span>
+		<span class="color333 ml15"><a href="{:U('Multimedia/homeworkStatistics')}#eyJiTmVlZEtub3dsZWRnZSI6dHJ1ZSwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==">多媒体作业录入统计</a></span>
+	</div>
+	<div id="form" >
+		<div class="filterOutter">
+			<div class="filterInner of">
+				<div class="mb20 ml5">
+					<volist name="data" id="data">
+						<span class="mr30">{$data.name}:{$data.count} </span>
+					</volist>
+				</div>
+				<div class="filterBox">
+					<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;段</label>
+					<select name="section" id="" class="inputCommon" ">
+					<option value="0">请选择</option>
+					<volist name="sections" id="sections">
+						<option value="{$sections.id}">{$sections.name}</option>
+					</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+					<select name="courseId" id="courseId" class="inputCommon" >
+						<option value="0">请选择</option>
+						<volist name="courseList" id="courseList">
+							<option value="{$courseList.id}">{$courseList.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBtn dib">
+					<button class="btn" id="" onclick="getQueryParameter('form');query();">查询</button>
+					<button class="btn" id="" onclick="$('#form input,select').val('')">重置</button>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	<div class="tableTop mb20">
+		<div class="tableTitle">试题录入统计列表</div>
+	</div>
+	<table class="tableCommon" id="table">
+		<thead>
+		<tr>
+			<th width="16%">学段</th>
+			<th width="16%">学科</th>
+			<th width="16%">录入数量</th>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+
+</div>
+</div>
+<script type="text/javascript">
+	$('.detailsAll').click(function(){
+		$(this).hide();
+		$('.xiala').hide()
+		$('.shangla,.detailsHide,.versionDiv').show()
+
+	})
+	$('.detailsHide').click(function(){
+		$(this).hide();
+		$('.shangla,.versionDiv').hide()
+		$('.xiala,.detailsAll').show()
+
+	})
+</script>
+<script src="__PUBLIC__/dataTable/js/jquery.dataTables.min.js"></script>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+	function loading(name) {
+		$('body').loading({
+			loadingWidth:240,
+			title:'正在查询...',
+			name:name,
+			discription:'这是一个描述...',
+			direction:'row',
+			type:'origin',
+			originBg:'#71EA71',
+			originDivWidth:30,
+			originDivHeight:30,
+			originWidth:4,
+			originHeight:4,
+			smallLoading:false,
+			titleColor:'#388E7A',
+			loadingBg:'#312923',
+			loadingMaskBg:'rgba(22,22,22,0.2)'
+		});
+	}
+
+	function removeLoad(name) {
+		removeLoading(name);
+	}
+</script>
+<script>
+	function getQueryParameter(divId)
+	{
+		parameters = {"bNeedKnowledge":true};
+		$('#'+divId+' select').each(function(i,n){
+			if($(n).val() != '' && $(n).val() != 0)
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		$('#'+divId+' input').each(function(i,n){
+			if($(n).val().trim() !== '')
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		parameters.cat = $('#cat').val();
+	}
+	var parameters = {"bNeedKnowledge":true};
+	parameters.cat = $('#cat').val();
+
+	var ignoreQuery = false;
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		ignoreQuery = true;
+	}
+	var oTable = $("#table").dataTable({
+
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=QueryStatistics&a=testEntryStatisticsPage",//这个是请求的地址
+		"fnServerData": retrieveData ,
+		aoColumnDefs : [
+			],
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		},
+
+	});
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		parameters = JSON.parse(base64decode(window.location.href.split('#')[1]));
+		oTable.fnPageChange(parameters.startIndex/parameters.pageSize);
+		delete parameters['startIndex'];
+		delete parameters['pageSize'];
+		//oTable.api().draw(false);
+	}
+	function query()
+	{
+		//table reset;
+ 		oTable.fnUpdate()
+	}
+
+	function retrieveData( sSource,aoData, fnCallback) {
+		if(window.location.href.indexOf('#')!=-1)
+		{
+			if(ignoreQuery)
+			{
+				ignoreQuery =false;
+				return;
+			}
+		}
+		var queryData =  $.extend(true,{},parameters); //深度拷贝
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+		// queryData.sEcho = qq.sEcho;
+		if(!isBrowser)
+			window.location.hash = lastHash =  base64encode(JSON.stringify(queryData));
+		loading('loadData');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				if(typeof(result.aaData) == "undefined") $.NotifyBox.NotifyOne('提示',result.message || result.msg,'确定');if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+			},
+			error : function(msg) { 				 			}
+		});
+	}
+</script>
+<script>
+	function viewDetail(id)
+	{
+		window.location.href = "{:U('createExercise/editChoiceExercise')}" + "&id="+ id;
+	}
+
+
+</script>

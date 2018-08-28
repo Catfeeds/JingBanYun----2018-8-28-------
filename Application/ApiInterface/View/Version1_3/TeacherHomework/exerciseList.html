@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html >
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>习题列表</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/appCommon.css?v=1">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/teacherHomework.css">
+		<link href="__PUBLIC__/swiper/swiper-3.4.2.min.css" type="text/css" rel="stylesheet">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<style>
+			*{
+					-webkit-tap-highlight-color:rgba(0,0,0,0);
+			}
+			[v-cloak] {
+				display: none;
+			}
+
+			#app {
+				padding-top: 45px;
+			}
+
+			#app .mainOutter, .loadingImg {
+				display: none;
+			}
+			.exerciseMain p{
+				width: 100% !important
+			}
+			.exerciseMain p,.exerciseMain p span{
+				word-wrap:break-word !important
+			}
+		</style>
+	</head>
+	<body>
+		<img src="{$oss_path}public/web_img/App/loading_yun.gif" alt="" class="loadingImg">
+
+		<div id="app" v-cloak>
+			<!-- app公共头部 -->
+			<div class="appTop">
+				<div class="returnBox" @click="returnApp"></div>
+				<div class="appTopTitle">
+					<!-- 节 -->
+					<p class="title topFilter" v-on:click="filterTopList($event)" v-if="knowledgeId == ''" >
+						<template  v-for="(exerciseFestivalList, index) in exerciseTopData" v-if="exerciseFestivalList.section_id == festivalId" >
+							<span :id="exerciseFestivalList.section_id">{{ exerciseFestivalList.tree_point_name }}</span>
+						</template>
+					</p>
+					<!-- 知识点 -->
+					<p class="title topFilter" v-on:click="filterTopList($event)" v-else>
+						<template  v-for="(exerciseFestivalList, index) in exerciseTopData" v-if="exerciseFestivalList.id == knowledgeId" :id="exerciseFestivalList.section_id">
+							<span :id="exerciseFestivalList.section_id">{{ exerciseFestivalList.tree_point_name }}</span>
+						</template>
+					</p>
+				</div>
+				<!-- 节 -->
+				<ul class="selectFilterTop" id="" v-if="knowledgeId == ''">
+			        <li v-for="(exerciseFestivalList, index) in exerciseTopData" :festivalId="exerciseFestivalList.section_id" v-on:click="filterTopExercise($event)" v-bind:class="{active : exerciseFestivalList.section_id == festivalId}">{{ exerciseFestivalList.tree_point_name }}</li>
+			    </ul>
+			    <!-- 知识点 -->
+			    <ul class="selectFilterTop" id="" v-else>
+			        <li v-for="(exerciseFestivalList, index) in exerciseTopData" :festivalId="exerciseFestivalList.id" v-on:click="filterTopExercise($event)" v-bind:class="{active : exerciseFestivalList.id == knowledgeId}">{{ exerciseFestivalList.tree_point_name }}</li>
+			    </ul>
+			</div>
+			<div class="fullBackTop" v-on:click="filterTopHide"></div>
+
+			<div class="mainOutter">
+				<div class="fullBack" v-on:click="filterHide"></div>
+				<div class="selectOutter">
+				    <div class="selectInner" id="" v-on:click="filterList($event)">
+				        <div class="selectBox">
+				            <span class="selectName">题型</span>
+				            <img src="__PUBLIC__/img/Apphomework/xialaBlack.png" alt="" class="downUp">
+				        </div>
+				    </div>
+				    <div class="selectInner" id="" v-on:click="filterList($event)">
+				        <div class="selectBox">
+				            <span class="selectName">难度</span>
+				            <img src="__PUBLIC__/img/Apphomework/xialaBlack.png" alt="" class="downUp">
+				        </div>
+				    </div>
+				    <div class="selectInner" id="" v-on:click="filterList($event)">
+				        <div class="selectBox">
+				            <span class="selectName">全部</span>
+				            <img src="__PUBLIC__/img/Apphomework/xialaBlack.png" alt="" class="downUp">
+				        </div>
+				    </div>
+
+				    <ul class="selectFilter" id="">
+				        <li class="active" typeId="" v-on:click="filterExercise($event)">不限</li>
+				        <li v-for="(exerciseTypeList, index) in exerciseTypeData" :typeId="exerciseTypeList.id" v-on:click="filterExercise($event)">{{ exerciseTypeList.name }}</li>
+				    </ul>
+
+				    <ul class="selectFilter" id="">
+				        <li class="active" difficultyId="" v-on:click="filterExercise($event)">不限</li>
+				        <li difficultyId="1" v-on:click="filterExercise($event)">基础</li>
+				        <li difficultyId="2" v-on:click="filterExercise($event)">中等</li>
+				        <li difficultyId="3" v-on:click="filterExercise($event)">难题</li>
+				        <li difficultyId="4" v-on:click="filterExercise($event)">竞赛</li>
+				    </ul>
+
+				    <ul class="selectFilter" id="">
+				        <li class="active" status="" v-on:click="filterExercise($event)">不限</li>
+				        <li status="1" v-on:click="filterExercise($event)">已收藏</li>
+				        <li status="2" v-on:click="filterExercise($event)">曾出过</li>
+				        <li status="3" v-on:click="filterExercise($event)">未出过</li>
+				        <li status="4" v-on:click="filterExercise($event)">学生错题</li>
+				    </ul>
+				</div>
+
+				<div class="exerciseOutter">
+					<!-- 如果没有信息 -->
+					<img src="__PUBLIC__/img/Apphomework/res_empty_bg.png" alt="" class="emptyImg centerEmpty" v-if='exerciseData == ""'>
+					<div class="exerciseInner" v-for="(exerciseList, index) in exerciseData" :id="exerciseList.id" :topic-type="exerciseList.topic_type" :topic-type-name="exerciseList.topic_type_name">
+						<a href="javascript:;" class="exerciseBox" v-on:click="goSingleExercise($event)">
+							<div class="exerciseTitle" style="font-size:16px">
+								{{ index+1 }}-{{ exerciseList.topic_type_name }}
+								<span >(<span class="score">{{ exerciseList.score }}</span>分)</span>
+							</div>
+							<div class="exerciseMain" v-html="exerciseList.subject_name"></div>
+							<div class="exerciseDifficult">难度：<span class="grayText">{{ exerciseList.difficulty }}</span></div>
+						</a>
+						<div class="addImgBox">
+							<img src="__PUBLIC__/img/Apphomework/weishoucang.png" alt="" class="collectImg" v-if="exerciseList.eid==null" v-on:click="collectExercise($event)">
+							<img src="__PUBLIC__/img/Apphomework/yishoucang.png" alt="" class="collectImg active" v-else v-on:click="collectExercise($event)">
+
+							<img src="__PUBLIC__/img/Apphomework/tianjia.png" alt="" class="addImg" v-on:click="addExercise($event)" >
+							<!-- <img src="__PUBLIC__/img/Apphomework/shanchu.png" alt="" class="addImg" v-on:click="addExercise($event)" v-if="flagArr[index] != '0'"> -->
+						</div>
+					</div>
+				</div>
+
+				<div class="bottomBtn yellowBtn" @click="checkWorkDet">已选<span class="chooseNum" >{{exerciseNum}}</span>题 点击查看详情</div>
+			</div>
+		</div>
+	</body>
+
+	<script>
+		function CheckIsAndroid() {
+			var browser = {
+					versions: function () {
+						var u = navigator.userAgent,
+							app = navigator.appVersion;
+						return { //移动终端浏览器版本信息
+							ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+							android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+							iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+							iPad: u.indexOf('iPad') > -1, //是否iPad
+						};
+					}(),
+				}
+			if (browser.versions.android)
+				return true;
+			return false;
+		}
+
+
+		function CheckIsIOS() {
+			var browser = {
+				versions: function () {
+					var u = navigator.userAgent,
+						app = navigator.appVersion;
+					return { //移动终端浏览器版本信息
+						ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+						android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+						iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+						iPad: u.indexOf('iPad') > -1, //是否iPad
+					};
+				}(),
+			}
+			if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+				return true;
+			}
+		}
+
+		$(function(){
+			if (CheckIsIOS()){
+	    		$('.loadingImg').show();
+	    	}
+		})
+
+		function myFunction() {
+		    if(i >= 103) {
+		    	clearTimeout(timer);
+		    	$('.loadingImg').hide();
+		    	$('#app .mainOutter').show();
+		    }
+		}
+
+		var timer = setInterval("myFunction()",1000);
+	</script>
+
+	<script>
+		var role = "{$role}";
+		var userId = "{$userId}";
+        var versionId = "{$versionId}";
+        var courseId = "{$courseId}";
+        var gradeId = "{$gradeId}";
+		var schoolTerm = "{$schoolTerm}";
+		var classId  = "{$classId }";
+		var chapterId  = "{$chapterId }";
+		var festivalId = "{$festivalId}";
+		var parentId = "{$parentId}";
+		var knowledgeId = "{$knowledgeId}";
+
+		var i = 100;
+		var filterIndex;
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				role: role,
+				userId: userId,
+				versionId: versionId,
+				courseId: courseId,
+				gradeId: gradeId,
+				schoolTerm: schoolTerm,
+				classId: classId,
+				chapterId: chapterId,
+				festivalId: festivalId,
+				parentId: parentId,
+				knowledgeId: knowledgeId,
+				home_topic_type: '',
+				difficultyId: '',
+				status: '',
+				exerciseId: '',
+				exerciseUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/setSearchgetExerciseList',
+				exerciseData: '',
+
+				exerciseTypeUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/getExerciseType',
+				exerciseTypeData: '',
+
+				exerciseCollectUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/IWantToCollect',
+				iscancel: '',
+
+				exerciseFestivalUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/getSectionList',
+
+				exerciseKnowledgeUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/getTwoCurricuList',
+				exerciseTopData: '',
+				exerciseNum:0,
+
+				flagArr:[],
+				nativeids:'',
+			},
+			created: function () { //应用初始化完毕加载
+
+				var data7 = {
+					"page":"SQgetAllID",
+					'func':'SQngetAllDataID'
+				}
+				if (CheckIsIOS()){
+					window.webkit.messageHandlers.iosModel.postMessage(data7);
+				}
+				if (CheckIsAndroid()){
+					AppFunction.postMessage(JSON.stringify(data7))
+				}
+				this.getExerciseTypeList();
+				if(this.knowledgeId == '') {
+					// 获取节
+					this.getFestivalList();
+				} else {
+					// 获取知识点
+					this.getKnowledgeList();
+				}
+					// this.getExerciseList();
+
+
+			},
+			mounted:function(){
+				// 获取习题库列表
+				// this.getExerciseList();
+				// 获取习题库题型
+			},
+			updated:function(){
+
+			},
+			methods: {
+				// 获取习题库列表
+				getExerciseList: function(flagId){
+
+					if(this.knowledgeId == '') {
+						this.$http.post(this.exerciseUrl, {
+							version_id : this.versionId,
+							course_id : this.courseId,
+							grade_id : this.gradeId,
+							school_term : this.schoolTerm,
+							chapter_id : this.chapterId,
+							section_id : this.festivalId,
+							type_id: this.home_topic_type,
+							difficulty_id: this.difficultyId,
+							status : this.status,
+							userId : this.userId,
+						}, {
+							emulateJSON: 'application/x-www-form-urlencoded'
+						}).then(function (response) {
+							if(response.status == '200'){
+
+								this.nativeids = flagId;
+								this.flagArr = [];
+
+								$('.chooseNum').html(flagId.length)
+								if(flagId.length == '0'){
+									$('.bottomBtn').css('background','#ccc')
+								}else{
+									$('.bottomBtn').css('background','#f2b81a')
+								}
+
+								this.exerciseData = response.data.data;
+
+								for(var q=0;q<this.exerciseData.length;q++){
+									this.flagArr.push('')
+									var id= this.exerciseData[q].id;
+									if(flagId.indexOf(id) != '-1'){
+										this.flagArr[q] = '1'
+									}else{
+										this.flagArr[q] = '0'
+									}
+								}
+
+								this.$nextTick(function(){
+									if($('.chooseNum').text() == '0'){
+										$('.bottomBtn').css('background','#ccc')
+									}else{
+										$('.bottomBtn').css('background','#f2b81a')
+									}
+									for(var c = 0;c<this.flagArr.length;c++){
+										if(this.flagArr[c] =='0'){
+
+											$('.addImg').eq(c).attr('src','__PUBLIC__/img/Apphomework/tianjia.png')
+										}else{
+											$('.addImg').eq(c).attr('src','__PUBLIC__/img/Apphomework/shanchu.png')
+										}
+									}
+								})
+
+
+
+		    					i++;
+		                    } else {
+		                        console.log('错误1')
+		                    }
+						}, function (response) {
+							console.log('错误2')
+						})
+					} else {
+						this.$http.post(this.exerciseUrl, {
+							version_id : this.versionId,
+							course_id : this.courseId,
+							knowledge_id : this.knowledgeId,
+							type_id: this.home_topic_type,
+							difficulty_id: this.difficultyId,
+							status : this.status,
+							userId : this.userId,
+						}, {
+							emulateJSON: 'application/x-www-form-urlencoded'
+						}).then(function (response) {
+							if(response.status == '200'){
+		    					this.exerciseData = response.data.data;
+								this.nativeids = flagId;
+								this.flagArr = [];
+								if(flagId.length!='0'){
+									$('.chooseNum').html(flagId.length)
+									$('.bottomBtn').css('background','#f2b81a')
+								}else{
+									$('.chooseNum').html('0');
+									$('.bottomBtn').css('background','#ccc')
+								}
+
+								this.exerciseData = response.data.data;
+
+								for(var q=0;q<this.exerciseData.length;q++){
+									this.flagArr.push('')
+									var id= this.exerciseData[q].id;
+									if(flagId.indexOf(id) != '-1'){
+										this.flagArr[q] = '1'
+									}else{
+										this.flagArr[q] = '0'
+									}
+								}
+
+								this.$nextTick(function(){
+									for(var c = 0;c<this.flagArr.length;c++){
+										if(this.flagArr[c] =='0'){
+
+											$('.addImg').eq(c).attr('src','__PUBLIC__/img/Apphomework/tianjia.png')
+										}else{
+											$('.addImg').eq(c).attr('src','__PUBLIC__/img/Apphomework/shanchu.png')
+										}
+									}
+								})
+		    					i++;
+		                    } else {
+		                        console.log('错误1')
+		                    }
+						}, function (response) {
+							console.log('错误2')
+						})
+					}
+				},
+				// 获取题型
+				getExerciseTypeList: function(){
+					this.$http.post(this.exerciseTypeUrl, {
+						id : this.courseId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.exerciseTypeData = response.data.data;
+	    					i++;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				//筛选列表
+				filterList: function(e){
+					var that = $(e.currentTarget);
+					filterIndex = that.index();//点击的位置
+			        // 判断点击的是否已经点击过
+			        if (that.hasClass('active')) {
+			            $('.selectFilter').eq(filterIndex).slideUp('fast', function () {
+			                that.removeClass('active');//点击的元素去掉背景颜色
+			                that.find('img').attr('src', '__PUBLIC__/img/Apphomework/xialaBlack.png');//点击的元素图片朝下
+			                $('.fullBack').hide();//黑透明背景
+			                $('body').css('overflow-y', 'auto');//页面可以滑动
+			            });//点击相应的列表收起
+			        } else {
+			            that.addClass('active').siblings('.selectInner').removeClass('active');//点击的元素添加背景颜色
+			            that.find('img').attr('src', '__PUBLIC__/img/Apphomework/huishouYellow.png').end().siblings('.selectInner').find('img').attr('src', '__PUBLIC__/img/Apphomework/xialaBlack.png');//点击的元素图片朝上
+			            $('.fullBack').show();//黑透明背景
+			            $('body').css('overflow-y', 'hidden');//页面禁止滑动
+			            $('.selectFilter').hide().eq(filterIndex).slideDown('fast');//点击相应的列表展开
+			        }
+				},
+				//点击黑背景隐藏
+				filterHide: function(){
+					$('.selectFilter').eq(filterIndex).slideUp('fast', function () {
+			            $('.selectInner').eq(filterIndex).removeClass('active');//点击的元素去掉背景颜色
+			            $('.selectInner').eq(filterIndex).find('img').attr('src', '__PUBLIC__/img/Apphomework/xialaBlack.png');//点击的元素图片朝下
+			            $('.fullBack').hide();//黑透明背景
+			            $('body').css('overflow-y', 'auto');//页面可以滑动
+			        });//点击相应的列表收起
+				},
+				//点击筛选
+				filterExercise: function(e){
+					if(filterIndex == 0) {
+						// 这是题型筛选
+						this.home_topic_type = $(e.currentTarget).attr('typeId');
+						$('.selectName').eq(0).html($(e.currentTarget).text())
+					} else if(filterIndex == 1) {
+						// 这是难度筛选
+						this.difficultyId = $(e.currentTarget).attr('difficultyId');
+						$('.selectName').eq(1).html($(e.currentTarget).text())
+					} else if(filterIndex == 2) {
+						// 这是全部筛选
+						this.status = $(e.currentTarget).attr('status');
+						$('.selectName').eq(2).html($(e.currentTarget).text())
+					}
+
+					$(e.currentTarget).addClass('active').siblings().removeClass('active');
+
+					this.filterHide();
+					// 获取学生错题库列表
+					var data7 = {
+						"page":"SQgetAllID",
+						'func':'SQngetAllDataID'
+					}
+					if (CheckIsIOS()){
+						window.webkit.messageHandlers.iosModel.postMessage(data7);
+					}
+					if (CheckIsAndroid()){
+						AppFunction.postMessage(JSON.stringify(data7))
+					}
+					// this.getExerciseList(this.nativeids);
+
+				},
+				//收藏习题
+				collectExercise: function(e){
+					var that = $(e.currentTarget);
+					if(that.hasClass('active')) {
+						this.iscancel = 1;
+					} else {
+						this.iscancel = 2;
+					}
+
+					this.exerciseId = that.parent().parent().attr('id');
+
+					this.$http.post(this.exerciseCollectUrl, {
+						iscancel : this.iscancel,
+						exercise_id : this.exerciseId,
+						// version_id : this.versionId,
+						course_id : this.courseId,
+						grade_id : this.gradeId,
+						school_term : this.schoolTerm,
+						// chapter_id : this.chapterId,
+						section_id : this.festivalId,
+						knowledge_id: this.knowledgeId,
+						// difficulty_id: this.difficultyId,
+						userId : this.userId,
+						role : this.role
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							if(that.hasClass('active')) {
+								that.removeClass('active').attr('src','__PUBLIC__/img/Apphomework/weishoucang.png');
+
+							} else {
+								that.addClass('active').attr('src','__PUBLIC__/img/Apphomework/yishoucang.png');
+
+							}
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				//跳转到单个习题详情
+				goSingleExercise: function(e){
+					this.exerciseId = $(e.currentTarget).parent().attr('id');
+					window.location.href = '/index.php/ApiInterface/Version1_3/TeacherHomework/exerciseDetails?role='+this.role+'&userId='+userId+'&versionId='+this.versionId+'&courseId='+this.courseId+'&gradeId='+this.gradeId+'&schoolTerm='+this.schoolTerm+'&chapterId='+this.chapterId+'&festivalId='+this.festivalId+'&knowledgeId='+this.knowledgeId+'&exerciseId='+this.exerciseId;
+				},
+				// 获取节（appTop）
+				getFestivalList: function(){
+					this.$http.post(this.exerciseFestivalUrl, {
+						chapter_id: this.chapterId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.exerciseTopData = response.data.data;
+	    					i++;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				//筛选列表（appTop）
+				filterTopList: function(e){
+					var that = $(e.currentTarget);
+			        // 判断点击的是否已经点击过
+			        if (that.hasClass('active')) {
+			            $('.selectFilterTop').slideUp('fast', function () {
+			                that.removeClass('active');
+			                $('.fullBackTop').hide();//黑透明背景
+			                $('body').css('overflow-y', 'auto');//页面可以滑动
+			            });
+			        } else {
+			            $('.fullBackTop').show();//黑透明背景
+			            $('body').css('overflow-y', 'hidden');//页面禁止滑动
+			            $('.selectFilterTop').slideDown('fast');//点击相应的列表展开
+			            that.addClass('active');
+			        }
+				},
+				//点击黑背景隐藏（appTop）
+				filterTopHide: function(){
+					$('.selectFilterTop').slideUp('fast', function () {
+						$('.topFilter').removeClass('active');
+			            $('.fullBackTop').hide();//黑透明背景
+			            $('body').css('overflow-y', 'auto');//页面可以滑动
+			        });
+				},
+				//点击筛选（appTop）
+				filterTopExercise: function(e){
+					if(this.knowledgeId == ''){
+						this.festivalId  = $(e.currentTarget).attr('festivalId');
+					}else{
+							this.knowledgeId = $(e.currentTarget).attr('festivalId');
+					}
+
+
+					$(e.currentTarget).addClass('active').siblings().removeClass('active');
+					this.filterTopHide();
+					// 获取列表
+					var data7 = {
+						"page":"SQgetAllID",
+						'func':'SQngetAllDataID'
+					}
+					if (CheckIsIOS()){
+						window.webkit.messageHandlers.iosModel.postMessage(data7);
+					}
+					if (CheckIsAndroid()){
+						AppFunction.postMessage(JSON.stringify(data7))
+					}
+					$('.topFilter>span').text($(e.currentTarget).text())
+						// this.getExerciseList(this.nativeids);
+				},
+				// 获取知识点（appTop）
+				getKnowledgeList: function(){
+					this.$http.post(this.exerciseKnowledgeUrl, {
+						two_id: this.parentId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.exerciseTopData = response.data.data;
+	    					i++;
+	    					console.log(response)
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				addExercise:function($event){
+
+					if($($event.target).attr('src') == '/Public/img/Apphomework/tianjia.png'){
+						// var knowledge_code = this.gradeId+'_'+this.schoolTerm+'_'+this.chapterId+'_'+$('.topFilter>span').attr('id')+'_0';
+						var data2 = {
+							"page":"SQadd",
+							"data":{
+								"id":$($event.target).parents('.exerciseInner').attr('id'),
+								'is_media':'0',
+								'point':$($event.target).parents('.exerciseInner').find('.score').text(),
+								// 'knowledge_code':knowledge_code,
+								'qutype':$($event.target).parents('.exerciseInner').attr('topic-type'),
+								'quname':$($event.target).parents('.exerciseInner').attr('topic-type-name')
+							}
+						}
+						if (CheckIsIOS()){
+							window.webkit.messageHandlers.iosModel.postMessage(data2)
+						}
+						if(CheckIsAndroid()){
+							AppFunction.postMessage(JSON.stringify(data2))
+						}
+
+						$('.chooseNum').html(parseInt($('.chooseNum').html())+1)
+						if($('.chooseNum').text() >'0'){
+							$('.bottomBtn').css('background','#f2b81a')
+						}
+						$($event.target).attr('src','/Public/img/Apphomework/shanchu.png')
+					}else{
+
+						var id = $($event.target).parents('.exerciseInner').attr('id')
+						var data2 = {
+							"page":"SQdelete",
+							'id':id
+						}
+						if (CheckIsIOS()){
+							window.webkit.messageHandlers.iosModel.postMessage(data2)
+						}
+						if(CheckIsAndroid()){
+							AppFunction.postMessage(JSON.stringify(data2))
+						}
+						$('.chooseNum').html(parseInt($('.chooseNum').html())-1)
+						if($('.chooseNum').text() == '0'){
+							$('.bottomBtn').css('background','#ccc')
+						}
+						$($event.target).attr('src','/Public/img/Apphomework/tianjia.png')
+					}
+
+				},
+
+				returnApp:function(){
+					var data4 = {
+							"page":"backClick"
+						}
+					if (CheckIsIOS()){
+						window.webkit.messageHandlers.iosModel.postMessage(data4)
+					}
+					if(CheckIsAndroid()){
+
+						AppFunction.postMessage(JSON.stringify(data4))
+					}
+
+				},
+				checkWorkDet:function(){
+					if($('.chooseNum').text() == '0'){
+
+					}else{
+						window.location.href = '/index.php/ApiInterface/Version1_3/TeacherHomework/exerciseListPublish?userId='+this.userId+'&role='+this.role+'&versionId='+this.versionId+'&courseId='+this.courseId+'&gradeId='+this.gradeId+'&schoolTerm='+this.schoolTerm+'&chapterId='+this.chapterId+'&festivalId='+this.festivalId
+					}
+				},
+				a:function(){
+
+					// if(localStorage.getItem('shoucang') != null){
+					// 	var shoucang = localStorage.getItem('shoucang').split(',');
+					// 	if(shoucang[1] == '1'){
+					// 		$('#'+shoucang[0]).find('.collectImg').attr('src','/Public/img/Apphomework/weishoucang.png')
+					// 	}else{
+					// 		$('#'+shoucang[0]).find('.collectImg').attr('src','/Public/img/Apphomework/yishoucang.png')
+					// 	}
+					//
+					// }
+
+					// if(localStorage.getItem('id') != null){
+					// 	var id = localStorage.getItem('id').split(',');
+					// 	$('.chooseNum').html('0')
+					// 	if(id != null){
+					// 		if(id[1] == '1'){
+					// 			$('#'+id[0]).find('.addImg').attr('src','/Public/img/Apphomework/shanchu.png');
+					// 			// $('.chooseNum').html(parseInt($('.chooseNum').html())+1)
+					// 		}else{
+					// 			$('#'+id[0]).find('.addImg').attr('src','/Public/img/Apphomework/tianjia.png');
+					// 			// $('.chooseNum').html(parseInt($('.chooseNum').html())-1)
+					// 		}
+					//
+					// 	}
+						// for(var b=0;b<$('.exerciseInner').length;b++){
+						// 	if($('.exerciseInner').eq(b).find('.addImg').attr('src') =='/Public/img/Apphomework/shanchu.png'){
+						//
+						// 		$('.chooseNum').html(parseInt($('.chooseNum').html())+1)
+						// 	}
+						// }
+
+					// }
+
+				}
+			}
+		})
+
+			function SQngetAllCount(result){
+
+				$('.chooseNum').html(result)
+			}
+
+			function SQngetAllDataID(res){
+			
+				app.getExerciseList(res)
+			}
+			function SQngetAllDataID1(res){
+				$('.chooseNum').html(parseInt(res.length))
+				app.getExerciseList(res)
+			}
+			function refresh(){
+				var data7_1= {
+					"page":"SQgetAllID",
+					'func':'SQngetAllDataID1'
+				}
+				if (CheckIsIOS()){
+					window.webkit.messageHandlers.iosModel.postMessage(data7_1);
+				}
+				if (CheckIsAndroid()){
+					AppFunction.postMessage(JSON.stringify(data7_1))
+				}
+			}
+
+		function showWebNav(){}//显示web导航
+		$('.fullBack,.fullBackTop').bind('touchmove', function(e) {
+		e.preventDefault();
+		});
+	</script>
+</html>

@@ -1,0 +1,291 @@
+<layout name="teacher_layout_3"/>
+<!--<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>-->
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<script src="__PUBLIC__/js/exercise/render_2.js?" type="text/javascript"></script>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css"/>
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.js"></script>
+<link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css"/>
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+
+    .exerciseChapterWrapper {
+        margin: 20px 0;
+        padding: 8px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+    }
+
+    .exerciseChapterWrapper.selected {
+        background: green;
+        color: #fff
+    }
+    
+    .main_head {
+        padding: 17px;
+    }
+    
+    .main_content {
+        width: 50%;
+        margin :0 auto;
+    }
+    
+    .btn_copy {
+        color: #595757;
+        background-color: #fff;
+        border: 1px solid #E9C232;
+        font-weight: 600;
+    }
+    
+    .checkbox_choice{
+        width: 20px;
+        height: 20px;
+    }
+    
+    .exercises_{
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+    }
+    
+    #navThumImg1, #navThumImg3, #navThumImg5 {
+        -moz-transform:rotate(20deg);
+        -webkit-transform:rotate(20deg);
+        transform:rotate(20deg);
+    }
+    
+    #navThumImg2, #navThumImg4 {
+        -moz-transform:rotate(-20deg);
+        -webkit-transform:rotate(-20deg);
+        transform:rotate(-20deg);
+    }
+    
+    #navThumImg1:hover,#navThumImg3:hover,#navThumImg5:hover {
+        -moz-animation:rotate_z 0.8s infinite ease;
+        -webkit-animation:rotate_z 0.8s infinite ease;
+        animation:rotate_z 0.8s infinite ease;
+    }
+    
+    #navThumImg2:hover, #navThumImg4:hover {
+        -moz-animation:rotate_f 0.8s infinite ease;
+        -webkit-animation:rotate_f 0.8s infinite ease;
+        animation:rotate_f 0.8s infinite ease;
+    }
+    
+    @-moz-keyframes rotate_z{
+        0%{
+          -moz-transform:rotate(20deg);
+         }
+         100%{
+           -moz-transform:rotate(360deg);
+         }
+      }
+    
+      @-webkit-keyframes rotate_z{
+        0%{
+          -webkit-transform:rotate(20deg);
+         }
+         100%{
+           -webkit-transform:rotate(360deg);
+         }
+      }
+    
+      @keyframes rotate_z{
+        0%{
+          transform:rotate(20deg);
+         }
+         100%{
+           transform:rotate(360deg);
+         }
+      }
+    
+    @-moz-keyframes rotate_f{
+        0%{
+          -moz-transform:rotate(20deg);
+         }
+         100%{
+           -moz-transform:rotate(360deg);
+         }
+      }
+    
+      @-webkit-keyframes rotate_f{
+        0%{
+          -webkit-transform:rotate(20deg);
+         }
+         100%{
+           -webkit-transform:rotate(360deg);
+         }
+      }
+    
+      @keyframes rotate_f{
+        0%{
+          transform:rotate(20deg);
+         }
+         100%{
+           transform:rotate(360deg);
+         }
+      }
+</style>
+
+<div>
+    <a href="javascript:void(0)" title="确定" class="btn btnReturn3">确定</a>
+</div>
+
+<div class="row" style="margin: 0;">
+        <div class="col-md-2" style="font-size:16px;">
+            <label for="all_choice"><input type="checkbox" name="all_choice" id="all_choice" class="checkbox_choice" >&nbsp;全选</label>
+        </div>
+
+        <div class="col-md-10">
+            <div  class="col_child" style="display:none;">
+                <span title="已选择习题" class="btn btn_copy">已选择习题</span>
+                <!------习题编号-----------> 
+            </div>
+        </div>
+    </div>
+<div id="exerciseWrapper"></div>
+    
+    
+
+
+<volist name="other_chose" id="other_chose_item" empty="">
+    <input type="hidden" value="{$other_chose_item}" class="chose_id" />
+</volist>
+
+<script>
+    var chapterId = '{$chapter_id}'; 
+    var exercises = [];
+
+    var startTime = 1;
+    var isShowCorrectAnswer = false;
+
+    var checked_ids='{$checked_ids}';   
+    var homework_id='{$homework_id}'; 
+    
+    var all_other_chose=$('.chose_id');
+
+    var checked_span="<span title='习题编号' attr='0' class='btn btn_copy'>1</span>";  
+    $(function () {
+        loadHomework();
+        /*window.setTimeout(function () {
+            setInterval(function () {
+                startTime = startTime + 1;
+            }, 60000);
+        }, 5000);//5秒后开始计时*/
+    });
+    function loadHomework() {   
+        createExerciseLibraryChapter_copy(chapterId, exercises, null);  
+        if(all_other_chose.length>0){
+            $('.col_child').css('display','block'); 
+            for(var i=0;i<all_other_chose.length;i++){
+                var value=$(all_other_chose[i]).val();    
+                $('.class_'+value).siblings('.exercises_')[0].checked=true;
+                 var number=$('.class_'+value).parent().attr('data-id');
+                var temp=$(checked_span).clone(true);
+                $(temp).text(number);
+                $(temp).attr('attr',number);    
+                $('.col_child').append(temp);
+            }
+        }
+    }
+    
+    //点击全选
+    $("#all_choice").click(function(){
+        var currend_val=$(this)[0].checked;
+        var checkbox_list=$(".exercises_");
+        var checked_tag=true;
+        if(currend_val==false){
+            checked_tag=false;
+            $('.col_child').children('span:not(:eq(0))').remove();
+            $('.col_child').css('display','none');
+        }else{
+            $('.col_child').css('display','block');
+        } 
+        for(var i=0;i<checkbox_list.length;i++)
+        { 
+            if(checked_tag==true){
+                if(checkbox_list[i].checked==false){
+                    var temp=$(checked_span).clone(true);
+                    $(temp).attr('attr',(i+1));
+                    $(temp).text(i+1);
+                    $('.col_child').append(temp);
+                }
+            } 
+            checkbox_list[i].checked=checked_tag;
+          
+        }
+    });
+   
+    //点击单选
+    $('.exercises_').live('click',function(){
+        var all_checkbox_list=$(".exercises_");
+        var checkbox_list=$(".exercises_:checked");
+        if(checkbox_list.length==0){ 
+            $('.col_child').children('span:not(:eq(0))').remove();
+            $('.col_child').css('display','none');
+            $("#all_choice")[0].checked=false;
+        }else{
+            var number=$(this).parent().attr('data-id');
+           if($(this)[0].checked==true){        
+               $('.col_child').css('display','block'); 
+               var temp=$(checked_span).clone(true);
+               $(temp).text(number);
+               $(temp).attr('attr',number);    
+               $('.col_child').append(temp);
+           }else{
+               $('.btn_copy[attr='+number+']').remove();
+           }
+           if(all_checkbox_list.length==checkbox_list.length){
+                $("#all_choice")[0].checked=true;
+            }else{
+                $("#all_choice")[0].checked=false;
+            }
+        }
+    });  
+    
+    
+    //点击确定
+    $(".btnReturn3").click(function(){
+        var string="";
+        var checkbox_list=$(".exercises_:checked"); 
+        if(all_other_chose.length>0){ 
+            for(var i=0;i<checkbox_list.length;i++){ 
+                var val=$(checkbox_list[i]).siblings('.real_question_id').val();    
+                for(var j=0;j<all_other_chose.length;j++){ 
+                    if(val==$(all_other_chose[i]).val()){
+                        break;
+                    }else{
+                        if(j==(all_other_chose.length)-1){ 
+                            string+=val+',';
+                            break;
+                        }
+                    }
+                } 
+            } 
+            //这里开始拼接之前传递过来的数字
+            for(var k=0;k<all_other_chose.length;k++){
+                string+=$(all_other_chose[k]).val()+',';    
+            }
+        }else{
+            for(var i=0;i<checkbox_list.length;i++){
+                string+=$(checkbox_list[i]).siblings('.real_question_id').val()+','; 
+            }
+        } 
+        
+        if(checked_ids==0){
+            checked_ids='';
+        }else{
+            checked_ids='&b_id='+checked_ids;
+        }    
+        if(string==''){
+             location.href="{:U('Teach/homeworkCopy')}&id="+homework_id+checked_ids;
+         }else{
+            string=string.slice(0,(string.length-1)); 
+            location.href="{:U('Teach/homeworkCopy')}&id="+homework_id+checked_ids+"&c_id="+string;
+        }
+    });
+</script>

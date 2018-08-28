@@ -1,0 +1,550 @@
+<layout name="admin_layout"/> 
+<script src="__PUBLIC__/js/pikaday.min.js"></script>
+<link href="__PUBLIC__/css/pikaday.css" type="text/css" rel="stylesheet">
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    } 
+    
+    .phone_box {
+        width:100%; 
+        border:1px solid #ccc; 
+        background:#fff; 
+        position:absolute;
+        top:40.8px;
+        left:0;
+        z-index:9999;
+        display:none;
+    }
+    
+    .phone_ul {
+        padding:5px;
+        width:100%;
+        margin:0;
+        list-style:none;
+        font-size: 14px;
+    }
+    
+    .phone_li {
+        cursor: pointer;
+    }
+    
+    /*----------三期新增加↓↓↓-----------*/
+    .input_control_short{
+        -moz-appearance: none;
+		-webkit-appearance: none;
+		appearance: none;
+		position: relative;
+		border: 1px #d9d9d9 solid;
+		min-height: 2.125rem;
+    	height: 2.125rem;
+		padding: .3125rem;
+		z-index: 0;
+		outline: none;
+		margin: 0 10px;
+    }
+	
+	.input_control_short:hover {
+		border-color: #787878;
+	}
+	
+	.try_a, .use_a {
+		margin-left: 20px;
+	}
+	
+	.try_a:hover, .use_a:hover {
+		text-decoration: underline;
+	}
+	/*----------三期新增加↑↑↑-----------*/
+</style>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.core.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.datepicker.js"></script>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 学生列表" class="button {:session('btntheme')}">&lt; 返回 学生列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/modifyStudentOp" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput" data-show-error-hint="true">
+        <input type="hidden" name="id" value="{$data.id}">
+        <div class="example" data-text="基本信息">
+
+            <div class="form_section">
+                <label for="name">姓名</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="name" id="name" value="{$data.student_name}" data-validate-func="required" data-validate-hint="姓名不能为空">
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="telephone">性别</label> 
+                    <if condition="$data['sex'] eq '男'">
+                        <input type="radio" name="sex" value="1" checked="true"/>男
+                        <input type="radio" name="sex" value="2"/>女<br/>
+                    <else />
+                        <input type="radio" name="sex" value="1" />男
+                        <input type="radio" name="sex" value="2" checked="true"/>女<br/>
+                    </if>
+            </div>
+             
+            
+            <div class="form_section">
+                <label for="email">出生年月</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="birth_date" id="datepicker" value="{$data.birth_date|date='Y-m-d H:i',###}" data-validate-func="required" data-validate-hint="出生年月必填">
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="email">邮箱</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="email" id="email" value="{$data.email}">
+                </div>
+            </div>
+            
+            <in name="Think.session.admin.role" value="1,2">
+                <div class="form_section">
+                    <label for="school_id">所在学校</label>
+
+                    <div class="input-control text full-size">
+                        <select id="school_id" name="school_id" data-validate-func="required" data-validate-hint="学校不能为空">
+                            <option value="">-请选择-</option>
+                            <volist name="schools" id="dataSchool">
+                                <option value="{$dataSchool.id}" <if condition="$data['school_id']==$dataSchool['id']">selected</if>>{$dataSchool.school_name}</option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+            </in>
+            
+            <div class="form_section">
+                <label for="telephone">家长手机号</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="telephone" id="telephone" value="{$data.parent_tel}" data-validate-func="required" data-validate-hint="手机号不能为空" autocomplete="off" style="position: relative;">
+                    <div class="phone_box">
+                       <ul class="phone_ul" id="phone_ul"> 
+                       </ul>
+                    </div> 
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="parent_name">家长姓名</label>
+
+                <div class="input-control text full-size"> 
+                    <!--<select class='parent_name' name='parent_id'>
+                        <option value='0'>请选择家长</option> 
+                    
+                        <volist name="parent_data" id="parent_item" empty="">
+                            <option value='{$parent_item.id}' <if condition="$parent_item['id']==$data['parent_id']">selected</if>>{$parent_item.parent_name}</option> 
+                        </volist>
+                    </select>
+                    -->
+                    <input value="{$data.parent_name}" id="parent_name" name="parent_name" data-validate-func="required" data-validate-hint="请填写家长姓名" disabled="disabled"/>
+                </div>
+            </div> 
+             
+             <!--
+             <div class="form_section">
+                <label for="">密码</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="password" id="password" data-validate-func="required" value="" data-validate-hint="密码">
+                </div>
+            </div>-->  
+            
+            <input type="hidden" value="{$id}" class="teacher_id"/>
+            <div class="form_section">
+                <?php if (!empty($user_auth)): ?>
+                    <table id="listWrapper" class="table striped hovered border" >
+                        <thead>
+                        <tr> 
+                            <th class="text-center">权限</th>
+                            <th class="text-center">开始时间</th>
+                            <th class="text-center">结束时间</th>
+                            <th class="text-center">试用类型</th>
+                            <th class="text-center">试用类型</th>
+                            <th class="text-center">操作</th> 
+                        </tr>
+                        </thead>
+                        <tbody id="body">
+                            <volist name="user_auth" id="authdata">
+                                <tr>
+                                    <input type="hidden" value="{$authdata.id}" class="auth_id"/>
+                                    <td class="text-center">
+                                        {$authdata.auth_name}
+                                    </td>
+                                    <td class="text-center">{$authdata.auth_start_time|date="Y-m-d ",###}</td>
+                                    <td class="text-center">{$authdata.auth_end_time|date="Y-m-d ",###}</td>
+                                    <td class="text-center">
+                                        <if condition="$authdata['timetype'] eq 1 "> 试用时间
+                                            <else /> 使用时间
+                                        </if>
+                                    </td>
+                                    <if condition="$authdata['expired'] eq 1">
+                                        <td class="text-center" >使用中</td>
+                                    <elseif condition="$authdata['expired'] eq 2" />
+                                        <td class="text-center" >未使用</td>
+                                    <else />
+                                        <td class="text-center" >已使用</td>
+                                    </if>
+                                    <td class="text-center" ><span style="cursor:pointer;" class='update_privilege'>修改</span> <span style="cursor:pointer;" class='delete_privilege'>删除</span></td>
+                                </tr>
+                            </volist>
+                        </tbody>
+                    </table>
+                <?php endif ?>
+            </div>
+            
+            <div class="form_section" style="margin-bottom: 200px;">
+                <label for="">分配权限</label>
+                
+                <div class="input-control text full-size">
+                    <button type="button" class="add_button" style="display:none;">返回添加权限</button>
+                    <select id="privilege_type" class="privilege_class" style="margin-top:10px;">
+                            <option value="0">-请选择权限使用类型-</option>  
+                            <option value="1" >试用</option>
+                            <option value="2" >正式</option> 
+                    </select>  
+                    <select id="privilege_category" class="privilege_class" style="margin-top:10px;" >
+                        <option value="0">-请选择权限类型-</option>
+                        <volist name="account_list" id="account_item">
+                            <!--{$data['course_id']==$dataCourse['id']?'selected':''}-->
+                            <option value="{$account_item.id}" >{$account_item.auth_name}</option>
+                        </volist>
+                    </select> 
+                    <input type="text" name="try_time_from" id="try_time_from" class="" readonly  data-validate-hint="开始时间" placeholder="开始时间" style="width:30%;margin-right:20px;margin-top:10px;">
+                    <input type="text" name="try_time_to" id="try_time_to" class="" readonly data-validate-hint="结束时间" placeholder="结束时间" style="width:30%;margin-right:0px;margin-top:10px;">
+                    <input type="button" value="添加权限" class="save_privilege" style="margin-top:10px;" />
+
+                </div> 
+            </div>
+
+        </div>
+        <br>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button {:session('btntheme')}" onclick="return check();">保存</button>
+        </div>
+    </form>
+</div>
+<script>
+    var lispan='<li class="phone_li"><span></span> <span style="display: none;"></span> <span style="display: none;"></span></li>';
+    var option="<option value='0'>-请选择-</option>"; 
+    
+    //手机号按钮发生改变
+     $('#telephone').keyup(function(){
+         var tel=$("#telephone").val(); 
+         if(tel==''){
+            $('.phone_box').hide();
+            $('#parent_name').val('');
+            $("#email").val('');
+         } 
+         $.ajax({
+             type: "post",
+             url: "index.php?m=Home&c=Admin&a=getParentInfo",
+             data: {'tel':tel},
+             dataType: "json",
+             success: function(msg){
+                 $(".phone_li").remove();
+                 if(msg.status=='success'){ 
+                    if(msg.data.length>0){ 
+                        for(var i=0;i<msg.data.length;i++){
+                            if(i==0){ 
+                                $('#parent_name').val(msg.data[i].parent_name); 
+                            }
+                            var temp_li_span=$(lispan).clone(true);
+                            $(temp_li_span).children('span').eq(0).text(msg.data[i].telephone);
+                            $(temp_li_span).children('span').eq(1).text(msg.data[i].parent_name);
+                            $(temp_li_span).children('span').eq(2).text(msg.data[i].email);
+                            $("#phone_ul").append(temp_li_span); 
+                        }
+                        $('.phone_box').show();
+                    }else{ 
+                        $('.phone_box').hide();
+                        $('#teacher_name').val(''); 
+                    }
+                 } 
+             }
+         }) 
+     });
+     
+     //点击新增的
+     $(".phone_li").live('click',function(){    
+         $('#telephone').val($(this).children('span').eq(0).text());
+         $('#parent_name').val($(this).children('span').eq(1).text());  
+         $('.phone_box').hide();
+         $('.phone_li').remove();
+     });
+    
+    Date.prototype.Format = function (fmt) { //author: meizz 
+        var o = {
+            "M+": this.getMonth() + 1, //月份 
+            "d+": this.getDate(), //日 
+            "h+": this.getHours(), //小时 
+            "m+": this.getMinutes(), //分 
+            "s+": this.getSeconds(), //秒 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+            "S": this.getMilliseconds() //毫秒 
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    
+    $("#datepicker").change(function () {
+        var time1 = new Date().Format("yyyy-MM-dd");
+        var time2 = $("#datepicker").val();
+        if (time2 > time1) {
+            $("#datepicker").val('');
+            return false;
+        }
+    });
+    
+    var year=new Date().Format("yyyy"); 
+     var picker = new Pikaday(
+    {
+        field: document.getElementById('datepicker'),
+        firstDay: 1,
+        minDate: new Date('1990-01-01'),
+        maxDate: new Date('2020-12-31'),
+        yearRange: [1990,year]
+    });
+        
+    function notifyOnErrorInput(input){
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+
+    function check() {
+        var parent_ele=$('.parent_name').val();
+        if(parent_ele==0){
+            $.Notify({
+                caption: '提示',
+                content: '需要选择一位家长',
+                type: 'warning'
+            });
+            return false;
+        }
+        
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regTel.test($("#telephone").val())) {
+            $.Notify({
+                caption: '提示',
+                content: '手机号格式不正确',
+                type: 'warning'
+            });
+            return false;
+        }
+        if($("#email").val()!=''){
+            var regEmail = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;  
+            if (!regEmail.test($("#email").val())) {
+                $.Notify({
+                    caption: '提示',
+                    content: '邮箱格式不正确',
+                    type: 'warning'
+                });
+                return false;
+            }
+        }
+            
+        //判断时间是否大于今天
+        var time2 = new Date().Format("yyyy-MM-dd hh:mm:ss"); 
+        var datepicker_time=$('#datepicker').val();
+        if(datepicker_time>time2){
+            $.Notify({
+                caption: '提示',
+                content: '日期不能大于今天',
+                type: 'warning'
+            }); 
+            return false;
+        } 
+        return true;
+    }
+
+</script>
+
+
+<script>
+    $('#telephone').click(function(){
+        if($(".phone_li").length>0){
+            $('.phone_box').toggle();
+        }
+    })
+</script>
+
+<script>
+    function IsDate(mystring) {   
+        var reg = /^(\d{4})-(\d{2})-(\d{2})$/;  
+        var str = mystring;     
+        if (!reg.test(str)  || RegExp.$2>12 || RegExp.$3>31){     
+            return false;  
+        }  
+        return true;  
+    }
+    
+    //点击删除
+    $('.delete_privilege').click(function(){
+        var auth_id=$(this).parent().siblings('.auth_id').val();
+        $.getJSON('index.php?m=Home&c=Admin&a=deletePrivilegeInfo',{id:auth_id,user_id:user_id,role:role},function(msg){
+            if(msg.status==1){
+                alert('删除成功'); 
+                location.reload();
+            }else{
+                alert('删除失败');
+            }
+        });
+    });
+    
+    //请求数据 
+    var auth_primary_id=0;
+    var user_id="{$id}";
+    var role=3;
+    var add_status=1;  
+    $(".update_privilege").click(function(){
+        var auth_id=$(this).parent().siblings('.auth_id').val();
+        $.getJSON('index.php?m=Home&c=Admin&a=getPrivilegeInfo',{id:auth_id,user_id:user_id,role:role},function(msg){
+            if(msg.length){
+                $("#privilege_type").val(msg[0].timetype);
+                $("#privilege_category").val(msg[0].auth_id);
+                $('#try_time_from').val(msg[0].start_time);
+                $('#try_time_to').val(msg[0].end_time);
+                $('.save_privilege').val('修改权限');
+                add_status=2;
+                auth_primary_id=auth_id;
+                $('.add_button').show();
+            } 
+        })
+    });
+
+    //点击返回添加权限
+    $('.add_button').click(function(){
+        $("#privilege_type").val('');
+        $("#privilege_category").val('');
+        $('#try_time_from').val('');
+        $('#try_time_to').val('');
+        $('.save_privilege').val('');
+        $('.add_button').hide();
+        add_status=1;
+        $('.save_privilege').val('添加权限');
+    });
+
+    //点击保存权限
+    $('.save_privilege').click(function(){  
+        
+        if($("#privilege_type").val()==0){
+            $.Notify({
+                caption: '提示',
+                content: '权限使用类型不能为空',
+                type: 'warning'
+            });
+            return false;
+        }
+        if($("#privilege_category").val()==0){
+            $.Notify({
+                caption: '提示',
+                content: '权限类型不能为空',
+                type: 'warning'
+            });
+            return false;
+        }
+        if($('#try_time_from').val()==''){
+            $.Notify({
+                caption: '提示',
+                content: '开始时间不能为空',
+                type: 'warning'
+            });
+            return false;
+        }else{
+            if(IsDate($('#try_time_from').val())==false){
+                    $.Notify({
+                    caption: '提示',
+                    content: '开始时间填写的格式不正确',
+                    type: 'warning'
+                });
+                return false;
+            }
+        }
+        if($('#try_time_to').val()==''){
+            $.Notify({
+                caption: '提示',
+                content: '结束时间不能为空',
+                type: 'warning'
+            });
+            return false;
+        }else{
+            if(IsDate($('#try_time_to').val())==false){
+                    $.Notify({
+                    caption: '提示',
+                    content: '结束时间填写的格式不正确',
+                    type: 'warning'
+                }); 
+                return false;
+            }
+        }
+        
+        
+        var data={
+            save_type:add_status,
+            user_id:user_id,
+            role:role,
+            auth_type:$("#privilege_category").val(),
+            start_time:$('#try_time_from').val(),
+            end_time:$('#try_time_to').val(),
+            use_type:$("#privilege_type").val(),
+            auth_id:auth_primary_id
+        } 
+        
+        $.getJSON('index.php?m=Home&c=Admin&a=savePrivilegeInfo',data,function(msg){
+            if(msg.status==2){
+                $.Notify({
+                    caption: '提示',
+                    content: '操作失败',
+                    type: 'warning'
+                }); 
+            }else if(msg.status==3){
+                $.Notify({
+                    caption: '提示',
+                    content: '填写的时间不能在其他权限的时间范围内',
+                    type: 'warning'
+                });
+            }else{
+                alert('操作成功');
+                location.reload();
+            }
+        });
+    })
+    
+    $(function(){
+        //试用时间
+        $( "#try_time_from" ).datepicker({
+            defaultDate: "+1w",
+			minDate: 0,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'yy-mm-dd',   
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#try_time_to" ).datepicker( "option", "minDate", selectedDate );
+            }
+        });
+
+        $( "#try_time_to" ).datepicker({
+            defaultDate: "+1w",
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'yy-mm-dd',   
+            numberOfMonths: 1,
+            onClose: function( selectedDate ) {
+                $( "#try_time_from" ).datepicker( "option", "maxDate", selectedDate );
+            }
+        }); 
+    });
+</script>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/css/external/easyui.css">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/css/external/icon.css">
+    <script type="text/javascript" src="__PUBLIC__/js/external/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/external/jquery.easyui.min.js"></script>
+    <style type="text/css">
+        .left {
+            width: 80px;
+        }
+
+     
+		body {
+			width: 630px;
+			position: relative;
+			font-family: "Lantinghei SC", "Open Sans", Arial, "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", "STHeiti", "WenQuanYi Micro Hei", SimSun, sans-serif;
+			font-size: 14px;
+			line-height: 1.428571429;
+			color: #333333;
+			margin: 0;
+			overflow-x: hidden
+		}
+		.left td {
+			background: #eee;
+		}
+		
+		.right {
+			width: 630px;
+		}
+		
+		.right table {
+			background: #E0ECFF;
+			width: 630px;
+		}
+		
+		.right td {
+			background: #fafafa;
+			text-align: center;
+			height: 33px;
+		}
+		
+		.right td {
+			background: #fff;
+			padding: 4px;
+		}
+		
+		.right td.drop {
+			background: #fafafa;
+			width: 70px;
+		}
+		
+		.right td.over {
+			background: #FBEC88;
+		}
+		
+		.item {
+			text-align: center;
+			border: 1px solid #333;
+			background: #fff;
+			
+			width: 66px;
+			font-size: 14px;
+		}
+
+        .assigned {
+            border: 0px solid transparent;
+            background-color: transparent;
+        }
+
+    </style>
+    <style>
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 60px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.428571429;
+            color: #555555;
+            background-color: white;
+            background-image: none;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        }
+		.btn {
+			padding: 6px 12px;
+		}
+		
+		.btn-primary {
+			color: white;
+			background-color: #eaca33;
+			border-color: #eaca33;
+		}
+
+        .btn {
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: normal;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            padding: 10px 20px;
+            font-size: 14px;
+            line-height: 1.428571429;
+            border-radius: 4px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+      
+    </style>
+    <script>
+        $(function () {
+            $('.left .item').draggable({
+                revert: true,
+                proxy: 'clone'
+            });
+
+
+            $('.right td.drop').droppable({
+                onDragEnter: function () {
+                    $(this).addClass('over');
+                },
+                onDragLeave: function () {
+                    $(this).removeClass('over');
+                },
+                onDrop: function (e, source) {
+                    $(this).removeClass('over');
+                    if ($(source).hasClass('assigned')) {
+                        $(this).append(source);
+                    } else {
+                        var c = $(source).clone().addClass('assigned');
+                        $(this).empty().append(c);
+                        c.draggable({
+                            revert: true
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+<form id="mainForm" action="__URL__/editTimetable" method="post">
+    <input type="hidden" name="class_id" value="{$classId}">
+    <input type="hidden" name="content" id="content">
+    <input type="hidden" name="is_pan" value="1">
+
+    <div id="timeTable" class="right">
+
+
+    </div>
+
+    <p>课表备注信息： <span id="comments"></span></p>
+</form>
+<script>
+    var status = '{$status}'
+    if (status == 1) {
+        alert('保存成功,可继续编辑');
+    }
+    function submitForm() {
+        var html = $('#timeTable').html();
+        html = html.replace(/\s+|\n/g, " ").replace(/>\s</g, "><");
+        $('#content').val(html);
+        $('#mainForm').submit();
+    }
+</script>
+
+<script src="__PUBLIC__/js/timetable/timetable.js"></script>
+<script>
+    $.ajaxSetup({
+        async : false
+    });
+    timeTableObject.refreshClassTimeTable("{$classId}",'timeTable','comments');
+    $(function () {
+        $('.left .item').draggable({
+            revert: true,
+            proxy: 'clone'
+        });
+
+
+        $('.right td.drop').droppable({
+            onDragEnter: function () {
+                $(this).addClass('over');
+            },
+            onDragLeave: function () {
+                $(this).removeClass('over');
+            },
+            onDrop: function (e, source) {
+                $(this).removeClass('over');
+                if ($(source).hasClass('assigned')) {
+                    $(this).append(source);
+                } else {
+                    var c = $(source).clone().addClass('assigned');
+                    $(this).empty().append(c);
+                    c.draggable({
+                        revert: true
+                    });
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

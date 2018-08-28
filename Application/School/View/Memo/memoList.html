@@ -1,0 +1,141 @@
+<layout name="admin_layout_school"/>
+
+<style>
+	.contentMain {
+		padding: 0;
+	}
+
+	[v-cloak] {
+		display: none;
+	}
+</style>
+
+<div id="admin" v-cloak>
+	<div class="indexOutter overHidden">
+		<div class="standardMain memoTitleContent">
+			<span class="momeText">备忘录</span>
+			<a href="{:U('Memo/createMemo')}" class="commonBtnBlue operateBtnTwo right">创建</a>
+		</div>
+
+		<div class="standardMain memoEmptyBox" v-if="memoData =='' || memoData == null">
+			<img src="__PUBLIC__/img/admin/beiwangluzanwushuju.png" alt="" class="emptyImg">
+		</div>
+		<div class="standardMain memoContent" v-for="(memolist, key, index) in memoData" v-else>
+			<div class="memoDate">
+				{{ key | filtersMonth }}
+			</div>
+			<div class="memoOutter">
+				<a :href="'/index.php?m=School&c=Memo&a=memoDetails&id=' + memoArr.id" class="memoBox" v-for="(memoArr, ind) in memolist">
+					<div class="memoTop">
+						<p class="memoTitle">{{ memoArr.memorandum_title }}</p>
+					</div>
+					<div class="memoBottom">时间：{{ memoArr.day | filtersDate }}</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/jqEllipsis/jquery.ellipsis.js"></script>
+<script src="__PUBLIC__/js/jqEllipsis/jquery.ellipsis.unobtrusive.js"></script>
+
+<script>
+	var admin = new Vue({
+		el: '#admin',
+		data: {
+			// 备忘录地址
+			memoUrl: '/index.php?m=School&c=Memo&a=getMemorandumList',
+			// 备忘录
+			memoData: ''
+		},
+		created: function () {
+			// 获取备忘录
+			this.getMemoList();
+		},
+		methods: {
+			// 获取备忘录
+			getMemoList: function(){ 
+				this.$http.post(this.memoUrl, {
+					
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.memoData = response.data.data;
+    					this.$nextTick(function(){
+							memoTitle();
+						});
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			change: function(e) {
+				var key = $(e.currentTarget).text();
+				key = new Date(key).Format("yyyy年M月");
+				$(e.currentTarget).text() = key
+			}
+		},
+		filters:{
+		    filtersMonth:function (val) {
+		    	val = new Date(val).Format("yyyy年M月");
+		      	return val
+		    },
+		    filtersDate:function (val) {
+		    	// val = new Date(val).Format("M月d日");
+		    	val = val.split('-')[0].replace(/\b(0+)/gi,"") + '月' + val.split('-')[1].replace(/\b(0+)/gi,"") + '日';
+	            return val
+		    }
+	    }
+	})
+</script>
+
+<script>
+	$(function(){
+		var winHeight = $(window).height();
+		$('.memoEmptyBox').css('min-height', winHeight-296);
+	})
+</script>
+
+<!-- 备忘录名称1/2行 靠左/居中对齐 -->
+<script>
+	function memoTitle() {
+		$('.memoTitle').each(function(i){
+			var thisText = $(this).text();
+			var num;
+			if(/^[a-zA-Z]*$/.test(thisText)) {
+				num = 15;
+			} else {
+				num = 10;
+			}
+			if($(this).text().length <= num ) {
+				$(this).addClass('singleLine')
+			} else {
+				$(this).ellipsis({maxWidth:'160',maxLine:2});
+			}
+		})
+	}
+</script>
+
+<!-- 将日期转换为年月日格式 -->
+<script>
+	Date.prototype.Format = function (fmt) { //author: meizz 
+	    var o = {
+	        "M+": this.getMonth() + 1, //月份 
+	        "d+": this.getDate(), //日 
+	        "h+": this.getHours(), //小时 
+	        "m+": this.getMinutes(), //分 
+	        "s+": this.getSeconds(), //秒 
+	        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+	        "S": this.getMilliseconds() //毫秒 
+	    };
+	    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+	    for (var k in o)
+	    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+	    return fmt;
+	}
+</script>
+
+

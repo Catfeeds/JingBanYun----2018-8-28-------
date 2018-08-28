@@ -1,0 +1,86 @@
+<link rel="stylesheet" href="__PUBLIC__/css/bjOrder.css" media="screen" title="no title" charset="utf-8">
+
+		<div class="of paytop">
+		  <div class="of">
+		    <div class="paytitle left">
+		        资源购买
+		    </div>
+		    <div class="right">
+		      <div class="Confirmorder left">
+		        确认订单
+		      </div>
+		      <div class="Confirmpayment left Confirmpayment_active">
+		        确认支付
+		      </div>
+		      <div class="Successfulpayment left">
+		        支付成功
+		      </div>
+		    </div>
+		  </div>
+		    <div class="mt25 Confirmordermsg">
+		      确认订单信息
+		    </div>
+
+		</div>
+		<div class="order_text ">
+				<p class="order_suc colorred">
+					订单提交成功，请您尽快完成支付！
+				</p>
+				<p class="order_num">
+					订单编号：{$order.order_sn}
+				</p>
+				<div class="text-center">
+						<input type="radio" checked="true" name="name" value="" class="mr5"><img src="__PUBLIC__/img/sinology/weixinzhifu.png" alt="" / >  &nbsp;&nbsp;&nbsp;&nbsp;
+						<!--<input type="radio" name="name" value="" class="mr5"><img src="__PUBLIC__/img/sinology/zhifubaozhifu.png" alt="" />-->
+				</div>
+		</div>
+		<div class="width900">
+				<div class="left w400">
+					<div class="top">
+						微信支付：
+						<p class="top_p">您的二维码支付时间还剩<span class="pay_time">120</span>秒,过期后请再获取新的二维码</p>
+					</div>
+					<img src="http://paysdk.weixin.qq.com/qrcode.php?data={$qrcode_rul}" alt="" class="erweima">
+					<div class="text">
+						<div class="left">
+							<img src="__PUBLIC__/img/sinology/saoyisao.png" alt="">
+						</div>
+						<div class="left left_div">
+							请使用微信扫一扫
+							<br> 扫描二维码支付
+						</div>
+
+					</div>
+
+				</div>
+				<div class="right">
+					<img src="__PUBLIC__/img/sinology/shouji.png" alt="">
+
+				</div>
+	</div>
+
+
+	<script>
+		var s = 120*1;
+		function times(){
+			if(s>0){
+				s--;
+				$('.pay_time').html(s)
+			}else{
+				$('.top_p').html('二维码已过期，请重新获取新的二维码')
+				window.location.reload();
+			}
+		}
+		setInterval(times,1000);
+		setInterval(getOrderStatsu,1000);
+		var order_sn = "{$order.order_sn}";
+		var resources_id = "{$order.resources_id}";
+
+		function getOrderStatsu() {
+			$.get('index.php?m=Home&c=OrderManage&a=getOrderStatsu', {order_sn: order_sn}, function (res) {
+				if (res == 'jump') {
+					window.location.href="index.php?m=Home&c=OrderManage&a=successFulpayment&order_sn="+order_sn+'&resources_id='+resources_id;
+				}
+			})
+		}
+	</script>

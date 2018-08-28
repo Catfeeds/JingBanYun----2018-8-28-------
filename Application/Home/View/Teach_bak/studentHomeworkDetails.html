@@ -1,0 +1,115 @@
+<layout name="teacher_layout"/>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回">&lt; 返回</a>
+</div>
+<div style="margin-top: 30px">
+    <form id="info-list" action="__URL__/submitHomework" method="post">
+        <input type="hidden" name="homework_id" id="homework_id" value="{$homeworkId}">
+        <input type="hidden" name="answers" id="answers" value="">
+
+        <div id="homework">
+
+        </div>
+    </form>
+</div>
+<div>
+    <button id="submitHomework" class="btn btn-primary" onclick="submitHomework()">提交</button>
+</div>
+<script>
+    var homeworkId = '{$homework.homework_id}';
+    var homeworkAnswers = '{$homework.answers}';
+    $(function () {
+        loadHomework();
+    })
+    function loadHomework() {
+        //todo
+        var url = 'http://123.56.145.63/Public/questions/q1.html';
+        $('#homework').load(url, function () {
+            loadData();
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    function submitHomework() {
+        var d = getStructuredData();
+        $('#answers').val(d);
+        $('form').submit();
+    }
+    function loadData() {
+        if (homeworkAnswers != '') {
+            var answers = JSON.parse(homeworkAnswers);
+            //
+            //赋值
+            var fields = $('#mainWrapper input,#mainWrapper select,#mainWrapper textarea');
+            $.each(fields, function (i, n) {
+                var name = $(n).attr('name');
+                var data_question = $(n).attr('data-question');
+                var data_points = parseInt($(n).attr('data-points'));
+                var data_answer = $(n).attr('data-answer');
+
+                if (typeof answers[name] != 'undefined') {
+                    $(n).val(answers[name]);
+                    //如果是radio button 则赋值
+                    if ($(n).attr('type') == 'radio' && answers[name] != '') {
+                        var radioName = $(n).attr('name');
+                        $('input[name=' + radioName + '][value=' + answers[name] + ']').attr('checked', 'true');
+                    }
+
+                    if (data_answer != '') {
+                        if (data_answer != answers[name] || answers[name] == '') { //错误答案
+                            $(n).parent().css('color', 'red');
+                            $(n).css('color', 'red');
+                        }
+                    }
+                    if (data_answer != '' && data_answer == answers[name]) { //正确答案
+                        //分数
+                        var s = 0;
+                        var el = $('#q' + data_question + 'Score');
+                        if (el.val() != '') {
+                            s = parseInt(el.val());
+                        }
+                        el.val(s + data_points);
+                        el.css('color', 'red');
+                        var totalEl = $('#totalScore');
+                        var total = $.trim(totalEl.html());
+                        if (total != '') {
+                            total = parseInt(total);
+                        }
+                        totalEl.html(total + data_points);
+                    }
+                }
+            });
+            //评分总分
+
+
+        }
+    }
+    function getStructuredData() {
+        var data = {};
+        var fields = $('#mainWrapper input,#mainWrapper select,#mainWrapper textarea');
+        $.each(fields, function (i, n) {
+            var name = $(n).attr('name');
+            data[name] = $(n).val();
+        });
+        return JSON.stringify(data);
+    }
+
+    function getTotalScore() {
+        var score = $('#q4Score').val();
+        if (score != '') {
+            score = parseInt(score);
+
+            var totalEl = $('#totalScore');
+            var total = $.trim(totalEl.html());
+            if (total != '') {
+                total = parseInt(total);
+            }
+            totalEl.html(total + score);
+        }
+
+
+    }
+
+
+</script>

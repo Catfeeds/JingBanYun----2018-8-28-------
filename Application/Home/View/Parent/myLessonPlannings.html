@@ -1,0 +1,82 @@
+<layout name="parent_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Parent/createLessonPlanning')}" title="创建教案" class="button danger">创建教案</a>
+</div>
+
+<table class="table striped hovered border">
+    <thead>
+    <tr>
+        <th>教案名称</th>
+        <th class="text-center">创建时间</th>
+        <th class="text-center">修改时间</th>
+        <th class="text-center">关联学科</th>
+        <th class="text-center">关联年级</th>
+        <th class="text-center">教材分册</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="暂时没有教案">
+        <tr id="l_{$data.id}">
+            <td>
+                <h3 class="list_title">
+                    {$data.name}
+                </h3>
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">{$data.update_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                {$data.course_name}
+            </td>
+            <td class="text-center">
+                {$data.grade}
+            </td>
+            <td class="text-center">
+                {$data.textbook}
+            </td>
+            <td>
+                <a href="{:U('Parent/modifyLessonPlanning')}&id={$data.id}" title="修改" class="button info"><span class="mif-pencil"></span>修改</a>
+                <button onclick="showDeleteDialog('{$data.id}')" title="删除" class="button danger"><span
+                        class="mif-cross"></span>删除
+                </button>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+
+<div data-role="dialog" id="deleteDialog" class="padding20">
+    <h1>请再次确定您要讲这项记录删除</h1>
+
+
+    <p class="align-right" style="margin-top: 60px;">
+        <button class="button danger" onclick="deleteResource()">确定</button>
+        <button class="button default" onclick="hideDeleteDialog()">取消</button>
+    </p>
+</div>
+
+<script>
+    var currentResourceId = 0;
+    function showDeleteDialog(resourceId) {
+        var dialog = $('#deleteDialog').data('dialog');
+        dialog.open();
+        currentResourceId = resourceId;
+    }
+    function deleteResource() {
+        $.get('index.php?m=Home&c=Teach&a=deleteLessonPlanning', {id: currentResourceId}, function (res) {
+            if (res == 'success') {
+                hideDeleteDialog();
+                window.location.reload();
+            } else {
+                alert('删除失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    function hideDeleteDialog() {
+        var dialog = $('#deleteDialog').data('dialog');
+        dialog.close();
+        currentResourceId = 0;
+    }
+
+</script>

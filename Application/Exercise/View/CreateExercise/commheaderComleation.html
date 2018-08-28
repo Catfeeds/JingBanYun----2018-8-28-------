@@ -1,0 +1,55 @@
+<div class="borderBottom of">
+    <button type="button" name="button" class="tabBtn active left duli">独立题录入</button>
+    <button type="button" name="button" class="tabBtn left fuhe">复合题录入</button><span class="color3baeab ml20 lh32">*复合题：一题含多个小题</span>
+</div>
+<ul class="subjectUl">
+
+    <li class="subjectLi">
+        <span class="color3baeabFixed">试题类型</span>
+        <?php foreach (C('exercisesType') as $exercisesK => $exercisesV): ?>
+        <a href="{:U('CreateExercise/createChoiceExercise?type=')}{$exercisesV.id}&big_paper_id={$big_paper_id}&paper_id={$paper_id}">
+            <?php if ($exercisesV['id'] == $type): ?>
+            <span class="color333 color3baeab"><?=$exercisesV['name']?></span>
+            <?php else: ?>
+            <span class="color333"><?=$exercisesV['name']?></span>
+            <?php endif ?>
+        </a>
+        <?php endforeach ?>
+    </li>
+
+    <li class="subjectLi">
+        <span class="color3baeabFixed">学段</span>
+
+        <?php foreach (C('Studysection') as $studyK => $studyV): ?>
+                <span class="color333 study_id" study_id="<?=$studyV['id']?>"><?=$studyV['name']?></span>
+        <?php endforeach ?>
+        <span class="red classred dn" v-if="subject" style="display:none">*该项为必选项</span>
+    </li>
+    <li class="subjectLi">
+        <div class="subjectDiv color3baeabFixed">科目</div>
+        <?php foreach ($getCourse as $CourseK => $CourseV): ?>
+                <span class="color333 CourseVdata" Courseid="<?=$CourseV['id']?>"  onclick="courseClick(<?=$CourseV['id']?>)"  ><?=$CourseV['name']?></span>
+        <?php endforeach; ?>
+        <span class="red classred dn" v-if="subject" style="display:none">*该项为必选项</span>
+    </li>
+
+    <li class="createCompletionLicontent">
+        <div class="mt10 mb10">
+            <span class="color3baeabFixed textSpan">题目</span>
+            <div class="dib">
+                <script type="text/plain" id="completionA" name="message" style="width:580px"></script>
+            </div>
+            <span class="red classred dn" v-if="subject" style="display:none">*该项为必选项</span>
+        </div>
+        <button type="button" name="button" class="btn mb10 getTxt">生成答案</button>
+        <p class="color3baeab dib">(*点我生成答案输入框)</p>
+        <span class="red classred dn" v-if="subject" style="display:none">*该项为必选项</span>
+        <div class="mb5">
+            <span class="color3baeabFixed mr0">题型展示</span>
+            <select class="selectSize presentation" name="">
+                <option value="">请选择</option>
+            </select>
+            <span class="red classred dn" v-if="subject" style="display:none">*该项为必选项</span>
+        </div>
+
+        <input type="hidden" class="question_type" value="{$type}">

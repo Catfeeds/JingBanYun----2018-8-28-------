@@ -1,0 +1,462 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+
+	.homeworkRight {
+		padding:0 28px;
+	}
+
+	.exerciseOutter .exerciseMain {
+		padding: 0 15px;
+	}
+</style>
+
+<a href="Javascript:history.go(-1);" title="返回" class="btn btnReturn1" style="position: absolute;">返回</a>
+
+<div class="main_opr">
+    <a href="{:U('TeacherHomework/homeworkList')}" title="作业列表" class="btn btn-main-opr btn-main-opr-active">作业列表</a>
+    <a href="{:U('TeacherHomework/publishHomework')}" title="布置作业" class="btn btn-main-opr">布置作业</a>
+    <a href="{:U('TeacherHomework/myCollectionList')}" title="我的收藏" class="btn btn-main-opr">我的收藏</a>
+    <a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+    <a href="{:U('TeacherHomework/testPaperList')}" title="试卷库" class="btn btn-main-opr">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="homeworkLeft homeworkLeftFixed">
+		<div class="homeworkLeftTitle">组题目录</div>
+		<div class="homeworkLeftMain">
+			<div class="homeworkLeftBox" v-for="(VocieData, index) in exerciseListVocieData.data">
+				<div class="homeworkLeftType">{{ index+1 | filtersVoiceNumber }}、{{ VocieData.name}}</div>
+				<div class="homeworkLeftCircleBox">
+					<div class="homeworkLeftCircle" @click="selectExerciseId($event)" v-for="(childVocieData, cindex) in VocieData.data" :exerciseId="childVocieData.id" :class="{active:childVocieData.id == exercisesId}" :category="childVocieData.category">{{ cindex+1 }}</div>
+				</div>
+			</div>
+
+			<div class="homeworkLeftBox" v-for="(VocieData, index) in exerciseListData.data">
+				<div class="homeworkLeftType">{{ index+1 | filtersNumber }}、{{ VocieData.name}}</div>
+				<div class="homeworkLeftCircleBox">
+					<div class="homeworkLeftCircle" @click="selectExerciseId($event)" v-for="(childVocieData, cindex) in VocieData.data" :exerciseId="childVocieData.id" :class="{active:childVocieData.id == exercisesId}">{{ cindex+1 }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="homeworkRight">
+		<div class="exerciseOutter exerciseOutterNoBorder">
+			<div class="oneExerciseBox">
+				<!-- 多媒体题 -->
+				<span v-if="exerciseData.types == 2">
+					<!-- 跟读词汇/跟读句子 -->
+		            <span v-if="exerciseData.ordinary_type == 1 || exerciseData.ordinary_type == 2">
+		                <div class="boxOutter">
+		                    <div class="exerciseTitle">
+		                        <span class="titleVerTop">
+		                            {{ exerciseIndex }}.<span class="scoreSpan">（{{ exerciseData.score }}分）</span>
+		                        </span>
+		                        <div class="wordMain previewBox">
+		                            <img src="__PUBLIC__/img/homeworkV1/videoGray36×30.png" :audioSrc="exerciseData.subject_name" alt="" class="videoPrimary" @click="play($event)">
+		                            <div class="wordRight">
+		                                {{ exerciseData.words }}
+		                            </div>
+		                        </div>
+		                        <audio :src="exerciseData.subject_name" class="audioHide"></audio>
+		                    </div>
+		                </div>
+		            </span>
+		            <!-- 观看视频 -->
+		            <span v-if="exerciseData.ordinary_type == 3">
+		                <div class="boxOutter">
+		                    <div class="exerciseTitle">
+		                        <span class="titleVerTop">
+		                            {{ exerciseIndex }}.<span class="scoreSpan">（{{ exerciseData.score }}分）</span>
+		                        </span>
+		                        <video :src="exerciseData.subject_name" class="outterVideo" controls preload></video>
+		                    </div>
+		                </div>
+		            </span>
+		            <!-- 观看课本 -->
+		            <span v-if="exerciseData.ordinary_type == 4">
+		                <div class="boxOutter">
+		                    <div class="exerciseTitle">
+		                        <span class="titleVerTop">
+		                            {{ exerciseIndex }}.<span class="scoreSpan">（{{ exerciseData.score }}分）</span>
+		                        </span>
+		                        <img :src="exerciseData.subject_name" alt="" class="outterImage">
+		                    </div>
+		                </div>
+		            </span>
+
+				</span>
+				<!-- 普通题题 -->
+				<span v-if="exerciseData.types == 1">
+					<!-- 选择题/选择填空题 -->
+		            <span v-if="exerciseData.is_topic_type == 1 || exerciseData.is_topic_type == 3">
+		                <div class="boxOutter">
+		                    <div class="exerciseTitle">
+		                        {{ exerciseIndex }}.<span class="scoreSpan">（{{ exerciseData.count_score }}分）</span>
+		                        <span class="exerciseStem" v-html="exerciseData.subject_name"></span>
+		                    </div>
+
+		                    <div class="exerciseMain" v-if="exerciseData.is_topic_type == 1">
+		                        <span class="option" v-for="(answerValue, answerIndex) in exerciseData.answer" :class="{w100:exerciseData.class_type != 2 && exerciseData.class_type != 4, w50:exerciseData.class_type == 2, w25:exerciseData.class_type == 4}">
+		                            {{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;
+		                            <span class="exerciseStem" v-html="answerValue"></span>&nbsp;&nbsp;
+		                        </span>
+		                    </div>
+		                    <div class="exerciseMain" v-if="exerciseData.is_topic_type == 3">
+		                        <span class="option" v-for="(answerValue, answerIndex) in exerciseData.answerList" :class="{w100:exerciseData.class_type != 2 && exerciseData.class_type != 4, w50:exerciseData.class_type == 2, w25:exerciseData.class_type == 4}">
+		                            {{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;
+		                            <span class="exerciseStem" v-html="answerValue"></span>&nbsp;&nbsp;
+		                        </span>
+		                    </div>
+
+		                </div>
+		            </span>
+		    
+		            <!-- 连线题 -->
+		            <span v-if="exerciseData.is_topic_type == 4">
+		                暂不支持连线题
+		            </span>
+
+		            <!-- 填空/作图/解答 -->
+		            <span v-if="exerciseData.is_topic_type == 2 || exerciseData.is_topic_type == 5 || exerciseData.is_topic_type == 6">
+		                <div class="boxOutter">
+		                    <div class="exerciseTitle">
+		                        {{ exerciseIndex }}.<span class="scoreSpan">（{{ exerciseData.count_score }}分）</span>
+		                        <span class="exerciseStem" v-html="exerciseData.subject_name"></span>
+		                    </div>
+		                </div>
+		            </span>
+				</span>
+			</div>
+			<div class="dashOutter oneDashOutter">
+				<div class="dashTitle">提交情况 （{{ studentInfoSubmitLength }}/{{ studentInfoAllLength }}）</div>
+				<div class="studentOutter" v-if="studentInfo.correct_list != ''">
+					<div class="dashTitleGray">已批改</div>
+					<div class="studentInner">
+						<!-- 循环这里 -->
+						<a href="javascript:;" class="studentBox" v-for="(ndata, index) in studentInfo.correct_list">
+							<div class="avatarBox">
+								<img :src="ndata.avatar" alt="" class="avatarImg">
+							</div>
+							<div class="studentName">
+								{{ ndata.student_name }}
+								<img src="__PUBLIC__/img/homeworkV1/video.png" alt="" class="videoImg" :audioSrc="ndata.answer" v-if="isVoice == true" @click="playOne($event)">
+								<audio :src="ndata.answer" class="audioHide"></audio>
+							</div>
+							<div class="studentScore">{{ ndata.exercises_score }}分</div>
+						</a>
+					</div>
+				</div>
+
+				<div class="studentOutter" v-if="studentInfo.no_submit_list != ''">
+					<div class="dashTitleRed">未提交</div>
+					<div class="studentInner">
+						<!-- 循环这里 -->
+						<a href="javascript:;" class="studentBox" v-for="(ndata, index) in studentInfo.no_submit_list">
+							<div class="avatarBox">
+								<img :src="ndata.avatar" alt="" class="avatarImg">
+							</div>
+							<div class="studentName">{{ ndata.student_name }}</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+    var userId = "{:session('teacher.id')}";
+    var homeworkId = "{$homeworkId}";
+    var classId = "{$classId}";
+    var exercisesId = "{$exercisesId}";
+
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+            getUrl:"/index.php?m=Home&c=TeacherHomework&a=getOrderedExerciseList",
+            selectExerciseIdList:"",
+            selectExerciseIdArr:[],
+            exerciseListData:[],
+            exerciseListVocieData:[],
+            exerciseListVocieLength: 0,
+			// 这些地方应该都用ID，用姓名不准确，暂时先这么写
+			subject: '',
+			volume: '',
+			url:"/index.php/ApiInterface/Version1_3/TeacherHomework/getExerciseIdAllDetails",
+			exerciseData:{},
+			workUrl:"/index.php?m=Home&c=TeacherHomework&a=getHomeworkDetail",
+            workData:{},
+			exerciseIdList:"",
+            exerciseIdListArr:[],
+            courseId:0,
+            userId:0,
+			getU:"/index.php/ApiInterface/Version1_3/TeacherHomework/studentCorrectHomeWorkSituation",
+            exercisesId:exercisesId,
+			studentInfo:{},
+			studentInfoSubmitLength: 0,
+			studentInfoAllLength: 0,
+			exerciseIndex: 1,
+			isVoice: false
+
+		},
+		created: function () {
+			this.userId = userId;
+			this.homeworkId = homeworkId;
+			this.classId = classId;
+			this.exercisesId = exercisesId;
+			this.getExerciseDetails();
+			this.getHomeworkDetail();
+			this.studentCorrectHomeWorkSituation();
+		},
+		methods: {
+            selectExerciseId:function(event){
+                this.exercisesId = $(event.target).attr('exerciseId');
+                this.getExerciseDetails();
+                this.getHomeworkDetail();
+                this.studentCorrectHomeWorkSituation();
+
+                // 题号
+				this.exerciseIndex = $(event.target).text();
+				if($(event.target).attr('category') != undefined) {
+					// 是否是音频
+					homework.isVoice = true;
+
+					// 其余音频停止播放
+	                $('audio').trigger('pause');
+                    // 其余去掉背景颜色
+                    $('.wordMain').removeClass('active');
+                    // 所有音频图标重置
+                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                    // 所有学生音频图标重置
+                    $('.videoImg').attr('src', '__PUBLIC__/img/homeworkV1/video.png');
+                    
+				} else {
+					homework.isVoice = false;
+				}
+			},
+            studentCorrectHomeWorkSituation: function(){
+				this.$http.post(this.getU, {
+					homeworkId : this.homeworkId,
+					classId:this.classId,
+                    exercises_id:this.exercisesId,
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						this.studentInfo = response.data.data;
+						if(this.studentInfo) {
+							this.studentInfoSubmitLength = this.studentInfo.submit_student_count.length;
+							this.studentInfoAllLength = this.studentInfo.allStudent.length;
+						}
+					} else {
+						console.log('错误1')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+
+            getHomeworkDetail: function(){
+                this.$http.post(this.workUrl, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                    exercise_id_list:this.exercisesId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.workData = response.data.data;
+                        this.courseId = this.workData.course_id;
+						for (var i=0;i<this.workData.exerciseList.length;i++){
+                            this.exerciseIdListArr.push(this.workData.exerciseList[i].exercises_id);
+						}
+						this.exerciseIdList = this.exerciseIdListArr.join(",");
+                        this.getOrderedExerciseList();
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            getExerciseDetails: function(){
+                this.$http.post(this.url, {
+                    homeworkId : this.homeworkId,
+                    classId:this.classId,
+                    exercise_id_list:this.exercisesId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.exerciseData = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            getOrderedExerciseList: function(){
+                this.$http.post(this.getUrl, {
+                    courseId : this.courseId,
+                    id:this.exerciseIdList,
+                    userId:this.userId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.DataInfo =  $.parseJSON(response.body).data;
+
+                        if (this.DataInfo[0]['name'] == "语音作业") {
+                            this.exerciseListVocieData = this.DataInfo[0];
+                            this.exerciseListVocieLength = this.DataInfo[0].data.length;
+
+                            if (this.DataInfo[1]!=undefined) {
+                                this.exerciseListData = this.DataInfo[1];
+                            }
+
+                        } else {
+                            this.exerciseListVocieData=[];
+                            this.exerciseListData = this.DataInfo[0];
+                        }
+
+                        // 选中题的题号
+                        this.$nextTick(function(){
+		                    $('.homeworkLeftCircle').each(function(i, n){
+		                    	if($(this).hasClass('active')) {
+		                    		// 题号
+									homework.exerciseIndex = $(this).text();
+									if($(this).attr('category') != undefined) {
+										// 是否是音频
+										homework.isVoice = true;
+									}
+		                    	}
+
+							})
+		                })
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            // 播放音频
+            play: function(e){
+                var that = $(e.currentTarget);
+                var player = that.parent('.wordMain').siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if(newUrl != '' && newUrl != null) {
+	                if (player.paused){
+	                    // 其余音频停止播放
+	                    $('audio').trigger('pause');
+	                    // 其余去掉背景颜色
+	                    $('.wordMain').removeClass('active');
+	                    // 所有音频图标重置
+	                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+
+	                    // 所有学生音频图标重置
+	                    $('.videoImg').attr('src', '__PUBLIC__/img/homeworkV1/video.png');
+
+	                    that.parent('.wordMain').siblings('.audioHide').attr('src', newUrl);
+	                    player.play();
+	                    that.parent('.wordMain').addClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoYellow36×30.gif');
+	                    player.loop = false;
+	                    player.addEventListener('ended', function () {
+	                        that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+	                    }, false);
+	                } else {
+	                    player.pause();//暂停
+	                    that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+	                }
+	            } else {
+                	$.NotifyBox.NotifyPromptOne('提示', '音频为空', '确定');
+                }
+            },
+            // 播放单个学生音频
+            playOne: function(e){
+                var that = $(e.currentTarget);
+                var player = that.siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if(newUrl != '' && newUrl != null) {
+                	if (player.paused){
+	                    // 其余音频停止播放
+	                    $('audio').trigger('pause');
+	                    // 其余去掉背景颜色
+	                    $('.wordMain').removeClass('active');
+	                    // 所有音频图标重置
+	                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+
+	                    // 所有学生音频图标重置
+	                    $('.videoImg').attr('src', '__PUBLIC__/img/homeworkV1/video.png');
+	                    that.siblings('.audioHide').attr('src', newUrl);
+	                    player.play();
+	                    that.attr('src', '__PUBLIC__/img/homeworkV1/video.gif');
+	                    player.loop = false;
+	                    player.addEventListener('ended', function () {
+	                        that.attr('src', '__PUBLIC__/img/homeworkV1/video.png');
+	                    }, false);
+	                } else {
+	                    player.pause();//暂停
+	                    that.attr('src', '__PUBLIC__/img/homeworkV1/video.png');
+	                }
+                } else {
+                	$.NotifyBox.NotifyPromptOne('提示', '音频为空', '确定');
+                }
+                
+            }
+
+        },
+        filters:{
+            filtersVoiceNumber:function (val) {
+                val = num(val+"");
+                return val
+            },
+            filtersNumber:function (val) {
+                val = val + homework.exerciseListVocieLength;
+                val = num(val+"");
+                return val
+            }
+        }
+	})
+</script>
+
+<script>
+    function num(n) {
+        if(!/(^[1-9]\d*$)/){
+            return '非法数字';
+        }
+        var uppercase = '千百亿千百十万千百十个';
+        var nLength = n.length;
+        var newStr = '';
+        if(uppercase.length-nLength<0){
+            return '数字过长';
+        }
+        uppercase=uppercase.substr(uppercase.length-nLength);
+        for(var i=0; i < nLength; i++){
+            newStr +='零一二三四五六七八九'.charAt(n[i])+uppercase.charAt(i);
+        };
+        newStr = newStr.substr(0,newStr.length-1);
+        return newStr;
+    }
+</script>
+
+<script>
+	$(function(){
+		var contentHeight = $('#contentWrapper').height();
+		$('.exerciseOutter').css('min-height', contentHeight);
+	})
+</script>

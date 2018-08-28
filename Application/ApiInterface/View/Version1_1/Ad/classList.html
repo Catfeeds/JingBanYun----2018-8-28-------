@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>班级列表</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		html, body, img {
+			width: 100%;
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Carousel/carousel_class1_1.png">
+	<img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Carousel/carousel_class1_2.png" onclick="return href()">
+	
+	<script typet="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script>
+		var jump_type="{$jump_type}";
+		var url="{$url}";
+
+
+		function CheckIsAndroid() {
+			var browser = {
+				versions: function () {
+					var u = navigator.userAgent,
+							app = navigator.appVersion;
+					return { //移动终端浏览器版本信息
+						ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+						android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+						iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+						iPad: u.indexOf('iPad') > -1, //是否iPad
+					};
+				}(),
+			}
+			//if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+			//    return false;
+			//}
+			if (browser.versions.android)
+				return true;
+			return false;
+		}
+
+
+		function CheckIsIOS() {
+			var browser = {
+				versions: function () {
+					var u = navigator.userAgent,
+							app = navigator.appVersion;
+					return { //移动终端浏览器版本信息
+						ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+						android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+						iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+						iPad: u.indexOf('iPad') > -1, //是否iPad
+					};
+				}(),
+			}
+			if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+				return true;
+			}
+		}
+
+		function href() {
+
+			if(url == null || url == undefined || url == '') {
+				return false;
+			}
+
+			if (jump_type == 1) {
+				window.location.href=url;
+				return false;
+			} else {
+				var data = {
+					"type":2,
+					"url":url,
+					"weburl":"{$url}",
+				};
+			}
+
+			if(CheckIsIOS()) {
+				window.webkit.messageHandlers.iosModel.postMessage(data);
+			} else {
+				var json = JSON.stringify(data);
+				AppFunction.goNext(json);
+			}
+
+			/*if(CheckIsAndroid()) {
+				var json = JSON.stringify(data);
+				AppFunction.goNext(json);
+			}*/
+		}
+
+		function goNext(data){
+
+		}
+
+	</script>
+
+</body>
+</html>

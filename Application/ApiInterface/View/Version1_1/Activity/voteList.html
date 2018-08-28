@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<title>活动详情</title>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	<style>
+		* {
+			padding: 0;
+			margin: 0;
+			color: #333
+		}
+
+		.title {
+			line-height: 20px;
+			font-size: 20px;
+			border-left: 5px solid #f06358;
+			margin: 20px;
+			text-indent: 5px;
+		}
+
+		.content {
+			border-top: 1px solid #ededed;
+		}
+
+		.content li {
+			margin-left: 5%;
+			list-style: none;
+				border-top: 1px solid #ededed;
+		}
+		.left{
+			float: left;
+		}
+		.of{
+			overflow: hidden;
+		}
+		.activity_img{
+			width: 80px;
+			height: 80px;
+			margin: 10px 10px 10px 0;
+		}
+		li .name{
+			font-size: 18px;
+			width: 100px;
+			display: inline-block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-weight: bold;
+			line-height: 30px;
+			margin-top:10px
+		}
+		.name_span{
+			font-size: 18px;
+			display: inline-block;
+			overflow: hidden;
+			line-height: 30px;
+			margin-right: 8px;
+			margin-top:10px
+		}
+		.ellipsis{
+			display: block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+
+			font-size: 18px;
+
+
+		}
+		.time{
+			line-height: 25px
+		}
+		.red{
+			color: #f06358
+		}
+		.right{
+			float: right;
+		}
+
+		.w70 {
+			width: 65%;
+		}
+		.w30{
+			width: 30%;
+		}
+		@media(min-width:410px){
+			.w70 {
+				width: 75%;
+			}
+			.w30{
+				width: 25%;
+			}
+
+		}
+		@media(min-width:600px){
+			.w70 {
+				width: 80%;
+			}
+			.w30{
+				width: 100px;
+			}
+			li .name{
+				width: 450px
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="title">
+		我要投票
+	</div>
+	<div class="content">
+		<ul>
+			<volist name="data" id="data">
+			<li class="of">
+				<a href="__URL__/votingDetails?id={$data.id}&userId={$userId}&role={$role}&activity_id={$id}">
+				<div class="left w30">
+					<img src="{$oss_path}{$data.img_path}" alt="" class="activity_img">
+				</div>
+				<div class="left w70">
+				<div class="of">
+					<p class="name left">{$data.title}</p>
+					<?php if(time() < $data['votestart']) echo '<p class="name_span red right">(未开始)</p>';
+                     else if(time() <= $data['voteend'] && (time() >= $data['votestart'])) echo '<p class="name_span red right">(投票中)</p>';
+					 else echo '<p class="name_span right">(已结束)</p>';
+					?>
+					</div>
+					<p class="time ellipsis">开始：{$data.votestart|date="Y-m-d H:i",###}</p>
+					<p class="time ellipsis">结束：{$data.voteend|date="Y-m-d H:i",###}</p>
+				</div>
+				</a>
+			</li>
+            </volist>
+		</ul>
+	</div>
+</body>
+
+</html>

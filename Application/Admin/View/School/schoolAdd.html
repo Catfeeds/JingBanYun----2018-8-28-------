@@ -1,0 +1,205 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		学校管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('School/schoolList')}">学校管理</a>>>
+			<a href="javascript:;">创建学校</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form action="" method="post" onsubmit="return checkInfo()">
+<div class="blueBox">
+	<span class="blueText left fs16">创建学校</span>
+	<a href="javascript:;" class="blackText right submitA mr20" id="">
+		<label for="submitSave"><img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="mr5"></label>
+		<input type='submit' class="submitInput" id="" value='保存信息'/>
+	</a>
+</div>
+<hr class="thin bg-grayLighter"> 
+
+	<!--<p class="blueText fs16">教师查询</p>-->
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+                        <div class="cell">
+				<label>省份：</label>
+				<select id="province_list" class="input-control" name="province" required>
+					<option value="0">-请选择-</option>
+				    <volist name="province_list" id="province_item">
+                                        <option value="{$province_item.id}" >{$province_item.name}</option>    
+                                    </volist>
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>市区：</label>
+				<select id="city_list" class="input-control" name="city" required>
+					<option value="0">-请选择-</option> 
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>区县：</label>
+				<select id="district_list" class="input-control" name="district" required>
+					<option value="0">-请选择-</option> 
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>学校名称：</label>
+				<input type="text" class="input-control school_name" name="school_name"  placeholder="请输入学校名称"  autocomplete="off" required>
+				<span class="redStar">*</span>
+			</div>
+                        <div class="cell">
+				<label>学校地址：</label>
+				<input type="text" class="input-control school_address" name="school_address"  placeholder="请输入学校地址"  autocomplete="off" required>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>学校代码：</label>
+				<input type="text" class="input-control school_code" name="school_code"  placeholder="创建自动生成学校代码"  autocomplete="off" disabled>
+			</div>
+			<div class="cell">
+				<label>学校性质：</label>
+				<select id="school_category" class="input-control" name="school_category" required>
+					<option value="">-请选择-</option>
+                                    <volist name="school_category" id="category_item" > 
+                                        <option value="{$key}" >{$category_item}</option>
+                                    </volist>
+				</select>
+				<span class="redStar">*</span>
+			</div> 
+			<div class="cell">
+				<label>负责人姓名：</label>
+				<input type="text" class="input-control obligation_person" name="obligation_person"  placeholder="请输入负责人姓名"  autocomplete="off">
+			</div>
+			<div class="cell">
+				<label>负责人手机号：</label>
+				<input type="text" class="input-control obligation_tel" name="obligation_tel"  placeholder="请输入负责人手机号"  autocomplete="off">
+			</div>
+			<div class="cell">
+				<label>负责人邮箱：</label>
+				<input type="text" class="input-control obligation_email" name="obligation_email"  placeholder="请输入负责人邮箱"  autocomplete="off">
+			</div>
+		</div>
+	</div>
+</form>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+    var temp_option="<option value='0'>-请选择-</option>";
+        //省份发生变化
+        $('#province_list').change(function(){ 
+            $("#city_list option:not(:eq(0))").remove();
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#province_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getCityByProvince')}",
+                dataType:"json",
+                data:{'province_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#city_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        
+        //城市发生变化
+        $('#city_list').change(function(){ 
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#city_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getDistrictByCity')}",
+                dataType:"json",
+                data:{'city_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#district_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        
+        //验证
+        function checkInfo(){   
+                var province_val,city_val,district_val,school_val,school_address;
+                province_val=$("#province_list").val();
+                city_val=$("#city_list").val();
+                district_val=$("#district_list").val();
+                school_val=$(".school_name").val();
+                school_address=$('.school_address').val();
+                if(province_val==0){
+                    $.NotifyBox.NotifyOne('注意','省份不能为空！','确定');
+                    return false;
+                }
+                if(city_val==0){
+                    $.NotifyBox.NotifyOne('注意','城市不能为空！','确定');
+                    return false;
+                }
+                if(district_val==0){
+                    $.NotifyBox.NotifyOne('注意','区县不能为空！','确定');
+                    return false;
+                }
+                if(school_val==''){
+                    $.NotifyBox.NotifyOne('注意','学校不能为空！','确定');
+                    return false;
+                }
+                if(school_address==''){
+                    $.NotifyBox.NotifyOne('注意','学校地址不能为空！','确定');
+                    return false;
+                }
+                
+                var school_category=$('#school_category').val();       
+                if(school_category==''){ 
+                    $.NotifyBox.NotifyOne('注意','请选择学校类型！','确定');
+                    return false;
+                }  
+            
+		//联系人姓名
+		var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		var linkmanName = $('.obligation_person').val();
+                if(linkmanName!=''){
+                    if (!regName.test(linkmanName)) {
+                            $.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+                            return false;
+                    } 
+                }    
+		
+		//联系人电话
+		var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		var linkmanPhone = $('.obligation_tel').val();
+                if(linkmanPhone!=''){
+                    if (!regMobilePhone.test(linkmanPhone)) { 
+                            $.NotifyBox.NotifyOne('注意','手机号格式错误！','确定');
+                            return false;
+                    }
+                }
+		
+		//联系人邮箱
+		var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+		var linkmanEmail = $('.obligation_email').val();
+                if(linkmanEmail!=''){
+                    if (!regEmail.test(linkmanEmail)) { 
+                            $.NotifyBox.NotifyOne('注意','邮箱格式错误！','确定');
+                            return false;
+                    }
+                }  
+		return true;
+	}
+</script>

@@ -1,0 +1,68 @@
+<ul id="Classmate_ul">
+	<volist name="allgroup_list" id="allgroupinfo">
+		<div class="stu_div">
+
+			<li>
+				<?php if (preg_match('/Resources/', $allgroupinfo['avatar'])): ?>
+					<img class="student_avatar" src=<?=C( 'oss_path').$allgroupinfo[ 'avatar']?> />
+					<?php else: ?>
+						<img class="student_avatar" src="__ROOT__/Uploads/StudentAvatars/{$allgroupinfo.avatar}">
+						<?php endif; ?>
+
+							<img class="kezhuo" src="/Public/DigitalClassroom/images/2kezhuo.gif">
+							<span class="student_kezhuo_name cut-off">{$allgroupinfo.student_name}</span>
+							<img class="kezhuo_lock" src="/Public/DigitalClassroom/images/lock.png" style="display: none;">
+			</li>
+			<?php if (in_array($allgroupinfo['sid'],$instu)): ?>
+
+			<img src="__PUBLIC__/img/icon/zaned.png" alt="" style="width: 25px; margin-right: 5px;position: relative;top: 8px;" class="stu_zan student_{$allgroupinfo.sid}isclick" id="{$allgroupinfo.sid}">
+			<?php else: ?>
+			<img src="__PUBLIC__/img/icon/zan.png" alt="" style="width: 25px; margin-right: 5px;position: relative;top: 8px;" class="stu_zan student_{$allgroupinfo.sid}isclick" id="{$allgroupinfo.sid}">
+			<?php endif ?>
+			<button class="addCommentBtn" id="{$allgroupinfo.sid}">添加评论</button>
+
+		</div>
+	</volist>
+</ul>
+<div id="addcomment">
+	<p>添加评论</p>
+	<textarea class="pinglun" name="" id="" cols="30" rows="10" maxlength="500"></textarea>
+	<button class="queadd">确定</button>
+	<button class="commentNone">取消</button>
+</div>
+<script>
+
+  $('.stu_zan').click(function(){
+	  var stuid = $(this).attr('id');
+	  var src = $(this).attr('src');
+	  var sendstuid = studentId;
+	  var tostuid = stuid;
+	  var roomid = classroomId;
+
+	  if( src == '__PUBLIC__/img/icon/zan.png'){ //点赞
+		  $(this).attr('src','__PUBLIC__/img/icon/zaned.png');
+
+		  $.get("index.php?m=Home&c=DigitalClassroom&a=haszan",{'sendstuid':sendstuid,'tostuid':tostuid,'roomid':roomid},function(msg){
+				if ( msg.code == 200 ) {
+					socket.emit('hasZan', my_room + '|' + msg.stucount + '|' + stuid);
+				}
+		  });
+
+	  }else{ //取消点赞
+		  $(this).attr('src','__PUBLIC__/img/icon/zan.png');
+
+		  $.get("index.php?m=Home&c=DigitalClassroom&a=quxiaohaszan",{'sendstuid':sendstuid,'tostuid':tostuid,'roomid':roomid,'status':2},function(msg){
+			  if ( msg.code == 200 ) {
+				  socket.emit('hasZan', my_room + '|' + msg.stucount + '|' + stuid);
+			  }
+		  });
+
+
+	  }
+  })
+
+  requestList();
+  function requestList() {
+	  socket.emit('request_list', my_room);
+  }
+</script>

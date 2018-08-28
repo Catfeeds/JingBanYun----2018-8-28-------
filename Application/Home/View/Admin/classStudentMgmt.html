@@ -1,0 +1,472 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+ 
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<style>
+    /*-------------导入框----------------*/
+    #import_outer{display:none;}
+    .import{width:800px;height:400px;position:fixed;left:50%;top:50%;margin-left:-400px;margin-top:-200px;background: url(__PUBLIC__/img/home/44.png) no-repeat left top;background-size:100% 100%;z-index:9999}
+    .close_btn{float:right;margin:10px 15px 0 0;cursor:pointer;}
+    .close_btn img { width:20px;}
+    .info .title_content{width: 115px;}
+    .item{width:28%;}
+    .download_form {width:100%;margin:80px 0 50px 55px;}
+    .browse{width:100%;margin-left:70px;}
+    .browse input{width:500px;}
+    .file{width:100%;margin:30px 0 0 70px;}
+    .outer{width:500px;height:17px;border:1px solid #ccc;float:left;margin-top:8px;}
+    .inner{width:2%;height:15px;background:#E9C232;}
+/*-----------------导入成功-------------------*/
+    .import_success,.import_fail,.export_success,.export_fail{display:none;width:500px;height:300px;position:fixed; top:50%;left:35%;z-index:9999;background:url(/Public/img/home/30.png) no-repeat center;background-size: 100% 100%;}
+    .success_top,.fail_top{overflow:hidden;padding:50px 0 0 80px;}
+    .success_top img,.fail_top img{width:30%;float:left;}
+    .success_top p,.fail_top p{float:left;font-size:40px;color:#666;padding-top:35px;}
+    .success_bottom,.fail_bottom{text-align: center;}
+    .success_bottom button,.fail_bottom button{width:120px;height: 50px;border:none;background: url(__PUBLIC__/img/home/15.png) no-repeat left top;background-size:100% 100%;color:#fff;font-size:20px;        position:relative;
+        top:20px;}
+</style>
+<style>
+    .check_child,.check_all {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .notice_message{
+        display:none;
+    }
+    .back_class{
+        display: none;
+    }
+	
+</style>
+<input type="hidden" value="{$class_id}" id="class_id"/>
+<div style="text-align: right;" class="search_class">
+    <div class="input-control text" data-role="input" style="width: 320px;">
+        <input type="text" value="{$keyword}" id="keyword" name="keyword" placeholder="学生姓名或家长姓名">
+        <button onclick="search()" class="button"><span class="mif-search"></span></button>
+    </div>
+</div>
+
+<div class="back_class">
+    <a href="{:U('Admin/classStudentMgmt?id=')}{$class_id}" attr="" class="button">返回</a>
+</div>
+
+<div style="padding-top: 15px;width: 894px;" class="notice_message">
+    <div style="margin-bottom: 6px;">异常消息：你有5条数据导入失败,以下是导入失败的信息。</div> 
+</div>
+
+<in name="Think.session.admin.role" value="1,2,3"> 
+
+    <div style="margin-bottom: 12px;float:left;" class="create_class">
+        <a href="{:U('Admin/createClassStudent?class_id=')}{$class_id}" title="创建班级" class="button {:session('btntheme')}">创建班级学生</a>
+    </div>
+
+
+    <div style="margin-bottom: 12px;float:right;" class="import_class">
+        <a href="javascript:;" id="import_btn" class="button">批量导入</a>
+        <a href="javascript:;" id="export_btn" class="button" style="">批量导出</a>
+        <a href="{:U('Admin/exportedClassStudentAll')}&id={$class_id}{$condition_str}" id="exportAll_btn" class="button" style="">导出全部</a>
+    </div>
+</in>
+<table id="listWrapper" class="table striped hovered border">
+    <thead class="class_thead">
+    <tr class="tr_head_info">
+        <th><input type="checkbox" class="check_all">全选</th>
+        <th>学生姓名</th>
+        <th class="text-center">学生性别</th>
+        <th class="text-center">出生年月</th>
+        <th class="text-center">家长姓名</th>
+        <th>家长邮箱</th>
+        <th >家长手机号</th>
+        <th  class="text-center">操作</th> 
+    </tr>
+    </thead>
+    <tbody id='body'>
+    <volist name="list" id="data" empty="">
+        <tr id="l_{$data.id}" style="line-height:30px;" class="tr_body_info"> 
+            
+            <td><input type="checkbox" class="check_child" name='checkbox' attr="{$data.id}"></td>
+            <td> 
+
+                {$data.student_name}
+            </td>
+            <td class="text-center">
+                {$data.sex}
+            </td>
+            <td class="text-center">
+                {$data.birth_date|date="Y-m-d",###}
+            </td>
+            <td class="text-center">
+                {$data.parent_name}
+                <!--{$data.create_at|date="Y-m-d H:i",###}-->
+            </td>
+            <td>
+                {$data.email}
+            </td>
+            <td >
+                {$data.telephone}
+            </td> 
+            <td class="text-center">
+                <in name="Think.session.admin.role" value="1,2,3">
+                    <input type="hidden" value="{$data.id}" class="hidden_id"/>
+                     
+                    <a href="{:U('Admin/modifyClassStudent?id=')}{$data.id}&class_id={$class_id}" class="button">修改</a> 
+                    <a href="##" attr="{$data.id}" class="button delete_button">删除</a>
+                </in>
+                
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>    <input type="hidden" value="{$class_id}" name="class_id" id="class_id"/>
+<div class="Pagination">{$page}</div>
+<in name="Think.session.admin.role" value="1,2,3">
+   
+<!--------------------批量导入----------------------------->
+<div id="import_outer" style="background:#fff;">
+    <div class="import">
+        <div class="close_btn">
+            <img src="__PUBLIC__/img/home/close.png" alt="">
+        </div>
+        <div class="download_form">
+            <a href="{:U('Admin/downloadClassStudentFile')}" target="_blank" title="下载" class="button">下载示例表格</a>
+        </div>
+        <div class="browse">
+            <input type="text" id="address" placeholder="链接地址" >
+            <a href="javascript:;" title="浏览" class="button browse_button">浏览</a>
+            <input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+            <a href="javascript:;" title="上传" class="button upload_file">上传</a>
+        </div>
+<!--
+        <div class="file">
+            <div class="outer">
+                <div class="inner">
+                
+                </div>
+            </div>
+            <a href="javascript:;" style="float:left;margin-left:5px;" title="请选择上传文件" class="button">请选择上传文件</a>
+        </div>
+-->
+    </div>
+</div>
+
+<!-------------------导入成功---------------------->
+    <div class="import_success">
+        <div class="success_top">
+            <img src="__PUBLIC__/img/home/32.png" alt="">
+            <p>导入成功！</p>
+        </div>
+        <div style="position:relative;left:20px">
+            导入成功的学生默认已经在平台注册, 请学生使用初始密码123456登录平台
+        </div>
+        <div class="success_bottom">
+            <button type="submit" class="im_success_sure">确定</button>
+        </div>
+
+    </div>
+<!-------------------导入失败---------------------->
+<div class="import_fail">
+    <div class="fail_top">
+        <img src="__PUBLIC__/img/home/31.png" alt="">
+        <p>导入失败！</p>
+    </div>
+    <div class="fail_bottom">
+        <button type="submit" class="im_fail_sure">确定</button>
+    </div>
+</div>
+
+<!-------------------导出成功---------------------->
+<div class="export_success">
+    <div class="success_top">
+        <img src="__PUBLIC__/img/home/32.png" alt="">
+        <p>导出成功！</p>
+    </div>
+    <div class="success_bottom">
+        <button type="submit" class="ex_success_sure">确定</button>
+    </div>
+</div>
+<!-------------------导出失败---------------------->
+<div class="export_fail">
+    <div class="fail_top">
+        <img src="__PUBLIC__/img/home/31.png" alt="">
+        <p>导出失败！</p>
+    </div>
+    <div class="fail_bottom">
+        <button type="submit" class="ex_fail_sure">确定</button>
+    </div>
+</div>
+</in>   
+    <script>
+        /*
+        function lock(id) {
+            $.get('index.php?m=Home&c=Admin&a=lockTeacherAccount', {id: id}, function (res) {
+                if (res == 'success') {
+                    alert('锁定成功')
+                    window.location.reload();
+                } else {
+                    alert('锁定失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+        function unlock(id) {
+            $.get('index.php?m=Home&c=Admin&a=unlockTeacherAccount', {id: id}, function (res) {
+                if (res == 'success') {
+                    alert('解锁成功')
+                    window.location.reload();
+                } else {
+                    alert('解锁失败，请刷新页面后重新尝试');
+                }
+            })
+        }*/
+        //点击批量导出
+        $('#export_btn').click(function(){
+            var check_input=$('#body').find("[name='checkbox']:checked");
+            if(check_input.length<1){
+                $.Notify({
+                    caption: '提示',
+                    content: '请勾选您要导出的账号',
+                    type: 'warning'
+                });
+                return false;
+            }
+            var string="",form="";
+            form = $("<form></form>");
+            form.attr('action',"index.php?m=Home&c=Admin&a=exportedClassStudent");
+            form.attr('method','post');
+            
+            for(var i=0;i<check_input.length;i++){ 
+                var temp_val=$(check_input[i]).attr('attr'); 
+                var temp= $("<input type='hidden' name='hid[]'/>")
+                $(temp).attr('value',temp_val);
+                form.append(temp);
+            } 
+            form.appendTo("body");
+            form.css('display','none');
+            form.submit();
+        });
+
+    
+var thead="<tr class='tr_head_info'><th class='text-center'>学生姓名</th>"+
+                    "<th class='text-center'>学生性别</th>"+
+                    "<th class='text-center'>&nbsp;</th>"+
+                    "<th class='text-center'>出生年月</th>"+
+                    "<th class='text-center'>家长姓名</th>"+
+                    "<th class='text-center'>家长邮箱</th>"+
+                    "<th class='text-center'>家长手机号</th>"+
+                    "<th class='text-center'>异常原因</th></tr>";
+       
+var tbody="<tr style='line-height:30px;' class='tr_body_info'>"+
+                "<td class='text-center'>123</td>"+
+                "<td class='text-center'>123</td>"+
+                "<td class='text-center'>&nbsp;</td>"+
+                "<td class='text-center'>123</td>"+
+                "<td class='text-center'>123</td>"+
+                "<td class='text-center'>123</td>"+
+                "<td class='text-center'>123</td>"+
+                "<td class='text-center'>123</td>"+
+                "</tr>";       
+        
+        //点击文件上传
+        $('.upload_file').click(function(){
+            if($('#file_csv').val()=='' || !$('#file_csv').val()){
+                $.Notify({
+                    caption: '提示',
+                    content: '请选择需要上传的csv格式文件',
+                    type: 'warning'
+                });
+            }else{
+                var class_id=$('#class_id').val(); 
+                $.ajaxFileUpload
+                (
+                    {
+                        url: 'index.php?m=Home&c=Admin&a=importClassStudent&id='+class_id, //用于文件上传的服务器端请求地址
+                        secureuri: false, //是否需要安全协议，一般设置为false
+                        fileElementId: 'file_csv', //文件上传域的ID
+                        dataType: 'json', //返回值类型 一般设置为json
+                        success: function (data)  //服务器成功响应处理函数
+                        { 
+                            $('#address').val('');
+                            $('#import_outer').css('display','none');
+                             
+                            if(data.status==1001){
+                                $('.notice_message').children('div').text('异常消息：没有上传文件');
+                                $(".notice_message").show();
+                                
+                            }else if(data.status==1002){
+                                $('.notice_message').children('div').text('异常消息：上传文件没有信息');
+                                $(".notice_message").show();
+                                
+                            }else if(data.status==1003){
+                                $('.notice_message').children('div').text('异常消息：参数有误');
+                                $(".notice_message").show();
+                                
+                            } else if(data.status==1004){
+                                $('.notice_message').children('div').text('异常消息：班级信息不存在');
+                                $(".notice_message").show();
+                                
+                            }else if(data.status==1005){
+                                $(".striped").hide();
+                                $('.notice_message').children('div').text('异常消息：你有'+data.notice_data.length+'条数据导入失败,以下是导入失败的信息。');
+                                //清空id为body下的所有tr,和thead下的tr,并隐藏所有
+                                $(".tr_body_info").remove();
+                                $(".tr_head_info").remove();    
+                                $(".odd").remove();
+                                $('.dataTables_scrollHead').remove();
+                                $('.search_class').hide();
+                                $('.create_class').hide();
+                                $('.back_class_list').hide();
+                                $('.import_class').hide();
+                                for(var i=0;i<data.notice_data.length;i++){
+                                    var temp_tbody=$(tbody).clone(true);
+                                    $(temp_tbody).find('.text-center').eq(0).text(data.notice_data[i][0]);
+                                    $(temp_tbody).find('.text-center').eq(1).text(data.notice_data[i][1]);
+                                    $(temp_tbody).find('.text-center').eq(3).text(data.notice_data[i][2]);
+                                    $(temp_tbody).find('.text-center').eq(4).text(data.notice_data[i][3]);
+                                    $(temp_tbody).find('.text-center').eq(5).text(data.notice_data[i][4]);
+                                    $(temp_tbody).find('.text-center').eq(6).text(data.notice_data[i][5]);
+                                    $(temp_tbody).find('.text-center').eq(7).text(data.notice_data[i][6]);
+                                    $("#body").append(temp_tbody);
+                                }
+                                var temp_head=$(thead).clone(true);
+                                $(".class_thead").append(temp_head);
+                                $(".striped").show();
+                                $(".notice_message").show();
+                                $(".back_class").show();
+                                $(".Pagination").hide();
+                                
+                            }else{
+                                $(".notice_message").hide();  
+                                $('.import_success').show();
+                            }
+                            
+                        },
+                        error: function (data, status, e)//服务器响应失败处理函数
+                        {
+                            alert('导入失败,请刷新页面后重试');
+                        }
+                    }
+                )
+            }
+        });
+        
+        //input file发生变化
+        $('.file_csv').change(function(){ 
+            var filepath = $('.file_csv').val();
+            var extStart = filepath.lastIndexOf(".");
+            var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+            if(ext=='.CSV'){
+                $('#address').val(filepath);
+            }else{
+                $.Notify({
+                    caption: '提示',
+                    content: '只支持csv文件上传',
+                    type: 'warning'
+                });
+                $('.file_csv').val('');
+            }
+        });
+     
+         
+        function search() {
+            var keyword = $('#keyword').val();
+            var class_id=$('#class_id').val();
+            /*if (keyword == '') {
+                return false;
+            }*/
+            var url = 'index.php?m=Home&c=Admin&a=classStudentMgmt&keyword=' + keyword+'&id='+class_id;
+            window.location.href = url;
+        }
+        
+        //全选和反选中
+        $('.check_all').click(function(){
+            var all_checkbox=$('.check_child');
+            var length=all_checkbox.length;
+            var temp_status=true;
+            if($(this)[0].checked==true){
+                //本次选中
+                temp_status=true;
+            }else{
+                //本次取消
+                temp_status=false;
+            }
+            for(var i=0;i<length;i++){
+                all_checkbox[i].checked=temp_status
+            }
+        });
+        
+        //点击删除
+        $('.delete_button').click(function(){
+            var obj=this;     
+            if(confirm('您确定删除吗')){
+                var id=$(this).attr('attr');
+                var class_id=$('#class_id').val();
+                $.get('index.php?m=Home&c=Admin&a=deleteClassStudent',{'id':id,'class_id':class_id},function(msg){
+                    if(msg=='success'){
+                        $(obj).parent().parent().remove();
+                    }else{
+                        alert('删除失败,请刷新页面后重试');
+                    }
+                });
+            } 
+        });
+        
+        //点击浏览按钮
+        $('.browse_button').click(function(){
+            //清空input框
+            $("#address").val('');
+            $('.file_csv').trigger('click');
+        });
+    </script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 370) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[ 
+                {"width":"10%"},
+                {"width":"6%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"24%"}
+				]
+        });
+    });
+</script>
+
+
+<!---------------------导入文件-------------------------->
+<script>
+    $('#import_btn').on('click',function(){
+        $('#import_outer').css('display','block');
+    });
+    $('.close_btn').on('click',function(){
+        $('#import_outer').css('display','none');
+    });
+</script>
+<!---------------------导入-------------------------->
+<script>
+    $('.im_success_sure').on('click',function(){
+        $('.import_success').css('display','none');
+        location.reload();
+    });
+    
+    $('.im_fail_sure').on('click',function(){
+        $('.import_fail').css('display','none');
+    });
+</script>
+<!---------------------导出-------------------------->
+<script>
+    $('.ex_success_sure').on('click',function(){
+        $('.export_success').css('display','none');
+    });
+    
+    $('.ex_fail_sure').on('click',function(){
+        $('.export_fail').css('display','none');
+    });
+</script>

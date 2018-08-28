@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" href="__PUBLIC__/swiper/swiper-3.4.2.min.css" media="screen" title="no title" charset="utf-8">
+		<script type="text/javascript" src="__PUBLIC__/js/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/swiper/swiper-3.4.2.jquery.min.js"></script>
+		<title>{$name}</title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				-webkit-tap-highlight-color: rgba(0,0,0,0);
+				-webkit-tap-highlight-color: transparent;
+			}
+			html,body,.swiper-slide,.swiper-container{
+				height: 100%
+			}
+			.p20{
+				padding: 10px 20px
+			}
+			body{
+				font-size: 18px;
+				color: #333
+			}
+			.left{
+				float: left;
+			}
+			.right{
+				float: right
+			}
+			.yellow{
+				color: #f2b718
+			}
+			.border-top{
+				border-top: 5px solid #f4f4f4
+			}
+			.of{
+				overflow: hidden;
+			}
+			.color999{
+				color: #999
+			}
+			.audioDiv{
+				border: 2px solid #f2b718;
+				width: 220px;
+				overflow: hidden;
+				margin: auto;
+				border-radius: 10px;
+				margin: 5px auto;
+				min-height: 50px;
+				position: relative;
+			}
+			.auidobtn{
+				width: 50px;
+				height: 50px;
+				background: url(__PUBLIC__/img/Apphomework/huibofang1.png)no-repeat center;
+				background-size: 25px 25px;
+				position: absolute;
+				top:0;
+				left:0;
+				right: 0;
+				bottom:0;
+				margin: auto 0;
+				min-height: 50px
+			}
+			.auidobtn.active{
+				background: url(__PUBLIC__/img/Apphomework/bofang2.png)no-repeat center;
+				background-size: 25px 25px;
+			}
+			.audiotext{
+				width:calc(100% - 50px);
+				text-align: center;
+				border-left: 1px solid #f2b718;
+				min-height: 50px
+			}
+			.audiotext.active{
+				color: #f2b718
+			}
+			.audio1btn{
+				width:35px;
+				height: 35px;
+				background: url(__PUBLIC__/img/Apphomework/ting.png)no-repeat center;
+				background-size: 100%;
+			}
+			.audio1btn.active{
+
+				background: url(__PUBLIC__/img/Apphomework/ting1.png)no-repeat center;
+				background-size: 100%;
+			}
+			.fanyiIcon{
+				width: 20px;
+				height: 20px;
+				display: inline-block;
+				background: url(__PUBLIC__/img/Apphomework/fanyi1.png)no-repeat center;
+				background-size: 100%;
+			}
+			.fanyiIcon.active{
+				background: url(__PUBLIC__/img/Apphomework/fanyi2.png)no-repeat center;
+				background-size: 100%;
+			}
+			.fanyi{
+				border-bottom: 1px solid #eee;
+				margin: 5px 20px;
+				padding: 5px 20px
+			}
+			.fanyitext{
+				line-height: 20px;
+				margin-left: 5px
+			}
+			.text{
+				padding: 0 20px;
+				line-height: 28px;
+				display: none
+			}
+			.audio1Div{
+				width: 220px;
+				margin: 10px auto  5px;
+				overflow: hidden;
+			}
+			.time{
+				line-height: 36px;
+				margin-left:8px
+			}
+			.deifen{
+				width: 35px;
+				float: right;
+			}
+			.textName{
+				line-height: 25px
+			}
+			.score{
+				float: right;
+				line-height: 36px
+			}
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+
+	<div class="swiper-container"  >
+	    <div class="swiper-wrapper" id="exerciseDiv">
+	        <div class="swiper-slide"   v-for="(todo,$index) in exerciseData" v-cloak>
+				<div class="p20 of">
+					<p class="left">
+						{{todo.exerciseName}}
+					</p>
+					<p class="right">
+						<span class="yellow">{{todo.index}}</span>/{{todo.count}}
+					</p>
+				</div>
+				<div class="border-top p20 color999">
+					<!-- <div class="" v-if="todo.score">
+						({{todo.score}}分)
+					</div>
+					<div class="" v-if="todo.point">
+						({{todo.point}}分)
+					</div> -->
+					<div class="audioDiv">
+						<div class="auidobtn left" onclick="play(this)" v-if="todo.score">
+							<audio v-bind:src="todo.url" v-bind:id="todo.id" preload="preload">
+							</audio>
+						</div>
+						<div class="auidobtn left" onclick="play(this)" v-if="todo.point">
+							<audio v-bind:src="todo.org_answer_url" v-bind:id="todo.id" preload="preload">
+							</audio>
+						</div>
+						<div class="right audiotext">
+							<div class="textName">{{todo.name}}</div>
+						</div>
+
+					</div>
+					<div class="audio1Div" v-if ="todo.point">
+						<div class="audio1btn left" onclick="play1(this)" ondblclick="shuangji(this)" v-if="todo.url!=''">
+							<audio v-bind:src="todo.url" v-bind:id="'student'+($index)" preload="preload">
+							</audio>
+						</div>
+						<p class="left time" v-if="todo.url !=''">
+							00:00
+						</p>
+						<div class="score" v-if="todo.url !=''">
+							({{todo.point}}分)
+						</div>
+						<div class="" v-if="todo.url==''" style="text-align:center">
+							未作答
+						</div>
+					</div>
+
+
+				</div>
+				<div class="fanyi of"  onclick="toggle(this)" v-if='todo.exerciseName != "跟读-课文"'>
+					<span class="right fanyitext">查看翻译</span>
+					<span class="fanyiIcon right" ></span>
+				</div>
+				<div class="text" v-if='todo.exerciseName != "跟读-课文"'>
+					<p>
+						<b>{{todo.name}}</b>
+					</p>
+					<p>
+						{{todo.translation}}
+
+					</p>
+				</div>
+			</div>
+
+	    </div>
+	</div>
+	<script>
+
+	</script>
+	<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+	<script type="text/javascript">
+	// $(function(){
+		var flag = "{$flag}";
+		var userId = "{$userId}";
+		var role = "{$role}";
+		var homeworkId = "{$homeworkId}";
+		var classId = "{$classId}";
+		var submitId = "{$submitId}";
+		var dataurl;
+		var duration;
+		var activeIndex;
+		if(getQueryString('type') == '2'){
+		var dataurl='/ApiInterface/Version1_2/HomeworkParent/getSubmitHomeworkDetail?userId={$userId}&role={$role}&id={$submitId}&isFlatten=2';
+		}else{
+		var dataurl='/ApiInterface/Version1_2/HomeworkParent/getHomeworkDetail?role={$role}&userId={$userId}&homeworkId={$homeworkId}&isFlatten=2';
+		}
+		var flag = "{$flag}";
+
+		var exercise = new Vue({
+			el : '#exerciseDiv',
+			 data:{
+				 exerciseData:[],
+				 exurl:dataurl,
+			},
+			created :function(){
+				this.exercise();
+			},
+			methods:{
+				exercise:function(){
+				 	this.$http.get(this.exurl).then(function(response){
+						if (response.data.data.data.length > 0) {
+							this.exerciseData = response.data.data.data;
+						}
+
+					console.log(this.exerciseData);
+					this.$nextTick(function(){
+						var mySwiper = new Swiper ('.swiper-container',{
+							initialSlide :flag,
+							onSlideChangeStart: function(swiper){
+							    $('.time').html('00:00');
+								endtime1();
+								$('.swiper-slide').find('.active').removeClass('active').find('audio').trigger('pause');
+								$('.text').hide();
+								$('.fanyitext').text('查看翻译')
+							},
+							onSlideChangeEnd: function(swiper){
+								$('.time').html('00:00');
+								endtime1();
+								$('.swiper-slide').find('.active').removeClass('active').find('audio').trigger('pause');
+								$('.text').hide();
+								$('.fanyitext').text('查看翻译');
+								activeIndex = swiper.activeIndex;
+						    }
+
+						});
+						lineHeight()
+		            })
+					},function(response){
+				 })
+				},
+			},
+		})
+ // })
+
+		function toggle(obj){
+			if($(obj).siblings('.text').is(":hidden")){
+				$(obj).siblings('.text').show();
+				$(obj).find('.fanyiIcon').addClass('active').siblings('.fanyitext').text('隐藏翻译')
+			}else {
+				$(obj).siblings('.text').hide();
+				$(obj).find('.fanyiIcon').removeClass('active').siblings('.fanyitext').text('查看翻译')
+			}
+		}
+		function play(obj){
+			var player = $(obj).find('audio')[0];
+			if (player.paused){
+				$('.time').html('00:00');
+				endtime1();
+				player.play();
+				$(player).parent('div').addClass('active').siblings('.audiotext').addClass('active').parents('.swiper-slide').siblings('div').find('.active').removeClass('active').find('audio').trigger('pause');
+				if($(obj).parent().siblings('.audio1Div').length >0){
+					$(obj).parent().siblings('.audio1Div').find('.active').removeClass('active').find('audio').trigger("pause")
+				}
+				player.loop = false;
+				player.addEventListener('ended', function () {
+					$(obj).parent('div').find('.active').removeClass('active')
+				}, false);
+			}else {
+				player.pause();
+				$(player).parent('div').removeClass('active').siblings('.audiotext').removeClass('active')
+			}
+		}
+		function play1(obj){
+			var player = $(obj).find('audio')[0];
+
+			if($(player).attr('src') == ''){
+				alert('此题未提交语音作业')
+				return false
+			} else {
+				var time = $(obj).siblings('.time')
+				if (player.paused){
+					duration = player.duration;
+					player.play();
+					s=0;
+					starttime(time);
+					$(obj).addClass('active').parent().siblings('.audioDiv').find('.active').removeClass('active').find('audio').trigger('pause');
+					$(obj).parents('.swiper-slide').siblings('div').find('.active').removeClass('active').find('audio').trigger('pause')
+					player.loop = false;
+
+					player.addEventListener('ended', function () {
+						$(player).parent('div').removeClass('active').siblings('.audiotext').removeClass('active');
+						clearInterval(t);
+						h = 0;
+						m = 0;
+						s = 0;
+						$(player).parent().siblings('.time').html('00:00')
+					}, false);
+				}else {
+					player.pause();
+					endtime();
+					$(player).parent('div').removeClass('active').siblings('.audiotext').removeClass('active')
+					// time
+				}
+			}
+		}
+		function CheckIsAndroid() {
+				var browser = {
+						versions: function () {
+							var u = navigator.userAgent,
+								app = navigator.appVersion;
+							return { //移动终端浏览器版本信息
+								ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+								android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+								iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+								iPad: u.indexOf('iPad') > -1, //是否iPad
+							};
+						}(),
+					}
+				if (browser.versions.android)
+					return true;
+				return false;
+			}
+
+
+		function CheckIsIOS() {
+				var browser = {
+					versions: function () {
+						var u = navigator.userAgent,
+							app = navigator.appVersion;
+						return { //移动终端浏览器版本信息
+							ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+							android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+							iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+							iPad: u.indexOf('iPad') > -1, //是否iPad
+						};
+					}(),
+				}
+				if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+					return true;
+				}
+			}
+			if(CheckIsAndroid()){
+				window.alert = function(name){
+					var iframe = document.createElement("IFRAME");
+					iframe.style.display="none";
+					iframe.setAttribute("src", 'data:text/plain,');
+					document.documentElement.appendChild(iframe);
+					window.frames[0].window.alert(name);
+					iframe.parentNode.removeChild(iframe);
+				};
+			}
+
+		function lineHeight(){
+			for(var y = 0; y<$('.textName').length;y++){
+				if($('.textName').eq(y).height()< '40'){
+						$('.textName').eq(y).css('line-height','50px')
+				}
+			}
+		}
+		function settime(a){
+			if(a<10)
+				a = "0"+a;
+			return a;
+		}
+			h = 0;
+			m = 0;
+			s = 0;
+		var t ;
+		function starttime(timer){
+			var showh = settime(h);
+			var showm = settime(m);
+			var shows = settime(s);
+			var shijian = showm+":"+shows
+			$(timer).html(shijian);
+
+			s++;
+			if(s == 60)
+			{
+				s = 0;
+				m++;
+			}
+			if(m == 60){
+				m = 0;
+				h++;
+			}
+
+			t = setTimeout("starttime('.time')",1000);
+			if(s > duration*1 + 2) {
+				// alert('播放失败，请刷新重试！');
+				if(flag != activeIndex) {
+					window.location.replace("__URL__/exerciseDetails?submitId={$submitId}&userId={$userId}&role={$role}&id={$homeworkId}&type=2&flag="+activeIndex+"&name="+name)
+				} else {
+					location.reload();
+				}
+			}
+		}
+
+		function endtime() {
+			clearTimeout(t);
+		}
+		function endtime1(){
+			s = 0;
+			clearTimeout(t);
+		}
+		function shuangji(obj){
+			var player = $(obj).find('audio')[0];
+			if(player.paused){
+				clearTimeout(t);
+			}else{
+				clearTimeout(t)
+			}
+		}
+		function getQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]); return null;
+		}
+	 </script>
+	</body>
+</html>

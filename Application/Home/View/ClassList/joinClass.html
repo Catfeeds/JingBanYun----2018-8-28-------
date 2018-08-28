@@ -1,0 +1,349 @@
+
+<style>
+	#contentWrapper {
+		background: rgb(255, 251, 242);
+		border: 2px solid #efca33
+	}
+
+	.classDiv {
+		width: 621px;
+		margin: 40px auto;
+		text-align: center;
+		font-size: 16px;
+		line-height: 36px;
+	}
+
+	select {
+		width: 150px;
+		height: 42px;
+		padding-left: 5px;
+	}
+
+	input {
+		width: 307px;
+		height: 42px;
+		padding-left: 5px;
+	}
+
+	button {
+		border: none;
+		outline: none;
+		background: #efca33;
+		color: #fff;
+		width: 70px;
+		border-radius: 5px;
+		height: 43px;
+		position: relative;
+		top: -1px
+	}
+	.beizhu{
+		line-height:24px;font-size:14px;color:#ccc;text-indent: 85px;text-align:left
+	}
+    .fullscreen #contentWrapper{
+		min-height:950px !important
+	}
+    .addcg {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		margin: auto auto;
+		width: 400px;
+		height: 250px;
+		text-align: center;
+		z-index: 20170306;
+		background: #fff;
+		display: none;
+	}
+	.addcg p:nth-child(1) {
+    background: #efca33;
+    line-height: 40px;
+    font-size: 18px;
+	}
+	.addcg p:nth-child(2) {
+    margin: 70px 0;
+    font-size: 16px;
+	}
+	.addcg img {
+    float: right;
+    width: 30px;
+    margin-top: 5px;
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+	}
+	.addcg button {
+    border: none;
+    outline: none;
+    width: 150px;
+    padding: 5px;
+    background-color: #eaca33;
+    border-radius: 5px;
+    color: #fff;
+	}
+	#bg{
+		    display: none;
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 20170213;
+    -moz-opacity: 0.7;
+    opacity: .70;
+	}
+</style>
+<div class="main_opr">
+	<a href="{:U('ClassList/classList')}" title="我的班级" class="btn btn-main-opr ">我的班级</a>
+	<a href="{:U('ClassList/createClass')}" title="创建班级" class="btn btn-main-opr">创建班级</a>
+	<a href="{:U('ClassList/joinClass')}" title="加入班级" class="btn btn-main-opr  btn-main-opr-active">加入班级</a>
+	<a href="{:U('ClassList/acceptClass')}" title="待接班级" class="btn btn-main-opr">待接班级</a>
+
+</div>
+<div class="classDiv">
+	<p>班级编号：
+		<input type="tel" id="bianhaoval" placeholder="请输入班级编号" maxlength="6"  onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^0-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+    onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" / />
+		<select  id="course_data_val">
+			<option value="0">请选择任教学科</option>
+			<volist name="course_data" id="course_data" empty="暂时没有信息">
+				<option value="{$course_data.c_id}">{$course_data.course_name}</option>
+			</volist>
+		</select>
+		<button id="bianhao">确定</button>
+	</p>
+	<p class="beizhu">*您可以向学校或已经加入校建班级的教师询问班级编号
+	</p>
+	<p class="beizhu"> 通过输入班级编号，选择任教学科，可以直接加入班级 </p>
+	<p>选择班级：
+		<select name="" id="getclassid" onchange="getXueke()">
+			<option value="0">请选择年级</option>
+			<volist name="xiaojian" id="xiaojiandata" empty="暂时没有信息">
+				<option value="{$xiaojiandata.grade_id}">{$xiaojiandata.grade}</option>
+			</volist>
+		</select>
+		<select name="dict_course_id" id="dict_course_id">
+			<option value="0">请选择班级</option>
+		</select>
+		<select id="course_data_copy_val">
+			<option value="0">请选择任教学科</option>
+			<volist name="course_data_copy" id="course_data_copy" empty="暂时没有信息">
+				<option value="{$course_data_copy.c_id}">{$course_data_copy.course_name}</option>
+			</volist>
+		</select>
+		<button id="xuanze">确定</button>
+	</p>
+	<p class="beizhu">*选择已有班级
+	</p>
+</div>
+
+<div class="addcg addcg1 addclasssuccess">
+	<p ><span class="news_title">加入班级</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt=""></p>
+	<p class="news_content">添加成功</p>
+	<p>
+		<button>确定</button>
+	</p>
+</div>
+<div class="addcg addcg2 addyierror">
+	<p>加入班级<img src="__PUBLIC__/img/classManage/close_btn.png" alt=""></p>
+	<p>已加入该班级</p>
+	<p>
+		<button>确定</button>
+	</p>
+</div>
+<!--弹窗 -->
+<div id="Popup">
+	<p>加入班级<img src="__PUBLIC__/img/classManage/close_btn.png" alt=""></p>
+	<p>确定将此学生移除班级？</p>
+	<p>
+		<button>确定</button>
+	</p>
+</div>
+<div id="bg"></div>
+
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+
+<script>
+	$('#bianhao').click(function () {
+		$(this).attr('disabled', true);
+		var index_this = $(this);
+		var course  = $('#course_data_val').val();
+		var code = $('#bianhaoval').val();
+
+		if ( code ==''){
+			$.NotifyBox.NotifyPromptOne('提示', '请填写班级编号', '确定');
+			$(this).attr('disabled', false);
+			return;
+		}
+
+		var   type="^[0-9]*[1-9][0-9]*$";
+		var   re   =   new RegExp(type);
+		if(code.match(re)==null)
+		{
+			$.NotifyBox.NotifyPromptOne('提示', '请输入正确的编号', '确定');
+			index_this.attr('disabled', false);
+			return;
+		}
+
+		if ( course ==''){
+			$.NotifyBox.NotifyPromptOne('提示', '请选择任教学科', '确定');
+			index_this.attr('disabled', false);
+			return;
+		}
+
+		$.get("__URL__/teacherAddClass",{'course_id':course,'class_id':code},function(msg){
+			if(msg.code == 400){
+				$.NotifyBox.NotifyPromptOne('提示', '该编号不存在校建班', '确定');
+				index_this.attr('disabled', false);
+			}
+			if(msg.code == 300){
+				$.NotifyBox.NotifyPromptOne('提示', '加入失败', '确定');
+				index_this.attr('disabled', false);
+			}
+			if(msg.code == 200){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOneCNc('提示', '加入班级成功', '确定', function(){
+					$('#bianhaoval').val('');
+					$('#course_data_val').val('0');
+					window.location.reload();
+				})
+			}
+			if(msg.code == 600){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '已加入该班级', '确定');
+			}
+			if(msg.code == 900){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '该班级已经被停用', '确定');
+			}
+
+			if(msg.code == 1000){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '账户异常不能加入班级', '确定');
+			}
+
+			if(msg.code == 1001){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '要加入的班级和您的学校不是同一个学校', '确定');
+			}
+
+			if(msg.code == 1002){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '您未通过所在学校审核，不能加入班级', '确定');
+			}
+
+		});
+
+	});
+
+	$('#xuanze').click(function () {
+
+		$(this).attr('disabled', true);
+		var index_this = $(this);
+		var course  = $('#course_data_copy_val').val();
+		var code = $('#dict_course_id').val();
+
+		if ( code ==''){
+			index_this.attr('disabled', false);
+				$('.news_title').html('提示!');
+				$('.news_content').html('请选择班级')
+				$('.addcg1,#bg').show();
+			return;
+		}
+
+		var   type="^[0-9]*[1-9][0-9]*$";
+		var   re   =   new RegExp(type);
+		if(code.match(re)==null)
+		{
+			index_this.attr('disabled', false);
+				$('.news_title').html('提示!');
+				$('.news_content').html('请输入正确的编号!')
+				$('.addcg1,#bg').show();
+			return;
+		}
+
+		if ( course ==''){
+			index_this.attr('disabled', false);
+				$('.news_title').html('提示!');
+				$('.news_content').html('请选择任教学科')
+				$('.addcg1,#bg').show();
+			return;
+		}
+
+		$.get("__URL__/teacherSelectAddClass",{'course_id':course,'class_id':code},function(msg){
+			if(msg.code == 400){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '该编号不存在校建班', '确定');
+			}
+			if(msg.code == 300){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '加入失败', '确定');
+			}
+			if(msg.code == 200){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOneCNc('提示', '加入班级成功', '确定', function(){
+					$('#getclassid').val('0');
+					$('#dict_course_id').val('0');
+					$('#course_data_copy_val').val('0');
+					window.location.reload();
+				})
+			}
+			if(msg.code == 600){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '已加入该班级', '确定');
+			}
+			if(msg.code == 900){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '该班级已经被停用', '确定');
+			}
+
+			if(msg.code == 1000){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '账户异常不能加入班级', '确定');
+			}
+
+			if(msg.code == 1001){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '要加入的班级和您的学校不是同一个学校', '确定');
+			}
+
+			if(msg.code == 1002){
+				index_this.attr('disabled', false);
+				$.NotifyBox.NotifyPromptOne('提示', '您未通过所在学校审核，不能加入班级', '确定');
+			}
+
+		});
+
+	})
+
+	function getXueke() {
+		var gradeId = $('#getclassid').val();
+		if (gradeId == '') {
+			$('#dict_course_id').html('<option value="">-选择-</option>');
+			return;
+		}
+		$.get('__URL__/getclassSchool', {
+			'grade_id': gradeId
+		}, function (res) {
+			var options = [];
+			$.each(res, function (index, item) {
+				options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+			});
+			if (options.length > 0) {
+				$('#dict_course_id').html(options.join(''));
+			} else {
+				$('#dict_course_id').html('<option value="">-请选择-</option>');
+			}
+		})
+	}
+
+	$('.addcg').find('button').click(function(){
+		location.reload();
+	})
+	$('.addcg').find('img').click(function(){
+
+		$('.addcg,#bg').hide()
+	})
+</script>

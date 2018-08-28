@@ -1,0 +1,123 @@
+<layout name="teacher_layout_3" />
+<style>
+		#contentWrapper {
+		background: rgb(255, 251, 242);
+		border: 2px solid #efca33
+	}
+    table{
+	width: 750px;
+	margin: 40px auto;
+	border: 1px solid #666;
+	color: #333
+	}
+	th,td{
+		border: 1px solid #666
+	}
+	thead p{
+		font-size: 14px;
+		line-height: 40px;
+		margin: 0 ;
+		background: #efca33
+	}
+	tbody td{
+		line-height: 40px;
+	}
+	button{
+		height: 31px;
+		line-height: 31px;
+		border-radius: 5px;
+		border: none;
+		outline: none;
+		color: #fff;
+		background: #efca33;
+		width: 85px;
+	}
+</style>
+<div class="main_opr">
+	<a href="{:U('ClassList/classList')}" title="我的班级" class="btn btn-main-opr ">我的班级</a>
+	<a href="{:U('ClassList/createClass')}" title="创建班级" class="btn btn-main-opr">创建班级</a>
+	<a href="{:U('ClassList/joinClass')}" title="加入班级" class="btn btn-main-opr ">加入班级</a>
+	<a href="{:U('ClassList/acceptClass')}" title="接收班级" class="btn btn-main-opr  btn-main-opr-active">接收班级</a>
+</div>
+<empty name="list">
+	<div class="text-center">您暂时没有任何班级需要接收~</div>
+</empty>
+<div>
+    <?php if (!empty($list)): ?>
+	    <table class="notetable ">
+                <thead>
+                <tr>
+                    <th width="15%" class="text-center"><p>年级</p></th>
+                    <th width="15%" class="text-center"><p>班级</p></th>
+                    <th class="text-center" width="20%"><p>任教班级</p></th>
+                    <th class="text-center" width="20%"><p>是否有班级管理员</p></th>
+                    <th  width="30%"  class="text-center"><p>操作</p></th>
+
+                </tr>
+                </thead>
+                <tbody>
+                    <volist name="list" id="data" empty="">
+                            <tr>
+                                <td class="text-center">
+                                    {$data.grade}
+                                </td>
+                                <td class="text-center">
+                                    {$data.name}
+                                </td>
+                                <td class="text-center">
+                                    {$data.course_name}
+                                </td>
+                                <td class="text-center">
+                                  有
+                                </td>
+                                <td class="text-center">
+                                 <button class="setclassstatus" course_id="{$data.course_id}" status="2" classid="{$data.class_id}" steacher="{$data.send_teacherid}"  dteacher="{$data.dest_teacherid}">接收班级</button>
+                                 <button class="setclassstatus" course_id="{$data.course_id}" status="3" classid="{$data.class_id}" steacher="{$data.send_teacherid}"  dteacher="{$data.dest_teacherid}">拒绝接收</button>
+                                </td>
+
+                            </tr>
+                    </volist>
+
+                </tbody>
+            </table>
+    <?php endif ?>
+</div>
+<!--弹窗 -->
+<div id="Popup">
+	<p>加入班级<img src="__PUBLIC__/img/classManage/close_btn.png" alt=""></p>
+	<p>确定将此学生移除班级？</p>
+	<p>
+		<button>确定</button>
+	</p>
+</div>
+
+<script>
+    $(document).on('click','.setclassstatus',function(event){
+        var classid = $(this).attr('classid');
+        var steacher = $(this).attr('steacher');
+        var dteacher = $(this).attr('dteacher');
+        var status = $(this).attr('status');
+        var course_id = $(this).attr('course_id');
+
+        $.post('__URL__/setClasStatusTeacher', {
+
+            'classid':classid,
+            'steacher':steacher,
+            'dteacher':dteacher,
+            'status':status,
+            'course_id':course_id
+
+        }, function (res) {
+            if (res.code ==200) {
+                location.reload();
+            } else {
+                $.Notify({
+                    caption: '提示',
+                    content: '操作失败,请刷新重新尝试',
+                    type: 'warning'
+                });
+            }
+        });
+    });
+
+</script>

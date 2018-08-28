@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/studentHomeworkElse.css?v=3">
+
+		<link rel="stylesheet" href="__PUBLIC__/swiper/swiper-3.4.2.min.css" media="screen" title="no title" charset="utf-8">
+		<script type="text/javascript" src="__PUBLIC__/js/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/swiper/swiper-3.4.2.jquery.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<link rel="stylesheet" href="__PUBLIC__/css/app/homeworkDetails.css?v=1">
+		<title></title>
+		<style media="screen">
+
+		</style>
+	</head>
+	<body>
+	<div class="content">
+
+		<div class="swiper-container" id="detailsDiv" >
+			<div class="appTop">
+				<div class="returnBox"  onclick="window.history.go(-1)"></div>
+				<div class="appTopTitle zuoyemc">
+					{{workName}}
+				</div>
+
+			</div>
+		    <div class="swiper-wrapper" id="exerciseDiv" >
+		        <div class="swiper-slide swiper-no-swiping"   v-for="(todo,index) in exerciseData" v-cloak :id='todo.id'>
+						<div class="p20 of">
+							<p class="left lh26">
+								<img src="__PUBLIC__/img/Apphomework/cuoti.png" alt="" class="cuoti" v-if="statue =='2'"/><span class="yellow"> {{index+1}}</span>/{{exerlength}}
+							</p>
+
+						</div>
+					    <!-- 单词 -->
+						<div  v-if="todo.main_type =='2'&&todo.sub_type == '1' " class="danci neirong">
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+								</div>
+								<div class="" v-if="todo.point">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+								</div>
+								<div class="loding" v-if="todo.score">
+									<!-- 倒计时：<span>3</span> -->
+								</div>
+								<div class="audiotext">
+									<div class="textName">{{todo.name}}</div>
+								</div>
+								<div class="audioDiv">
+									<div class="auidobtn left" onclick="play2(this,'.audio1btn')" v-if="todo.score">
+										<audio v-bind:src="todo.url" v-bind:id="todo.id" >
+										</audio>
+									</div>
+									<div class="auidobtn left" onclick="play2(this,'.audio1btn')" v-if="todo.point">
+										<audio v-bind:src="todo.org_answer_url" v-bind:id="todo.id" >
+										</audio>
+									</div>
+
+									<div class="audio1btn right" onclick="play2(this,'.auidobtn')"  v-bind:class="{'dn':isShow}" v-if="todo.point">
+										<audio v-bind:src="todo.url" v-bind:id="'student'+(index)" preload>
+										</audio>
+									</div>
+									<div class="audio1btn right" onclick="play2(this,'.auidobtn')"  v-bind:class="{'dn':isShow}" v-if="todo.score">
+										<audio  v-bind:id="'student'+(index)" preload>
+										</audio>
+									</div>
+
+								</div>
+								<div class="answerUrl" style="display:none">
+
+								</div>
+								<div class="studentPoint" style="display:none">
+
+								</div>
+								<div class="fanyi" v-if='todo.exerciseName != "跟读-课文"'>
+									<span class="fanyiIcon" onclick="toggle(this)">英文释义</span>
+								</div>
+								<div class="text" v-if='todo.exerciseName != "跟读-课文"'>
+									<p>
+										{{todo.translation}}
+									</p>
+								</div>
+							</div>
+						</div>
+						<!-- 句子 -->
+						<div  v-if="todo.main_type=='2'&&todo.sub_type=='2'" class="juzi neirong">
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+								</div>
+								<div class="" v-if="todo.point">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+								</div>
+								<div class="loding" v-if="todo.score">
+									<!-- 倒计时：<span>3</span> -->
+								</div>
+								<div class="audiotext">
+									<div class="textName">{{todo.name}}</div>
+								</div>
+								<div class="audioDiv">
+									<div class="auidobtn left" onclick="play2(this,'.audio1btn')" v-if="todo.score">
+										<audio v-bind:src="todo.url" v-bind:id="todo.id" >
+										</audio>
+									</div>
+									<div class="auidobtn left" onclick="play2(this,'.audio1btn')" v-if="todo.point">
+										<audio v-bind:src="todo.answer_select" v-bind:id="todo.id" >
+										</audio>
+									</div>
+
+									<div class="audio1btn right" onclick="play2(this,'.auidobtn')"  v-bind:class="{'dn':isShow}" v-if="todo.point">
+										<audio v-bind:src="todo.url" v-bind:id="'student'+(index)" preload>
+										</audio>
+									</div>
+									<div class="audio1btn right" onclick="play2(this,'.auidobtn')"  v-bind:class="{'dn':isShow}" v-if="todo.score">
+										<audio  v-bind:id="'student'+(index)" preload>
+										</audio>
+									</div>
+
+								</div>
+								<div class="answerUrl" style="display:none">
+
+								</div>
+								<div class="studentPoint" style="display:none">
+
+								</div>
+								<div class="fanyi" v-if='todo.exerciseName != "跟读-课文"'>
+									<span class="fanyiIcon" onclick="toggle(this)">英文释义</span>
+								</div>
+								<div class="text" v-if='todo.exerciseName != "跟读-课文"'>
+									<p>
+										{{todo.translation}}
+									</p>
+								</div>
+							</div>
+						</div>
+						<!-- 微课视频 -->
+						<div  v-if="todo.main_type=='2'&&todo.sub_type=='3'" class="weike neirong">
+
+
+
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+								</div>
+								<div class="" v-if="todo.point">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+								</div>
+								<div class="loding" v-if="todo.score">
+									<!-- 倒计时：<span>3</span> -->
+								</div>
+								<div class="videotext">
+									<div class="textName">{{todo.name}}</div>
+								</div>
+								<div class="">
+									<video :src="todo.subject_name" controls>
+
+									</video>
+								</div>
+							</div>
+						</div>
+						<!-- 看课本-->
+						<div v-if="todo.main_type=='2'&&todo.sub_type=='4'" v-cloak class="keben neirong">
+
+
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+								</div>
+								<div class="" v-if="todo.point">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+								</div>
+								<div class="loding" v-if="todo.score">
+
+								</div>
+
+								<div class=" keben">
+									<img :src="todo.subject_name"></img>
+								</div>
+							</div>
+						</div>
+						<!-- 选择-->
+						<div v-if="todo.main_type=='1'" class="xiti neirong">
+							<div class="border-top p20 ">
+								<div class="" v-if="todo.score">
+									{{todo.title_name}} (<span class="fen ">{{todo.score}}</span>分)
+									<span class="right" @click="pingyu" v-if="status =='2'&&todo.comment !=''"><img src="__PUBLIC__/img/Apphomework/laoshipingyu.png" alt="" style="width:20px;margin-right:5px"/>老师评语</span>
+								</div>
+								<div class="" v-if="todo.point">
+									{{todo.title_name}}(<span class="">{{todo.point}}</span>分)
+									<span class="right" @click="pingyu"  v-if="todo.topic_type!='1'&&todo.topic_type!='3'&&todo.comment !=''"><img src="__PUBLIC__/img/Apphomework/laoshipingyu.png" alt="" style="width:20px;margin-right:5px"/>老师评语</span>
+								</div>
+								<div class="loding" v-if="todo.score">
+									<!-- 倒计时：<span>3</span> -->
+								</div>
+								<div class="wodeanswer" >
+									<div class="wodeanswer1">
+										【我的答案】:<span v-if="todo.topic_type=='1'||todo.topic_type =='3'">{{todo.student_answer}}</span>
+										<img :src="todo.student_answer" alt="" v-else/>
+									</div>
+								</div>
+								<div v-html="todo.json_html" :class="{xuanze:todo.topic_type =='1',duoxuan:todo.topic_type =='3'}">
+								</div>
+								<div class="text-center" v-if="todo.topic_type!='1'&&todo.topic_type!='3'&&statue!='2'">
+									<div class="daanDiv">
+										<img src="" alt="" /class="imageSrc">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="p20 next">
+							<div class="swiper-button-prev left">上一题</div>
+							<div class="right" style="position:relative;display:inline-block;overflow:hidden">
+								<div class="nextCard" style="display:none;width:100%;height:100%;position:absolute;top:0;left:0;z-index:5" @click="jieguo">
+								</div>
+								<div class="swiper-button-next">下一题
+								</div>
+							</div>
+
+						</div>
+						<div class="pingyu" v-cloak style="display:none">
+							<div class="cardTop" style="margin:0">
+								<p>
+									查看老师对本道题的评语(1)
+									<img src="__PUBLIC__/img/Apphomework/guanbipingyu.png" alt="" class="right" style="width:20px" @click="guanbi"/>
+								</p>
+							</div>
+							<div class="" v-html="todo.comment" style="padding:20px">
+
+							</div>
+						</div>
+					</div>
+			</div>
+	</div>
+
+
+</div>
+	<div class="fullBack"></div>
+
+
+	<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+	<script type="text/javascript">
+	var flag =  getQueryString('flag');
+	var userId = getQueryString('userId');
+	var role = getQueryString('role');
+	var homeworkId = getQueryString('homeworkId');
+	var classId = getQueryString('classId');
+	var submitId = getQueryString('submitId');
+	var type = getQueryString('type');
+	var statue = getQueryString('statue');
+	var dataurl;
+	var answerList = new Array();
+	var answerObj;
+	var titleName;
+		if(getQueryString('statue') == '1'){
+			//已截止和未做
+			var dataurl='/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkDetail';
+		}
+		else if(getQueryString('statue') == '2'){
+			//错题
+			var dataurl = '/index.php/ApiInterface/Version1_3/HomeworkStudent/viewAnalysis'
+
+		}else if(getQueryString('statue') == '3'){
+			//已完成
+			var dataurl='/index.php/ApiInterface/Version1_3/HomeworkStudent/getSubmitHomeworkDetail';
+		}else {
+			var dataurl='/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkDetail';
+		}
+		  var show = true //未完成
+		var exercise = new Vue({
+			el : '.content',
+			 data:{
+				 userId: userId,
+				role:role,
+				homeworkId:homeworkId,
+				classId:classId,
+				submitId:submitId,
+				 exerciseData:[],
+				 exurl:dataurl,
+				 isShow:show,
+				 dataurl:dataurl,
+				 exerlength:0,
+				cihuiname:'',
+				workName:'',
+				datikaArr:[],
+				type:type,
+				statue:statue,
+				shoucangUrl:'/index.php/ApiInterface/Version1_3/HomeworkStudent/favorExercise',
+			},
+
+			created :function(){
+				this.getExerciseDetails();
+				var winHeight = $(window).height();//屏幕的高度
+				var topHeight = 80;//“答题卡顶部”的高度
+				var minusHeight = winHeight*1 - topHeight*1 - 10;//相减的高度
+				$('.homeListCon').css('minHeight',minusHeight);//标签页的最小高度
+				if(this.statue =='3'){
+					this.isShow = false
+				}
+			},
+			methods:{
+				hide:function(){
+					$('#app').hide();
+					$('#detailsDiv').show()
+				},
+				guanbi:function($event){
+					$($event.target).parents('.pingyu').hide().siblings('div').show()
+				},
+				pingyu:function($event){
+					$($event.target).parents('.xiti').hide().siblings('div').hide().siblings('.pingyu').show();
+
+				},
+				jieguo:function(){
+					window.history.go(-1)
+				},
+				getExerciseDetails: function(){
+					this.$http.post(this.dataurl, {
+						userId:this.userId,
+						role:this.role,
+						homeworkId:this.homeworkId,
+						submitId:this.submitId,
+						type:this.type
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.exerlength = response.data.message;
+							this.exerciseData = response.data.data['1dData']
+							this.datikaArr =  response.data.data['2dData']
+							this.workName = response.data.additionalData.workName
+
+							this.$nextTick(function(){
+								if(getQueryString('isEnd') =='1'){
+									$('#answerCard,.voice,.loding,.text-center').addClass('dn');
+									$('.loding').html('')
+								}
+
+								var mySwiper = new Swiper ('.swiper-container',{
+									initialSlide:flag,
+									prevButton:'.swiper-button-prev',
+									nextButton:'.swiper-button-next',
+									onSlideChangeStart: function(swiper){
+										$('.swiper-slide').find('.active').removeClass('active').find('audio').trigger('pause');
+										$('.text').hide();
+											$('video').trigger('pause');
+									},
+									onSlideChangeEnd: function(swiper){
+										$('.swiper-slide').find('.active').removeClass('active').find('audio').trigger('pause');
+										$('.text').hide();
+											$('video').trigger('pause');
+									}
+								});
+								if(getQueryString('type') == '2' ||getQueryString('isEnd') == '1'){
+									$('.swiper-button-next').eq($('.swiper-slide').length-1).css('opacity','0.3')
+								}else {
+									$('.swiper-button-next').eq($('.swiper-slide').length-1).siblings('.nextCard').show();
+									$('.swiper-button-next').eq($('.swiper-slide').length-1).text('完 成').css('width','126px')
+								}
+								if(getQueryString('statue')=='2'||getQueryString('statue')=='3'){
+									$('.exerciseJx,.exerciseAnswer,.exerciseMinor').show()
+									for(var a=0;a<$('.swiper-slide').length;a++){
+										$('.exerciseAnswer,.exerciseMinor').eq(a).before($('.wodeanswer').eq(a).html())
+									}
+								}
+								$('#exerciseDiv').height($(document).height()-45)
+								$('.neirong').css({
+									'height':$(document).height()-150,
+									'overflow-y':'scroll'
+								})
+
+							})
+						} else {
+							console.log('错误1')
+						}
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				swindex:function($event){
+					var allindex = 0
+					var index = $($event.target).parents('.homeCircleLi').index();
+					var pindex =  $($event.target).parents('.parent_index').index();
+
+					for(var h=0;h<pindex;h++){
+						allindex = $('.parent_index').eq(h).find('li').length+allindex
+					}
+					this.$nextTick(function(){
+						$('#detailsDiv').show();
+						$('#app').hide()
+						var mySwiper = new Swiper ('.swiper-container',{
+							initialSlide:allindex+index,
+							prevButton:'.swiper-button-prev',
+							nextButton:'.swiper-button-next'
+						});
+					})
+				},
+			}
+		})
+
+
+		function toggle(obj){
+			if($(obj).parent().siblings('.text').is(":hidden")){
+				$(obj).parent().siblings('.text').show();
+				$(obj).addClass('active')
+			}else {
+				$(obj).parent().siblings('.text').hide();
+				$(obj).removeClass('active')
+			}
+		}
+		function play2(obj,parentSibling){
+			var player = $(obj).find('audio')[0];
+			if($(player).attr('src') == ''){
+				alert('此题未提交语音作业')
+				return false
+			}
+			if (player.paused){
+				player.play();
+					$(player).parent('div').addClass('active').siblings(parentSibling).removeClass('active').find('audio').trigger('pause').parents('.swiper-slide').siblings('div').find('.active').removeClass('active').find('audio').trigger('pause');
+				player.loop = false;
+				player.addEventListener('ended', function () {
+					$(player).parent('div').removeClass('active')
+				}, false);
+			}else {
+				player.pause();
+				$(player).parent('div').removeClass('active')
+			}
+		}
+		if(CheckIsAndroid()){
+			window.alert = function(name){
+				var iframe = document.createElement("IFRAME");
+				iframe.style.display="none";
+				iframe.setAttribute("src", 'data:text/plain,');
+				document.documentElement.appendChild(iframe);
+				window.frames[0].window.alert(name);
+				iframe.parentNode.removeChild(iframe);
+			};
+		}
+	function showWebNav(){}//显示web导航
+
+</script>
+
+	</body>
+</html>

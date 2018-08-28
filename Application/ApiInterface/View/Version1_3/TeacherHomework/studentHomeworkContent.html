@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+			<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<title></title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				color: #333;
+			}
+			body{
+			}
+			ul li{
+				list-style: none
+			}
+			div{
+				word-break: break-all;
+			}
+			.left{
+				float: left;
+			}
+			.right{
+				float: right;
+			}
+			.of{
+				overflow: hidden;
+			}
+			.content img{
+				max-width: 100%
+			}
+			.preview,.synchronization,.strengthen{
+				width: 33.3%;
+				text-align: center;
+				line-height: 36px;
+				border-bottom: 1px solid #eee
+			}
+			.headertop{
+				border-bottom: 4px solid #eee;
+
+				padding: 0 10px;
+				margin-top: 50px
+			}
+			.daan{
+				max-width: 100%
+			}
+			.preview.active,.synchronization.active,.strengthen.active{
+				border-bottom: 1px solid #F2B81A;
+				color: #F2B81A
+			}
+			.headertop p:nth-child(1){
+				line-height: 40px
+			}
+			.headertop p  span{
+				display: inline-block;
+				width: 50%;
+				float: left;
+				font-size: 14px;
+				line-height: 28px
+			}
+
+			.play{
+				width: 20px
+			}
+			.audioBox{
+					background:url(__PUBLIC__/img/Apphomework/weibo.png) no-repeat;
+					background-size: 30px;
+					display: inline-block;
+					text-indent: 40px;
+					border: 1px solid #eaa800;
+					padding-right: 20px;
+					border-radius: 5px
+			}
+			.audioBox.active{
+					background:#fff8da  url(__PUBLIC__/img/Apphomework/yibo.png) no-repeat;
+					background-size: 30px;
+					display: inline-block;
+					text-indent: 40px;
+					border: 1px solid #eaa800;
+					padding-right: 20px;
+					border-radius: 5px
+			}
+			.wordDiv{
+				margin: 10px 0;
+				line-height: 28px
+			}
+			.wordDiv img{
+				position: relative;
+				top:4px;
+				margin-right: 10px;
+			}
+			.mb8{
+				margin-top: 8px;
+				padding: 0 10px
+ 			}
+			.borderBom1 .borderBom{
+				border-bottom: 2px dashed  #eaa800
+			}
+			.borderBom1{
+				border-bottom: 3px solid  #eee;
+			}
+			.borderBom{
+				padding: 10px
+			}
+			.padding10{
+				padding: 10px
+			}
+			.appTop {
+				height: 44px;
+				width: 100%;
+				border-bottom: 1px solid #eee;
+				position: fixed;
+				top: 0;
+				background: #fff;
+				z-index: 100;
+				box-sizing: content-box;
+			}
+			.appTop .returnBox {
+				width: 44px;
+				height: 100%;
+				background: url(__PUBLIC__/img/Apphomework/fanhui.png) no-repeat center;
+				background-size: 10px 16px;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			.appTop .appTopTitle {
+				height: 44px;
+				line-height: 44px;
+				font-size: 20px;
+				margin: 0 60px;
+				text-align: center;
+			}
+			.Corrections{
+				position: fixed;
+				width: 100%;
+				line-height: 40px;
+				color: #fff;
+				text-align: center;
+				background: #f2b81a;
+				bottom:0;
+				left: 0
+			}
+			/*习题*/
+			.exerciseRemark,.exerciseAnswer,.exerciseJx,.claimScore,.score,.difficulty,.exerciseDifficulty{
+				display: none
+			}
+			.keben,video{
+				width: 100%
+			}
+			.caption p img{
+				max-width: 100%
+			}
+			.content{
+				padding:0 10px
+			}
+			.answerInput{
+				background: #fff;
+				outline: none;
+				border: none;
+				border-bottom: 1px solid #000;
+				width: 20px
+			}
+			.exerciseContent li p{
+				display: inline-block;
+			}
+			.xueshengAs{
+				width: 30px;
+				height:30px;
+				background: url(__PUBLIC__/img/Apphomework/ting.png) no-repeat;
+				background-size: 100%;
+				display: inline-block;
+				margin-left: 5px
+			}
+			.xueshengAs.active{
+				width: 30px;
+				height:30px;
+				background: url(__PUBLIC__/img/Apphomework/ting1.png) no-repeat;
+				background-size: 100%;
+				display: inline-block;
+				margin-left: 5px
+			}
+			/**/
+		</style>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div class="app">
+			<div class="appTop">
+				<div class="returnBox" @click="returnApp"></div>
+				<div class="appTopTitle">
+						{{workname}}
+				</div>
+			</div>
+			<div class="headertop">
+				<p >
+					提交时间：{{workData.submit_at}}
+				</p>
+				<p class="of">
+					<span>用时:{{workData.work_timeout}}</span>
+					<span>作业状态:<template v-if="workData.correct_status==1">已批改</template> <template v-if="workData.correct_status==0">未批改</template></span>
+					<span>得分:{{workData.score}}分(总分{{workData.total_score}}分)</span>
+					<span>正确率:{{workData.correct_rate}}</span>
+				</p>
+			</div>
+			<div class=" of">
+				<div class="preview left " @click="preview" :class="{active:ispreview}">
+					作业内容({{previewNum}})
+				</div>
+				<div class="synchronization left" @click="synchronization" :class="{active:issynchronization}">
+					本次错题({{errorNum}})
+				</div>
+				<div class="strengthen left"  @click="strengthen" :class="{active:isstrengthen}">
+					评语({{commentList.length}})
+				</div>
+			</div>
+			<div class="content">
+				<div  v-show="ispreview">
+
+						<div v-for="(list,index) in dataArr">
+							<div  v-if="list.main_type== '2'&&list.sub_type =='1'" class="borderBom1">
+								<p>
+									<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+								</p>
+								<div class="of wordDiv" v-for="(cihui,index) in list.data" :id="list.id">
+									<p>
+										<span class="left">{{index+1}}.</span>
+										<span class="audioBox left" v-html="cihui.name" @click="play">
+											<img src="__PUBLIC__/img/Apphomework/weibo.png" alt="" />
+										</span>
+										<audio :src="cihui.subject_name" >
+										</audio>
+										<span class="xueshengAs left " @click="play1" v-if="cihui.submit_answer !=''">
+											<audio :src="cihui.submit_answer">
+											</audio>
+										</span>
+									</p>
+								</div>
+							</div>
+							<div  v-if="list.main_type== '2'&&list.sub_type =='2'" class="borderBom1">
+								<p>
+									<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+								</p>
+								<div  v-for="(juzi,index) in list.data"  class="of wordDiv">
+									<p>
+										<span class="left">{{index+1}}.</span>
+										<span class="audioBox left" v-html="juzi.name"  @click="play">
+											<img src="__PUBLIC__/img/Apphomework/weibo.png" alt="" />
+										</span>
+										<audio :src="juzi.subject_name" >
+
+										</audio>
+										<span class="xueshengAs left" @click="play1" v-if="juzi.submit_answer !=''">
+											<audio :src="juzi.submit_answer">
+											</audio>
+										</span>
+									</p>
+								</div>
+							</div>
+							<div  v-if="list.main_type== '2'&&list.sub_type =='3'" class="borderBom1">
+								<p>
+									<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+								</p>
+								<div  v-for="(sp,index) in list.data"  class="of wordDiv">
+									<span class="left">{{index+1}}.</span><video :src="sp.subject_name"  controls=""></video>
+								</div>
+							</div>
+							<div  v-if="list.main_type== '2'&&list.sub_type =='4'" class="borderBom1">
+								<p>
+									<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+								</p>
+								<div v-for="(sp,index) in list.data"  class="of wordDiv">
+									<span class="left">{{index+1}}.</span><img :src="sp.subject_name" class="keben">
+								</div>
+							</div>
+							<div  v-if="list.main_type=='1'" class="of wordDiv borderBom1">
+								<p>
+									<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+								</p>
+								<div class=""  v-for="(todo,index) in list.data" >
+									<span>第{{index+1}}题</span>
+									<div v-html="todo.json_html">
+
+									</div>
+									<div v-if="todo.topic_type =='1'||todo.topic_type =='3'" v-html="'学生答案:'+todo.submit_answer">
+
+									</div>
+									<img v-else :src="todo.submit_answer" style="width:100%">
+
+								</div>
+
+							</div>
+						</div>
+				</div>
+				<div class="" v-show="issynchronization" >
+					<div v-for="(list,index) in cuotiArr">
+						<div  v-if="list.main_type== '2'&&list.sub_type =='1'" class="borderBom1">
+							<p>
+								<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+							</p>
+							<div class="of wordDiv" v-for="cihui in list.data" :id="list.id">
+								<p>
+									<span class="audioBox left" v-html="cihui.name" @click="play">
+										<img src="__PUBLIC__/img/Apphomework/weibo.png" alt="" />
+									</span>
+									<audio :src="cihui.subject_name" >
+									</audio>
+									<span class="xueshengAs left">
+										<audio :src="cihui.submit_answer">
+										</audio>
+									</span>
+								</p>
+							</div>
+						</div>
+						<div  v-if="list.main_type== '2'&&list.sub_type =='2'" class="borderBom1">
+							<p>
+								<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+							</p>
+							<div  v-for="juzi in list.data"  class="of wordDiv">
+								<p>
+									<span class="audioBox left" v-html="juzi.name"  @click="play">
+										<img src="__PUBLIC__/img/Apphomework/weibo.png" alt="" />
+									</span>
+									<audio :src="juzi.subject_name" >
+
+									</audio>
+									<span class="xueshengAs left">
+										<audio :src="juzi.submit_answer">
+										</audio>
+									</span>
+								</p>
+							</div>
+						</div>
+						<div  v-if="list.main_type== '2'&&list.sub_type =='3'" class="borderBom1">
+							<p>
+								<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+							</p>
+							<div  v-for="sp in list.data"  class="of wordDiv">
+								<video :src="sp.subject_name"  controls=""></video>
+							</div>
+						</div>
+						<div  v-if="list.main_type== '2'&&list.sub_type =='4'" class="borderBom1">
+							<p>
+								<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+							</p>
+							<div v-for="sp in list.data"  class="of wordDiv">
+								<img :src="sp.subject_name" class="keben">
+							</div>
+						</div>
+						<div  v-if="list.main_type=='1'" class="of wordDiv borderBom1">
+							<p>
+								<b>{{index+1|filtersVoiceNumber}}.{{list.name}}({{list.totalScore}}分)</b>
+							</p>
+							<div class=""  v-for="(todo,index) in list.data" >
+								<div v-html="todo.json_html">
+
+								</div>
+								<div v-if="todo.topic_type =='1'||todo.topic_type =='3'" v-html="'学生答案:'+todo.submit_answer">
+
+								</div>
+								<img v-else :src="todo.submit_answer" style="width:100%">
+
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+				<div class="" v-show="isstrengthen" style="padding-bottom:45px">
+
+					<div class="" v-for="list in commentList" :id="list.id" v-html="list.comment" >
+						<!-- {{}} -->
+					</div>
+					<div class="Corrections" @click="Appview">
+						评语
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<script type="text/javascript">
+		var homeworkId = "{$homeworkId}";
+		var studentId = "{$studentId}";
+		var classId = "{$classId}";
+		var role = "{$role}";
+		var userId = "{$userId}";
+		var app = new Vue({
+			el:'.app',
+			data:{
+				workUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/getStudentHomeWorkDetails',
+				dateArr:[],
+				workData:[],
+				ispreview:true,
+				issynchronization:false,
+				isstrengthen:false,
+				previewNum:0,
+				homeworkId:homeworkId,
+				studentId:studentId,
+				classId:classId,
+				dataArr:[],
+				cuotiArr:[],
+				errorNum:0,
+				workname:'',
+				subId:'',
+				commentList:[]
+			},
+			created:function(){
+				this.getHomeWorkList();
+
+			},
+			methods:{
+				returnApp:function(){
+					var data4 = {
+							"page":"backClick"
+					}
+					postApp(data4)
+				},
+				preview:function(){
+					this.ispreview = true;
+					this.issynchronization=false;
+					this.isstrengthen=false;
+				},
+				synchronization:function(){
+					this.ispreview = false;
+					this.issynchronization=true;
+					this.isstrengthen=false;
+				},
+				strengthen:function(){
+					this.ispreview = false;
+					this.issynchronization=false;
+					this.isstrengthen=true;
+				},
+				getHomeWorkList:function(){
+					this.$http.post(this.workUrl, {
+						homeworkId: this.homeworkId,
+						classId: this.classId,
+						studentId:this.studentId,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.workData = $.parseJSON(response.body).data;
+							console.log(this.workData);
+							this.workname = this.workData.student_name;
+							this.subId = this.workData.submitid;
+							this.dataArr = this.workData.exercise_list
+							this.commentList = this.workData.comment_list
+							this.cuotiArr = this.workData.error_exercise_list;
+							this.previewNum = this.workData.exercise_list_count;
+							this.errorNum = this.workData.error_exercise_list_count
+							//错题
+
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				},
+				play:function($event){
+					var that = $event.target;
+					var player = $(that).siblings('audio')[0];
+					if($(that).hasClass('active')){
+						player.pause();
+						$(that).removeClass('active')
+					}else{
+						player.play();
+						player.loop = false;
+						$(that).addClass('active')
+						player.addEventListener('ended', function () {
+							$(that).removeClass('active')
+						}, false);
+					}
+				},
+				play1:function($event){
+					var that = $event.target;
+					var player = $(that).children('audio')[0];
+					if($(that).hasClass('active')){
+						player.pause();
+						$(that).removeClass('active')
+					}else{
+						player.play();
+						player.loop = false;
+						$(that).addClass('active')
+						player.addEventListener('ended', function () {
+							$(that).removeClass('active')
+						}, false);
+					}
+				},
+				Appview:function(){
+					var data2 = {
+						"page":"teacherSendMessage",
+						"submitId":this.subId,
+					}
+					postApp(data2)
+				},
+			},
+			filters:{
+	            filtersVoiceNumber:function (val) {
+	                val = num(val+"");
+	                return val
+	            }
+	        }
+		})
+		function showWebNav(){}//显示web导航
+		function reload(){
+			app.getHomeWorkList()
+		}
+		function num(n) {
+	        if(!/(^[1-9]\d*$)/){
+	            return '非法数字';
+	        }
+	        var uppercase = '千百亿千百十万千百十个';
+	        var nLength = n.length;
+	        var newStr = '';
+	        if(uppercase.length-nLength<0){
+	            return '数字过长';
+	        }
+	        uppercase=uppercase.substr(uppercase.length-nLength);
+	        for(var i=0; i < nLength; i++){
+	            newStr +='零一二三四五六七八九'.charAt(n[i])+uppercase.charAt(i);
+	        };
+	        newStr = newStr.substr(0,newStr.length-1);
+	        return newStr;
+    	}
+
+
+		</script>
+
+	</body>
+</html>

@@ -1,0 +1,541 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<!--<link href="__PUBLIC__/dataTable/css/jquery.dataTables.min.css"/>-->
+<link href="__PUBLIC__/dataTable/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/Base64.js"></script>
+
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter').css('min-height',boxHeight)
+	})
+</script>
+
+<div class="boxOutter">
+	<div id="form" >
+		<div class="filterOutter">
+			<div class="filterInner">
+				<div class="filterBox">
+					<label for="">版&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本</label>
+					<select name="version" id="version" onchange="getcharp()" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+						<volist name="versionData" id="versionDataList">
+							<option value="{$versionDataList.id}">{$versionDataList.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label>
+					<select name="courseId" id="course" onchange="getcharp()" class="inputCommon" v-model="courseId" @change="">
+						<option value="0">请选择</option>
+						<volist name="courseList" id="courseList">
+							<option value="{$courseList.id}">{$courseList.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label>
+					<select name="grade" id="grade" onchange="getcharp()" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+						<volist name="grade" id="gradeList">
+							<option value="{$gradeList.id}">{$gradeList.grade}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</label>
+					<select name="school_term" id="school_term" onchange="getcharp()" class="inputCommon" v-model="">
+							<option value="">请选择</option>
+							<option value="1">上册</option>
+							<option value="2">下册</option>
+							<option value="3">全一册</option>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">章</label>
+					<select name="chapter" id="chapter" onchange="getFestival()" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">节</label>
+					<select name="festival" id="festival" onchange="getKnowledge()" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">知&nbsp;识&nbsp;点</label>
+					<select name="knowledge" id="knowledge" onchange="getKnowledgePoint()" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">子知识点</label>
+					<select name="knowledgepoint" id="knowledgepoint"  class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">关&nbsp;键&nbsp;词</label>
+					<input name="keyword" type="text" class="inputCommon" id="" placeholder="请输入试题关键词" >
+				</div>
+				<div class="filterBox">
+					<label for="">录入人员</label>
+					<select name="creatorId" id="" class="inputCommon" >
+						<option value="0">请选择</option>creatorList
+						<volist name="creatorList" id="creatorList">
+							<option value="{$creatorList.creator_id}">{$creatorList.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">类&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</label>
+					<select name="type" id="" class="inputCommon" v-model="">
+						<option value="0">请选择</option>
+						<volist name="type" id="typeList">
+							<option value="{$typeList.id}">{$typeList.name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="filterBox">
+					<label for="">录入日期</label>
+					<input type="text" class="inputCommon inputTime" name="inputStartTime" id="startTime" placeholder="开始时间" >
+					至
+					<input type="text" class="inputCommon inputTime" name="inputEndTime" id="endTime" placeholder="结束时间" >
+				</div>
+			</div>
+			<div class="filterBtn">
+				<?php if(in_array('Multimedia/screening',session('exercises_permissions'))){ ?>
+				<button class="btn" id="" onclick="getQueryParameter('form');query();">查询</button>
+				<?php }?>
+				<button class="btn" id="" onclick="$('#form input,select').val('')">重置</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="tableTop mb20">
+		<div class="tableTitle">录入作业列表</div>
+		<?php if(in_array('Multimedia/homeworkImport',session('exercises_permissions'))){ ?>
+			<button onclick="window.location.href='/index.php?m=Exercise&c=Multimedia&a=homeworkImport'" class="btn" id="">导入作业</button>
+		<?php }?>
+	</div>
+	<div class="borderBottom of mb15">
+		<input type="hidden" name="cat" id="cat" value="{$_GET['cat']!=0? $_GET['cat'] : 1}"/>
+		<button type="button" onclick="$('#cat').val(1);query()" name="button" class="tabBtn left {$_GET['cat']==1?'active':''}" id="enterBtn">已录入</button>
+		<button type="button" onclick="$('#cat').val(3);query()" name="button" class="tabBtn left {$_GET['cat']==3?'active':''}" id="modifyBtn">返工待修改</button>
+		<iframe name="iframeName1" id="iframeID1" src="about:blank" width="0" height="0" frameborder="0" ></iframe>
+	</div>
+	<table class="tableCommon" id="table">
+		<thead>
+		<tr>
+			<th width=6%>序号</th>
+			<th width=6%>ID</th>
+			<th width=15%>上传日期</th>
+			<th width=8%>录入人员</th>
+			<th width=8%>状态</th>
+			<th width=8%>类别</th>
+			<th width=34%>上传内容</th>
+			<th width=15%>操作</th>
+		</tr>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+    function loading(name) {
+        $('body').loading({
+            loadingWidth:240,
+            title:'正在查询...',
+            name:name,
+            discription:'这是一个描述...',
+            direction:'row',
+            type:'origin',
+            originBg:'#71EA71',
+            originDivWidth:30,
+            originDivHeight:30,
+            originWidth:4,
+            originHeight:4,
+            smallLoading:false,
+            titleColor:'#388E7A',
+            loadingBg:'#312923',
+            loadingMaskBg:'rgba(22,22,22,0.2)'
+        });
+    }
+
+    function removeLoad(name) {
+        removeLoading(name);
+    }
+</script>
+<script>
+	!function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actend.min = datas; //开始日选好后，重置结束日的最小日期
+			actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+</script>
+<script src="__PUBLIC__/dataTable/js/jquery.dataTables.min.js"></script>
+<script>
+	function getQueryParameter(divId)
+	{
+		parameters = {};
+		$('#'+divId+' select').each(function(i,n){
+			if($(n).val() != '' && $(n).val() != 0)
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		$('#'+divId+' input').each(function(i,n){
+			if($(n).val().trim() !== '')
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		parameters.cat = $('#cat').val();
+	}
+	var parameters = {};
+	parameters.cat = $('#cat').val();
+	var ignoreQuery = false;
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		ignoreQuery = true;
+	}
+	var oTable = $("#table").dataTable({
+
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=Multimedia&a=screening",//这个是请求的地址
+		"fnServerData": retrieveData ,
+		aoColumnDefs : [
+            {
+                "aTargets" :[1],
+                "mRender" : function(data, type, full){
+                    return '<a class="tdcolor" href="/index.php?m=Exercise&c=Multimedia&a=homeworkDetails&id='+full[1]+'">'+data+'</a>';
+                }
+
+            },
+			{
+				"aTargets" :[6],
+				"mRender" : function(data, type, full){
+					return '<a class="tdcolor" href="/index.php?m=Exercise&c=Multimedia&a=homeworkDetails&id='+full[1]+'">'+data+'</a>';
+	           }
+			},
+			{
+				"aTargets" :　[7],
+				"mRender" : function(data, type, full){
+					var buttonStr = '';
+					if(data.indexOf('modify') != -1)
+					{
+                    <?php if(in_array('Multimedia/updateOssExercisese',session('exercises_permissions'))){ ?>
+						buttonStr += "<a class='tableABtn' href='/index.php?m=Exercise&c=Multimedia&a=homeworkDetails&id="+full[1]+"'>修改</a>";
+					<?php }?>
+					}
+					if(data.indexOf('delete') != -1)
+					{
+                    <?php if(in_array('ExerciseState/deleteExerciseButton',session('exercises_permissions'))){ ?>
+						buttonStr += "<a href='javascript:void(0)' class='tableABtn' onclick='deleteQuestion("+full[1]+")'>删除</a>";
+					<?php }?>
+					}
+					if(data.indexOf('verify') != -1)
+					{
+                    <?php if(in_array('Multimedia/homeworkCheckDetails',session('exercises_permissions'))){ ?>
+						buttonStr += "<a class='tableABtn' href='/index.php?m=Exercise&c=Multimedia&a=homeworkCheckDetails&id="+full[1]+"'>校审</a>";
+					<?php }?>
+					}
+					return buttonStr;
+				}
+			}],
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		},
+
+	});
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		parameters = JSON.parse(base64decode(window.location.href.split('#')[1]));
+		$('.borderBottom').children('button').removeClass('active');
+		$('.borderBottom').children('button').eq(parseInt(parameters.cat)-1).addClass('active');
+		oTable.fnPageChange(parameters.startIndex/parameters.pageSize);
+		delete parameters['startIndex'];
+		delete parameters['pageSize'];
+		//oTable.api().draw(false);
+	}
+	/*************************************************切换TAB选项卡**************************************************************/
+	function query()
+	{
+		parameters.cat = $('#cat').val();
+		//table reset;
+		oTable.fnUpdate();
+	}
+
+	function retrieveData( sSource,aoData, fnCallback) {
+		if(window.location.href.indexOf('#')!=-1)
+		{
+			if(ignoreQuery)
+			{
+				ignoreQuery =false;
+				return;
+			}
+		}
+		var queryData =  $.extend(true,{},parameters); //深度拷贝
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+		// queryData.sEcho = qq.sEcho;
+		if(!isBrowser && queryData)
+		window.location.hash = lastHash =  base64encode(JSON.stringify(queryData));
+		loading('loadData');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+			},
+			error : function(msg) {
+				location.reload();
+			}
+		});
+	}
+	// 发布第三方
+	$('.tabBtn').click(function(){
+		$(this).addClass('active').siblings('.tabBtn').removeClass('active')
+	});
+
+/********************************************删除操作*****************************************************************/
+   function deleteQuestion(id)
+   {
+	   $.NotifyBox.NotifyTwoCallTwo('确定','确定删除该习题？','确定','取消',function(){
+		   loading('loadData');
+		   $.ajax({
+			   url : "{:U('ExerciseState/deleteExercise')}",//这个就是请求地址对应sAjaxSource
+			   data : {ids:id},//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			   type : 'post',
+			   dataType : 'json',
+			   async : true,
+			   success : function(result) {
+				   removeLoad('loadData');
+				   if(result.status == 200)
+					   $.NotifyBox.NotifyOneCall('成功','删除成功','确定',function(){if(oTable.fnSettings().fnRecordsDisplay()-oTable.fnSettings()._iDisplayStart == 1)oTable.fnPageChange('previous',true); else oTable.api().draw(false); });
+				   else
+					   $.NotifyBox.NotifyOne('错误',result.message,'确定');
+
+			   },
+			   error : function(msg) {
+				   removeLoad('loadData');
+				   $.NotifyBox.NotifyOneCall('错误','删除失败','确定');
+			   }
+		   });
+	   })
+
+   }
+</script>
+<script>
+    String.prototype.format = function (args) {
+        if (arguments.length > 0) {
+            var result = this;
+            if (arguments.length == 1 && typeof (args) == "object") {
+                for (var key in args) {
+                    var reg = new RegExp("({" + key + "})", "g");
+                    result = result.replace(reg, args[key]);
+                }
+            }
+            else {
+                for (var i = 0; i < arguments.length; i++) {
+                    if (arguments[i] == undefined) {
+                        return "";
+                    }
+                    else {
+                        var reg = new RegExp("({[" + i + "]})", "g");
+                        result = result.replace(reg, arguments[i]);
+                    }
+                }
+            }
+            return result;
+        } else {
+            return this;
+        }
+    }
+
+/******************************************************获取章************************************************************************/
+    function getcharp(){
+        var version_id = $('#version').val();
+        var course_id = $('#course').val();
+        var grade_id = $('#grade').val();
+        var school_term = $('#school_term').val();
+    $("#chapter option:not(:eq(0))").remove();
+    $("#festival option:not(:eq(0))").remove();
+    $("#knowledge option:not(:eq(0))").remove();
+        $.ajax({
+            type: 'POST',
+            url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+            cache: false,
+			data:{'version':version_id,'courseId':course_id,'grade_id':grade_id,'school_term':school_term,'level':1},
+           // async: false,
+            dataType:'json',
+            success: function(msg){
+				if(msg.status == 200){
+                    if(msg.data.length){
+                        var html = '';
+                        var	option =  "<option value='{0}'>{1}</option>";
+                        html += option.format(0,'请选择');
+                        $(msg.data).each(function (i, n) {
+                            console.log(msg.data.i)
+                            html += option.format(n.id, n.tree_point_name);
+                            $('#chapter').html(html);
+                        })
+                    }
+				}
+            }
+		})
+    }
+    /********************************************************获取节*******************************************************/
+    function getFestival(){
+        var id = $('#chapter').val();
+        $("#festival option:not(:eq(0))").remove();
+        $("#knowledge option:not(:eq(0))").remove();
+        $.ajax({
+            type: 'POST',
+            url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+            cache: false,
+            data:{'id':id,'level':2},
+            // async: false,
+            dataType:'json',
+            success: function(msg){
+                if(msg.status == 200){
+                    if(msg.data.length){
+                        var html = '';
+                        var	option =  "<option value='{0}'>{1}</option>";
+                        html += option.format(0,'请选择');
+                        $(msg.data).each(function (i, n) {
+                            console.log(msg.data.i)
+                            html += option.format(n.id, n.tree_point_name);
+                            $('#festival').html(html);
+                        })
+                    }
+                }
+            }
+        })
+    }
+    /********************************************************获取知识点*******************************************************/
+    function getKnowledge(){
+        var id = $('#festival').val();
+        $("#knowledge option:not(:eq(0))").remove();
+        $.ajax({
+            type: 'POST',
+            url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+            cache: false,
+            data:{'id':id,'level':3},
+            // async: false,
+            dataType:'json',
+            success: function(msg){
+                if(msg.status == 200){
+                    if(msg.data.length){
+                        var html = '';
+                        var	option =  "<option value='{0}'>{1}</option>";
+                        html += option.format(0,'请选择');
+                        $(msg.data).each(function (i, n) {
+                            console.log(msg.data.i)
+                            html += option.format(n.id, n.tree_point_name);
+                            $('#knowledge').html(html);
+                        })
+                    }
+                }
+            }
+        })
+    }
+
+    /********************************************************获取子集知识点*******************************************************/
+    function getKnowledgePoint(){
+        var id = $('#knowledge').val();
+        $("#knowledgepoint option:not(:eq(0))").remove();
+        $.ajax({
+            type: 'POST',
+            url: '/index.php?m=Exercise&c=Multimedia&a=getNextLevelKnowledge',
+            cache: false,
+            data:{'id':id,'level':4},
+            // async: false,
+            dataType:'json',
+            success: function(msg){
+                if(msg.status == 200){
+                    if(msg.data.length){
+                        var html = '';
+                        var	option =  "<option value='{0}'>{1}</option>";
+                        html += option.format(0,'请选择');
+                        $(msg.data).each(function (i, n) {
+                            console.log(msg.data.i)
+                            html += option.format(n.id, n.tree_point_name);
+                            $('#knowledgepoint').html(html);
+                        })
+                    }
+                }
+            }
+        })
+    }
+</script>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的收藏</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/appCommon.css?v=1">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/teacherHomework.css">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/Version1_3/studentHomeworkElse.css">
+		<link href="__PUBLIC__/swiper/swiper-3.4.2.min.css" type="text/css" rel="stylesheet">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+
+			body {
+				background: #fff;
+			}
+			.redText p span,.redText span{
+				color: #ff683e !important;
+				background: none !important;
+			}
+			.exerciseMain p span,p span{
+				color: #333  !important;
+				background: none !important;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="appTop">
+				<div class="returnBox"  onclick="window.history.go(-1)"></div>
+				<div class="appTopTitle">
+					我的收藏
+				</div>
+
+			</div>
+			<div class="mainOutter" style="margin-top:45px">
+				<div class="exerciseOutter p0">
+					<!-- 如果没有信息 -->
+					<img src="__PUBLIC__/img/Apphomework/res_empty_bg.png" alt="" class="emptyImg centerEmpty" v-if='exerciseData == ""'>
+
+					<div class="exerciseInner" v-for="(exerciseList, index) in exerciseData" :id="exerciseList.id">
+						<a href="javascript:;" class="exerciseBox">
+							<div class="exerciseType addImgBox">
+								{{ exerciseList.name }} ({{ exerciseList.score }}分)
+								<img src="__PUBLIC__/img/Apphomework/yishoucang.png" alt="" class="collectImg active right" v-on:click="collectExercise($event)">
+							</div>
+							<div class="exerciseTitle">
+								{{ index+1 }}-{{ exerciseList.name }}
+							</div>
+							<div class="exerciseMain" v-html="exerciseList.subject_name"></div>
+
+							<div class="exerciseMain" v-if="exerciseList.topic_type == 1">
+                              <li class="option" v-for="(answerValue, answerIndex) in exerciseList.answer" :class="{w100:exerciseList.class_type != 2 && exerciseList.class_type != 4, w50:exerciseList.class_type == 2, w25:exerciseList.class_type == 4}">
+                                 <span class="left">{{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;</span>
+								  <span class="exerciseStem left" v-html="answerValue"></span>&nbsp;&nbsp;
+                              </li>
+							</div>
+							<div class="exerciseMain" v-if="exerciseList.topic_type == 3">
+                                <li class="option" v-for="(answerValue, answerIndex) in exerciseList.answerList" :class="{w100:exerciseList.class_type != 2 && exerciseList.class_type != 4, w50:exerciseList.class_type == 2, w25:exerciseList.class_type == 4}">
+                                    {{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;
+                                    <span class="exerciseStem" v-html="answerValue"></span>&nbsp;&nbsp;
+                                </li>
+							</div>
+							<div class="answerBox">
+								<div class="answer">正确答案：
+									<span class="redText" v-if="exerciseList.topic_type == 1" >{{ exerciseList.right_key }}</span>
+									<span class="redText" v-else-if="exerciseList.topic_type == 2 || exerciseList.topic_type == 3 " v-html="exerciseList.answer" ></span>
+									<span class="redText" v-else=" exerciseList.topic_type == 5 || exerciseList.topic_type == 6" v-html="exerciseList.right_key"></span>
+								</div>
+								<div class="analysis">解析：<span v-html="exerciseList.analysis"></span></div>
+							</div>
+						</a>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</body>
+
+
+	<script>
+		var userId = getQueryString('userId');
+		var role = getQueryString('role');
+		var courseId = getQueryString('courseId');
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId: userId,
+				role: role,
+				courseId: courseId,
+				exerciseId: '',
+				exerciseUrl: '/index.php/ApiInterface/Version1_3/HomeworkStudent/getMyCollectedLibraryIdList',
+				exerciseData: '',
+
+				exerciseCollectUrl: '/index.php/ApiInterface/Version1_3/HomeworkStudent/favorExercise',
+				iscancel: ''
+			},
+			created: function () { //应用初始化完毕加载
+				// 获取我的收藏列表
+				this.getExerciseList();
+			},
+			methods: {
+				// 获取我的收藏列表
+				getExerciseList: function(){
+					this.$http.post(this.exerciseUrl, {
+						userId : this.userId,
+						role: this.role,
+						courseId: this.courseId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.exerciseData = response.data.data;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				//收藏习题
+				collectExercise: function(e){
+					var that = $(e.currentTarget);
+					if(that.hasClass('active')) {
+						that.removeClass('active').attr('src','__PUBLIC__/img/Apphomework/weishoucang.png');
+						this.iscancel = 1;
+					} else {
+						that.addClass('active').attr('src','__PUBLIC__/img/Apphomework/yishoucang.png');
+						this.iscancel = 2;
+					}
+
+					this.exerciseId = that.parent().parent().parent().attr('id');
+
+					this.$http.post(this.exerciseCollectUrl, {
+						userId : this.userId,
+						role : this.role,
+						isCancel : this.iscancel,
+						exerciseId : this.exerciseId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					console.log('成功')
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				}
+			}
+		})
+			function showWebNav(){}//显示web导航
+	</script>
+</html>

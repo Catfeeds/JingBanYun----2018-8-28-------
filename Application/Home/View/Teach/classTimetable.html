@@ -1,0 +1,178 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/activity.css" rel="stylesheet" type="text/css" />
+<link href="__PUBLIC__/css/rotate.css" rel="stylesheet" type="text/css" />
+
+<style>
+	body {
+		display: block;
+	}
+	
+	.workPublish {
+		min-height: 60%;
+	}
+		
+	.courseRemind {
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind1.png) no-repeat center;
+		background-size: cover;
+	}
+	
+	.courseRemind:hover {
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind2.png) no-repeat center;
+		background-size: cover;
+	}
+	 
+	.bellTopP2 {
+		background: url({$oss_path}public/web_img/classTimeTable/plusBell.png) no-repeat center;
+		background-size: cover;
+	}
+</style>
+
+<div style="margin-bottom: 12px;">
+	<a href="{:U('Teach/classList')}" title="返回" class="btn btnReturn3">返回</a>
+</div>
+<div style="width:1020px;margin: 0 auto">
+	<iframe src="{:U('Teach/classTimetableInner?classId=')}{$classId}" frameborder="0" width="930" height="900" border=0 style="margin:auto;float:left">
+	</iframe>
+	
+</div>
+
+
+
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script> 
+    var template_empty_div='<div class="emptyResult">暂时没有提醒哦</div>';
+    var template='<tr><td class="text-center">'+
+                        '<img src="{$oss_path}public/web_img/classTimeTable/bell.png" alt="" class="bell">'+
+                      '</td>'+
+                      '<td class="text-center">08:00</td>'+
+                      '<td class="text-center">每3分钟</td>'+
+                      '<td class="text-center">星期一 星期二 星期三 星期四 星期五 星期六 星期日</td>'+
+                      '<td class="text-center">'+
+                        '<img src="{$oss_path}public/web_img/classTimeTable/deleteBell.png" alt="" class="deleteBell" title="删除此提醒">'+
+                      '</td>'+
+                      '<td><input type="hidden" class="hidden_id"/></td>'+
+                '</tr>';
+    
+    
+	$('.courseRemind').click(function () { 
+            request_data();
+            
+            $('body').css('overflow-y','hidden');
+            $('.blackBack,.workPublish').show();
+	})
+        
+        var empty_div=$(template_empty_div).clone(true);
+        function request_data(){
+            $(".bellBottom").find('tbody').empty(); 
+            $(".bellBottom").find('.emptyResult').remove();
+            
+            $.getJSON('index.php?m=Home&c=ClockNotice&a=clockList&class_id={$classId}',function(msg){
+                if(msg.status==200){
+                    if(msg.data.length){
+                        for(var i=0;i<msg.data.length;i++){
+                            var clone_template=$(template).clone(true); 
+                            $(clone_template).find('td').eq(1).text(msg.data[i].clock_time.substr(0,2)+':'+msg.data[i].clock_time.substr(2,2));
+                            $(clone_template).find('td').eq(2).text('每隔'+msg.data[i].clock_time_interval+'分钟'); 
+                            $(clone_template).find('td').eq(3).text(getWeekString(msg.data[i].several_week));  
+                            $(clone_template).find('.hidden_id').val(msg.data[i].id);
+                            $(".bellBottom").find('tbody').append(clone_template);
+                        }
+                        $('.bellBottom').find('thead').show();
+                    }else{
+                        $(".bellBottom").append(empty_div);
+                        $('.bellBottom').find('thead').hide();
+                    } 
+                }
+            });
+        }
+        
+        function getWeekString(week_number){
+            var week_string;
+            switch(week_number){
+                case '1':
+                    week_string='星期一';
+                    break;
+                case '2':
+                    week_string='星期二';
+                    break;
+                case '3': 
+                    week_string='星期三';
+                    break;
+                case '4':
+                    week_string='星期四';
+                    break;
+                case '5':
+                    week_string='星期五';
+                    break;
+                case '6':
+                    week_string='星期六';
+                    break;
+                default:
+                    week_string='星期日';
+                    break;
+            }
+            return week_string
+        }
+        
+        var classId="{$classId}";
+        $('.deleteBell').live('click',function(){
+            $(".bellBottom").find('.emptyResult').remove();
+            var clock_id,obj=this;
+            clock_id=$(obj).parent().parent().find('.hidden_id').val();  
+            if(!clock_id){
+                alert('操作失败,请刷新页面后重试!');
+                return false;
+            }
+            $.getJSON('index.php?m=Home&c=ClockNotice&a=deleteClock',{class_id:classId,clock_id:clock_id},function(msg){
+                if(msg.status==200){
+                    $(obj).parent().parent().remove();
+                    if(!$(".bellBottom").find('tbody').find('tr').length){
+                        $(".bellBottom").find('thead').hide();
+                        $(".bellBottom").append(empty_div);
+                    }
+                }else{
+                    $(".bellBottom").append(empty_div);
+                    alert('操作失败,请刷新页面重试!');
+                }
+            });
+        });
+        
+        $('.bellTopP2').click(function(){
+            var time,hour=$("#hour_id").val();
+            var minute=$("#minute_id").val();
+            var min_interval=$('#min_id').val();
+            if(hour=='' || minute==''){
+                alert('请选择提醒时间!');
+                return false;
+            }
+            if(min_interval==0){
+                alert('请选择时间间隔!');
+                return false;
+            }
+            var week_arr=new Array();
+            for(var i=0;i<$('.weekCheck').length;i++){
+                if($('.weekCheck')[i].checked==true){
+                    week_arr.push($('.weekCheck')[i].value); 
+                } 
+            } 
+            if(!week_arr.length){
+                alert('请选择一个星期的某一天');
+                return false;
+            } 
+            $.getJSON('index.php?m=Home&c=ClockNotice&a=addClock',{hour:hour,minute:minute,interval:min_interval,week:week_arr,classId:classId},function(msg){
+                if(msg.status==200){
+                    request_data();
+                }else if(msg.status==501){
+                    alert('不可设置多个相同时间的时钟!');
+                }else{
+                    alert('操作失败,请刷新页面重试!');
+                }
+            })
+        });
+	
+	$('.workPublishClose').click(function () {
+		$('body').css('overflow-y','auto');
+		$('.blackBack,.workPublish').hide();
+	})
+	 
+</script>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>我的错题库</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/appCommon.css?v=1">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/teacherHomework.css">
+		<link href="__PUBLIC__/swiper/swiper-3.4.2.min.css" type="text/css" rel="stylesheet">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+			.appTop {
+				height: 44px;
+				width: 100%;
+				border-bottom: 1px solid #eee;
+				position: fixed;
+				top: 0;
+				background: #fff;
+				z-index: 100;
+				box-sizing: content-box;
+			}
+			.appTop .appTopTitle {
+				height: 44px;
+				line-height: 44px;
+				font-size: 20px;
+				margin: 0 60px;
+				text-align: center;
+			}
+			.appTop .returnBox {
+				width: 44px;
+				height: 100%;
+				background: url(__PUBLIC__/img/Apphomework/fanhui.png) no-repeat center;
+				background-size: 10px 16px;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="appTop">
+				<div class="returnBox"  onclick="window.history.go(-1)"></div>
+				<div class="appTopTitle">
+					错题库
+				</div>
+			</div>
+			<div class="mainOutter mb0" style="margin-top:44px">
+				<!-- 如果没有信息 -->
+				<img src="__PUBLIC__/img/Apphomework/res_empty_bg.png" alt="" class="emptyImg centerEmpty" v-if='subjectNumData == ""'>
+				<div class="subjectNumList" v-else>
+					<a href="javascript:;" class="subjectNumBox" v-for="(subjectNumList, index) in subjectNumData" :id="subjectNumList.course_id" v-on:click="goHref">
+						<div class="">
+							<img src="{$oss_path}public/web_img/APPHomework/v1-3/yingyu.png" alt="" class="subjectNumImg" v-if="subjectNumList.name == '英语'">
+							<img src="{$oss_path}public/web_img/APPHomework/v1-3/yuwen.png" alt="" class="subjectNumImg" v-if="subjectNumList.name == '语文'">
+							<img src="{$oss_path}public/web_img/APPHomework/v1-3/shuxue.png" alt="" class="subjectNumImg" v-if="subjectNumList.name == '数学'">
+
+							<span class="subjectNumName">{{ subjectNumList.name }}</span>
+							<span class="subjectNumExercise"><span class="subjectNumNum">{{ subjectNumList.count }}</span>道</span>
+							<img src="__PUBLIC__/img/Apphomework/wodeshitikugengduo.png" alt="" class="subjectNumRightArrow">
+						</div>
+
+					</a>
+				</div>
+			</div>
+		</div>
+	</body>
+
+
+	<script>
+		var userId = getQueryString('userId');
+		var role = getQueryString('role');
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId: userId,
+				role: role,
+				subjectNumUrl: '/index.php/ApiInterface/Version1_3/HomeworkStudent/getMyWrongWorkBaseInfo',
+				subjectNumData: '',
+				subjectNumId: ''
+			},
+			created: function () { //应用初始化完毕加载
+				// 获取学科列表
+				this.getSubjectNumList();
+			},
+			methods: {
+				// 获取学科列表
+				getSubjectNumList: function(){
+					this.$http.post(this.subjectNumUrl, {
+						userId : this.userId,
+						role: this.role
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.subjectNumData = response.data.data;
+	    					this.$nextTick(function(){
+						    	var subjectNumListHeight = $(window).height();
+						    	$('.subjectNumList').css('min-height', subjectNumListHeight)
+							})
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				//跳转到我的错题库列表
+				goHref: function($event){
+					var courseId = $($event.target).parents('.subjectNumBox').attr('id');
+					window.location.href ='/index.php/ApiInterface/Version1_3/HomeworkStudent/myWrongList?userId='+this.userId+'&role='+this.role+'&courseId='+courseId;
+				},
+
+			}
+		})
+
+		function showWebNav(){}//显示web导航
+	</script>
+</html>

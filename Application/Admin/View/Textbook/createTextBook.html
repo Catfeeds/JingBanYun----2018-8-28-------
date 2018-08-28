@@ -1,0 +1,210 @@
+<layout name="admin_layout_back"/>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}">&lt; 返回</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form id="form1" name="form1" action="{:U('Textbook/createTextBook')}<?php if($data['id'] == '') echo '' ;else echo '&id=' . $data['id']; ?>" method="post" data-role="validator"
+          data-on-error-input="notifyOnErrorInput"
+          data-show-error-hint="true" enctype="multipart/form-data">
+
+        <div class="grid condensed">
+            <div class="row cells3">
+                <div class="cell">
+                    <label for="course_id">关联学科</label>
+
+                    <div class="input-control text full-size">
+                        <select id="course_id" name="course_id"  data-validate-func="required" data-validate-hint="关联学科不能为空">
+                            <option value="0">-请选择-</option>
+                            <volist name="courses" id="dataCourse" empty="暂时没有信息">
+                                <option value="{$dataCourse.id}" {$data['course_id']==$dataCourse['id']?'selected':''} >{$dataCourse.code} : {$dataCourse.course_name}
+                                </option>
+                            </volist>
+                                <option value="-1">QXK ： 全学科</option>
+                        </select> 
+                    </div>
+                </div>
+                <div class="cell">
+                    <label for="grade_id">关联年级</label>
+
+                    <div class="input-control text full-size">
+                        <select id="grade_id" name="grade_id"  data-validate-func="" data-validate-hint="关联年级不能为空">
+                            <option value="0">-请选择-</option>
+                            <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                                <option value="{$dataGrade.id}" {$data['grade_id']==$dataGrade['id']?'selected':''}>{$dataGrade.grade}</option>
+                            </volist>
+                        </select>
+
+                    </div>
+                </div>
+                <div class="cell">
+                    <label for="grade_id">教材分册</label>
+
+                    <div class="input-control text full-size">
+                        <select id="school_term" name="school_term" onchange="" data-validate-func="" data-validate-hint="关联分册不能为空">
+                            <option value="0" {$data['school_term']==0?'selected':''}>-请选择-</option>
+                            <option value="1" {$data['school_term']==1?'selected':''}>上册</option>
+                            <option value="2" {$data['school_term']==2?'selected':''}>下册</option>
+                            <option value="3" {$data['school_term']==3?'selected':''}>全一册</option>
+                        </select>
+
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="name">课本名称</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" name="name" id="name" data-validate-func="required" value="{$data['name']}" data-validate-hint="课本名称不能为空">
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="name">作者</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" name="author" id="author" data-validate-func="required" value="{$data['author']}" data-validate-hint="资源名称不能为空">
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="name">ISBN</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" name="isbn" id="isbn" value="{$data['isbn']}" data-validate-func="required" data-validate-hint="资源名称不能为空">
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="name">版本</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" name="edition" id="edition" value="{$data['edition']}" data-validate-func="required" data-validate-hint="资源名称不能为空">
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="name">印次</label>
+
+                    <div class="input-control text full-size">
+                        <input type="number" min="1" name="print" id="print_count" value="{$data['print']}" data-validate-func="required" data-validate-hint="资源名称不能为空">
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="name">排序</label>
+
+                    <div class="input-control text full-size">
+                        <input type="number" min="1" name="sort_order" id="sort_order" value="{$data['sort_order']}" data-validate-func="required" data-validate-hint="资源名称不能为空">
+                    </div>
+                </div>
+                <div class="form_section">
+                    <input id="ebookCheckBox" name="has_ebook" type="checkBox" onchange="ossInputChange()" {$data['has_ebook']==1?'checked':''}>已上传电子课本资源至OSS
+                    <div id="ossInput" {$data['has_ebook']==1?'':'style="display:none"'}>
+                    <label for="name"></br>OSS路径 (e.g: http://jbyoss.oss-cn-beijing.aliyuncs.com/beijing_edu_pub/english/eng_5_1_v1)</label>
+                    <div class="input-control text full-size">
+                        <input type="text" name="server_path" id="oss_path" data-validate-func="required" value="{$data['server_path']}" data-validate-hint="资源名称不能为空">
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="form-actions" style="text-align: left; margin-top: 40px;">
+            <button id="submitButton" type="submit" class="button primary {:session('btntheme')}" onclick="return check();">{$data['id']=='' ? 创建:修改}课本</button>
+        </div>
+    </form>
+
+	
+</div>
+
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script type="text/javascript" src="__PUBLIC__/flashUploader/js/stream-v1.js"></script>
+<script>
+    $("#print_count").keyup(function(){
+        $("#print_count").val(parseInt($("#print_count").val()));
+    });
+    
+    function ossInputChange()
+    {
+        if($('#ebookCheckBox').attr('checked'))
+            $('#ossInput').attr('style','');
+        else
+            $('#ossInput').attr('style','display:none');
+
+
+    }
+    $(function () {
+        var options = {
+            success: showResponse, // post-submit callback
+            resetForm: false,
+            dataType: 'json'
+        };
+        $('#form1').submit(function () {
+           $(this).ajaxSubmit(options);
+            return false;
+        });
+    });
+    function check() {
+        var course_id = $('#course_id').val();
+        if (course_id == 0) {
+            alert('请选择学科');
+            return false;
+        }
+        var grade_id = $('#grade_id').val();
+        if (grade_id == 0) {
+            alert('请选择年级');
+            return false;
+        }
+        var school_term_id = $('#school_term_id').val();
+        if (school_term_id == 0) {
+            alert('请选择分册');
+            return false;
+        }
+        var name = $('#name').val();
+        if (name == '') {
+            alert('请输入课本名称');
+            $('#name').focus();
+            return false;
+        }
+        var print_count = $('#print_count').val();
+        if (print_count < 1) {
+            alert('印次不能小于1');
+            $('#print_count').focus();
+            return false;
+        }
+        var sort_order = $('#sort_order').val();
+        if (sort_order < 1) {
+            alert('排序不能小于1');
+            $('#sort_order').focus();
+            return false;
+        }
+        if($('#ebookCheckBox').attr('checked')) {
+            var oss_path = $('#oss_path').val();
+            if (oss_path == '') {
+                alert('请输入OSS路径');
+                $('#oss_path').focus();
+                return false;
+            }
+        }
+     return true;
+    }
+    function showResponse(responseText, statusText) {
+        alert(responseText.msg);
+        $('#submitButton').attr('disabled',false).removeClass('disabled');
+        switch (responseText.code) {
+            case 1: //edit success
+                window.location.href = '{:U('Textbook/textbookList')}';
+                //TODO:1. ask if need to modify ebook
+                break;
+            case -1: //add failed
+
+                break;
+            case 0: // add success
+                window.location.href = '{:U('Textbook/textbookList')}';
+                //TODO:upload ebook
+                break;
+            default:
+                break;
+        }
+    }
+</script>

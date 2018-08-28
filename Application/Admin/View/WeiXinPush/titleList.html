@@ -1,0 +1,330 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=3.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<style>
+    #listWrapper img {
+        width: 50px !important;
+        height: 50px !important;
+        margin-right: 10px;
+        margin-top: 5px;
+    }
+
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+
+    .list_title {
+        width: 100%;
+        line-height: 50px;
+    }
+
+    .list_title a {
+        color: #2086bf !important;
+    }
+
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:" title="创建标题" id="addBtn" class="button primary {:session('btntheme')}">创建标题</a>
+    <a href="javascript:;window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}">返回</a>
+</div>
+
+<div style="margin: 20px 0;">
+    <div class="grid condensed searchbar">
+        <div class="row cells3 cellBox">
+            <div class="cell">
+                <label>创建时间：</label>
+                <input type="text" name="creat_time" class="input-control input-control-before sendTime_id" id="datepicker" placeholder="创建时间" autocomplete="off" value="<?php echo $creat_time?>">
+            </div>
+            <div class="cell" data-role="input">
+                <label for="">&nbsp;</label>
+                <button class="button search_button" onclick="" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<input type="hidden" value="{$role}" id="role_id"/>
+
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">ID</th>
+        <th class="text-center">创建时间</th>
+        <th class="text-center">标题</th>
+        <th class="text-center">排序</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <form action="{:U('WeiXinPush/weiXinPush_save')}" method="post">
+        <input type="hidden" name="column_id" value="<?php echo $column_id?>">
+        <input type="hidden" name="ctcid" value="<?php echo $ctcid?>">
+        <div class="right">
+        <label for="submitSave"><img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="saveImg"></label>
+        <input type='submit' class="submitInput submitInputSpecial" id="" onclick="return check()" value='保存排序'/>
+        </div>
+    <volist name="list" id="data">
+        <tr id="l_{$data.id}">
+
+            <td class="text-center">{$data.id}</td>
+            <td class="text-center">
+                <?php echo date('Y-m-d H:i:s',$data['creat_time'])?>
+            </td>
+            <td class="text-center">{$data.title}</td>
+            <td class="text-center">
+                <input type="hidden" value="{$data.id}" name="ids[]">
+                <input type="text" value="{$data.sort}" name="values[]" class="input-control numInput maxnum">
+            </td>
+            <td class="text-center"><button class="button info">  <a href="javascript:;" class="operBtn" id="delete_click" attr="{$data.id}">删除</a>
+            </td>
+        </tr>
+    </volist>
+    </form>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+<!--新增内容弹窗-->
+<div class="fullscr1" id="addCon">
+    <div class="adminNotifyBox1 aBoxHeight">
+        <div class="adminNotifyTitle">新增内容</div>
+        <div class="adminNotifyContent aConHeight">
+            <div class="adminSelect pt20">
+                <div class="selectBox mb10">
+                    <label for="">文章编号：</label>
+                    <input type="text" class="input-control" id="num" name="resource_id" value="" placeholder="请输入文章编号">
+                </div>
+                <div class="selectBox mb10">
+                    <label for="">文章名称：</label>
+                    <input type="text" class="input-control" name="" id="names" value="" placeholder="请输入文章名称">
+                </div>
+            </div>
+            <p class="adminNotifyButton">
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureCon">确定</a>
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelCon">取消</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js" type="text/javascript"></script>
+<!--<script src="__PUBLIC__/js/jquery.dataTables.min.js" type="text/javascript"></script>-->
+
+<script>
+    function imageError(obj) {
+        $(obj).remove();
+    }
+    //点击搜索按钮,只能搜索中文不能含有空格等
+    $('.search_button').click(function () {
+        var status = $('#class_name').val();
+        var creat_time = $("#datepicker").val();
+
+        /*if(str.match(/[^\u4e00-\u9fa5]/g))
+         {
+         alert("只能输入中文");
+         return false;
+         }else{}*/
+        var string = '';
+        string = string + "&column_id=<?php echo $column_id;?>";
+        string = string + "&ctcid=<?php echo $ctcid;?>";
+        if(creat_time != 0) {
+            string = string + '&creat_time=' + creat_time;
+        }
+        location.href = "{:U('WeiXinPush/titleList')}" + string;
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#datepicker").datepicker({
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+//			maxDate: '0',
+            yearRange: "1950:2050"
+        });
+
+    });
+    jQuery(function ($) {
+        $.datepicker.regional['zh-CN'] = {
+            clearText: '清除',
+            clearStatus: '清除已选日期',
+            closeText: '关闭',
+            closeStatus: '不改变当前选择',
+            prevText: '<上月',
+            prevStatus: '显示上月',
+            prevBigText: '<<',
+            prevBigStatus: '显示上一年',
+            nextText: '下月>',
+            nextStatus: '显示下月',
+            nextBigText: '>>',
+            nextBigStatus: '显示下一年',
+            currentText: '今天',
+            currentStatus: '显示本月',
+            monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthStatus: '选择月份',
+            yearStatus: '选择年份',
+            weekHeader: '周',
+            weekStatus: '年内周次',
+            dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+            dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+            dayStatus: '设置 DD 为一周起始',
+            dateStatus: '选择 m月 d日, DD',
+            dateFormat: 'yy-mm-dd',
+            firstDay: 1,
+            initStatus: '请选择日期',
+            isRTL: false
+        };
+        $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+    });
+
+    //删除
+    $('#delete_click').live('click',function(){
+        var id=$(this).attr('attr');
+        //alert(column_id);
+        deleteJBResource(id,this);
+    });
+
+    function deleteJBResource(id,obj) {
+        if (confirm('确定要删除吗？请务必谨慎处理，不要误删！！！')) {
+            $.get('index.php?m=Admin&c=WeiXinPush&a=weiXinPush_delete', {id: id}, function (res) {
+                if (res == 'success') {
+                    history.go();
+                } else {
+//                    alert('删除失败，请刷新页面后重新尝试');
+                    $.NotifyBox.NotifyOne('注意','删除失败，请刷新页面后重新尝试','确定');
+                }
+            })
+        }
+    }
+    function check() {
+        var arr = new Array();
+        $('.numInput').each(function (k,v) {
+            arr[k] = $(this).val();
+        });
+        //console.log(arr);return false;
+        var nary=arr.sort();
+
+        for(var i=0;i<arr.length;i++){
+
+            if (nary[i]==nary[i+1]){
+
+//                alert("数组重复内容："+nary[i]);
+                $.NotifyBox.NotifyOne('注意','排序标号重复：'+nary[i],'确定');
+                return false;
+
+            }
+
+        }
+
+    }
+    //新增
+    $('#sureCon').click(function () {
+        var statu = false;
+        var num = $('#num').val();
+        var idarr = new Array();
+        $('.maxnum').each(function () {
+            idarr.push($(this).val());
+        });
+        var max = idarr.sort();
+        max = max.pop();
+        var column_id = "<?php echo $_GET['column_id']?>";
+        var ctcid = "<?php echo $_GET['ctcid']?>";
+        if(num == ''){
+//            alert('输入不能为空');
+            $.NotifyBox.NotifyOne('注意','输入不能为空','确定');
+        }else if(checks(num) == false){
+//			alert('请输入正确格式的资源编号');
+            $.NotifyBox.NotifyOne('注意','请输入正确格式的文章编号','确定');
+        }
+        else{
+            $.ajax({
+                url:"{:U('WeiXinPush/weiXinPush_check')}",
+                data:{'push_id':num,'column_id':column_id,'ctcid':ctcid},
+                type:"post",
+                async: false,
+                success:function (msg) {
+                    if(msg == 'type_error'){
+                        //alert('1');return false;
+                        statu = false;
+                    }else if(msg == 'type_error2'){
+                        statu = false;
+                    }
+                    else if(msg == 'success'){
+                        statu = true;
+                    }
+                }
+            })
+            if(!statu){
+//				alert('此资源不属无此栏目下，无法关联');
+                $.NotifyBox.NotifyOne('注意','已经关联或者该文章不存在','确定');
+                return false;
+            }else{
+
+                $.ajax({
+                    data: {'push_id': num,'column_id':column_id,'ctcid':ctcid},
+                    url:"{:U('WeiXinPush/weiXinPush_add')}",
+                    dataType:'json',
+                    type:'post',
+                    success:function (data) {
+                        if(data == 'failed'){
+//                            alert('cuowu');
+                            $.NotifyBox.NotifyOne('注意','错误','确定');
+                            return false;
+                        }else if(data == 'error'){
+//							alert('在此栏目中已存在此资源');
+                            $.NotifyBox.NotifyOne('注意','已关联','确定');
+                            return false;
+                        }
+                        else{
+                            history.go();
+                        }
+                    }
+                })
+            }
+        }
+    });
+
+    //验证所输值是否为正整数
+    function checks(num) {
+        var r = /^[0-9]*[1-9][0-9]*$/;　　//正整数
+        return r.test(num);
+    }
+    //添加内容显示资源名称
+    $('#num').change(shows);
+    function shows() {
+        var push_id = $('#num').val();
+        if(checks(push_id) == false){
+            $.NotifyBox.NotifyOne('注意','请输入正确格式的文章编号','确定');
+            return false;
+        }else{
+            $.ajax({
+                data: {'push_id': push_id},
+                url:"{:U('WeiXinPush/push_name')}",
+                dataType:'json',
+                type:'post',
+                success:function (data) {
+                    $('#names').val(data.title);
+
+                }
+            })
+        }
+    }
+
+    $('#addBtn').click(function(){
+        $('#addCon').show()
+    })
+
+    $('#cancelCon').click(function(){
+        $('#addCon').hide();
+        $('#num').val('');
+    });
+</script>

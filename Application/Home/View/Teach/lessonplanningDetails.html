@@ -1,0 +1,210 @@
+<layout name="teacher_layout_2" />
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+
+<style>
+    .list_avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+    
+    h3 {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .file-name a {
+        color: #333;
+        padding: 10px 20px;
+        display: inline-block;
+    }
+    
+    .file-name a:hover {
+        background: #fff
+    }
+    
+    ul,
+    li {
+        list-style: none
+    }
+    
+    #downloadname button {
+        background: #fff;
+        outline: none;
+        border: none;
+        color: #dd1010
+    }
+    
+    .downloadHref {
+        position: absolute;
+        left: 300px;
+    }
+    
+    .row {
+        margin: 0
+    }
+    
+    #data_load {
+        padding: 0;
+        margin-top: 50px;
+    }
+    
+    #data_load a {
+        color: #333;
+    }
+    
+    #data_load li:hover a {
+        color: #CB5F61;
+    }
+    
+    .classname {
+        text-align: left;
+        border: 1px solid #04c5a4;
+        border-radius: 4px;
+        padding: 20px;
+        background: #f8fffe;
+    }
+    
+    .downloadHref {
+        padding: 0
+    }
+    .creatBtn{
+      position: absolute;
+      right: -60px;
+      top: 40px;
+      width: 40px;
+      height: 40px;
+      background: url(__PUBLIC__/img/myLessonPlannings/xiugai.png) no-repeat;
+
+    }
+    .creatBtn:hover{
+      background: url(__PUBLIC__/img/myLessonPlannings/xiugai2.png) no-repeat;
+    }
+    .lessonPlanningBox{
+      overflow: hidden,
+  		width: 940px,
+  		height: 610px,
+  		border: 1px dotted #ccc,
+  		position: fixed,
+  		top: 0,
+  		left: 0,
+  		right: 0,
+  		bottom: 0,
+  		margin: auto
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <if condition="$from eq 'favor'">
+        <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn2">返回</a>
+        <else />
+        <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn2">返回</a>
+    </if>
+
+</div>
+<div class="example">
+    <div class="listview">
+        <div class="padding10">
+            <h3 style="text-align:center">{$data.name}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row classname" style="margin:30px auto;text-align:center;width:910px;">
+    <div class="col-md-4">
+       学科：{$data.course} 
+    </div>
+	<div class="col-md-4">
+       年级：{$data.grade}
+    </div>
+    <div class="col-md-4">
+       教材：{$data.textbook}
+    </div>
+</div>
+<div class="" style="width:910px;margin:0 auto;height:1px;position:relative">
+    <a class="creatBtn" href="{:U('Teach/createLessonPlanning')}&id={$data.id}" title="修改" ></a>
+</div>
+<iframe id="lessonplanningsFrame" style="width: 100%;height: 670px" frameborder="0" allowfullscreen></iframe>
+      
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.1.min.js" type="text/javascript"></script>
+<script src="__PUBLIC__/js/layer/layer.js"></script>
+<script>
+    var swfVideoPlay = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf"><embed width="{1}" height="{2}" name="plugin" src="{0}" type="application/x-shockwave-flash"><param name="loop" value="false"><param name="movie" value="images/zf03320.swf"></object>';
+
+    function showResource(obj) {
+        var type = $(obj).attr('attr_type');    
+        type = type.toLowerCase();
+        var attr_id = $(obj).attr('attr_id');
+        var attr_path = $(obj).attr('attr_path');
+        $('.displayContent').attr('style', 'display:none');
+        switch (type) {
+        case 'video':
+        case 'audio':
+            polyvObject('#plv').videoPlayer({
+                'vid': attr_id
+            });
+            $('#videoAudio').attr('style', 'display:block');
+            break;
+        case 'ppt':
+        case 'word':
+        case 'pdf':
+            $('#resourceFrame').attr('src', '__PUBLIC__/pdfjs/viewer/viewer.html?f=' + attr_path);
+            $('#document').attr('style', 'display:block');
+            break;
+        case 'pic':
+            $('#imgDisplay').attr('src', attr_path);
+            $('#pic').attr('style', 'display:block');
+            break;
+        case 'swf':
+            var videoEle = swfVideoPlay.format(attr_path, 500, 500);
+            $('#flash').html(videoEle);
+            $('#flash').attr('style', 'display:block');
+            break;
+        }
+
+    }
+    showResource($('.browse_resource')[0]);
+
+    function adjustLayout() {
+        var resourceFrame = $('#resourceFrame');
+
+        if (resourceFrame.length == 1) {
+            window.setTimeout(function () {
+                $('#contentWrapper').removeAttr('style');
+            }, 500)
+
+        }
+
+    }
+</script>
+
+<script>
+	$(function(){
+			var url = window.location.href;
+	var n = url.indexOf("?");
+	var url_sub = url.substr(n);
+	var sp_arr = url_sub.split("&");
+	var ids = sp_arr.pop();
+	console.log(ids)
+	var a = 'index.php?m=Home&c=DigitalClassroom&a=lesson_planning_V3&'+ids
+	$('#lessonplanningsFrame').attr('src',a)
+	})
+
+	$(function(){
+		var deptObjs= document.getElementById("lessonplanningsFrame").contentWindow.document.getElementsByClassName("lessonPlanningBox");
+
+		// deptObjs.css({
+		// 	overflow: 'hidden',
+		// width: '940px',
+		// height: '610px',
+		// border: '1px dotted #ccc',
+		// position: 'fixed',
+		// top: 0,
+		// left: 0,
+		// right: 0,
+		// bottom: 0,
+		// margin: 'auto'
+		// })
+	})
+
+</script>

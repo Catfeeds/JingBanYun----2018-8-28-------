@@ -1,0 +1,850 @@
+<layout name="admin_layout_back"/>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link href="__PUBLIC__/css/adminActivity.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+
+<style>
+	.input-control input:focus,
+	.input-control textarea:focus,
+	.input-control select:focus,
+	.input-control input:hover,
+	.input-control textarea:hover,
+	.input-control select:hover {
+		border-color: #d9d9d9 !important;
+	}
+
+	.input_control_short:hover {
+		border-color: #d9d9d9;
+	}
+
+	.appImg {
+		display: block;
+		width: auto;
+		max-width: 200px;
+		margin-top: 12px
+	}
+
+	.import_success,
+	.import_fail,
+	.export_success,
+	.export_fail {
+		display: none;
+		width: 500px;
+		height: 300px;
+		position: fixed;
+		top: 50%;
+		left: 35%;
+		z-index: 9999;
+		background: url(/Public/img/home/30.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+
+	.success_top,
+	.fail_top {
+		overflow: hidden;
+		padding: 50px 0 0 80px;
+	}
+
+	.success_top img,
+	.fail_top img {
+		width: 30%;
+		float: left;
+	}
+
+	.success_top p,
+	.fail_top p {
+		float: left;
+		font-size: 40px;
+		color: #666;
+		/*		padding-top: 35px;*/
+	}
+
+	.success_bottom,
+	.fail_bottom {
+		text-align: center;
+	}
+
+	.success_bottom button,
+	.fail_bottom button {
+		width: 120px;
+		height: 50px;
+		border: none;
+		background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+		background-size: 100% 100%;
+		color: #fff;
+		font-size: 20px;
+		position: relative;
+		top: 20px;
+	}
+</style>
+<?php if(session('admin.userName') !== 'jyyuser') : ?>
+<div style="margin-bottom: 12px;">
+	<!--javascript:window.history.go(-1)-->
+	<!--<%= request.getHeader("Referer")%>-->
+	<a href="javascript:window.history.go(-1)" onclick="self.location=document.referrer;" title="返回" class="button primary {:session('btntheme')}">&lt; 返回</a>
+</div>
+<?php endif; ?>
+
+
+<div class="example">
+	<span class="exampl">作品评比</span>
+	<div class="listview set-border padding10">
+		<div class="padding10">
+			<div class="grid condensed searchbar" style="width: 100%;margin-top: 0;margin-bottom: 10px">
+				<div class="row cells4 cellBox">
+					<div class="cell">
+						<label>省份：</label>
+						<select id="provice" name="provice" class="input-control input-control-before">
+							<option value="0">-请选择-</option>
+							<volist name="provice_result" id="provice_item" empty="暂时没有省份">
+								<option value={$provice_item.id} <if condition="$provice_item['id']==$provice"> selected="true"</if> >{$provice_item.name}</option>
+							</volist>
+						</select>
+					</div>
+					<div class="cell">
+						<label>市区：</label>
+						<select id="city" name="city" class="input-control input-control-before">
+							<option value="0">-请选择-</option>
+							<volist name="city_result" id="city_item" empty="暂时没有城市">
+								<option value={$city_item.id} <if condition="$city_item['id']==$city"> selected="true"</if> >{$city_item.name}</option>
+							</volist>
+						</select>
+					</div>
+					<div class="cell">
+						<label>区县：</label>
+						<select id="district" name="district" class="input-control input-control-before">
+							<option value="0">-请选择-</option>
+							<volist name="district_result" id="district_item" empty="暂时没有区域">
+								<option value={$district_item.id} <if condition="$district_item['id']==$district"> selected="true"</if> >{$district_item.name}</option>
+							</volist>
+						</select>
+					</div>
+					<div class="cell">
+						<label>学校：</label>
+						<input name="school_name" id="schoolName" class="input-control input-control-before" placeholder="学校名称">
+					</div>
+					<if condition="$data.class_id eq 1">
+						<div class="cell">
+							<label>学科：</label>
+							<select id="course_id" name="course_id" class="input-control input-control-before" onchange="getTextbooks()">
+								<option value="0">-请选择-</option>
+								<volist name="courses" id="dataCourse">
+									<option value="{$dataCourse.id}" {$dataCourse[ 'id']==$course_id? 'selected': ''}>
+									{$dataCourse.code} : {$dataCourse.course_name}
+									</option>
+								</volist>
+							</select>
+						</div>
+						<div class="cell">
+							<label>年级：</label>
+							<select id="grade_id" name="grade_id" class="input-control input-control-before" onchange="getTextbooks()">
+								<option value="0">-请选择-</option>
+								<volist name="grades" id="dataGrade">
+									<option value="{$dataGrade.id}" {$dataGrade[ 'id']==$grade_id? 'selected': ''}>
+									{$dataGrade.grade}
+									</option>
+								</volist>
+							</select>
+						</div>
+					</if>
+					<div class="cell">
+						<label>报名时间：</label>
+						<input type="text" name="registration_time" class="input-control input-control-before" id="datepicker" value="" placeholder="-请选择-">
+					</div>
+					<if condition="$data.class_id eq 1">
+						<div class="cell">
+							<label>状态：</label>
+							<select id="lock_status" class="input-control input-control-before" name="status">
+								<option value='0'>-请选择-</option>
+								<option value="1" <if condition="$status==1">selected</if> >待审核</option>
+								<option value="2" <if condition="$status==2">selected</if> >通过</option>
+								<option value="3" <if condition="$status==3">selected</if> >拒绝</option>
+							</select>
+						</div>
+					</if>
+					<div class="cell">
+						<label>关键字：</label>
+						<input type="text" value="{$keyword}" id="keyword" class="input-control input-control-before" name="keyword" placeholder="姓名/手机号/参评课题">
+					</div>
+					<div class="cell" data-role="input">
+						<label for="">&nbsp;</label>
+						<button onclick="search()" class="button"><span class="mif-search"></span> 搜索</button>
+					</div>
+				</div>
+			</div>
+			<div class="cellSpecial">
+				<label for="">活动名称：</label>
+				{$data.title}
+			</div>
+			<div class="cellSpecial">
+				<label for="">活动作品主题</label>
+				<input value="{$data.display_work_title}" type="text" name="displayWorkTitle" class="input-control" id="workTitle" value="" placeholder="不超过50个字符">
+			</div>
+			<div style="clear: both; text-align: right; margin-top: 10px">
+				<a href="{:U('Activities/exportRanking?id=')}{$res_id}" id="export_btn" class="button">导出本报名表</a>
+				<a href="javascript:;" attr-href="{:U('Activities/importRanking?id=')}{$res_id}" id="import_btn" class="button">导入排名信息</a>
+			</div>
+
+
+			<table class="table striped hovered border">
+
+				<thead>
+				<tr>
+					<th class="text-center" style="font-size: 16px; width: 8%">报名人</th>
+					<th class="text-center" style="font-size: 16px; width: 10%">手机号码</th>
+					<th class="text-center" style="font-size: 16px; width: 10%">角色</th>
+					<th class="text-center" style="font-size: 16px; width: 8%">参评课题</th>
+					<th class="text-center" style="font-size: 16px; width: 10%">报名时间</th>
+					<th class="text-center" style="font-size: 16px; width: 6%">是否上传作品</th>
+					<th class="text-center" style="font-size: 16px; width: 8%">邀请码</th>
+					<th class="text-center" style="font-size: 16px; width: 8%">状态</th>
+					<th class="text-center" style="font-size: 16px; width: 8%">奖项</th>
+					<th class="text-center" style="font-size: 16px; width: 10%">操作</th>
+				</tr>
+				</thead>
+
+
+				<tbody class="activityhtml">
+				<tr>
+					<td class="text-center" colspan="12">努力加载中...</td>
+				</tr>
+				</tbody>
+			</table>
+
+		</div>
+		<div class="Pagination"></div>
+	</div>
+
+</div>
+
+
+<input type="hidden" class="res_id" value="{$res_id}">
+<!--弹窗出现时背景-->
+<div class="fs"></div>
+<!--提示框 【打分】-->
+<div class="remindBox" id="">
+	<h4>请输入奖项</h4>
+	<p>
+		<select type="text" class="numBox scoreNum" name="" style="width:200px">
+			<option value="1">一等奖</option>
+			<option value="2">二等奖</option>
+			<option value="3">三等奖</option>
+
+		</select>
+	</p>
+	<div class="buttonBox">
+		<a href="javascript:;" class="m0 cancelBtn" save-id="">取消</a>
+		<a href="javascript:;" class="m0 remindBtn" save-id="">确定</a>
+	</div>
+</div>
+
+<!--------------------批量导入----------------------------->
+<div id="import_outer" style="background:#fff;">
+	<div class="import">
+		<div class="close_btn">
+			<img src="__PUBLIC__/img/home/close.png" alt="">
+		</div>
+		<div class="download_form">
+			<a href="{:U('Activities/exportRanking?id=')}{$res_id}" target="_blank" title="下载" class="button">下载示例表格</a>
+		</div>
+		<div class="browse">
+			<input type="text" id="address" placeholder="链接地址">
+			<a href="javascript:;" title="浏览" class="button browse_button">浏览</a>
+			<input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+			<a href="javascript:;" title="上传" class="button upload_file">上传</a>
+		</div>
+	</div>
+</div>
+
+<!--邀请码弹窗-->
+<div class="fullBlack"></div>
+<div class="codeOutter">
+	<span class="codeClose"></span>
+	<div class="codeInner">
+		<table id="listWrapper" class="table striped hovered border">
+			<thead>
+			<tr>
+				<th class="text-center">序号</th>
+				<th class="text-center">邀请码</th>
+				<th class="text-center">是否使用</th>
+				<th class="text-center">状态</th>
+			</tr>
+			</thead>
+			<tbody class="codecentent">
+			<volist name="codelist" id="codedata" key="sk" empty="暂时没有生成邀请码">
+				<tr>
+					<td class="text-center">
+						{$sk}
+					</td>
+					<td class="text-center">{$codedata.invitation_code}</td>
+
+					<td class="text-center">
+						<?php if ($codedata['status']==1): ?>
+						未使用
+						<?php else: ?>
+						已使用
+						<?php endif ?>
+					</td>
+					<td class="text-center">
+						<?php if ($codedata['status']==1): ?>
+						正常
+						<?php else: ?>
+						废弃
+						<?php endif ?>
+					</td>
+				</tr>
+			</volist>
+			</tbody>
+		</table>
+
+	</div>
+
+</div>
+
+<div class="import_success">
+	<div class="success_top">
+		<img src="__PUBLIC__/img/home/32.png" alt="">
+		<p>导入成功！</p>
+	</div>
+	<div class="success_bottom">
+		<button type="submit" class="im_success_sure">确定</button>
+	</div>
+</div>
+<div id="statics"></div>
+<div class="text-center buttonOutter">
+	<button onclick="publishWorks();" id="publish_btn" class="button info">发布</button>
+	<button id="saveInfo_btn" class="button info">保存</button>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js" type="text/javascript"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+
+<script>
+    function refreshStatics()
+    {
+        var staticsObj = {};
+        $('.point').each(function(i,n){
+            staticsObj[$(n).val()] =  (staticsObj[$(n).val()] == undefined) ? 1 : staticsObj[$(n).val()] + 1 ;
+        })
+        var text = '';
+        for(var p in staticsObj) {
+            if(p != '')
+                text += p+ ':' + staticsObj[p] + '个'
+        }
+        $('#statics').html('评奖统计:     '+text)
+    }
+    function export_btn_all_resource() {
+        var is_pack = "{$data.is_pack}";
+        if (is_pack == 1 || is_pack =='1' ) {
+//			alert('该资源还未打包,请等待系统打包');
+            $.NotifyBox.NotifyOne('注意', '该资源还未打包,请等待系统打包', '确定');
+        } else {
+            window.location ="{$oss_path}"+is_pack;
+        }
+    }
+
+    $('.im_success_sure').on('click', function () {
+        $('.import_success').css('display', 'none');
+        location.reload();
+    });
+
+    bindQueryDistrictEvent("/Home/Teach", 'provice', 'city', 'district', 'school');
+
+    function getQueryString(name) {
+        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            return unescape(r[2]);
+        }
+        return 0;
+    }
+    var res_id = $('.res_id').val();
+    var url = getCookie('pageUrl');
+
+    $.get(url == ''|| window.history.length ==0 ? "/index.php?m=Admin&c=Activities&a=getActivityListInfo&id="+res_id : url , {
+
+    }, function (res) {
+        var html = res.info;
+        $('.activityhtml').html(html);
+        $('.Pagination').html(res.pageInfo);
+        if($('.num').length >0){
+            var htmlStr = "<input type='text' name='p' id='pageGo'> <input type='submit' onclick='go()' value='GO'>";
+            $('.Pagination').append(htmlStr);
+        }
+ //       setCookie('pageUrl','',0);
+        refreshStatics();
+    });
+
+    function go() {
+		var pages = $('#pageGo').val();
+        search(pages);
+    }
+
+    $('.codeCheck').click(function () {
+        $('.fullBlack').css('display', 'block');
+        $('.codeOutter').css('display', 'block');
+    });
+
+    function search(pages) {
+        var string = "";
+        var keyword = $("#keyword").val();
+        var province_id = $('#provice').val();
+        var city_id = $('#city').val();
+        var country_id = $('#district').val();
+        var school_id = $('#school').val();
+
+
+        var course_id = $('#course_id').val();
+        var grade_id = $('#grade_id').val();
+        var schoolName = $('#schoolName').val();
+        if (grade_id != '' && grade_id != undefined) {
+            string = '&grade_id=' + grade_id;
+        }
+
+        var datepicker = $('#datepicker').val();
+        var lock_status = $('#lock_status').val();
+        if (course_id != '' && course_id != undefined) {
+            string += '&course_id=' + course_id;
+        }
+
+        if (datepicker != '' && datepicker != undefined) {
+            string += '&register_at=' + datepicker;
+        }
+        if (lock_status != '' && lock_status != undefined) {
+            string += '&lock_status=' + lock_status;
+        }
+
+
+        if (province_id != '' && province_id != undefined) {
+            string += '&province_id=' + province_id;
+        }
+        if (city_id != '' && city_id != undefined) {
+            string += '&city_id=' + city_id;
+        }
+
+        if (country_id != '' && country_id != undefined) {
+            string += '&country_id=' + country_id;
+        }
+
+        if (school_id != '' && school_id != undefined) {
+            string += '&school_id=' + school_id;
+        }
+        if (schoolName != '' && schoolName != undefined) {
+            string += '&school_name=' + schoolName;
+        }
+        if (keyword != '' && keyword != undefined) {
+            string += '&keyword=' + keyword;
+        }
+
+        var res_id = $('.res_id').val();
+
+        $.get("/index.php?m=Admin&c=Activities&a=getActivityListInfo&id="+ res_id + string + "&p="+pages, {
+        }, function (res) {
+            var html = res.info;
+            $('.activityhtml').html(html);
+            $('.Pagination').html(res.pageInfo);
+            if($('.num').length >0){
+                var htmlStr = "<input type='text' name='p' id='pageGo'> <input type='submit' onclick='go()' value='GO'>";
+                $('.Pagination').append(htmlStr);
+			}
+            setCookie('pageUrl',"/index.php?m=Admin&c=Activities&a=getActivityListInfo&id="+ res_id + string,1);
+        });
+    }
+    function pageCallback(url)
+    {
+        var res_id = $('.res_id').val();
+
+        $.get(url+"&id="+ res_id, {
+
+        }, function (res) {
+            var html = res.info;
+            $('.activityhtml').html(html);
+            $('.Pagination').html(res.pageInfo);
+            var htmlStr = "<input type='text' name='p' id='pageGo'> <input type='submit' onclick='go()' value='GO'>";
+            $('.Pagination').append(htmlStr);
+//            setCookie('pageUrl',url+"&id="+ res_id,1);
+        });
+    }
+    /*function setCookie(cname,cvalue,exdays){
+        var d = new Date();
+        d.setTime(d.getTime()+(exdays*24*60*60*1000));
+        var expires = "expires="+d.toGMTString();
+        document.cookie = cname+"="+cvalue+"; "+expires;
+    }*/
+    function getCookie(cname){
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+            var c = ca[i].trim();
+            if (c.indexOf(name)==0) { return c.substring(name.length,c.length); }
+        }
+        return "";
+    }
+</script>
+
+<!--------------日历----------------->
+<script>
+    $(function () {
+        $("#datepicker").datepicker({
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+            //			maxDate: '0',
+            yearRange: "1950:2050"
+        });
+    });
+</script>
+<script>
+    jQuery(function ($) {
+        $.datepicker.regional['zh-CN'] = {
+            clearText: '清除',
+            clearStatus: '清除已选日期',
+            closeText: '关闭',
+            closeStatus: '不改变当前选择',
+            prevText: '<上月',
+            prevStatus: '显示上月',
+            prevBigText: '<<',
+            prevBigStatus: '显示上一年',
+            nextText: '下月>',
+            nextStatus: '显示下月',
+            nextBigText: '>>',
+            nextBigStatus: '显示下一年',
+            currentText: '今天',
+            currentStatus: '显示本月',
+            monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthStatus: '选择月份',
+            yearStatus: '选择年份',
+            weekHeader: '周',
+            weekStatus: '年内周次',
+            dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+            dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+            dayStatus: '设置 DD 为一周起始',
+            dateStatus: '选择 m月 d日, DD',
+            dateFormat: 'yy-mm-dd',
+            firstDay: 1,
+            initStatus: '请选择日期',
+            isRTL: false
+        };
+        $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+    });
+</script>
+
+<script>
+    $('#activityMark').click(function () {
+        $('.remindBox,.fs').show()
+    });
+    $('#saveInfo_btn').click(function(){
+        saveWorks();
+    })
+    function saveScore(ids,values) {
+
+        $.get("/index.php?m=Admin&c=Activities&a=saveScore", {
+            'ids': ids,
+            "values": values
+        }, function (res) {
+            var length = res.length;
+            if(length == 2 ){
+                if(res[0]==1001) {
+                    $.Notify({
+                        caption: '提示',
+                        content: res[1]+'教师未上传作品无法打分',
+                        type: 'warning'
+                    });
+                }
+                else if(res[0]==1003) {
+                    $.Notify({
+                        caption: '提示',
+                        content: res[1]+'教师作品未通过审核,无法打分',
+                        type: 'warning'
+                    });
+                }
+            }else if(res == 1002)
+            {
+                $.Notify({
+                    caption: '提示',
+                    content: '活动报名未结束,无法打分',
+                    type: 'warning'
+                });
+            }
+
+            else{
+                if (res == 'success') {
+                    $('.remindBox,.fs').hide();
+                    $.Notify({
+                        caption: '提示',
+                        content: '设置成功',
+                        type: 'normal'
+                    });
+                    location.reload();
+                } else {
+                    $('.remindBox,.fs').hide();
+                    $.Notify({
+                        caption: '提示',
+                        content: '服务器繁忙请稍后重试',
+                        type: 'warning'
+                    });
+                }
+            }
+
+        });
+
+
+    }
+</script>
+
+<!---------------------导入文件-------------------------->
+<script>
+    $('#import_btn').on('click', function () {
+        $('#import_outer,.fs').show();
+    });
+    $('.close_btn').on('click', function () {
+        $('#import_outer,.fs').hide();
+    });
+</script>
+
+<!--查看邀请码-->
+<script>
+    $('.codeCheck').click(function () {
+        $('.fullBlack,.codeOutter').show();
+        $(document.body).css('overflow-y', 'hidden');
+    })
+
+    $('.codeClose').click(function () {
+        $('.fullBlack,.codeOutter').hide();
+        $(document.body).css('overflow-y', 'auto');
+    })
+</script>
+
+<script>
+    var resource_path = '';
+    $('.codeCheck,.check').click(function () {
+        $('.fullBlack,.codeOutter').show();
+        $(document.body).css('overflow-y', 'hidden');
+        $('#newCode').hide();
+    })
+
+    $('.codeClose').click(function () {
+        $('.fullBlack,.codeOutter').hide();
+        $(document.body).css('overflow-y', 'auto');
+    })
+
+
+</script>
+
+<script>
+    //点击文件上传
+    $('.upload_file').click(function () {
+        var id = $('.res_id').val();
+        if ($('#file_csv').val() == '' || !$('#file_csv').val()) {
+            $.Notify({
+                caption: '提示',
+                content: '请选择需要上传的csv格式文件',
+                type: 'warning'
+            });
+        } else {
+            $.ajaxFileUpload({
+                url: '/index.php?m=Admin&c=Activities&a=importRanking&id=' + id, //用于文件上传的服务器端请求地址
+                secureuri: false, //是否需要安全协议，一般设置为false
+                fileElementId: 'file_csv', //文件上传域的ID
+                dataType: 'json', //返回值类型 一般设置为json
+                success: function (data) //服务器成功响应处理函数
+                {
+                    //$('#address').val('');
+                    $('.fs,#import_outer').css('display', 'none');
+
+                    if (data.status == 1001) {
+                        //$('.notice_message').children('div').text('异常消息：没有上传文件');
+                        //$(".notice_message").show();
+//							alert('异常消息：没有上传文件');
+                        $.NotifyBox.NotifyOne('注意', '异常消息：没有上传文件', '确定');
+
+                    } else if (data.status == 1002) {
+                        //$('.notice_message').children('div').text('异常消息：上传文件没有信息');
+                        //$(".notice_message").show();
+//							alert('异常消息：上传文件没有信息');
+                        $.NotifyBox.NotifyOne('注意', '异常消息：上传文件没有信息', '确定');
+
+                    } else if (data.status == 1003) {
+                        //$(".striped").hide();
+                        //$('.notice_message').children('div').text('异常消息：总共有' + data.all_number + '条数据,导入成功' + data.success_number + '条,导入失败' + data.notice_data.length + '条,以下是导入失败的信息。');
+                        var errorInfo = '';
+                        $(data.notice_data).each(function(i,n){
+                            errorInfo += '\n' + n[0] + " : " + data.notice_info[i];
+                        });
+                        alert('异常消息：总共有' + data.all_number + '条数据,导入成功' + data.success_number + '条,导入失败' + data.notice_data.length + '条,以下是导入失败的信息:\n' + errorInfo);
+                        /*
+                        $(".notice_message").show();
+                        //清空id为body下的所有tr,和thead下的tr,并隐藏所有
+                        $(".tr_body_info").remove();
+                        $(".tr_head_info").remove();
+                        $(".odd").remove();
+
+                        $('.dataTables_scrollHead').remove();
+                        $('.search_class').hide();
+                        $('#searchConditionArray').hide();
+                        $('.create_class').hide();
+                        $('.grade_class').hide();
+                        $('.class_class').hide();
+                        $('.import_class').hide();
+
+                        for (var i = 0; i < data.notice_data.length; i++) {
+                            var temp_tbody = $(tbody).clone(true);
+                            $(temp_tbody).find('.text-center').eq(0).text(data.notice_data[i][0]);
+                            $(temp_tbody).find('.text-center').eq(2).text(data.notice_data[i][1]);
+                            $(temp_tbody).find('.text-center').eq(4).text(data.notice_data[i][2]);
+                            $(temp_tbody).find('.text-center').eq(6).text(data.notice_data[i][3]);
+                            $(temp_tbody).find('.text-center').eq(6).attr('title', data.notice_data[i][3]);
+
+                            $(temp_tbody).find('.text-center').eq(8).text(data.notice_data[i][4]);
+                            $(temp_tbody).find('.text-center').eq(8).attr('title', data.notice_data[i][4]);
+
+                            $(temp_tbody).find('.text-center').eq(10).text(data.notice_data[i][5]);
+                            $(temp_tbody).find('.text-center').eq(10).attr('title', data.notice_data[i][5]);
+
+                            $(temp_tbody).find('.text-center').eq(12).text(data.notice_data[i][6]);
+                            $(temp_tbody).find('.text-center').eq(12).attr('title', data.notice_data[i][6]);
+                            if (role != 3) {
+                                $(temp_tbody).find('.text-center').eq(13).text(data.notice_data[i][7]);
+                                $(temp_tbody).find('.text-center').eq(13).attr('title', data.notice_data[i][7]);
+                            }
+                            $("#body").append(temp_tbody);
+                        }
+                        var temp_head = $(thead).clone(true);
+                        $(".class_thead").append(temp_head);
+                        $(".notice_message").show();
+                        $(".striped").show();
+                        $(".back_class").show();
+                        $(".Pagination").hide();*/
+
+                    }else if(data.status == 1004)
+                    {
+//							alert('活动报名未结束,无法评分');
+                        $.NotifyBox.NotifyOne('注意', '活动报名未结束,无法评分', '确定');
+                    }
+                    else if(data.status == 1005)
+                    {
+//							alert('活动未打包完成,无法评分');
+                        $.NotifyBox.NotifyOne('注意', '活动未打包完成,无法评分', '确定');
+                    }
+                    else {
+                        $(".notice_message").hide();
+                        $('.import_success').show();
+                    }
+
+                },
+                error: function (data, status, e) //服务器响应失败处理函数
+                {
+                    $(".notice_message").hide();
+                    $('.import_success').show();
+                }
+            })
+        }
+    });
+
+    //input file发生变化
+    if(typeof $('').live == "function")
+        $('.file_csv').live('change', function () {
+            var filepath = $('.file_csv').val();
+            var extStart = filepath.lastIndexOf(".");
+            var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+            if (ext == '.CSV') {
+                $('#address').val(filepath);
+            } else {
+                $.Notify({
+                    caption: '提示',
+                    content: '只支持csv文件上传',
+                    type: 'warning'
+                });
+                $('.file_csv').val('');
+            }
+        });
+
+    //点击浏览按钮
+    $('.browse_button').click(function () {
+        //清空input框
+        $("#address").val('');
+        $('.file_csv').trigger('click');
+    });
+    $(document).on('click', '.activityMark', function () {
+        $('.remindBtn').attr('save-id', '');
+        var id = $(this).attr('id-save');
+        $('.remindBtn').attr('save-id', id);
+        $('.remindBox').css('display', 'block');
+    });
+
+    //点击取消
+    $('.cancelBtn').click(function(){
+        $('.remindBox,.fs').hide()
+    })
+    function publishWorks()
+    {
+        $.post("/index.php?m=Admin&c=Activities&a=publishWorks", {
+            'activity_id': {$data.id}
+    }, function (res) {
+        res = eval('('+ res + ')');
+        if(res.status == 200)
+        {
+//			alert('发布成功');
+            $.NotifyBox.NotifyOne('注意', '发布成功', '确定');
+        }
+        else
+        {
+//			alert('发布失败');
+            $.NotifyBox.NotifyOne('注意',res.message, '确定');
+        }
+
+    });
+    }
+    function saveWorks()
+    {
+        var title = $('#workTitle').val();
+        if(title == '')
+        {
+//			alert('主题不能为空');
+            $.NotifyBox.NotifyOne('注意', '主题不能为空', '确定');
+            return;
+        }
+        var checkResult = true;
+        $('.point').each(function(i,n){
+            if(false == $(n).blur()) {
+                checkResult = false;
+                alert('评奖中有非法字符');
+                return false;
+            }
+        });
+        if(false == checkResult)
+        {
+            return;
+        }
+        $.post("/index.php?m=Admin&c=Activities&a=saveWorkTitle", {
+            'activity_id': {$data.id},'title':$('#workTitle').val()
+    }, function (res) {
+        res = eval('('+ res + ')');
+        if(res.status == 200)
+        {
+            var ids = Array();
+            var values = Array();
+            $('.point').each(function(i,n){
+                var id =  $(n).parent().parent().find('.hidden_input_id').val();
+                var value = $(n).val();
+                ids.push(id);
+                values.push(value);
+            });
+            saveScore(ids,values);
+        }
+        else
+        {
+            $.NotifyBox.NotifyOne('注意', '保存失败', '确定');
+        }
+
+    });
+
+    }
+
+</script>

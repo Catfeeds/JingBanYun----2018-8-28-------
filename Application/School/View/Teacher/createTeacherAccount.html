@@ -1,0 +1,268 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+	<div class="standardMain hrefContent">
+		<a href="{:U('Teacher/teacherList')}" class="returnBack">教师列表</a>
+		>
+		<span class="thePage">创建教师</span>
+	</div>
+
+	<div class="standardMain classContent tableContent mt0">
+		<form action="{:U('Teacher/createTeacherAccount')}" method="post" onsubmit="return checkInfo()">
+			<div class="blueBox">
+				<span class="left blueTitle">创建教师</span>
+				<a href="javascript:;" class="blackText right submitA" id="">
+					<label for="submitSave"><img src="__PUBLIC__/img/admin/wanchengchuangjian.png" alt="" class="mr5"></label>
+					<input type='submit' class="submitInput" id="submitSave" value='完成创建' onClick="return checkInfo()"/>
+				</a>
+				<?php if(session('school.parent_id')!=0){ if(in_array('Teacher/teacherChooseClass',session('school_permissions'))){ ?>
+					<a href="javascript:;" class="blackText right submitA mr20" id="">
+						<label for="submitAdd"><img src="__PUBLIC__/img/admin/tianjia2.png" alt="" class="mr5"></label>
+						<input type='submit' class="submitInput" id="submitAdd" value='添加任教班级' onClick="return checkInfo()"/>
+					</a>
+				<?php }}else{ ?>
+					<a href="javascript:;" class="blackText right submitA mr20" id="">
+						<label for="submitAdd"><img src="__PUBLIC__/img/admin/tianjia2.png" alt="" class="mr5"></label>
+						<input type='submit' class="submitInput" id="submitAdd" value='添加任教班级' onClick="return checkInfo()"/>
+					</a>
+				<?php }?>
+			</div>
+
+		    <input type="hidden" class="next_flag" name="next_flag" value="0"/>
+		    <input type="hidden" class="grade_course_ids" name="grade_course_ids"/>
+        
+			<div class="grid condensed infoOutter infoOutterModify">
+				<div class="row cells3 infoBox">
+					<div class="cell">
+						<label>教师姓名：</label>
+						<input type="text" class="teacher_name input-control" name="name"  placeholder="请输入教师姓名"  autocomplete="off" required>
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>教师手机号：</label>
+						<input type="text" class="telephone input-control" name="telephone" placeholder="请输入教师手机号" required autocomplete="off" maxlength="11">
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>登录密码：</label>
+						<input type="password" class="password input-control" name="password" placeholder="请输入6-16位登录密码"  autocomplete="off" required minlength="6" maxlength="16">
+						<span class="redStar">*</span>
+					</div>
+					<div class="cell">
+						<label>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</label>
+						<input type="text" class="email input-control" name="email" autocomplete="off"  placeholder="请输入邮箱">
+					</div>
+					<div class="cell">
+						<label>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</label>
+						<select id="sex" class="input-control" name="sex" required>
+							<option value="0">-请选择-</option>
+							<option value="男">男</option>
+							<option value="女">女</option>
+						</select>
+						<span class="redStar">*</span>
+					</div>
+				</div>
+				<div class="row cells1 infoBox">
+					<div class="cell">
+						<label>简&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;介：</label>
+						<textarea name="brief_info" id="brief_info" class="textarea-control input-control" maxlength="40"></textarea>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<p class="tableTitle tableTitleInner">请选择任教年级学科</p>
+		<div class="grid condensed infoOutter infoOutterModify mb10">
+			<div class="row cells3 infoBox">
+				<div class="cell">
+					<label>任教年级：</label>
+					<select id="grade_" class="input-control" name="" required>
+						<option value="0">-请选择-</option> 
+                        <volist name="grade_list" id="grade_item">
+                            <option value="{$grade_item.id}">{$grade_item.grade}</option>
+                        </volist>
+					</select>
+					<span class="redStar">*</span>
+				</div>
+				<div class="cell">
+					<label>任教学科：</label>
+					<select id="course_" class="input-control" name="" required>
+						<option value="0">-请选择-</option> 
+                        <volist name="course_list" id="course_item">
+                            <option value="{$course_item.id}">{$course_item.name}</option>
+                        </volist>
+					</select>
+					<span class="redStar">*</span>
+				</div>
+				<span class="commonBtnBlue operateBtn btnBig" id="appendGrade">添加</span>
+			</div>
+		</div>
+
+		<div class="gradeCourse" id="gradeCourse"> 
+		</div>
+	</div>
+</div>
+
+<!--<div class="bgGray mb10 mt20">
+	<p class="blueText nobold fs16">请选择任教班级</p>
+	<div class="grid condensed cellBox" style="width: 90%">
+		<div class="row cells3">
+			<div class="cell">
+				<label>任教年级：</label>
+				<select id="" class="input-control" name="" required>
+					<option value="0">-请选择-</option>
+					<option value="1">一年级</option>
+					<option value="2">二年级</option>
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>任教学科：</label>
+				<select id="" class="input-control" name="" required>
+					<option value="0">-请选择-</option>
+					<option value="1">英语</option>
+					<option value="2">语文</option>
+				</select>
+				<span class="redStar">*</span>
+			</div>
+			<div class="cell">
+				<label>任教班级：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">一班</option>
+					<option value="2">二班</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<img src="{$oss_path}public/web_img/Admin/icon-append.png" alt="" class="checkImg" id="appendClass" onclick="return showChooseGrade()">
+</div>
+
+<div class="ml20 mr20" id="classCourse">
+	<span class="gradeSpan mr10">
+		一年级一班英语
+		<span class="redClose">×</span>
+	</span>
+	<span class="gradeSpan mr10">
+		一年级一班语文
+		<span class="redClose">×</span>
+	</span>
+</div>-->
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+    //直接保存
+    $("#submitSave").click(function(){
+        $('.next_flag').val(0);
+    });
+    
+    //添加任教班级按钮进行保存
+    $("#submitAdd").click(function(){
+        $('.next_flag').val(1);
+    });
+    
+    $('.redClose').live('click',function(){
+        $(this).parent().remove();
+    });
+    
+    var grade_course_span='<span class="gradeSpan mr10" attr_id="1">'+
+                            '<font class="text">一年级英语 </font>'+
+                            '<span class="redClose" >×</span>'+
+                        '</span>';
+    
+            $('#appendGrade').click(function(){ 
+                var grade_value=$('#grade_').val();
+                var grade_text=$('#grade_').find('option:selected').text();    
+                var course_value=$('#course_').val();                       
+                var course_text=$('#course_').find('option:selected').text();  
+
+                if(grade_value==false){
+                   $.NotifyBox.NotifyOne('注意','请选择年级！','确定');
+                    return false;
+                } 
+                if(course_value==false){
+                   $.NotifyBox.NotifyOne('注意','请选择学科！','确定');
+                    return false;
+                }
+                var temp_span=$(grade_course_span).clone(true);
+                $(temp_span).find('.text').text(grade_text+course_text);
+                $(temp_span).attr('attr_id',grade_value+'_'+course_value);  
+                //判断该年级学科是否已经创建
+                if($('#gradeCourse').find('.gradeSpan').length){
+                    var gradeSpanAll=$('#gradeCourse').find('.gradeSpan');
+                    for(var i=0;i<gradeSpanAll.length;i++){
+                        if($(gradeSpanAll[i]).attr('attr_id')==(grade_value+'_'+course_value)){
+                            $.NotifyBox.NotifyOne('注意','该年级学科您已选择过！','确定');
+                            return false;
+                        }  
+                    }
+                }
+                $('#gradeCourse').append(temp_span);
+            });
+        
+	//验证
+	function checkInfo(){
+		//联系人姓名
+		var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		var linkmanName = $('.teacher_name').val();
+		if (linkmanName == '') {
+			$.NotifyBox.NotifyOne('注意','姓名不能为空！','确定'); 
+			return false;
+		} else if (!regName.test(linkmanName)) {
+			$.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+			return false;
+		}
+
+		//教师手机号
+		var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		var linkmanPhone = $('.telephone').val();
+		if (linkmanPhone == '') { 
+			$.NotifyBox.NotifyOne('注意','请输入教师手机号！','确定');
+			return false;
+		} else if (!regMobilePhone.test(linkmanPhone)) { 
+			$.NotifyBox.NotifyOne('注意','教师手机号格式错误！','确定');
+			return false;
+		}
+ 
+		var pwd = $.trim($('.password').val());
+		if(pwd == ''){
+			$.NotifyBox.NotifyOne('注意','请输入密码！','确定');
+			return false;
+		} else if(pwd.length < 6 || pwd.length > 16) {
+			$.NotifyBox.NotifyOne('注意','请输入6-16位密码！','确定');
+			return false;
+		}
+
+		//联系人邮箱
+		var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+		var linkmanEmail = $('.email').val();
+		if(linkmanEmail!=''){
+			if (!regEmail.test(linkmanEmail)) { 
+				$.NotifyBox.NotifyOne('注意','邮箱格式错误！','确定');
+				return false;
+			}
+		}
+
+		var sex_value=$('#sex').val();  
+		if(sex_value==0){ 
+			$.NotifyBox.NotifyOne('注意','请选择性别！','确定');
+			return false;
+		} 
+            
+		//年级学科  
+		var string='';
+		var grade_course_selected_all=$('#gradeCourse').find('.gradeSpan');
+		for(var i=0;i<grade_course_selected_all.length;i++){
+			string+=$(grade_course_selected_all[i]).attr('attr_id')+',';
+		} 
+		string=string.substr(0,string.length-1); 
+		if(string==''){
+			$.NotifyBox.NotifyOne('注意','请创建任教年级学科！','确定');
+			return false; 
+		}else{
+			$('.grade_course_ids').val(string);
+			return true;
+		} 
+	} 
+</script>

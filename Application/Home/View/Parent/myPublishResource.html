@@ -1,0 +1,93 @@
+<layout name="parent_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Parent/publishResource')}" title="发布资源" class="button danger">发布资源</a>
+</div>
+ 
+<table class="table striped hovered border">
+    <thead>
+    <tr>
+        <th>发布单位/人</th>
+        <th>资源名称</th>
+        <th class="text-center">发布时间</th>
+        <th class="text-center">获赞数</th>
+        <th class="text-center">收藏数</th>
+        <th class="text-center">观看数</th>
+        <th class="text-center">关联教材</th>
+        <th>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="暂时没有分享的资源">
+        <tr id="l_{$data.id}">
+            <td>
+                <img class="list_avatar" src="__ROOT__/Uploads/Avatars/{$data.teacher_id}_t.jpg">
+                {$data.teacher_name}
+            </td>
+            <td>
+                <h3 class="list_title">
+                    <a href="{:U('Parent/resourceDetails?id=')}{$data.id}">{$data.name}</a>
+                </h3>
+
+                <div class="list_sub_title">{$data.description}</div>
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                {$data.zan_count}
+            </td>
+            <td class="text-center">
+                {$data.favorite_count}
+            </td>
+            <td class="text-center">
+                {$data.follow_count}
+            </td>
+            <td class="text-center">
+                {$data.textbook}
+            </td>
+            <td>
+                <a href="{:U('Parent/modifyResource')}&id={$data.id}" title="修改" class="button info"><span class="mif-pencil"></span>修改</a>
+                <button onclick="showDeleteDialog('{$data.id}')" title="删除" class="button danger"><span
+                        class="mif-cross"></span>删除
+                </button>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+
+
+<div data-role="dialog" id="deleteDialog" class="padding20">
+    <h1>请再次确定您要讲这项记录删除</h1>
+
+
+    <p class="align-right" style="margin-top: 60px;">
+        <button class="button danger" onclick="deleteResource()">确定</button>
+        <button class="button default" onclick="hideDeleteDialog()">取消</button>
+    </p>
+</div>
+
+<script>
+    var currentResourceId = 0;
+    function showDeleteDialog(resourceId) {
+        var dialog = $('#deleteDialog').data('dialog');
+        dialog.open();
+        currentResourceId = resourceId;
+    }
+    function deleteResource() {
+        $.get('index.php?m=Home&c=Teach&a=deleteResource', {id: currentResourceId}, function (res) {
+            if (res == 'success') {
+                hideDeleteDialog();
+                window.location.reload();
+            } else {
+                alert('删除失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    function hideDeleteDialog() {
+        var dialog = $('#deleteDialog').data('dialog');
+        dialog.close();
+        currentResourceId = 0;
+    }
+
+</script>

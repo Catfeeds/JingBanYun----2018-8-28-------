@@ -1,0 +1,324 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+
+<style>
+    .list_title {
+        width: inherit;
+    } 
+    
+    .list_sub_title {
+        width: inherit;
+    }
+    
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+	
+</style>
+<form action="{:U('Resource/resourceMgmt')}" method="post">
+	<div class="grid condensed searchbar" style="margin-bottom: 20px;">
+		<div class="row cells4 cellBox">
+			<div class="cell">
+				<label>学科：</label>
+				<select id="course_id" name="course_id" class="input-control input-control-before" onchange="getTextbooks()">
+					<option value="">-请选择-</option>
+					<volist name="courses" id="dataCourse">
+						<option value="{$dataCourse.id}" {$dataCourse['id']==$course_id?'selected':''}>
+							{$dataCourse.code} : {$dataCourse.course_name}
+						</option>
+					</volist>
+				</select>
+			</div>
+			
+			<div class="cell">
+				<label>年级：</label>
+				<select id="grade_id" name="grade_id" class="input-control input-control-before" onchange="getTextbooks()">
+					<option value="">-请选择-</option>
+					<volist name="grades" id="dataGrade">
+						<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+							{$dataGrade.grade}
+						</option>
+					</volist>
+				</select>
+			</div>
+			
+			<div class="cell">
+				<label>教材分册：</label>
+				<select id="textbook_id" class="input-control input-control-before" name="textbook_id">
+					<option value="">-请先选择学科和年级-</option>
+					<volist name="textbook_list" id="textbook_item">
+						<option value="{$textbook_item.id}" {$textbook_id == $textbook_item['id']?'selected':''}>
+						{$textbook_item.name}
+						</option>
+					</volist>
+				</select>
+			</div>
+			
+			<div class="cell">
+				<label>类型：</label>
+				<select id="type" class="input-control input-control-before" name="type">
+					<option value="">-请选择-</option>
+					<option value="video" {$type=='video'?'selected':''}>视频</option>
+					<option value="audio" {$type=='audio'?'selected':''}>音频</option>
+                    <option value="image" {$type=='image'?'selected':''}>图片</option>
+					<option value="word" {$type=='word'?'selected':''}>WORD</option>
+					<option value="ppt" {$type=='ppt'?'selected':''}>PPT</option>
+					<option value="pdf" {$type=='pdf'?'selected':''}>PDF</option>
+					<option value="swf" {$type=='swf'?'selected':''}>SWF文件</option> 
+					<!--<option value="others" {$type=='others'?'selected':''}>其他</option>-->
+				</select>
+			</div>
+			
+			<div class="cell">
+				<label>排序：</label>
+				<select id="sort_column" class="input-control input-control-before" name="sort_column">
+					<!--<option value="">-请选择-</option> -->
+					<option value="create_at" {$sort_column ==create_at?'selected':''}  >发布时间</option>
+					<option value="follow_count" {$sort_column ==follow_count?'selected':''} >观看数</option>
+					<option value="zan_count" {$sort_column ==zan_count?'selected':''} >点赞数</option>
+					<option value="favorite_count" {$sort_column ==favorite_count?'selected':''} >收藏数</option>
+				</select>
+			</div>
+			
+			<div class="cell">
+				<label>状态：</label>
+				<select id="lock_status" class="input-control input-control-before" name="status">
+					<option value='0'>-请选择-</option> 
+					<option value="1" <if condition="$status==1">selected</if> >审核未通过</option> 
+					<option value="2" <if condition="$status==2">selected</if> >审核已通过</option>   
+					<option value="3" <if condition="$status==3">selected</if> >审核已拒绝</option> 
+				</select>
+			</div> 
+			
+			<div class="cell">
+   				<label>关键词：</label>
+   				<input type="text" value="{$keyword}" id="keyword" class="input-control input-control-before" name="keyword" placeholder="资源名称/发布人名称/资源简述">
+   			</div>
+   			
+   			<div class="cell" data-role="input">
+    			<label for="">&nbsp;</label>
+				<button class="button" onclick="" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+			</div>
+		</div>
+	</div>
+</form>
+<!--<empty name="list">
+    <div class="emptyResult">对不起，您想要搜索的内容不存在</div>
+</empty>-->
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">发布单位/人</th>
+        <th class="text-center">年级</th>
+        <th class="text-center">学科</th>
+        <th class="text-center">教材分册</th>
+        <th class="text-center">资源名称</th>
+        <th class="text-center">类型</th>
+        <th class="text-center">是否含有敏感词</th>
+        <th class="text-center">发布时间</th>
+        <th class="text-center">获赞数</th>
+        <th class="text-center">收藏数</th>
+        <th class="text-center">观看数</th> 
+        <th class="text-center">状态</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="">
+        <tr id="l_{$data.id}">
+            <td>
+                <if condition="strpos($data['avatar'],'default')===false">
+                    <img onerror="img_teacher(this)" class="list_avatar" src="<?php echo C('oss_path').$data['avatar']?>">
+                <else />
+                    <img onerror="img_teacher(this)" class="list_avatar" src="__ROOT__/Uploads/Avatars/{$data.teacher_id}_t.jpg">
+                </if>
+                <a href="{:U('Teacher/updateTeacher?id=')}{$data.teacher_id}">{$data.teacher_name}</a>
+            </td>
+            <td class="text-center">
+                {$data.grade}
+            </td>
+            <td class="text-center">
+                {$data.course_name}
+            </td>
+            <td class="text-center">
+                {$data.textbook}
+            </td>
+            <td>
+                <h3 class="list_title">
+                    <!--<a href="{:U('Teach/resourceDetails?key=')}{$data.key}">{$data.name}</a>-->
+                    <a href="{:U('Resource/resourceDetails?id=')}{$data.id}" style="color:#2086bf !important">{$data.name}</a>
+                </h3>
+
+                <div class="list_sub_title">{$data.description}</div>
+            </td>
+            <td class="text-center">
+                {$data.type}
+            </td>
+            <td class="text-center">
+                <if condition="$data['has_sensitive_words'] eq 1">
+                    是
+                <else />
+                    否
+                </if>
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                {$data.zan_count}
+            </td>
+            <td class="text-center">
+                {$data.favorite_count}
+            </td>
+            <td class="text-center">
+                {$data.follow_count}
+            </td> 
+            <td class="text-center reviewJ">
+                <if condition="$data['status'] eq 1">
+                    未通过审核
+                <elseif condition="$data['status'] eq 2"/>
+                    通过审核
+                <else/>
+                    已拒绝
+                </if>
+            </td>
+            <td align="center">
+                <in name="Think.session.admin.role" value="1,2">
+                    <if condition="$data['status'] eq 1">
+                        <button onclick="approve({$data.id},this)" class="button info">通过</button>
+                        <button onclick="deny({$data.id},this)" class="button danger">拒绝</button>
+                    <elseif condition="$data['status'] eq 2"/>
+                        <button onclick="xiajia({$data.id},this)" class="button downR">下架</button> 
+                    </if> 
+                    <button onclick="delete_data({$data.id},this)" class="button delete_button">删除</button>
+                </in>
+                <!--<if condition="$data['has_sensitive_words'] eq 1">
+                    <div style="color: #ff0000;text-align: center;">
+                        (含有敏感词汇,请谨慎审核!)
+                    </div>
+                </if>-->
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+<div style="float:left;width:100%;">
+    <h4>全部资源信息</h3>
+    <volist name="all_resource_count_arr" id="all_exercise_item" key="key">
+        <span style="margin-right:10px;">{$all_exercise_item.key}:{$all_exercise_item.value}条</span>
+    </volist>
+</div>
+<div style="float:left;width:100%;margin:20px 0;">
+    <h4>筛选出的资源信息</h3>
+    <volist name="search_resource_arr" id="search_resource_item" key="key">
+        <span style="margin-right:10px;">{$search_resource_item.key}:{$search_resource_item.value}条</span>
+    </volist>
+</div>
+
+<in name="Think.session.admin.role" value="1,2">
+    <script>
+        function approve(id,obj) {
+            $.get('index.php?m=Admin&c=Resource&a=approveResource', {id: id}, function (res) {
+                if (res == 'success') { 
+                    $(obj).parent().siblings('.reviewJ').text('通过审核');
+                    var downR="<button onclick=xiajia("+id+",this) class='button downR'>下架</button>";
+                    $(obj).before(downR);
+                    $(obj).siblings('.danger').remove();
+                    $(obj).remove();
+                } else {
+                    alert('通过失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+        function deny(id,obj) {
+            $.get('index.php?m=Admin&c=Resource&a=denyResource', {id: id}, function (res) {
+                if (res == 'success') { 
+                    $(obj).parent().siblings('.reviewJ').text('已拒绝');
+                    $(obj).siblings('.info').remove();
+                    $(obj).remove();
+                } else {
+                    alert('拒绝失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+
+        function xiajia(id,obj) { 
+            $.get('index.php?m=Admin&c=Resource&a=downResource', {id: id}, function (res) {
+                if (res == 'success') { 
+                    var temp_y="<button onclick=approve("+id+",this) class='button info'>通过</button>&nbsp;";
+                    var temp_n="<button onclick=deny("+id+",this) class='button danger'>拒绝</button>"; 
+                    $(obj).parent().siblings('.reviewJ').text('未通过审核');
+                    $(obj).before(temp_y);
+                    $(obj).before(temp_n);
+                    $(obj).remove();
+                } else {
+                    alert('下架失败，请刷新页面后重新尝试');
+                }
+            })
+        }
+        
+        function delete_data(id,obj){
+            if(confirm('您确认删除吗?删除后不可找回!')){
+                $.get('index.php?m=Admin&c=Resource&a=deleteResource',{id:id},function(msg){
+                    if(msg=='success'){
+                        alert('删除成功');
+                        location.reload();
+                    }else if(msg=='error'){
+                        alert('非法操作');
+                    }else{
+                        alert('删除成功');
+                    }
+                });
+            } 
+        }
+        
+
+        /*
+        function search() {
+            var string='';
+            var keyword = $('#keyword').val();
+            var status=$("#lock_status").val();
+            if (keyword != '') {
+                string='&keyword='+keyword;
+            }
+            if(status!=0){
+                string=string+'&status='+status;
+            }
+
+            var url = 'index.php?m=Home&c=Admin&a=resourceMgmt' + string;
+            window.location.href = url;
+        }*/
+    </script>
+</in>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+			"aoColumns":[
+                {"width":"9%"},
+                {"width":"7%"},
+                {"width":"5%"},
+                {"width":"11%"},
+                {"width":"11%"},
+                {"width":"5%"},
+                {"width":"9%"},
+                {"width":"9%"},
+                {"width":"4%"},
+                {"width":"4%"},
+                {"width":"4%"},
+                {"width":"7%"},
+                {"width":"14%"}
+            ]
+        });
+    });
+    
+    function img_teacher(obj) { 
+        obj.src = './Public/img/teacher.jpg';
+    }
+</script>

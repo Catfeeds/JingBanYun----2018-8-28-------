@@ -1,0 +1,710 @@
+<layout name="student_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/qrcode.min.js"></script>
+<script src="__PUBLIC__/js/record/recorder.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+
+	.homeworkLeft.homeworkLeftFixed .homeworkLeftMain {
+		min-height: 400px
+	}
+</style>
+
+<a href="Javascript:history.go(-1);" title="返回" class="btn btnReturn1" style="position: absolute;">返回</a>
+
+<div id="homework" v-cloak>
+	<div class="studentIndexOutter studentHomeworkWrapper studentHomeworkDoing">
+		<div class="homeworkLeftBoxOutter">
+			<div class="homeworkLeft homeworkLeftFixed">
+				<div class="homeworkLeftTitle">{{additionalData.workName}}</div>
+				<div class="homeworkLeftStatus">作业中<span class="useTime">{{duration}}</span></div>
+				<div class="homeworkLeftMain">
+					<!-- 这是每个题型 -->
+					<div class="homeworkLeftBox" v-for="(exercise,index) in homeworkList">
+						<div class="homeworkLeftType">{{ index+1 | filtersVoiceNumber }}、{{exercise.name}}</div>
+						<div class="homeworkLeftCircleBox">
+							<div v-for="(subExercise,subIndex) in exercise.data">
+								<div class="homeworkLeftCircle" v-if="subExercise.userAnswer == ''|| subExercise.userAnswer == undefined" @click="goExercise(subExercise.id)">{{subIndex+1}}</div>
+								<div class="homeworkLeftCircle active" v-else>{{subIndex+1}}</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="homeworkLeftBtnBox">
+					<button class="btnCommon" id="homeworkSubmit" onclick="homework.submitHomework()">交卷</button>
+				</div>
+			</div>
+			
+			<img src="__PUBLIC__/img/homeworkV1/appCode.png" alt="" class="appCode">
+		</div>
+		
+
+		<div class="homeworkRight">
+			<div class="exerciseOutter exerciseOutterNoBorder">
+				<div class="exerciseOutterTop">
+					<div class="exerciseBigTitle">
+						<span class="beforeName">{{additionalData.workName}}</span>
+					</div>
+					<div class="exerciseRemark">
+						共<span class="num"> {{additionalData.totalExercise}} </span>题&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;满分<span class="num"> {{additionalData.totalpoint}} </span>分
+					</div>
+				</div>
+
+				<include file="./Application/Home/View/HomeworkCommon/exerciseOutterDo.html"/>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- 得分框 -->
+	<div class="homeworkBlack" @click="closeScoreFixed"></div>
+	<div class="homeworkFixed scoreFixed">
+		<div class="scoreClose" @click="closeScoreFixed"></div>
+		<div class="scoreText">0</div>
+		<div class="scoreTime">倒计时 <span class="time">5</span>s</div>
+	</div>
+
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/layer/layer.js"></script>
+<script>
+Date.prototype.Format = function(fmt) {
+		var o = {
+			"M+" : this.getMonth()+1,                 //月份
+			"d+" : this.getDate(),                    //日
+			"h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时
+			"H+" : this.getHours(), //小时
+			"m+" : this.getMinutes(),                 //分
+			"s+" : this.getSeconds(),                 //秒
+			"q+" : Math.floor((this.getMonth()+3)/3), //季度
+			"S"  : this.getMilliseconds()             //毫秒
+		};
+		if(/(y+)/.test(fmt))
+			fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+		for(var k in o)
+			if(new RegExp("("+ k +")").test(fmt))
+				fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+		return fmt;
+	}
+</script>
+<script>
+//录音
+var voiceCompare= {
+      recorder:null,
+	  dataReadyCallback:null,
+	  init:function()
+	  {
+	    this.recorder = new Recorder({
+          monitorGain: parseInt(0, 10),
+		  wavSampleRate: 16000,
+          recordingGain: parseInt(1, 10),
+          numberOfChannels: parseInt(1, 10),
+          wavBitDepth: parseInt(16,10),
+          encoderPath: "__PUBLIC__/js/record/waveWorker.min.js"
+        });
+		this.recorder.handle = this;
+		this.recorder.onstart = function(){
+           ;
+        };
+		this.recorder.onstop = function(){
+           ;
+        };
+		this.recorder.ondataavailable = function( typedArray ){
+          var dataBlob = new Blob( [typedArray], { type: 'audio/wav' } );
+          var fileName = new Date().toISOString() + ".wav";
+          var url = URL.createObjectURL( dataBlob );
+          this.handle.dataReadyCallback(dataBlob);
+           
+        };	
+	  },
+      startRecord:function(displayWav){
+	     //return wav handle
+		 this.recorder.start().catch(function(e){
+            ;;;;
+         });
+		 //realtime display wav 
+	  },
+	  stopRecord:function(dataReadyCallback){
+	     this.dataReadyCallback = dataReadyCallback;
+	     this.recorder.stop()
+	  },
+	  postWavFile:function(wavFileBlob,exerciseId,callback){
+	    var mp3Path,score;
+		
+	    callback(mp3Path,score)
+        //return mp3 path and score
+	  }
+};
+
+</script>
+<script>
+	var userId = '{$_SESSION['student']['id']}';
+	function generateMixed(an) {
+		var chars = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+		var res = "";
+		for(var ia = 0; ia < an ; ia ++) {
+			var id = Math.ceil(Math.random()*35);
+			res += chars[id];
+		}
+		return res;
+	}
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+			url: '',
+			showAnswer:false,
+			homeworkId:getQueryString('homeworkId'),
+			classId:getQueryString('classId'),
+			courseId:getQueryString('courseId'),
+			getListUrl:'/index.php/Home/StudentHomework/getHomeworkDetail',
+			submitUrl:'/index.php/Home/StudentHomework/submitHomework',
+			voiceCompareUrl:'/index.php/Home/StudentHomework/voiceCompare',
+			wrongPracticeUrl:'/index.php/Home/StudentHomework/startWrongPractice',
+			practiceUrl:'/index.php/Home/StudentHomework/addPracticeCount',
+			iscancel: '',
+			duration:'',
+			durationSeconds:0,
+			startTime:new Date(),
+			homeworkList:[],
+			additionalData:[],
+			isRecord:false,
+			timerId:0,
+			currentRecordTitleObj:null,
+			recordingTarget:null,
+			isVoice: false
+		},
+		created: function () {
+			if(this.courseId == null)
+			this.getList(this.homeworkId)
+			else
+			this.startWrongPractice();
+			this.getTime();
+			voiceCompare.init();
+		},
+		methods: {
+			startWrongPractice:function(){
+				var parameters={};
+				parameters['courseId'] = this.courseId;
+				this.$http.post(this.wrongPracticeUrl, parameters, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						this.additionalData = response.data.additionalData;
+						this.homeworkList = response.data.data;
+						this.$nextTick(function(){
+							this.generateQrCodeUrl();
+						})
+
+
+					} else {
+						console.log('错误1')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			addPreZeros:function (num) {
+				if(num>99){
+					return num;
+				}
+				return ('0' + num).slice(-2);
+			},
+			getTime:function()
+			{
+				var endTime = new Date();
+				this.durationSeconds = parseInt((endTime - this.startTime) / 1000);
+				this.timerId =setTimeout("homework.getTime()",1000);
+				this.duration =  this.addPreZeros(parseInt(this.durationSeconds/60)) + ':'+ this.addPreZeros(parseInt(this.durationSeconds%60));
+			},
+			getList:function (homeworkId){
+				var parameters={};
+				parameters['homeworkId'] = homeworkId;
+				this.$http.post(this.getListUrl, parameters, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						this.additionalData = response.data.additionalData;
+						this.homeworkList = response.data.data;
+
+						if(response.data.data[0].data[0].main_type == 2 && (response.data.data[0].data[0].sub_type == 1 || response.data.data[0].data[0].sub_type == 2)  ) {
+							isFirefox() 
+						}
+
+						this.$nextTick(function(){
+							this.generateQrCodeUrl();
+						})
+
+					} else {
+						console.log('错误1')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			generateQrCodeUrl: function()
+			{
+				  for (var i in this.homeworkList){
+					  for(var exercise in this.homeworkList[i].data){
+						  if(this.homeworkList[i].data[exercise].topic_type == 2 || this.homeworkList[i].data[exercise].topic_type == 5 || this.homeworkList[i].data[exercise].topic_type == 6 ){
+							  var imageFullUrl = this.generateQrCode(i,exercise)
+							  this.assignImageUrl(i,exercise,imageFullUrl);//start image Loading
+						  }
+					  }
+				  }
+
+		   },
+			reUpload: function(index,subIndex)
+			{
+				if(confirm('是否重新上传')) {
+					var obj = $(document).find('div[index=' + index + '][subindex=' + subIndex + ']');
+					var imageFullUrl = this.generateQrCode(index,subIndex)
+					this.assignImageUrl(index,subIndex,imageFullUrl);//start image Loading
+					this.homeworkList[index].data[subIndex].userAnswer = '';
+					//remove button
+					obj.find('.reUploadBtn').remove();
+					obj.find('.uploadCode,.uoloadText').show();
+				}
+			},
+            assignImageUrl:function(index,subIndex,url)
+			{
+				var obj = $(document).find('div[index='+index+'][subindex='+subIndex+']');
+				var imageObj = obj.find('.answerImg')[0];
+				imageObj.src = url;
+				imageObj.onload = function(){
+					$(imageObj).show()
+					//add reupload button
+					var buttonDiv = '<button onclick="homework.reUpload(' +index + ','+subIndex +')" class=" btnCommon reUploadBtn">重新上传</button>';
+					obj.find('.exerciseMain').append(buttonDiv);
+					//hide qrcode
+                    obj.find('.uploadCode,.uoloadText').hide();
+					//save answer
+					homework.homeworkList[index].data[subIndex].userAnswer = this.src;
+				};
+				imageObj.onerror = function(){
+					$(imageObj).hide()
+					setTimeout(function(){
+						try {
+							var url = imageObj.src;
+							imageObj.src = '';
+							imageObj.src = url;
+						}catch(e){;}
+					},1000)
+
+				}
+			},
+			generateQrCode: function(index,subIndex)
+			{
+				var obj = $(document).find('div[index='+index+'][subindex='+subIndex+']');
+				var exerciseId = obj.attr('exerciseid');
+				var currentDate = new Date();
+				var imageUrl = 'images/' + userId + '/'+ currentDate.Format("yyyyMMddHHmmss")+ generateMixed(10)+'.jpg';
+				var urlPrefix = 'http://<?= WEB_URL?>' + '/index.php?m=Home&c=StudentHomework&a=scavenging&id=' + exerciseId + '&url=' + imageUrl;
+				var codeDiv = obj.find('.uploadCode');
+				codeDiv.html('');
+				var qrcode = new QRCode(codeDiv[0],{
+					width : 150,
+					height : 150
+				});
+				qrcode.makeCode(urlPrefix);
+				return "{$oss_path}Answers/"+ imageUrl;
+			},
+			//展开英文释义
+			showExplain: function(e){
+				if($(e.target).hasClass('active')) {
+					$(e.target).removeClass('active').text('英文释义');
+					$(e.target).siblings('.explainBox').slideUp()
+				} else {
+					var parentWordBox = $(e.target).parents('.wordBox');
+					var explainLeft = -parentWordBox.position().left - 77;
+
+					if(parentWordBox.parents('.forBox').siblings('.forBox').length > 0) {
+						parentWordBox.parents('.forBox').siblings('.forBox').find('.wordBox').find('.explainBox').stop(false,true).slideUp('normal',function(){
+							parentWordBox.parents('.forBox').siblings('.forBox').find('.wordBox').find('.explainText').removeClass('active').text('英文释义');
+							$(e.target).addClass('active').text('隐藏释义');
+							$(e.target).siblings('.explainBox').css('left', explainLeft).slideDown()
+						});
+					} else {
+						$(e.target).addClass('active').text('隐藏释义');
+						$(e.target).siblings('.explainBox').css('left', explainLeft).slideDown()
+					}
+					
+				}
+			},
+			total:function(index,field){
+				var sum = 0;
+				$(this.homeworkList[index].data).each(function(i,data){
+					sum += parseInt(data[field])
+				});
+				return sum;
+			},
+			doSubmit:function(){
+				var answerArray = [];
+				$('.exerciseMainBox').each(function(index,n){
+					var answer = $(n).attr('answer');
+					answer = answer == undefined ? '':answer;
+					answerArray.push(
+							{
+								id:$(n).attr('exerciseId'),
+					            answer:answer,
+					            score:$(n).attr('point'),
+					            totalscore:$(n).attr('totalpoint')
+							}
+					);
+				})
+				var parameters={};
+				parameters['homeworkId'] = this.homeworkId;
+				parameters['classId'] = this.classId;
+				parameters['duration'] = this.durationSeconds;
+				parameters['answerList'] = JSON.stringify(answerArray);
+				this.$http.post(this.submitUrl, parameters, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					response = response.data;
+					if(response.status == '200'){
+                        // alert('提交成功')
+                        $.NotifyBox.NotifyPromptOneC('提示', '提交成功', '确定', function(){
+                        	// window.history.go(-1)
+                        	window.location.href="/index.php?m=Home&c=StudentHomework&a=index"
+                        })
+					} else {
+						// alert(response.message)
+						$.NotifyBox.NotifyPromptOne('提示', response.message, '确定')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+
+			},
+			showAllAnswer:function(){
+				//add practice count
+				var exerciseIds = [];
+                $('.exerciseMainBox').each(function(i,n){
+					exerciseIds.push($(n).attr('exerciseid'))
+				})
+				var idString = exerciseIds.join();
+				this.$http.post(this.practiceUrl, {exerciseIds:idString}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					response = response.data;
+					if(response.status == '200'){
+						this.showAnswer= true;
+						this.choose = function(){;};
+						$('.answerBox,.exerciseBtnBox').show();
+						$('#homeworkSubmit').hide();
+						//stop timer
+						clearTimeout(this.timerId);
+					} else {
+                        // alert('服务器繁忙')
+                        $.NotifyBox.NotifyPromptOne('提示', '服务器繁忙', '确定')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			submitHomework:function()
+			{
+				//若有未答题则提示
+				if($('.homeworkLeftCircle.active').length != $('.homeworkLeftCircle').length){
+					$.NotifyBox.NotifyPromptTwoCo('提示', '您还有试题未做答,确认提交？' , '确定', '取消', function(){
+						if(this.courseId == null)
+						 this.doSubmit();
+						else
+						 this.showAllAnswer();
+					}.bind(this));
+				} else {
+					if(this.courseId == null)
+					 this.doSubmit();
+					else
+  					 this.showAllAnswer();
+				}
+
+				// if($('.homeworkLeftCircle.active').length != $('.homeworkLeftCircle').length){
+				// 	if(confirm('您还有试题未做答,确认提交？'))
+				// 	{
+				// 		if(this.courseId == null)
+				// 		 this.doSubmit();
+				// 		else
+				// 		 this.showAllAnswer();
+
+				// 	}
+				// }
+				// else{
+				// 	if(this.courseId == null)
+				// 	 this.doSubmit();
+				// 	else
+  		// 			 this.showAllAnswer();
+				// }
+			},
+			//已经观看习题
+			hasSeenExercise:function(e){
+			  $(e.currentTarget).hide().siblings('.doCircle').addClass('active');
+			  var titleObj = $(e.currentTarget).parents('.exerciseMainBox');
+			  var index = titleObj.attr('index');
+			  var subIndex = titleObj.attr('subindex');
+			  homework.homeworkList[index].data[subIndex].userAnswer = ' ';
+			  homework.homeworkList[index].data[subIndex].point = homework.homeworkList[index].data[subIndex].score;
+			},
+			// 选择本选项
+			choose: function(e){
+				if($(e.currentTarget).hasClass('active')) {
+					$(e.currentTarget).removeClass('active')
+				} else {
+					$(e.currentTarget).addClass('active');
+				}
+				//获取该题答案（考虑选择填空）
+				var titleObj = $(e.currentTarget).parents('.exerciseMainBox');
+				var index = titleObj.attr('index');
+				var subIndex = titleObj.attr('subindex');
+				var topicType = titleObj.attr('topic_type');
+				var answerArray = [];
+				var subAnswer = [];
+				var hasAnswer = false;
+                $(titleObj).find('.exerciseMain').each(function(i,n){
+					subAnswer = [];
+					$(n).find('.active').each(function(answerIndex,answer){
+						subAnswer.push(answer.innerText.substr(0,1));
+						hasAnswer =true;
+					})
+					answerArray.push(subAnswer.join(''));
+				})
+
+				var userAnswer ;
+				if(!hasAnswer)
+					userAnswer = null;
+				else
+					userAnswer = (answerArray.join(','));
+				homework.homeworkList[index].data[subIndex].userAnswer =  userAnswer;
+			},
+			startStopRecord:function(e){
+				if(this.isVoice == true) {
+					isFirefox()
+				} else {
+					if(!this.isRecord){
+						this.currentRecordTitleObj = $(e.currentTarget).attr('src','__PUBLIC__/img/homeworkV1/recordStop.png').parents('.exerciseMainBox');
+						this.recordingTarget = this.currentRecordTitleObj.attr('exerciseid');
+						 // this.currentRecordTitleObj.find('.recordTextDiv').text('点击结束录音');
+						voiceCompare.startRecord('');
+					} else {
+						if($(e.currentTarget).parents('.exerciseMainBox').attr('exerciseid') != this.recordingTarget)
+							return;
+						$(e.currentTarget).attr('src','__PUBLIC__/img/homeworkV1/record.png');
+						// $(e.currentTarget).parents('.exerciseMainBox').find('.recordTextDiv').text('点击开始录音');
+						voiceCompare.stopRecord(function(blob){
+
+							//将语音提交至后台
+							var fd = new FormData();
+			                fd.append('id', homework.currentRecordTitleObj.attr('exerciseid'));
+			                fd.append('file', blob);
+			                $.ajax({
+			                    type: 'POST',
+			                    url: homework.voiceCompareUrl,
+			                    data: fd,
+								dataType:'json',
+			                    processData: false,
+			                    contentType: false
+			                }).done(function(data) {
+			                      if(data.status == 200)
+								  {
+								     var index = homework.currentRecordTitleObj.attr('index');
+							         var subIndex = homework.currentRecordTitleObj.attr('subindex');
+									 // alert('得分:'+data.data['score']);
+									$('.homeworkBlack, .scoreFixed').show().find('.scoreText').text(data.data['score']);
+			        				$('body').css('overflow-y', 'hidden');
+			        				// homeworl.$nextTick(function(){
+										time()
+									// })
+
+								     homework.homeworkList[index].data[subIndex].point = data.data['score'];
+									 homework.homeworkList[index].data[subIndex].userAnswer = data.data['path'];
+								  }
+								  else{
+								    // alert(data.message)
+								    $.NotifyBox.NotifyPromptOne('提示', data.message, '确定')
+								  }
+			                });
+											
+						});
+				 	}
+					this.isRecord = !this.isRecord;
+				}
+			},
+            // 播放音频
+            play: function(e){
+                var that = $(e.currentTarget);
+                var player = that.parent('.wordMain').siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if (player.paused){
+                    // 其余音频停止播放
+                    $('audio').trigger('pause');
+                    // 其余去掉背景颜色
+                    $('.wordMain').removeClass('active');
+                    // 所有音频图标重置
+                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+
+                    // 所有学生音频图标重置
+                    $('.videoStudent.studentImg').attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+
+                    that.parent('.wordMain').siblings('.audioHide').attr('src', newUrl);
+                    player.play();
+                    that.parent('.wordMain').addClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoYellow36×30.gif');
+                    player.loop = false;
+                    player.addEventListener('ended', function () {
+                        that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                    }, false);
+                } else {
+                    player.pause();//暂停
+                    that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                }
+            },
+            // 播放单个学生音频
+            playVoice: function(e){
+                var that = $(e.currentTarget);
+                var player = that.siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if (player.paused){
+                    // 其余音频停止播放
+                    $('audio').trigger('pause');
+                    // 其余去掉背景颜色
+                    $('.wordMain').removeClass('active');
+                    // 所有音频图标重置
+                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+
+                    // 所有学生音频图标重置
+                    $('.videoStudent.studentImg').attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+                    that.siblings('.audioHide').attr('src', newUrl);
+                    player.play();
+                    that.attr('src', '__PUBLIC__/img/homeworkV1/bofang.png');
+                    player.loop = false;
+                    player.addEventListener('ended', function () {
+                        that.attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+                    }, false);
+                } else {
+                    player.pause();//暂停
+                    that.attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+                }
+            },
+            // 关闭得分弹窗
+            closeScoreFixed: function(){
+            	$('.homeworkBlack, .scoreFixed').hide();
+            	$('body').css('overflow-y', 'auto');
+            	$('.scoreFixed .time').html('5');
+            },
+            // 跳转到习题位置
+            goExercise: function(id_){
+                $("html,body").animate({ scrollTop: $('.innerId[exerciseId='+id_+']').offset().top });
+            }
+		},
+        filters:{
+            filtersVoiceNumber:function (val) {
+                val = num(val+"");
+                return val
+            },
+            filtersNumber:function (val) {
+                val = val + homework.exerciseListVocieLength;
+                val = num(val+"");
+                return val
+            }
+        }
+	})
+</script>
+
+<script>
+    function num(n) {
+        if(!/(^[1-9]\d*$)/){
+            return '非法数字';
+        }
+        var uppercase = '千百亿千百十万千百十个';
+        var nLength = n.length;
+        var newStr = '';
+        if(uppercase.length-nLength<0){
+            return '数字过长';
+        }
+        uppercase=uppercase.substr(uppercase.length-nLength);
+        for(var i=0; i < nLength; i++){
+            newStr +='零一二三四五六七八九'.charAt(n[i])+uppercase.charAt(i);
+        };
+        newStr = newStr.substr(0,newStr.length-1);
+        return newStr;
+    }
+</script>
+
+<script>
+	// 查看解析
+    $(document).on('click','.showAnalysis',function(){
+        if($(this).hasClass('active')) {
+            $(this).removeClass('active').text('查看解析').siblings('.analysisOutter').stop(false,true).slideUp();
+        } else {
+            $(this).addClass('active').text('收起').siblings('.analysisOutter').stop(false,true).slideDown();
+        }
+		
+    })
+
+    // 查看评语
+    $(document).on('click','.showComment',function(){
+        if($(this).hasClass('active')) {
+            $(this).removeClass('active').text('查看评语').siblings('.commentOutter').stop(false,true).slideUp();
+        } else {
+            $(this).addClass('active').text('收起').siblings('.commentOutter').stop(false,true).slideDown();
+        }
+    })
+</script>
+
+<script>
+	// 标题格式
+	function title() {
+		$('.homeworkLeftTitle').each(function(i, n){
+			if($(this).text().length <= 10) {
+				$(this).css({
+					'text-align': 'center'
+				})
+			} else {
+				$(this).css({
+					'text-align': 'left'
+				})
+			}
+		})
+	}
+
+	title()
+
+	$(function(){
+		var contentHeight = $('#contentWrapper').height();
+		$('.exerciseOutter').css('min-height', contentHeight);
+	})
+
+	function time() {
+		var s = 5;
+		var timer = setInterval(function () {
+			s--;
+			$('.scoreFixed .time').html(s);
+			if (s < 1) {
+				clearInterval(timer);
+				homework.closeScoreFixed()
+			}
+		}, 1000);
+	}
+</script>
+
+<script>
+	//判断是否Firefox浏览器
+	function isFirefox() {
+		var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+		if (userAgent.indexOf("Firefox") == -1) {
+			homework.isVoice = true;
+	        $.NotifyBox.NotifyPromptOneC('提示', '当前浏览器暂不支持语音作业<br><br>请更换 <img src="__PUBLIC__/img/homeworkV1/firefox.png"> 再进行登录', '点击下载', function(){
+	        	window.location.href = "https://download-ssl.firefox.com.cn/releases-sha2/stub/official/zh-CN/Firefox-latest.exe"
+	        })
+	    }
+	}
+</script>

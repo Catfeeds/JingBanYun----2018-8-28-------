@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+				<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<title></title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				color: #333;
+					-webkit-tap-highlight-color:rgba(0,0,0,0);
+			}
+			body{
+			}
+			ul li{
+				list-style: none
+			}
+			div{
+				word-break: break-all;
+			}
+			.left{
+				float: left;
+			}
+			.text-center{
+				text-align: center;
+			}
+			.w50{
+				width: 50%;
+				line-height: 38px;
+					box-sizing: border-box;
+					background: #f7f7f7;
+
+			}
+			.right{
+				float: right;
+			}
+			.of{
+				overflow: hidden;
+			}
+
+			.preview, .synchronization, .strengthen {
+			    width: 50%;
+			    text-align: center;
+			    line-height: 36px;
+			    border-bottom: 1px solid #eee;
+			    box-sizing: border-box;
+			}
+			.headertop{
+				border-bottom: 1px solid #eee;
+				line-height: 40px;
+				padding: 0 20px;
+				text-align: center;
+			}
+			.preview.active,.synchronization.active,.strengthen.active{
+				border-bottom: 1px solid #F2B81A;
+				color: #F2B81A;
+					background: #fdf6e3
+			}
+			.xuanzeshu.active{
+				color: #F2B81A;
+					background: #fdf6e3
+			}
+			.wordDiv p,.wordDiv1 p{
+
+					line-height: 27px;
+
+			}
+			.wordDiv span,.wordDiv1 span{
+				display: inline-block;
+				width: 100px;
+				text-align: center;
+			}
+			.audioBox{
+				float: left;
+					border-right: 1px solid #F2B81A
+			}
+			.audioBox img{
+					display: inline-block;
+					border-radius: 5px
+			}
+			.audioBox.active{
+					/*background:#fff8da  url(__PUBLIC__/img/Apphomework/yibo.png) no-repeat;*/
+
+			}
+			.wordDiv,.wordDiv1{
+				margin: 10px ;
+				border: 1px solid #eaa800;
+				border-radius: 5px;
+				position: relative;
+			}
+			.wordDiv1{
+
+				line-height: 28px;
+				padding: 10px;
+				border: none
+			}
+			.content{
+
+				margin-bottom: 75px;
+			}
+			.Corrections {
+			    position: fixed;
+			    width: 100%;
+			    line-height: 40px;
+			    color: #333;
+			    text-align: center;
+			    background: #f2b81a;
+			    bottom: 0;
+				left:0
+			}
+			.htmltext{
+				padding: 0 10px
+			}
+			.preview{
+				border-right: 1px solid #eee
+			}
+			.wordDiv1 .book{
+
+				width: 100%;
+			}
+			.xuanshu{
+				width:20px;
+				position:relative;
+				top:4px
+			}
+
+			.zuo{
+				margin-left: 20px;
+			}
+			.you{
+				margin-right: 20px;
+			}
+			.zuo,.you{
+				width: 26px;
+				margin-top: 6px ;
+				margin-bottom: 6px
+			}
+			.bookBom{
+				border: 1px solid #eee;
+				box-sizing: border-box;
+				position: fixed;
+				bottom: 40px;
+				width: 100%;
+				left: 0
+			}
+			.wordDiv1{
+				display: none
+			}
+			.wordDiv1:nth-child(1){
+				display: block;
+			}
+			.w40{
+				width: 40%;
+				padding: 10px;
+				border-right: 1px solid #eaa800
+			}
+			.w40 video{
+				width: 100%
+			}
+
+			.videoname{
+				/*font-size: 18px;*/
+
+				line-height: 30px;
+				text-indent: 5px;
+				padding-top: 10px;
+
+			}
+			.wordDiv .xuanzhong,.wordDiv1  .xuanzhong{
+				width: 10px;
+				position: absolute;
+				top:-4px;
+				right: -4px;
+				display: none
+			}
+			.wordDiv.active{
+				color: #F2B81A !important;
+				background: #fdf6e3;
+			}
+		</style>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div class="app">
+			<div class="headertop">
+				<img src="__PUBLIC__/img/Apphomework/fanhui.png" alt="" / class="left" style="position:relative;top: 11px;width: 10px;" @click="fanhui"><b>跟读</b>
+			</div>
+			<div class=" of">
+				<div class="preview left " @click="preview" :class="{active:ispreview}">
+					看微课
+				</div>
+				<div class="synchronization left" @click="synchronization" :class="{active:issynchronization}">
+					看课本
+				</div>
+
+			</div>
+			<div class="content">
+				<div class="" v-show="ispreview">
+
+
+						<div class=" wordDiv" v-for="list in videoData" :id="list.id" >
+							<div class="" @click="xuansp">
+								<div class="left w40"  >
+									<video :src="list.url" controls="">
+
+									</video>
+								</div>
+								<div class="left" >
+									<p class=" videoname">
+										{{list.name}}
+									</p>
+									<p>
+
+									</p>
+								</div>
+
+								<img src="__PUBLIC__/img/Apphomework/xuanzhong.png" alt="" / class="xuanzhong">
+								<div class="" style="clear:both"></div>
+							</div>
+
+						</div>
+				</div>
+				<div class="" v-show="issynchronization">
+
+
+						<div class="of wordDiv1" v-for="list in bookData" :id="list.id">
+
+							<img :src="list.url" alt="" class="book"/>
+							<div class="of bookBom">
+								<div class="w50 left " style="border-right:1px solid #eee">
+									<img src="__PUBLIC__/img/Apphomework/zuo1.png" alt="" / class="left zuo" @click="pre">
+									<img src="__PUBLIC__/img/Apphomework/you2.png" alt="" / class="right you"  @click="next">
+								</div>
+								<div class="w50 left text-center xuanzeshu" >
+									<div class="" @click="xuanze">
+										选入当前页  <img src="__PUBLIC__/img/Apphomework/xuanshu1.png" alt=""class="xuanshu" / >
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+
+
+				</div>
+				<div class="Corrections" @click="goDetails">
+						已选 <span class="chooseNum">{{exerciseNum}}</span>题，点击查看详情
+				</div>
+			</div>
+
+		</div>
+		<script type="text/javascript">
+		var courseId = "{$courseId}";
+		var category=  "{$category}";
+		var userId = "{$userId}";
+		var role= "{$role}";
+
+		var infoId= "{$infoId}";
+		var termId = "{$termId}";
+		var chapterId = "{$chapterId}";
+		var gradeId = "{$gradeId}";
+		var sectionId = "{$sectionId}";
+		var app = new Vue({
+			el:'.app',
+			data:{
+				workUrl:'/index.php/ApiInterface/Version1_2/HomeworkTeacher/getExerciseLevelInfo',
+
+				dateArr:[],
+				ispreview:true,
+				issynchronization:false,
+				isstrengthen:false,
+				previewData:[],
+				synchronizationData:[],
+				strengthenData:[],
+				previewNum:0,
+				wordData:[],
+				sentenceData:[],
+				videoData:[],
+				bookData:[],
+				count:0,
+				courseId :courseId,
+				category:category,
+				userId :userId,
+				role:role,
+
+				infoId:infoId,
+				termId:termId,
+				chapterId: chapterId,
+				gradeId :gradeId,
+			 	sectionId :sectionId,
+				exerciseNum:0,
+				// res:["2486", "2487", "18293", "18338", "18344", "18351"]
+			},
+			created:function(){
+
+					this.qingqiu()
+
+				if(this.category == '3'){
+					this.preview()
+				}else{
+					this.synchronization()
+				}
+
+				// this.getbook(this.res);
+				// this.getweike(this.res)
+			},
+			methods:{
+				qingqiu:function(){
+					var data7 = {
+						"page":"SQgetAllID",
+						'func':'SQngetAllDataID'
+					}
+					postApp(data7)
+				},
+				goDetails:function(){
+					if($('.chooseNum').text() != '0'){
+		window.location.href='/index.php/ApiInterface/Version1_3/TeacherHomework/exerciseListPublish?userId='+this.userId+'&role='+this.role+'&courseId='+this.courseId+'&gradeId='+this.gradeId+'&termId='+this.termId+'&chapterId='+this.chapterId;
+				}
+				},
+				pre:function($event){
+					if($($event.target).parents('.wordDiv1').index() == '0'){
+						return false
+					}else {
+						$($event.target).parents('.wordDiv1').hide().prev().show()
+					}
+				},
+				next:function($event){
+					if($($event.target).parents('.wordDiv1').index() == this.bookData.length-1){
+						return false
+					}else {
+						$($event.target).parents('.wordDiv1').hide().next().show()
+					}
+				},
+				xuanze:function($event){
+
+					var index = $($event.target).parents('.wordDiv1').index();
+					var id = $($event.target).parents('.wordDiv1').attr('id');
+					if($($event.target).parents('.xuanzeshu').find('img').attr('src') == '/Public/img/Apphomework/xuanshu1.png'){
+					$($event.target).parents('.xuanzeshu').addClass('active').find('img').attr('src','/Public/img/Apphomework/xuanshu2.png')
+						// $($event.target).parents('.wordDiv1').eq(index).find('.xuanzeshu').addClass('active');
+						var knowledge_code = this.gradeId+'_'+this.termId+'_'+this.chapterId+'_'+this.sectionId+'_'+id;
+						var data2 = {
+							"page":"SQadd",
+							"data":{
+								"id":id,
+								'is_media':'1',
+								'point':'5',
+								'knowledge_code':knowledge_code
+							}
+						}
+							$('.chooseNum').html(parseInt($('.chooseNum').html())+1)
+						if($('.chooseNum').text() >'0'){
+							$('.Corrections').css('background','#f2b81a')
+						}
+						postApp(data2)
+					}else{
+						$($event.target).parents('.xuanzeshu').removeClass('active').find('img').attr('src','/Public/img/Apphomework/xuanshu1.png');
+							// $($event.target).parents('.xuanzeshu');
+							var data2 = {
+								"page":"SQdelete",
+								'id':id
+							}
+								$('.chooseNum').html(parseInt($('.chooseNum').html())-1)
+							if($('.chooseNum').text() == '0'){
+								$('.Corrections').css('background','#ccc')
+							}
+							postApp(data2)
+					}
+
+				},
+				xuansp:function($event){
+					var id = $($event.target).parents('.wordDiv').attr('id');
+					if($($event.target).parents('.wordDiv').find('img').css('display') == 'none'){
+						$($event.target).parents('.wordDiv').find('img').show()
+						$($event.target).parents('.wordDiv').addClass('active');
+
+						var knowledge_code = this.gradeId+'_'+this.termId+'_'+this.chapterId+'_'+this.sectionId+'_'+id;
+						var data2 = {
+							"page":"SQadd",
+							"data":{
+								"id":id,
+								'is_media':'1',
+								'point':'5',
+								'knowledge_code':knowledge_code
+							}
+						}
+							$('.chooseNum').html(parseInt($('.chooseNum').html())+1)
+						if($('.chooseNum').text() >'0'){
+							$('.Corrections').css('background','#f2b81a')
+						}
+						postApp(data2)
+					}else{
+						$($event.target).parents('.wordDiv').find('img').hide()
+						$($event.target).parents('.wordDiv').removeClass('active')
+						var data2 = {
+							"page":"SQdelete",
+							'id':id
+						}
+							$('.chooseNum').html(parseInt($('.chooseNum').html())-1)
+						if($('.chooseNum').text() == '0'){
+							$('.Corrections').css('background','#ccc')
+						}
+						postApp(data2)
+					}
+				},
+				preview:function(){
+					this.ispreview = true;
+					this.issynchronization=false;
+				},
+				synchronization:function(){
+					this.ispreview = false;
+					this.issynchronization=true;
+				},
+				strengthen:function(){
+					this.ispreview = false;
+					this.issynchronization=false;
+				},
+				fanhui:function(){
+					/*原生返回事件 */
+					var data4 = {
+							"page":"backClick"
+						}
+					if (CheckIsIOS()){
+						window.webkit.messageHandlers.iosModel.postMessage(data4)
+					}
+					if(CheckIsAndroid()){
+
+						AppFunction.postMessage(JSON.stringify(data4))
+					}
+				},
+				getweike:function(res){
+					this.$http.post(this.workUrl, {
+						role:this.role,
+						userId:this.userId,
+						category: 3,
+						level:3,
+						infoId:this.infoId,
+						courseId: this.courseId,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							$('.chooseNum').html(res.length)
+							// this.previewData = response.data.data.type1;
+							this.videoData = response.data.data;
+							if($('.chooseNum').text() == '0'){
+								$('.Corrections').css('background','#ccc')
+							}
+							// console.log(this.videoData);
+							this.$nextTick(function(){
+								for(var c = 0;c< this.videoData.length;c++){
+									var id = response.data.data[c].id
+									// console.log(id);
+									if(res.indexOf(id) != '-1'){
+										$('#'+id).addClass('active').find('.xuanzhong').show()
+									}else{
+										$('#'+id).removeClass('active').find('.xuanzhong').hide()
+									}
+								}
+							})
+							// this.sentenceData= response.data.data.type1.type2;
+							// this.videoData= response.data.data.type1.type3;
+							// this.bookData= response.data.data.type1.type4;
+							// this.previewNum = response.data.data.num;
+							// this.count = response.data.data.count;
+							// this.synchronizationData = response.data.data.type2;
+							// this.strengthenData = response.data.data.type3;
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				},
+				getbook:function(res){
+					this.$http.post(this.workUrl, {
+						role:this.role,
+						userId:this.userId,
+						category: 4,
+						level:3,
+						infoId:this.infoId,
+						courseId: this.courseId,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							$('.chooseNum').html(res.length)
+							// this.previewData = response.data.data.type1;
+							if($('.chooseNum').text() == '0'){
+								$('.Corrections').css('background','#ccc')
+							}
+							this.bookData = response.data.data;
+							console.log(this.bookData );
+							this.$nextTick(function(){
+								for(var c = 0;c< this.bookData.length;c++){
+									var id = this.bookData[c].id
+									console.log(id);
+									if(res.indexOf(id) != '-1'){
+										$('#'+id).find('.xuanzeshu').addClass('active').find('.xuanshu').attr('src','/Public/img/Apphomework/xuanshu2.png')
+									}else{
+										$('#'+id).find('.xuanzeshu').removeClass('active').find('.xuanshu').attr('src','/Public/img/Apphomework/xuanshu1.png')
+									}
+								}
+							})
+							// this.sentenceData= response.data.data.type1.type2;
+							// this.videoData= response.data.data.type1.type3;
+							// this.bookData= response.data.data.type1.type4;
+							// this.previewNum = response.data.data.num;
+							// this.count = response.data.data.count;
+							// this.synchronizationData = response.data.data.type2;
+							// this.strengthenData = response.data.data.type3;
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				},
+
+			}
+		})
+	function showWebNav(){}//显示web导航
+			function postApp(obj){
+				if (CheckIsIOS()){
+					window.webkit.messageHandlers.iosModel.postMessage(obj)
+
+				}
+				if(CheckIsAndroid()){
+					AppFunction.postMessage(JSON.stringify(obj))
+					this.qingqiu()
+				}
+			}
+			function SQngetAllDataID(res){
+				app.getbook(res)
+				app.getweike(res)
+				console.log(res);
+			}
+			function refresh(){
+				var data7 = {
+					"page":"SQgetAllID",
+					'func':'SQngetAllDataID'
+				}
+				postApp(data7)
+			}
+		</script>
+	</body>
+</html>

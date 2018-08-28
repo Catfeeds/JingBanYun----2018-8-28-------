@@ -1,0 +1,311 @@
+<layout name="admin_layout_school"/>
+<link rel="stylesheet" href="__PUBLIC__/swiper/swiper-3.4.2.min.css" media="screen" title="no title" charset="utf-8">
+<script type="text/javascript" src="__PUBLIC__/js/jquery-2.0.3.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/swiper/swiper-3.4.2.jquery.min.js"></script>
+
+<style>
+	.classContent .classStudentNum {
+		margin-bottom: 12px;
+		background: url({$oss_path}public/web_img/Admin/xueshengrenshu.png) no-repeat left center;
+	}
+
+	.classContent .classCourceNum {
+		background: url({$oss_path}public/web_img/Admin/yishangkecheng.png) no-repeat left center;
+	}
+
+	.classContent .classDelete {
+		background: url({$oss_path}public/web_img/Admin/guanbi1.png) no-repeat center;
+	}
+
+	.classContent .classDelete:hover {
+		background: url({$oss_path}public/web_img/Admin/guanbi2.png) no-repeat center;
+	}
+
+	.classContent .classBox:hover .classStudentNum {
+		background: url({$oss_path}public/web_img/Admin/xueshengrenshu2.png) no-repeat left center;
+	}
+
+	.classContent .classBox:hover .classCourceNum {
+		background: url({$oss_path}public/web_img/Admin/yishangkecheng2.png) no-repeat left center;
+	}
+
+	.classContent .classTab.active {
+		background: #fff url({$oss_path}public/web_img/Admin/tiao.png) no-repeat center top;
+	}
+
+	.classContent .classTabBtn.classTabPrev {
+		background: #f9fcfe url({$oss_path}public/web_img/Admin/classLeft.png) no-repeat center;
+	}
+
+	.classContent .classTabBtn.classTabNext {
+		background: #f9fcfe url({$oss_path}public/web_img/Admin/classRight.png) no-repeat center;
+	}
+
+	[v-cloak] {
+		display: none;
+	}
+</style>
+
+<div id="admin" v-cloak>
+	<div class="indexOutter">
+		<div class="standardMain operateBtnContent">
+			<a href="javascript:;" class="commonBtnBlue operateBtn add" v-on:click="addClassShow" v-if="this.add == 'show'">添加</a>
+			<a href="/index.php?m=School&c=Class&a=importClassView" class="commonBtnBlue operateBtn import" v-if="this.import == 'yes'">导入</a>
+		</div>
+
+		<div class="standardMain classContent">
+			<div class="standardMain memoEmptyBox" v-if="gradeData =='' || gradeData == null">
+				<img src="__PUBLIC__/img/admin/beiwangluzanwushuju.png" alt="" class="emptyImg">
+			</div>
+
+			<div class="classContentTop" v-else>
+				<div class="swiper-container classTabBox swiper-no-swiping mb25">
+					<div class="swiper-wrapper">
+						<div class="classTab swiper-slide" v-for="(gradelist, index) in gradeData" v-bind:class="{ active: index == 0 }" :gradeId="gradelist.id" v-on:click="changeGrade($event)">{{ gradelist.grade }}（{{ gradelist.count }}）</div>
+						<div class="classTabLine"></div>
+						<div class="classTabLine top"></div>
+					</div>
+				</div>
+				<div class="classTabBtn classTabPrev" style="display: none" v-if="gradeData.length > 7"></div>
+				<div class="classTabBtn classTabNext" v-if="gradeData.length > 7"></div>
+				<div class="classTabBtn" v-else></div>
+			</div>
+			
+			<div class="classContentBottom">
+				<a href="javascript:;" class="classBox" v-for="(classlist, index) in classData" :classId="classlist.classid"  v-on:click="goClassDetails(classlist.classid)">
+					<div class="classDelete" v-on:click="deleteClass(classlist.classid, $event)"></div>
+					<div class="classTop textHidden">班级：{{ classlist.name }}</div>
+					<div class="classBottom">
+						<div class="classStudentNum">学生数量：{{ classlist.studentnumber }}人</div>
+						<div class="classCourceNum" v-if="classlist.homwordtotal == null">已布置作业数量：0份</div>
+						<div class="classCourceNum" v-else>已布置作业数量：{{ classlist.homwordtotal }}份</div>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<!--添加班级弹窗-->
+	<div class="fullscr1">
+		<div class="adminNotifyBox1">
+			<div class="adminNotifyTitle">创建班级</div>
+			<div class="adminNotifyContent">
+				<div class="adminSelect pt20">
+					<div class="selectBox">
+						<label for="">年级：</label>
+						<select class="input-control grade_list" id="grade_name">
+							<option value="0">请选择</option>
+                            <option :value="gradelist.id" v-for="(gradelist, index) in gradeList">{{ gradelist.grade }}</option>
+						</select>
+					</div>
+					<div class="selectBox">
+						<label for="">班级：</label>
+						<input type="text" class="input-control class_name" id="class_name" name="" value="" placeholder="输入班级名称，如：一班" maxlength="7" autocomplete="off">
+					</div>
+				</div>
+				<p class="adminNotifyButton">
+					<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn" v-on:click="addClass">确定</a>
+					<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn" v-on:click="addClassHide">取消</a>
+				</p>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<script>
+	$(function(){
+		var windowHeight = $(window).height();
+		var elseHeight = 86 + 40 + 110;
+		$('.classContent').css('min-height', windowHeight-elseHeight);
+		$('.memoEmptyBox').css('min-height', windowHeight-296);
+	})
+</script>
+
+<script>
+	function swiper() {
+		var swiper = new Swiper('.swiper-container', {
+	        pagination: '.swiper-pagination',
+	        slidesPerView: 'auto',
+	        paginationClickable: true,
+	        freeMode: true,
+	        cancelable: false,
+	        nextButton: '.classTabNext',
+    		prevButton: '.classTabPrev',
+    		onReachEnd: function(swiper){
+		    	$('.classTabNext').hide();
+		    	$('.classTabPrev').show();
+		    },
+		    onReachBeginning: function(swiper){
+		    	$('.classTabNext').show();
+		    	$('.classTabPrev').hide();
+		    }
+	    });
+	}
+</script>
+
+<script>
+	var add = "{$add}";
+	var importt = "{$import}";
+	var gradeList = {$gradeList};
+
+	var admin = new Vue({
+		el: '#admin',
+		data: {
+			add: add,
+			import: importt,
+			gradeList: gradeList,
+			// 年级地址
+			gradeUrl: '/index.php?m=School&c=Class&a=getGradeBySchool',
+			// 年级
+			gradeData: '',
+			// 选中的年级ID
+			gradeId: '',
+			// 班级地址
+			classUrl: '/index.php?m=School&c=Class&a=getClassByGrade',
+			// 班级
+			classData: '',
+			// 选中的班级ID
+			classId: '',
+			// 添加班级地址
+			addClassUrl: '/index.php?m=School&c=Class&a=addClass',
+			// 添加年级的ID
+			addGradeId: '',
+			// 添加班级的名字
+			addClassName: '',
+			// 删除班级地址
+			deleteClassUrl: '/index.php?m=School&c=Class&a=deleteClass',
+		},
+		created: function () {
+			// 获取年级
+			this.getGradeList();
+		},
+		methods: {
+			// 获取年级
+			getGradeList: function(){ 
+				this.$http.post(this.gradeUrl, {
+					
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.gradeData = response.data.data;
+    					if(response.data.data) {
+    						this.gradeId = this.gradeData[0].id;
+    					}
+    					this.$nextTick(function(){
+							swiper();
+							$('.classContentTop').css('min-height', 'auto');
+						});
+						// 获取班级
+						this.getClassList();
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取班级
+			getClassList: function(){ 
+				this.$http.post(this.classUrl, {
+					gradeId: this.gradeId
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.classData = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 改变年级
+			changeGrade: function(e){
+				$(e.currentTarget).addClass('active').siblings('.classTab').removeClass('active');
+				this.gradeId = $(e.currentTarget).attr('gradeId');
+				// 获取班级
+				this.getClassList();
+			},
+			// 添加班级框显示
+			addClassShow: function(){
+				if($('.fullscr1').css("display") == "none") {
+					$('.fullscr1').show();
+				}
+			},
+			// 添加班级框隐藏
+			addClassHide: function(){
+				$('.fullscr1').hide();
+				$('#grade_name').val('0');
+				$('#class_name').val('');
+			},
+			// 确定添加班级
+			addClass: function(){
+				this.addGradeId = $("#grade_name option:selected").val();
+				this.addClassName = $('#class_name').val();
+				if(this.addGradeId == 0) {
+					$.NotifyBox.NotifyOne('提示', '请选择年级', '确定');
+					return false
+				} else if(this.addClassName == '') {
+					$.NotifyBox.NotifyOne('提示', '请填写班级名称', '确定');
+					return false
+				}
+
+				this.$http.post(this.addClassUrl, {
+					grade_id: this.addGradeId,
+					class_name: this.addClassName
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						if(response.data.status == '402') {
+							$.NotifyBox.NotifyOne('提示', '班级名称重复，请重新添加', '确定');
+							return false
+						} else {
+							// this.getGradeList();
+							// 获取班级
+							// this.getClassList();
+							this.addClassHide();
+							$.NotifyBox.NotifyOneCall('提示', '添加班级成功！', '确定', function(){
+								location.reload();
+							})
+						}
+                    } else {
+                    	console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 删除班级
+			deleteClass: function(classId, e){
+				e.cancelBubble = true;
+				$.NotifyBox.NotifyTwoCallOneBlue('提示', '确定要删除此班级吗？', '确定', '取消', function(){
+					admin.$http.post(admin.deleteClassUrl, {
+						id: classId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					// this.getGradeList();
+							// 获取班级
+							// this.getClassList();
+							// this.addClassHide();
+							location.reload();
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				});
+			},
+			// 跳转到详情
+			goClassDetails: function(classId){
+				window.location.href = '/index.php?m=School&c=Class&a=classDetail&id='+classId;
+			}
+		}
+	})
+</script>

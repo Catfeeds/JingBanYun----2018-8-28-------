@@ -1,0 +1,110 @@
+<layout name="teacher_layout_3"/>
+<link href="__PUBLIC__/css/learnPathList.css" type="text/css" rel="stylesheet">
+
+<style>
+	body {
+		overflow-y: scroll
+	}
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="{:U('TeachLearnPath/classList')}&id={$classId}" title="返回" class="btn btnReturn3">返回</a>
+</div>
+
+<div class="wishContent">
+	<div class="wishBtn wishBtnAdd">
+		添加
+	</div>
+	<div class="search">
+		<form action="{:U('TeachLearnPath/teacherMessage')}" method="get" class="m0">
+			<input type="hidden" name="student_id" value="{$student_id}">
+			<input type="hidden" name="classId" value="{$classId}">
+			<input type="hidden" name="c" value="TeachLearnPath">
+			<input type="hidden" name="a" value="teacherMessage">
+			<button class="search_btn">搜索</button>
+			<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入关键字">
+		</form>
+	</div>
+	<!--添加寄语-->
+	<div class="wishAdd">
+		<form action="{:U('TeachLearnPath/addTeacherMessage')}" method="post" onsubmit="return check()">
+			<input type="hidden" name="student_id" value="{$student_id}">
+			<input type="hidden" name="classId" value="{$classId}">
+			<img src="__PUBLIC__/img/learningPath/wishClose.png" alt="" class="wishClose" title="关闭">
+			<textarea name="content"  class="wishTextarea content_text_jiyu" placeholder="请输入您的寄语" maxlength="200"></textarea>
+			<button type="submit" class="applyBtn">发布</button>
+		</form>
+	</div>
+	<hr>
+	<!--寄语列表-->
+	<empty name="list">
+		<div class="wishEmpty">
+			该学生暂时没有教师寄语！
+		</div>
+	</empty>
+	<notempty name="list">
+		<ul class="wishUl">
+			<volist name="list" id="data" empty="">
+				<li class="wishLi">
+					<div class="wishLiTitle">
+						<img src="__PUBLIC__/img/learningPath/wishPoint.png" alt="" class="wishPoint">
+						<span class="wishSpan">{$data.create_at|date="Y-m-d",###} {$data.week_name} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$data.create_at|date="H:i:s",###}</span>
+						<img src="__PUBLIC__/img/learningPath/wishDelete.png" alt="" class="right wishDelete" title="删除" onclick="deleteItem('{$data.id}')">
+					</div>
+					<div class="wishLiMain">
+						{$data.content}
+					</div>
+				</li>
+			</volist>
+		</ul>
+	</notempty>
+</div>
+<script>
+	function check() {
+		var con = $('.content_text_jiyu').val();
+		if (con == null || con == undefined || con == '') {
+			alert("提示","请填写链接地址", "确定");
+			return false;
+		}
+		return true;
+	}
+    function deleteItem(id) {
+
+		$.NotifyBox.NotifyPromptOneC("提示","确定删除寄语", "确定",function () {
+			$.get('index.php?m=Home&c=TeachLearnPath&a=delTeacherMessage', {id: id}, function (res) {
+				if (res == 'success') {
+					window.location.reload();
+				} else {
+					alert('删除失败，请刷新页面后重新尝试');
+				}
+			})
+		});
+
+    }
+	
+    /*function check() {
+		var content = $('.content_text_jiyu').val();
+
+		if (content.length > 200) {
+			$.NotifyBox.NotifyPromptOneC("提示","内容过多", "确定",function () {
+
+			});
+		}
+		return false;
+	}*/
+    
+</script>
+
+<script>
+	//点击添加
+	$('.wishBtnAdd').click(function(){
+		if($('.wishAdd').css('display') == 'none') {
+			$('.wishAdd').slideDown()
+		}
+	})
+	//点击关闭
+	$('.wishClose').click(function(){
+		$('.wishAdd').slideUp()
+	})
+</script>
+

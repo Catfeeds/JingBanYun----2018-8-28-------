@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>问题详情</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/appCommon.css?v=2">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/redNotify.css?v=3">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/directTrainDetails.css?v=8">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+		<script src="https://lkme.cc/js/linkedme.min.js" ></script>
+
+		<style>
+			.columnInfoBox .columnAvater {
+				background: url({$oss_path}public/web_img/App/DirectTrain/wentixiangqingxiangkuang@2x.png) no-repeat center;
+				background-size: 100% 100%;
+			}
+
+			.replyBtn {
+				background: url({$oss_path}public/web_img/App/DirectTrain/bianzhehuifu@2x.png) no-repeat 18px center;
+				background-size: auto 22px;
+				text-indent: 32px;
+			}
+
+			.replyBtn.tiwen {
+				background: url({$oss_path}public/web_img/App/DirectTrain/tiwen.png) no-repeat 18px center;
+				background-size: auto 22px;
+				text-indent: 32px;
+			}
+
+			@media  (max-width: 360px) {
+				.replyBtn {
+					background: url({$oss_path}public/web_img/App/DirectTrain/bianzhehuifu@2x.png) no-repeat 11px center;
+					background-size: auto 18px;
+					text-indent: 25px;
+				}
+
+				.replyBtn.tiwen {
+					background: url({$oss_path}public/web_img/App/DirectTrain/tiwen.png) no-repeat 18px center;
+					background-size: auto 22px;
+					text-indent: 32px;
+				}
+			}
+
+			@media  (min-width: 600px) {
+				.replyBtn {
+					background: url({$oss_path}public/web_img/App/DirectTrain/bianzhehuifu@2x.png) no-repeat 20px center;
+					background-size: auto 25px;
+					text-indent: 35px;
+				}
+
+				.replyBtn.tiwen {
+					background: url({$oss_path}public/web_img/App/DirectTrain/tiwen.png) no-repeat 18px center;
+					background-size: auto 22px;
+					text-indent: 32px;
+				}
+			}
+
+			[v-cloak] {
+				display: none !important;
+			}
+
+			#app, .loadingImg {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<img src="{$oss_path}public/web_img/App/loading_yun.gif" alt="" class="loadingImg">
+		<!-- 问题详情 -->
+		<div id="app" class="questionOutter" v-cloak>
+			<div class="columnInfoBox questionInfoBox">
+				<div class="columnAvater">
+					<img v-bind:src="oss+works.avatar" alt="" class="avaterImg" v-bind:sex="works.sex" onerror="imageError(this)">
+				</div>
+				<div class="columnInfo">
+					<div class="columnNumTime">
+						<span class="columnName">{{ works.name }}</span>
+						<span class="columnTime">
+							<img src="{$oss_path}public/web_img/App/DirectTrain/shijian@2x.png" alt="" class="iconImg">
+							{{ works.creat_time }}
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="questionBox">
+				<div class="questionTitle">
+					<img src="{$oss_path}public/web_img/App/DirectTrain/wen@2x.png" alt="" class="wenImg">
+					{{ works.special_column_question_title }}
+				</div>
+				<div class="questionMain">
+					<div class="questionTop">
+						<img v-if='works.course_id == 1' src="{$oss_path}public/web_img/App/DirectTrain/yuwen@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 2' src="{$oss_path}public/web_img/App/DirectTrain/shuxue@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 3' src="{$oss_path}public/web_img/App/DirectTrain/yingyu@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 4' src="{$oss_path}public/web_img/App/DirectTrain/wuli@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 5' src="{$oss_path}public/web_img/App/DirectTrain/huaxue@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 6' src="{$oss_path}public/web_img/App/DirectTrain/si@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 7' src="{$oss_path}public/web_img/App/DirectTrain/lishi@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 8' src="{$oss_path}public/web_img/App/DirectTrain/dili@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 9' src="{$oss_path}public/web_img/App/DirectTrain/shengwu@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 11' src="{$oss_path}public/web_img/App/DirectTrain/meishu@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 12' src="{$oss_path}public/web_img/App/DirectTrain/tiyu@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 17' src="{$oss_path}public/web_img/App/DirectTrain/laoji@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 31' src="{$oss_path}public/web_img/App/DirectTrain/kexue@2x.png" alt="" class="courseImg">
+						<img v-if='works.course_id == 37' src="{$oss_path}public/web_img/App/DirectTrain/yinyue@2x.png" alt="" class="courseImg">
+						{{ works.grade }} {{ works.fascicule_id }}
+					</div>
+					<div class="questionContent" v-html="works.special_column_question_reply_description" onclick="return false">
+
+					</div>
+					<div class="questionLabel">
+						<span class="quesLabel" v-for="(tagslist, index) in works.tags">{{ tagslist.tags_name }}</span>
+					</div>
+				</div>
+				<div class="replyBtnBox" v-if='works.isEditor == true'>
+					<div class="replyBtn" v-on:click="reply" :pid="0" :ppid="works.id" special_column_editor_quizzer_id="" type="3" :question_reply_concat_id="works.id" :quizzer_replier_concat_id="works.special_column_editor_quizzer_id" :name="works.name">
+						回复
+					</div>
+				</div>
+			</div>
+			
+			<div class="replyOutterOutter" v-for="(questionlist, index) in questionData">
+				<!-- 编者一级回复 -->
+				<div class="replyOutter">
+					<div class="editorReply">
+						<img src="{$oss_path}public/web_img/App/DirectTrain/bianzhehuifu@2x.png" alt="" class="replyImg">
+						编者回复
+					</div>
+					<div class="columnInfoBox">
+						<div class="columnAvater">
+							<img v-bind:src="oss+questionlist.avatar" alt="" class="avaterImg" v-bind:sex="questionlist.sex" onerror="imageError(this)">
+						</div>
+						<div class="columnInfo">
+							<div class="columnName">
+								<span class="name">{{ questionlist.name }}</span>
+								<span class="positon" v-if='questionlist.phase_of_studying_id == 1'>小学{{ questionlist.course_name }}编者</span>
+								<span class="positon" v-if='questionlist.phase_of_studying_id == 2'>初中{{ questionlist.course_name }}编者</span>
+								<span class="positon" v-if='questionlist.phase_of_studying_id == 3'>高中{{ questionlist.course_name }}编者</span>
+							</div>
+							<div class="columnTime">
+								<img src="{$oss_path}public/web_img/App/DirectTrain/shijian@2x.png" alt="" class="iconImg">
+								{{ questionlist.putaway_status_time }}
+							</div>
+						</div>
+						<div class="replyMain" v-if='questionlist.delete_status != 2 && questionlist.putaway_status == 1'>
+							{{ questionlist.special_column_question_reply_description }}
+						</div>
+						<div class="replyMain replyMainDel" v-else>
+							该内容已被删除
+						</div>
+					</div>
+					<div class="replyBtnBox" v-if='works.isEditor != true && questionlist.delete_status !=2'>
+						<div class="replyBtn tiwen" v-on:click="reply" :pid="questionlist.id" :ppid="works.id" special_column_editor_quizzer_id="" type="2" :question_reply_concat_id="questionlist.id" :quizzer_replier_concat_id="questionlist.special_column_editor_quizzer_id" :name="questionlist.name">
+							提问
+						</div>
+					</div>
+				</div>
+
+				<!-- 问者二级提问 -->
+
+				<div v-for="(replylist, ind) in questionlist._child">
+					<div class="replyOutter askOutter" v-if='replylist.type == 2'>
+						<img src="{$oss_path}public/web_img/App/DirectTrain/wen@2x.png" alt="" class="wenImg">
+						<div class="columnInfoBox">
+							<div class="columnAvater">
+								<img v-bind:src="oss+replylist.avatar" alt="" class="avaterImg" v-bind:sex="replylist.sex" onerror="imageError(this)">
+							</div>
+							<div class="columnInfo">
+								<div class="columnName">
+									<span class="name">{{ replylist.name }} 回复 {{ replylist.originatorname }}：</span>
+								</div>
+								<div class="columnTime">
+									<img src="{$oss_path}public/web_img/App/DirectTrain/shijian@2x.png" alt="" class="iconImg">
+									{{ replylist.putaway_status_time }}
+								</div>
+							</div>
+							<div class="replyMain" v-if='replylist.delete_status != 2 && replylist.putaway_status == 1'>
+								{{ replylist.special_column_question_reply_description }}
+							</div>
+							<div class="replyMain replyMainDel" v-else>
+								该内容已被删除
+							</div>
+						</div>
+
+						<div class="replyBtnBox" v-if='works.isEditor == true && replylist.delete_status !=2'>
+							<div class="replyBtn" v-on:click="reply" :pid="replylist.pid" :ppid="replylist.ppid" special_column_editor_quizzer_id="" type="3" :question_reply_concat_id="replylist.id" :quizzer_replier_concat_id="replylist.special_column_editor_quizzer_id" :name="replylist.name">
+								回复
+							</div>
+						</div>
+					</div>
+
+					<!-- 编者二级回复 -->
+					<div class="replyOutter replyOutterSmall" v-else>
+						<div class="editorReply">
+							<img src="{$oss_path}public/web_img/App/DirectTrain/bianzhehuifu@2x.png" alt="" class="replyImg">
+							编者回复
+						</div>
+						<div class="columnInfoBox">
+							<div class="columnAvater">
+								<img v-bind:src="oss+replylist.avatar" alt="" class="avaterImg" v-bind:sex="replylist.sex" onerror="imageError(this)">
+							</div>
+							<div class="columnInfo">
+								<div class="columnName">
+									<span class="name">{{ replylist.name }}</span>
+									<span class="positon" v-if='questionlist.phase_of_studying_id == 1'>小学{{ questionlist.course_name }}编者</span>
+									<span class="positon" v-if='questionlist.phase_of_studying_id == 2'>初中{{ questionlist.course_name }}编者</span>
+									<span class="positon" v-if='questionlist.phase_of_studying_id == 3'>高中{{ questionlist.course_name }}编者</span>
+								</div>
+								<div class="columnName">
+									<span class="name">回复 {{ replylist.originatorname }}：</span>
+								</div>
+								<div class="columnTime">
+									<img src="{$oss_path}public/web_img/App/DirectTrain/shijian@2x.png" alt="" class="iconImg">
+									{{ replylist.putaway_status_time }}
+								</div>
+							</div>
+							<div class="replyMain" v-if='replylist.delete_status != 2 && replylist.putaway_status == 1'>
+								{{ replylist.special_column_question_reply_description }}
+							</div>
+							<div class="replyMain replyMainDel" v-else>
+								该内容已被删除
+							</div>
+						</div>
+
+						<div class="replyBtnBox" v-if='works.isEditor != true && replylist.delete_status !=2'>
+							<div class="replyBtn tiwen" v-on:click="reply" :pid="replylist.id" :ppid="replylist.ppid" special_column_editor_quizzer_id="" type="2" :question_reply_concat_id="replylist.id" :quizzer_replier_concat_id="replylist.special_column_editor_quizzer_id" :name="replylist.name">
+								提问
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="columnRecommand">
+				<div class="recoTitle">相关推荐</div>
+				<div class="recoBox" v-for="(recolist, index) in recommendData">
+					<a :href="'/ApiInterface/Version1_3/DirectCar/questionDetailsView?id='+recolist.id">
+						<div class="columnTitle">
+							<img v-if='recolist.course_id == 1' src="{$oss_path}public/web_img/App/DirectTrain/yuwen@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 2' src="{$oss_path}public/web_img/App/DirectTrain/shuxue@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 3' src="{$oss_path}public/web_img/App/DirectTrain/yingyu@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 4' src="{$oss_path}public/web_img/App/DirectTrain/wuli@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 5' src="{$oss_path}public/web_img/App/DirectTrain/huaxue@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 6' src="{$oss_path}public/web_img/App/DirectTrain/si@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 7' src="{$oss_path}public/web_img/App/DirectTrain/lishi@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 8' src="{$oss_path}public/web_img/App/DirectTrain/dili@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 9' src="{$oss_path}public/web_img/App/DirectTrain/shengwu@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 11' src="{$oss_path}public/web_img/App/DirectTrain/meishu@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 12' src="{$oss_path}public/web_img/App/DirectTrain/tiyu@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 17' src="{$oss_path}public/web_img/App/DirectTrain/laoji@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 31' src="{$oss_path}public/web_img/App/DirectTrain/kexue@2x.png" alt="" class="courseImg">
+							<img v-if='recolist.course_id == 37' src="{$oss_path}public/web_img/App/DirectTrain/yinyue@2x.png" alt="" class="courseImg">
+							{{ recolist.special_column_question_title }}
+						</div>
+						<div class="recoInfo">
+							<span class="infoSpan">{{ recolist.grade }} {{ recolist.fascicule_id }}</span>
+							<span class="infoSpan right">提问者：{{ recolist.name }}</span>
+						</div>
+						<div class="recoInfo text-center">
+							<span class="columnNum">
+								<img src="{$oss_path}public/web_img/App/DirectTrain/liulan@2x.png" alt="" class="iconImg">
+								{{ recolist.special_column_question_visit_count }}
+							</span>
+							<span class="columnReply">
+								<img src="{$oss_path}public/web_img/App/DirectTrain/huifu@2x.png" alt="" class="iconImg">
+								{{ recolist.discussion_count }}
+							</span>
+							<span class="columnTime">
+								<img src="{$oss_path}public/web_img/App/DirectTrain/shijian@2x.png" alt="" class="iconImg">
+								{{ recolist.creat_time }}
+							</span>
+						</div>
+					</a>
+				</div>
+
+			</div>
+
+			<div class="lucencyBack"></div>
+			<div class="publishOutter">
+				<textarea name="" id="" cols="" rows="" class="publishText" placeholder="回复：" onpropertychange="this.style.height=this.scrollHeight + 'px'" oninput="this.style.height=this.scrollHeight + 'px';if($.trim(this.value)==''){$('.publishBtn').removeClass('active')} else{$('.publishBtn').addClass('active')}"></textarea>
+				<div class="publishBtn" v-on:click="replySubmit">发表</div>
+			</div>
+
+			
+
+			<?php if($is_share == 1) : ?>
+			<div class="shareMask"></div>
+			<div class="shareBox" id="enteredjby">
+				<a href="javascript:" class="openadd linkedme">打开京版云</a>
+				<input type="hidden" value="{$urldata}" class="url">
+			</div>
+
+			<div class="fullscr notifyBox">
+				<div class="adminNotifyBox" style="display: block;">
+					<div class="adminNotifyTitle">提示</div>
+					<div class="adminNotifyContent">
+						<div class="adminNotifyMsgBox">
+							<p class="adminNotifyMsg">请进入或下载京版云APP后观看资源！</p>
+						</div>
+						<p class="adminNotifyButton">
+							<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2 notifyBtn">取消</a>
+							<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2 openadd linkedme">打开京版云</a>
+						</p>
+					</div>
+				</div>
+			</div>
+			<?php endif; ?>
+
+		</div>
+	</body>
+
+	<script type="text/javascript" src="__PUBLIC__/js/notify/notifyApp.js"></script>
+	<script>
+		var userId = "{$userId}";
+		var id = "{$id}";
+		var role = "{$role}";
+		var gradeId = "{$grade_id}";
+		var courseId = "{$course_id}";
+		var fasciculeId = "{$fascicule_id}";
+		var questionReplyConcatId;
+		var i = 100;
+		var oss = "{$oss_path}";
+		var shareName, shareContent;
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId: userId,
+				id: id,
+				role: role,
+				oss: oss,
+				url: '/index.php/ApiInterface/Version1_3/DirectCar/questionDetails',
+				works: '',
+
+				gradeId: gradeId,
+				courseId: courseId,
+				fasciculeId: fasciculeId,
+				flag: 1,
+				recommendUrl: '/index.php/ApiInterface/Version1_3/DirectCar/getRelevantRecommend?type=2',
+				recommendData: '',
+
+				questionUrl: '/index.php/ApiInterface/Version1_3/DirectCar/getChildReply',
+				questionData: '',
+
+				replyUrl: '/index.php/ApiInterface/Version1_3/DirectCar/replyProblem',
+				pid: '',
+				ppid: '',
+				special_column_editor_quizzer_id: '',
+				type: '',
+				question_reply_concat_id: '',
+				quizzer_replier_concat_id: '',
+				special_column_question_reply_description: '',
+				text: '',
+				name: '',
+
+				errorImg: ''
+			},
+			created: function () { //应用初始化完毕加载
+				this.getQuestionDetails();
+				this.getRecommand();
+				this.getReply();
+			},
+			methods: {
+				// 问题详情
+				getQuestionDetails: function(){ 
+					this.$http.post(this.url, {
+						userId: this.userId,
+						id: this.id,
+						role: this.role
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.works = response.data.data;
+	    					shareName = this.works.special_column_question_title;
+	    					shareContent = this.works.special_column_question_reply_description;
+	    					i++;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+
+				// 相关推荐
+				getRecommand: function(){ 
+					this.$http.post(this.recommendUrl, {
+						grade_id: this.gradeId,
+						course_id: this.courseId,
+						fascicule_id: this.fasciculeId,
+						flag: this.flag,
+						id:id,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.recommendData = response.data.data;
+	    					i++;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+
+				// 问题回复
+				getReply: function(){ 
+					this.$http.post(this.questionUrl, {
+						question_id: this.id
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.questionData = response.data.data;
+							i++;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+
+				// 发表回复/提问
+				reply: function(event){
+					this.pid = $(event.target).attr('pid');
+					this.ppid = $(event.target).attr('ppid');
+					this.special_column_editor_quizzer_id = this.userId;
+					this.type = $(event.target).attr('type');
+					this.question_reply_concat_id = $(event.target).attr('question_reply_concat_id');
+					this.quizzer_replier_concat_id = $(event.target).attr('quizzer_replier_concat_id');
+					this.name = $(event.target).attr('name');
+					this.text = $.trim($(event.target).text());
+					// console.log(this.pid+'\\'+this.ppid+'\\'+this.special_column_editor_quizzer_id+'\\'+this.type+'\\'+this.question_reply_concat_id+'\\'+this.quizzer_replier_concat_id+'\\'+this.special_column_question_reply_description)
+
+					scrollToEnd();
+					$('.publishText').attr('placeholder', this.text+this.name+':');
+
+					
+					
+
+					//判断是否点击的之前的回复按钮
+					if(questionReplyConcatId == undefined || questionReplyConcatId != this.question_reply_concat_id) {
+						$('.publishText').val("");  
+					}
+					questionReplyConcatId = this.question_reply_concat_id;
+				},
+
+				// 提交回复/提问
+				replySubmit: function(){
+					this.special_column_question_reply_description = $.trim($('.publishText').val());
+					if(this.special_column_question_reply_description == '') {
+						$.NotifyBox.NotifyPromptOneC('提示', '请输入回复内容', '好的', function(){
+							$('.publishText').focus();
+						});
+						return false
+					}
+
+					console.log(this.pid+'\\'+this.ppid+'\\'+this.special_column_editor_quizzer_id+'\\'+this.type+'\\'+this.question_reply_concat_id+'\\'+this.quizzer_replier_concat_id+'\\'+this.special_column_question_reply_description);
+
+					this.$http.post(this.replyUrl, {
+						pid: this.pid,
+						ppid: this.ppid,
+						special_column_editor_quizzer_id: this.special_column_editor_quizzer_id,
+						type: this.type,
+						question_reply_concat_id: this.question_reply_concat_id,
+						quizzer_replier_concat_id: this.quizzer_replier_concat_id,
+						special_column_question_reply_description: this.special_column_question_reply_description
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							$.NotifyBox.NotifyPromptOneC('提示', '发布成功，请等待审核', '确定', function(){
+								history.go();
+							});
+	                    }else {
+	                        $.NotifyBox.NotifyPromptOne('提示', response.data.msg, '好的');
+	                    }
+
+					}, function (response) {
+						console.log('错误2')
+					})
+				}
+			}
+		})
+	</script>
+
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<script src="__PUBLIC__/js/share.js?v=20170712"></script>
+	<script>
+		var appId = '{$signPackage.appId}';
+		var timestamp = '{$signPackage.timestamp}';
+		var nonceStr = '{$signPackage.nonceStr}';
+		var signature = '{$signPackage.signature}';
+		var title = "{$resourceDetails[0]['resource_name']}";
+		var content = " <?php echo mb_substr(str_replace(array("\r\n", "\r", "\n"),'',strip_tags($resourceDetails[0]['description'])),0,40); ?>";
+		var linkimgUrl = 'http://{$WEB_URL}/Public/img/sharelogo.png';
+
+		var res_id = "{$resourceDetails[0]['id']}";
+		var type = 1;
+		var is_share = "{$is_share}";
+		var url = window.location.href+"&is_share=1";
+		share_weixin(appId, timestamp, nonceStr, signature, title, content, linkimgUrl, res_id, type, url);
+	</script>
+	<script>
+		<?php if ($is_share == 1) :?>
+		var url = $('.url').val();
+		linkedme.init("fd65bd508366dff5336015e5db872def", {type: "live"}, null);
+		var data = {};
+		data.type = "live";  //表示现在使用线上模式,如果填写"test", 表示测试模式.【可选】
+		data.feature = "功能名称"; // 自定义深度链接功能，多个用逗号分隔，【可选】
+		data.stage = "阶段名称"; // 自定义深度链接阶段，多个用逗号分隔，【可选】
+		data.channel = "渠道名称"; // 自定义深度链接渠道，多个用逗号分隔，【可选】
+		data.tags = "标签名称"; // 自定义深度链接标签，多个用逗号分隔，【可选】
+		data.ios_custom_url = ""; // 自定义iOS平台下App的下载地址，如果是AppStore的下载地址可以不用填写，【可选】
+		data.android_custom_url = "";// 自定义安卓平台下App的下载地址，【可选】
+		// 下面是自定义深度链接参数，用户点击深度链接打开app之后，params参数将被带入app
+		// 比如详情页面的参数，可以写进去，这样唤起app后可直接跳转到详情页【可选】
+		var value1 = 1;
+		var value2 = 2;
+		data.params = '{"url":"'+url+'","key2":"'+value2+'"}'; //注意单引号和双引号的位置
+
+		linkedme.link(data, function(err, data){
+			if(err){
+				// 生成深度链接失败，返回错误对象err
+				alert('生成错误');
+			} else {
+				/*
+				 生成深度链接成功，深度链接可以通过data.url得到，
+				 将深度链接绑定到<a>标签，这样当用户点击这
+				 个深度链接，如果是在pc上，那么跳转到深度链接二维
+				 码页面，用户用手机扫描该二维码就会打开app；如果
+				 在移动端，深度链接直接会根据手机设备类型打开ios
+				 或者安卓app
+				 */
+				$('.openadd').attr('url-data',data.url);
+				//document.body.innerHTML += '<a class="linkedme" href="'+data.url+'">打开app</a>'
+			}
+		},false);
+
+		$('.shareMask').click(function(){
+			$('.notifyBox').show();
+		});
+		<?php endif; ?>
+
+		$('.notifyBtn').click(function(){
+			$('.notifyBox').hide();
+		})
+
+		$('.openadd').click(function(){
+			$(this).css('color','#fff');
+			var url = $(this).attr('url-data');
+			window.location.href = url;//跳到生成的深度链接的url
+		});
+	</script>
+	<script>
+		function rightUIV2() {
+            var returnObj = {};
+            returnObj['share'] = {
+                "content": shareContent.substring(0, 15),
+                "title": shareName,
+                "url": window.location.href+"&is_share=1"
+            };
+         	return returnObj;
+	    }
+	</script>
+
+	<script>
+		//点击其他区域输入框隐藏
+		// $('.questionOutter').click(function(){
+		// 	if($(event.target).is('.replyBtn') || $(event.target).is('.publishOutter') || $(event.target).is('.publishText') || $(event.target).is('.publishBtn')){
+
+		// 	} else {
+		// 		$('.publishOutter').hide();
+		// 		$('html, body').css({
+		// 			'height': 'auto',
+		// 			'overflow': 'auto'
+		// 		})
+		// 	}
+		// })
+		// 
+		
+		$('.lucencyBack').on('touchstart',function(){
+			$('html, body').css({
+            	'height': 'auto',
+            	'overflow': 'auto'
+            });
+			$('.lucencyBack, .publishOutter').hide();
+			$('.publishText').blur();
+			$(document).scrollTop(scrollTop); 
+		})
+
+		var scrollTop;
+
+		function scrollToEnd(){
+			if($('body').height() < $(window).height()*2) {
+				$('body').height($(window).height()*2);
+			}
+			scrollTop = $(document).scrollTop();
+            var h = $(document).height()-$(window).height();
+            $(document).scrollTop(h); 
+            $('html, body').css({
+            	'height': '100%',
+            	'overflow': 'hidden'
+            });
+            $('.lucencyBack, .publishOutter').show();
+	    	$('.publishText').focus();
+
+		}
+
+		function imageError(img) {
+			if($(img).attr('sex') == '男') {
+	        	img.src = '__PUBLIC__/img/classManage/teacher_m.png';
+			} else {
+				img.src = '__PUBLIC__/img/classManage/teacher_w.png';
+			}
+	    }
+
+	    function CheckIsAndroid() {
+			var browser = {
+					versions: function () {
+						var u = navigator.userAgent,
+							app = navigator.appVersion;
+						return { //移动终端浏览器版本信息
+							ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+							android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+							iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+							iPad: u.indexOf('iPad') > -1, //是否iPad
+						};
+					}(),
+				}
+			if (browser.versions.android)
+				return true;
+			return false;
+		}
+
+
+		function CheckIsIOS() {
+			var browser = {
+				versions: function () {
+					var u = navigator.userAgent,
+						app = navigator.appVersion;
+					return { //移动终端浏览器版本信息
+						ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+						android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+						iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+						iPad: u.indexOf('iPad') > -1, //是否iPad
+					};
+				}(),
+			}
+			if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+				return true;
+			}
+		}
+
+		$(function(){
+			if (CheckIsIOS()){
+	    		$('.loadingImg').show();
+	    	}
+		})
+
+	    function myFunction() {
+		    if(i == 103) {
+		    	clearTimeout(timer);
+		    	$('.loadingImg').hide();
+		    	$('#app').show();
+		    	$('title').text(shareName);
+
+		    	if(is_share == 1) {
+		    		var bodyHeight = $('body').height();
+			    	var maskHeight = $('body').height() - 100;
+			    	$('.shareMask').height(maskHeight);
+
+			    	var data = {
+	                    "page":"rightUI",
+	                }
+			    	if (CheckIsIOS()){
+			    		window.webkit.messageHandlers.iosModel.postMessage(data);
+			    	}
+			        if (CheckIsAndroid()){
+		            	AppFunction.rightUI()
+			    	}
+			    }
+		    }
+		}
+
+		var timer = setInterval("myFunction()",1000);
+	</script>
+</html>

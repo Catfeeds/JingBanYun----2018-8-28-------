@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<layout name="admin_layout"/>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 学校列表" class="button {:session('btntheme')}">&lt; 返回 学校列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/createSchool" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput"
+          data-show-error-hint="true">
+        <div class="example" data-text="基本信息"> 
+
+            <div class="form_section">
+                <label for="school_name">学校名称</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="school_name" id="school_name" data-validate-func="required" value="{$data.school_name}"
+                           data-validate-hint="校名不能为空">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="school_name">负责人姓名</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="obligation_person" id="obligation_person" data-validate-func="required" value="{$data.obligation_person}"
+                           data-validate-hint="负责人姓名不能为空">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="zip_code">负责人邮箱</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="email" id="email" value="{$data.obligation_email}">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="contact">负责人手机号</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="telephone" id="telephone" value="{$data.obligation_tel}">
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="contact_tel">管理员名称</label>
+                
+                <div class="input-control text full-size">
+                <select id="admin_id" name="admin_id" data-validate-func="required" data-validate-hint="管理员名称不能为空">
+                        <option value="">-请选择管理员-</option>
+                        <volist name="admin_data" id="admin_item">
+                            <option value="{$admin_item.id}" <if condition="$admin_item['id']==$data['admin_id']">selected</if>>{$admin_item.real_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button {:session('btntheme')}" onclick="return check();">保存</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+    
+    function check() {
+
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regTel.test($("#telephone").val())) {
+            $.Notify({
+                caption: '提示',
+                content: '手机号格式不正确',
+                type: 'warning'
+            });
+            return false;
+        }
+        var regEmail = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+        if (!regEmail.test($("#email").val())) {
+            $.Notify({
+                caption: '提示',
+                content: '邮箱格式不正确',
+                type: 'warning'
+            });
+            return false;
+        }
+        return true;
+    }
+</script>
+</body>
+</html>

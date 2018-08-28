@@ -1,0 +1,469 @@
+<layout name="teacher_layout_3"/>
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/rotate.css">
+<style>
+    /*---------------查看答案与解析弹出框------------------*/
+    .checkBox {
+        width: 40%;
+        height: 50%;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        margin-left: -20%;
+        margin-top: -5%;
+        background: #fff;
+        border-radius: 5px;
+        display: none;   
+        
+    }
+    .checkBoxTitle {
+	    width: 100%;
+        line-height: 30px;
+        font-size: 16px;
+        background: #E9C232;
+        text-indent: 10px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        font-family: "黑体";
+    }
+    .answer{
+        padding: 0 10px;
+    }
+    .closeBtn {
+        background: #E9C232 !important;
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .order_btn {
+        display: block;
+        width: 100%;
+        height: 40%;
+        border: 0;
+        background: none;
+        outline: none;
+    }
+    
+    
+    .red_class{
+        border:1px solid red;
+    }
+    
+        #navThumImg1, #navThumImg3, #navThumImg5 {
+        -moz-transform:rotate(20deg);
+        -webkit-transform:rotate(20deg);
+        transform:rotate(20deg);
+    }
+    
+    #navThumImg2, #navThumImg4 {
+        -moz-transform:rotate(-20deg);
+        -webkit-transform:rotate(-20deg);
+        transform:rotate(-20deg);
+    }
+    
+    #navThumImg1:hover,#navThumImg3:hover,#navThumImg5:hover {
+        -moz-animation:rotate_z 0.8s infinite ease;
+        -webkit-animation:rotate_z 0.8s infinite ease;
+        animation:rotate_z 0.8s infinite ease;
+    }
+    
+    #navThumImg2:hover, #navThumImg4:hover {
+        -moz-animation:rotate_f 0.8s infinite ease;
+        -webkit-animation:rotate_f 0.8s infinite ease;
+        animation:rotate_f 0.8s infinite ease;
+    }
+    
+    @-moz-keyframes rotate_z{
+        0%{
+          -moz-transform:rotate(20deg);
+         }
+         100%{
+           -moz-transform:rotate(360deg);
+         }
+      }
+    
+      @-webkit-keyframes rotate_z{
+        0%{
+          -webkit-transform:rotate(20deg);
+         }
+         100%{
+           -webkit-transform:rotate(360deg);
+         }
+      }
+    
+      @keyframes rotate_z{
+        0%{
+          transform:rotate(20deg);
+         }
+         100%{
+           transform:rotate(360deg);
+         }
+      }
+    
+    @-moz-keyframes rotate_f{
+        0%{
+          -moz-transform:rotate(20deg);
+         }
+         100%{
+           -moz-transform:rotate(360deg);
+         }
+      }
+    
+      @-webkit-keyframes rotate_f{
+        0%{
+          -webkit-transform:rotate(20deg);
+         }
+         100%{
+           -webkit-transform:rotate(360deg);
+         }
+      }
+    
+      @keyframes rotate_f{
+        0%{
+          transform:rotate(20deg);
+         }
+         100%{
+           transform:rotate(360deg);
+         }
+      }
+    
+      
+        
+        .ascending {
+        background: url(/Public/img/home/ascending.png) no-repeat center;
+            background-size: 80%;
+            background-position: 0 8px;
+        }
+        
+        .descending {
+            background: url(/Public/img/home/descending.png) no-repeat center;
+               background-size: 80%;
+            background-position: 0 0;
+        }
+        
+        .sort_desc_red {
+            background: url(__PUBLIC__/img/home/xia.png) no-repeat center;
+            background-size: 80%;
+            background-position: 0 0;
+        }
+
+        .sort_asc_red {
+            background: url(__PUBLIC__/img/home/shang.png) no-repeat center;
+            background-size: 80%;
+            background-position: 0 8px;
+        }
+       
+</style>
+
+<div class="main_opr">
+    <a href="{:U('TeachmulHomework/mulHomework')}" title="语音作业" class="btn btn-main-opr">语音作业</a>
+    <a href="{:U('Teach/homework')}" title="习题作业"  class="btn btn-main-opr">习题作业</a>
+    <a href="{:U('Teach/exercisesLibrary')}" title="习题库" class="btn btn-main-opr">习题库</a>
+    <a href="{:U('Teach/wrongHomeworkList')}" title="错题集"  class="btn btn-main-opr btn-main-opr-active" >错题集</a>
+</div>
+
+<?php
+//echo $_SERVER['HTTP_REFERER'];
+ if($_SERVER['HTTP_REFERER'] != '')
+  echo '<div style="margin-bottom: 12px;"><a href="javascript:window.history.go(-1);" title="返回" class="btn btnReturn3">返回</a></div>';
+?>
+
+<!--div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1);" title="返回" class="btn btnReturn3">返回</a>
+</div-->
+<form action="{:U('Teach/wrongHomework?id=')}{$id}" method="post">
+    <div class="row">
+        <div class="col-md-3">
+            <label>作业名称：</label>
+            <input type="text" name="homework_name" id="homework_name" placeholder="作业名称" class="form-control" value="{$homework_name}"><!--题目序号{$number}-->
+        </div>
+        
+        <if condition="$use_tag==1"> 
+            <div class="col-md-3">
+                <label>班级错误率：</label>
+                <select id="errorRate" name="errorRate" class="form-control">
+                    <option value="0">请选择</option>
+                    <option value="10" <if condition="$default_sort==10">selected</if> >90%~100%</option>
+                    <option value="9" <if condition="$default_sort==9">selected</if> >80%~90%</option>
+                    <option value="8" <if condition="$default_sort==8">selected</if> >70%~80%</option>
+                    <option value="7" <if condition="$default_sort==7">selected</if> >60%~70%</option>
+                    <option value="6" <if condition="$default_sort==6">selected</if> >50%~60%</option>
+                    <option value="5" <if condition="$default_sort==5">selected</if> >40%~50%</option>
+                    <option value="4" <if condition="$default_sort==4">selected</if> >30%~40%</option>
+                    <option value="3" <if condition="$default_sort==3">selected</if> >20%~30%</option>
+                    <option value="2" <if condition="$default_sort==2">selected</if> >10%~20%</option>
+                    <option value="1" <if condition="$default_sort==1">selected</if> >0~10%</option>
+                </select>
+            </div>
+        </if>
+        <div class="col-md-3">
+            <label>学生姓名：</label>
+            <select id="sutdent_id" name="sutdent_id" class="form-control">
+                
+                <option value="0">请选择{$class_student_item.student_id}</option> 
+                <volist name="class_student" id="class_student_item" empty="" key="i">
+                    <option value="{$class_student_item.student_id}" <if condition="$class_student_item['student_id']==$student_id">selected</if> >{$class_student_item.student_name}</option> 
+                </volist>
+            </select>
+        </div>
+        <!---->
+        <if condition="$use_tag==2"> 
+            <div class="col-md-3">
+                <label>作业时间:</label>
+                <input type="text" name="datepicker" id="datepicker" placeholder="作业时间" class="form-control" autocomplete="off" value="{$default_date}">
+            </div>
+        </if>
+        
+        <div class="col-md-3">
+            <label>&nbsp;</label>
+            <button type="button" class="btn btn-primary" style="display: block;">搜索</button>
+        </div>
+    </div>
+
+
+</form>
+<empty name="list">
+    <div class="emptyResult">暂时没有错题</div>
+</empty>
+<notempty name="list">
+    <table class="table striped hovered border" style="margin-top: 20px;">
+        <thead>
+        <tr>
+            <th class="text-center">题目序号</th>
+            <th class="text-center">作业名称</th>
+            
+            <th class="text-center" style="width:50%;">错误题目</th>
+            <if condition="$use_tag==1"> 
+                <th class="text-center" style="padding:0;width:110px;">
+                    <div style="float:left;width:80%;padding:8px;">
+                       班级错误率
+                    </div>
+                    <div  style="float:right;width:15%;font-size:13px;">
+                        <button {$sort_order=='0' ? 'class="order_btn ascending sort_asc_red"': 'class="order_btn ascending"'} id="ascending" title="升序" style="height:20px">&nbsp;</button>
+                        <button {$sort_order=='1' ? 'class="order_btn descending sort_desc_red"': 'class="order_btn descending"'} id="descending" title="降序">&nbsp;</button>
+                    </div>
+                </th> 
+            </if>
+            <th class="text-center">作业时间</th>
+            <th class="text-center" style="width:15%;">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="" key="i">
+            <tr id="l_{$data.id}">
+<!--
+                <td title="{$data.homework}">
+                    <a href="{:U('Student/homeworkCompleteDetails?gotoback=false&homeworkId=')}{$data.homework_id}&studentId={$data.student_id}"
+                       target="_blank">{$data.homework}</a>
+                </td>
+-->
+                <!------------题目序号------------>
+                <input class="unique" type="hidden"  value="{$data.question_org_id}"/>
+                <td class="text-center" id="xun_{$i}" >
+                    {$i}
+                </td>
+                <!------------作业名称------------>
+                <td class="text-center">
+                    <a href="{:U('Teach/homeworkExercises?id=')}{$data.homework_id}">{$data.homework}</a>
+                </td>
+                <!------------错误题目------------>
+                <td class="text-center">
+                    {$data.questions}
+                </td>
+                <!------------错误率------------>
+                <if condition="$use_tag==1"> 
+                    <td class="text-center">
+                        <if condition="$data.percent eq null">
+                            0%
+                        <else />
+                            {$data.percent}%
+                        </if>
+                    </td>
+                </if>
+                <!------------作业时间------------>
+                <td class="text-center">
+                    {$data.create_at|date="Y-m-d H:i",###}
+                </td>
+                <!------------操作------------>
+                <td class="text-center">
+<!--
+                    <a href="####" title="查看答案与解析" class="button checkAnswer">查看答案与解析</a>
+                    ------查看答案与解析弹出框----------
+                    <div class="checkBox">
+                        <p class="checkBoxTitle">
+                            查看答案与解析
+                        </p>
+                        <div class="answer">
+                            {$data.answer}
+                        </div>
+                        <input type="button" value="确定" class="btn  closeBtn">
+                    </div>
+-->
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</notempty>
+
+
+
+<script src="__PUBLIC__/js/external/jquery-1.10.2.min.js"></script>
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<!--------------日历----------------->
+<script>
+    var sort="{$sort}";
+    var homework_id="{$homework_id}"?"{$homework_id}":0;        
+    var student_id="{$student_id}"?"{$student_id}":0; 
+    
+    
+    Date.prototype.Format = function (fmt) { //author: meizz 
+        var o = {
+            "M+": this.getMonth() + 1, //月份 
+            "d+": this.getDate(), //日 
+            "h+": this.getHours(), //小时 
+            "m+": this.getMinutes(), //分 
+            "s+": this.getSeconds(), //秒 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+            "S": this.getMilliseconds() //毫秒 
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    
+    $("#datepicker").change(function(){ 
+        var time1 = new Date().Format("yyyy-MM-dd");
+        var time2=$("#datepicker").val();
+        if(time2>time1){
+            $("#datepicker").val('');
+            return false;
+        }
+    });
+    
+    $(function() {
+        $( "#datepicker" ).datepicker({
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+			maxDate: '0',
+			yearRange: "1950:2050"
+        });
+    });
+    
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+    
+    //拼接字符串方法
+    function joinString(){
+        var homework_name=$("#homework_name").val();
+        var errorRate=$("#errorRate").val(); 
+        
+        var student_id=$("#sutdent_id").val();
+        var date=$("#datepicker").val();
+        
+        var string='';
+        
+        if(homework_name!=''){
+            string='&keyword='+homework_name;
+        }
+        
+        if((/(^[1-9]\d*$)/.test(student_id))==true){
+            string+='&student_id='+student_id;
+        }
+        
+        if(homework_id==0){
+            if(string==''){
+                alert('请选择作业名或学生名');
+                return false;
+            }
+        }else{
+            string+="&id="+homework_id;
+        }
+        
+        if(date!='' && typeof(date)!='undefined'){
+            string+="&date="+date;
+        }
+       
+        if(errorRate!=0 && typeof(errorRate)!='undefined'){
+            string+="&rate="+errorRate;
+        }
+         
+        
+        return string;
+    }
+    
+    
+    //点击搜索
+    $(".btn-primary").click(function(){
+        var string=joinString();   
+        if(string==false || string==''){
+            return false;
+        }
+        if($('.sort_asc_red').length>0){
+            sort=0;
+        }else{
+            sort=1;
+        }
+        var url="index.php?m=Home&c=Teach&a=wrongHomeworkDetail"+string+'&sort='+sort; 
+        location.href=url; 
+    });
+    
+    //点击那个上下的排序
+    $(".order_btn").click(function(){ 
+        if($(this).hasClass('ascending')){
+            sort=0;
+        }else{
+            sort=1;
+        }
+        var string=joinString(); 
+        string="index.php?m=Home&c=Teach&a=wrongHomeworkDetail"+string+'&sort='+sort; 
+        location.href=string; 
+    });
+     
+</script>
+<script>
+    $('.checkAnswer').on('click',function(){
+        $(this).siblings('.checkBox').css('display','block');
+    })
+    $('.closeBtn').on('click',function(){
+        $('.checkBox').css('display','none'); 
+    })
+</script>

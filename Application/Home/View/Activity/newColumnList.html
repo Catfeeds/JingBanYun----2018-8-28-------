@@ -1,0 +1,97 @@
+
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=3.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/newActivity.css" type="text/css" rel="stylesheet">
+
+<style>
+	#contentWrapper {
+		padding-top: 0;
+	}
+</style>
+
+<div class="">
+	<a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn2">返回</a>
+</div>
+<div class="newColumnList">
+	<div class="newColumnLeft">
+		<?php foreach($list as $val){
+		if($val['img']){?>
+		<div class="columnImg" style="background:url(Resources/socialactivity/<?php echo $val['img']?>) no-repeat center; background-size: 100%"></div>
+		<?php }}?>
+		<div class="columnTitle"><?php echo $list['0']['name']?></div>
+		<!--分享-->
+	</div>
+	<div class="newColumnRight">
+		<ul class="columnUl">
+			<?php foreach($list as $value){
+				if($value['content_type'] == 1){ ?>
+			<li class="columnLi">
+				<div class="colLiTitle">
+					<div class="title"><?php echo $value['title']?></div>
+					<p class="right"><?php echo date('Y-m-d H:m',$value['time'])?></p>
+				</div>
+				<div class="colLiMain">
+					<?php echo strip_tags ($value['content'])?>
+				</div>
+				<div class="colLiA">
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['ids']?>" class="">查看详情>></a>
+				</div>
+			</li>
+			<?php }elseif($value['content_type'] == 2){?>
+			<li class="columnLi">
+				<div class="colLiTitle">
+					<div class="title"><?php echo $value['title']?></div>
+					<p class="right"><?php echo date('Y-m-d H:m',$value['time'])?></p>
+				</div>
+				<div class="colLiMain">
+					<?php echo strip_tags($value['content'])?>
+				</div>
+				<div class="colLiA">
+					<a href="<?php echo 'index.php?m=Home&c=ExpertInformation&a=expertInformationDetails&id='.$value['ids']?>" class="">查看详情>></a>
+				</div>
+			</li>
+			<?php }elseif($value['content_type'] == 3){?>
+			<li class="columnLi">
+				<div class="colLiTitle">
+					<div class="title"><?php echo $value['title']?></div>
+					<p class="right"><?php echo date('Y-m-d H:m',$value['time'])?></p>
+				</div>
+				<div class="colLiMain">
+					<?php echo strip_tags ($value['content'])?>
+				</div>
+				<div class="colLiA">
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=vote_details&id='.$value['ids']?>" class="">查看详情>></a>
+				</div>
+			</li>
+			<?php }}?>
+		</ul>
+		<div class="Pagination">{$page}</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/share/activityShare.js"></script>
+<!--分享-->
+<script>
+	window._bd_share_config = {
+		"common": {
+			"bdSnsKey": {},
+			"bdText": "<?php echo $list['0']['name']?>",
+			"bdMini": "2",
+			"bdMiniList": false,
+			"bdPic": "",
+			"bdStyle": "0",
+			"bdSize": "32"
+		},
+		"share": {},
+		"image": {
+			"viewList": ["tsina", "weixin", "sqq", "qzone"],
+			"viewText": "分享到：",
+			"viewSize": "32"
+		}
+//		,
+//		"selectShare": {
+//			"bdContainerClass": null,
+//			"bdSelectMiniList": ["tsina", "weixin", "sqq", "qzone"]
+//		}
+	};
+	//		with(document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+</script>

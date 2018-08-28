@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>作业详情</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/appCommon.css?v=1">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/teacherHomework.css">
+		<link href="__PUBLIC__/swiper/swiper-3.4.2.min.css" type="text/css" rel="stylesheet">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="__PUBLIC__/swiper/swiper-3.4.2.jquery.min.js"></script>
+			<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+
+			#app {
+				padding-top: 45px;
+			}
+
+			#app .mainOutter {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<img src="{$oss_path}public/web_img/App/loading_yun.gif" alt="" class="loadingImg">
+
+		<div id="app" v-cloak>
+			<!-- app公共头部 -->
+			<div class="appTop">
+				<div class="returnBox" @click="returnApp"></div>
+				<div class="appTopTitle">
+					<p class="title">作业详情</p>
+				</div>
+			</div>
+			<div class="mainOutter">
+				<div class="homeworkTop">
+					<div class="homeworkTitleBox">
+						<div class="title textHidden">作业名称:{{ works.name }}</div>
+						<!-- 待批改 -->
+						<div class="homeworkStatus toCorrect" v-if='status == "待批改"'>
+							<img src="__PUBLIC__/img/Apphomework/daipigai.png" alt="">
+							待批改
+						</div>
+						<!-- 未开始 -->
+						<div class="homeworkStatus notStart" v-if='status == "未开始"'>
+							<img src="__PUBLIC__/img/Apphomework/weikaishi.png" alt="">
+							待布置
+						</div>
+						<!-- 作业中 -->
+						<div class="homeworkStatus doHomework" v-if='status == "作业中"'>
+							<img src="__PUBLIC__/img/Apphomework/zuoyezhong.png" alt="">
+							作业中
+						</div>
+						<!-- 作业报告 -->
+						<div class="homeworkStatus endReport" v-if='status == "作业报告"'>
+							<img src="__PUBLIC__/img/Apphomework/zuoyebaogao.png" alt="">
+							作业报告
+						</div>
+						<a href="javascript:;" class="checkHomework" @click="godetails">查看</a>
+					</div>
+
+					<!-- 除了“未开始”的时间框 -->
+					<div class="homeworkTime" v-if='status != "未开始"'>
+						<div class="timeLeft">
+							<div class="time">布置时间：{{ works.release_time }}</div>
+							<div class="time">结束时间：{{ works.deadline }}</div>
+						</div>
+						<div class="urgeHomework" v-if='urgeStatus == true' v-on:click="urgeHomework">催作业</div>
+						<!-- 已经催过作业 -->
+						<div class="urgeHomework disabled" v-else v-on:click="urgeHomework">催作业</div>
+					</div>
+					<!-- “未开始”的时间框 -->
+					<div class="homeworkTimeNot" v-else>
+						<div class="timeBox">
+							<label for="arrangeTime">布置时间：</label>
+							<input type="text" class="timeInput inputCommon" id="arrangeTime" :value="works.release_time"  readonly="">
+						</div>
+						<div class="timeBox">
+							<label for="endTime">结束时间：</label>
+							<input type="text" class="timeInput inputCommon" id="endTime" :value="works.deadline"  readonly="">
+						</div>
+					</div>
+				</div>
+
+				<div class="homeworkToCorrect">
+					<span class="title">待批改试题：</span>
+					<div class="swiper-container">
+						<div class="slideHomework swiper-wrapper" v-if="toMarkedData.length>0">
+							<span class="slideId swiper-slide" v-for="(toMarkedlist, index) in toMarkedData" v-bind:class="{ active: toMarkedlist.isP == '2' }" @click="exerciseId(toMarkedlist.exercises_id,toMarkedlist.work_id,index,toMarkedlist.isP)" :id="toMarkedlist.exercises_id">第{{ index+1 }}题</span>
+						</div>
+						<!-- <div class="swiper-button-prev"></div> -->
+    					<div class="swiper-button-next"></div>
+					</div>
+				</div>
+
+				<div class="studentListOutter">
+					<div class="tabBtnBox" v-if='status != "作业报告"'>
+						<div class="tabBtn active" v-on:click="getStudentList(1)">已提交</div>
+						<div class="tabBtn" v-on:click="getStudentList(2)">未提交</div>
+					</div>
+					<div class="tabBtnBox" v-if='status == "作业报告"'>
+						<div class="tabBtn active" v-on:click="getStudentList('')">提交情况</div>
+						<div class="tabBtn" v-on:click="getStatistics(this)">作业统计</div>
+					</div>
+
+					<div class="tabMain" v-if='status != "作业报告"'>
+						<div class="tabBox active">
+							<!-- 如果没有信息 -->
+							<img src="__PUBLIC__/img/Apphomework/noStudent.png" alt="" class="emptyImg" v-if='studentData == ""'>
+							<a href="javascript:;" class="studentList" v-for="(studentlist, index) in studentData"  :id="studentlist.id">
+								<div class="" @click="studentDetails">
+									<img v-bind:src="studentlist.avatar" class="avatarImg">
+									<div class="studentInfo">
+										<div class="textHidden">{{ studentlist.student_name }}</div>
+										<div class="textHidden">
+											得分：
+											<span class="redNum" v-if='studentlist.total_score > 0'>{{ studentlist.total_score }}</span>
+											<span v-if='studentlist.total_score == 0'>0</span>
+											分
+										</div>
+										<div class="textHidden">{{ studentlist.submit_at }}提交</div>
+									</div>
+									<div class="studentMark">
+										<img src="__PUBLIC__/img/Apphomework/gengduo.png" alt="">
+									</div>
+								</div>
+							</a>
+						</div>
+						<div class="tabBox notSubmit">
+							<!-- 如果没有信息 -->
+							<img src="__PUBLIC__/img/Apphomework/allStudent.png" alt="" class="emptyImg" v-if='studentData == ""'>
+							<a href="javascript:;" class="studentList" v-for="(studentlist, index) in studentData">
+								<img v-bind:src="studentlist.avatar" class="avatarImg">
+								<div class="studentInfo">
+									<div class="textHidden">{{ studentlist.student_name }}</div>
+									<div class="textHidden">得分：0分</div>
+								</div>
+								<div class="studentMark">未提交</div>
+							</a>
+						</div>
+					</div>
+
+					<div class="tabMain" v-if='status == "作业报告"'>
+						<div class="tabBox active">
+							<!-- 如果没有信息 -->
+							<img src="__PUBLIC__/img/Apphomework/noStudent.png" alt="" class="emptyImg" v-if='studentData == ""'>
+							<a href="javascript:;" class="studentList" v-for="(studentlist, index) in studentData"  :id="studentlist.id">
+								<div class="" @click="studentDetails" v-if='studentlist.hid !=null'>
+									<img v-bind:src="studentlist.avatar" class="avatarImg">
+									<div class="studentInfo">
+										<div class="textHidden">{{ studentlist.student_name }}</div>
+										<div class="textHidden">
+											得分：
+											<span class="redNum" v-if='studentlist.total_score > 0'>{{ studentlist.total_score }}</span>
+											<span v-else>0</span>
+											分
+										</div>
+										<div class="textHidden" >{{ studentlist.submit_at }}提交</div>
+									</div>
+									<div class="studentMark">
+										<img src="__PUBLIC__/img/Apphomework/gengduo.png" alt="">
+									</div>
+								</div>
+								<div class="" v-else>
+									<img v-bind:src="studentlist.avatar" class="avatarImg">
+									<div class="studentInfo">
+										<div class="textHidden">{{ studentlist.student_name }}</div>
+										<div class="textHidden">
+											得分：
+											<span class="redNum" v-if='studentlist.total_score > 0'>{{ studentlist.total_score }}</span>
+											<span v-else>0</span>
+											分
+										</div>
+										<div class="textHidden">未提交</div>
+									</div>
+									<div class="studentMark">
+										<img src="__PUBLIC__/img/Apphomework/gengduo.png" alt="">
+									</div>
+								</div>
+							</a>
+						</div>
+
+						<!-- “作业报告”的学生列表 -->
+						<div class="tabBox statistics">
+							<div class="questionNum">题目数量：共{$exercises_id_count}道</div>
+							<div class="statisticsBox">
+								<a href="javascript:;" class="statisticsA" @click="goApp(0)">
+									<img src="__PUBLIC__/img/Apphomework/zhengquelvtongji.png" alt="">
+								</a>
+								<a href="javascript:;" class="statisticsA" @click="goApp(1)">
+									<img src="__PUBLIC__/img/Apphomework/wanchenglvtongji.png" alt="">
+								</a>
+								<br>
+								<a href="javascript:;" class="statisticsA" @click="goApp(2)">
+									<img src="__PUBLIC__/img/Apphomework/tijiaosudutongji.png" alt="">
+								</a>
+								<a href="javascript:;" class="statisticsA" @click="goApp(3)">
+									<img src="__PUBLIC__/img/Apphomework/zongdefentongji.png" alt="">
+								</a>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<!--提示-->
+			<div class="blackNotify">
+				<span class="bNotify"></span>
+			</div>
+		</div>
+	</body>
+
+	<script type="text/javascript" src="__PUBLIC__/js/notify/notifyApp.js"></script>
+		<!-- swiper -->
+	<script>
+		var i = 100;
+		function swiper() {
+			var swiper = new Swiper('.swiper-container', {
+		        pagination: '.swiper-pagination',
+		        slidesPerView: 'auto',
+		        paginationClickable: true,
+		        freeMode: true,
+		        cancelable: false,
+		        // loop: true,
+		        clickable: true,
+		        // prevButton:'.swiper-button-prev',
+				nextButton:'.swiper-button-next'
+		    });
+		}
+
+		// swiper()
+	</script>
+
+	<script>
+		function blackNotify(notify) {
+		    $('.blackNotify').show().children('.bNotify').html(notify);
+			$('.blackNotify').stop(true).animate({top:'10%'},300);
+			setTimeout(function(){
+				$('.blackNotify').fadeOut().animate({top:'-30px'},1);
+			},3000);
+		}
+
+	  	function myFunction() {
+		    if(i >= 104) {
+		    	clearTimeout(timer);
+		    	$('.loadingImg').hide();
+		    	$('#app .mainOutter').show();
+		    	swiper()
+		    }
+		}
+
+		var timer = setInterval("myFunction()",1000);
+	</script>
+
+	<script>
+		var userId = "{$userId}";
+		var id = "{$id}";
+		var role = "{$role}";
+		var homeworkId = "{$homeworkId}";
+		var status = "{$status}";
+		var classId = "{$classId}";
+
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId: userId,
+				id: id,
+				role: role,
+				homeworkId: homeworkId,
+				status: status,
+				classId: classId,
+				url: '/index.php/ApiInterface/Version1_3/TeacherHomework/getHomeworkDetail',
+				works: '',
+
+				toMarkedUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/getCorrectHomeWorkListEx',
+				toMarkedData: '',
+
+				studentUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/getStudentHomeWorkList',
+				studentData: '',
+
+				urgeStatusUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/getPushStatus',
+				urgeStatus: false,
+
+				urgeUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/push',
+			},
+			created: function () { //应用初始化完毕加载
+				// 作业详情
+				this.getQuestionDetails();
+				// 待批改试题编号
+				this.getQuestionId();
+				if(status != '作业报告') {
+					// 已提交学生和未提交学生情况
+					this.getStudentList(1);
+				} else {
+					// 作业报告
+					this.getStudentList('');
+				};
+				// 获取催作业状态
+				this.getUrgeStatus();
+			},
+			methods: {
+				// goSdetails:function($event){
+				// 	var id = $($event.target).parents('.studentList').attr('id')
+				// 	window.location.href = '/index.php/ApiInterface/Version1_3/TeacherHomework/studentHomeworkContent?&userId='+this.userId+'&role='+this.role+'&homeworkId='+this.homeworkId+'&classId='+this.classId+'&studentId='+id
+				// },
+				godetails:function($event){
+					var id = $($event.target).parents('.studentList').attr('id')
+					window.location.href = '/index.php/ApiInterface/Version1_3/TeacherHomework/homeworkContent?&userId='+this.userId+'&role='+this.role+'&homeworkId='+this.homeworkId+'&classId='+this.classId+'&studentId='+id
+				},
+				goApp:function(index){
+
+					var data8={
+						"page":"StatisticsVC",
+                   		"index":index,
+						"homeworkId":this.homeworkId,
+						"classId":this.classId
+					}
+					postApp(data8)
+
+				},
+				// 作业详情
+				getQuestionDetails: function(){
+					this.$http.post(this.url, {
+						homeworkId: this.homeworkId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.works = response.data.data;
+	    					i++;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				// 待批改试题编号
+				getQuestionId: function(){
+					this.$http.post(this.toMarkedUrl, {
+						homeworkId: this.homeworkId,
+						classId: this.classId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.toMarkedData = response.data.data;
+	    					this.$nextTick(function(){
+								// swiper()
+				            })
+				            i++;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				studentDetails:function($event){
+
+					var studentId = $($event.target).parents('.studentList').attr('id')
+					window.location.href=  '/index.php/ApiInterface/Version1_3/TeacherHomework/studentHomeworkContent?&userId='+this.userId+'&role='+this.role+'&homeworkId='+this.homeworkId+'&classId='+this.classId+'&studentId='+studentId
+				},
+				// 已提交学生和未提交学生情况
+				getStudentList: function(e){
+					$('.tabBox').css('opacity', 0.5);
+					$('.loadingImg').show()
+					this.$http.post(this.studentUrl, {
+						homeworkId: this.homeworkId,
+						classId: this.classId,
+						isSubmit: e
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(e != '') {
+							var index = e-1;
+
+						} else {
+							var index = 0;
+						}
+						$('.tabBtn').eq(index).addClass('active').siblings('.tabBtn').removeClass('active');
+						$('.tabMain').children('.tabBox').eq(index).addClass('active').siblings('.tabBox').removeClass('active');
+
+						if(response.status == '200'){
+							this.studentData = response.data.data;
+							$('.tabBox').css('opacity', 1);
+							$('.loadingImg').hide()
+							i++;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				// 获取作业统计
+				getStatistics: function(obj){
+					var index = $(obj).index();
+					$('.tabBtn').eq(index).addClass('active').siblings('.tabBtn').removeClass('active');
+					$('.tabMain').children('.tabBox').eq(index).addClass('active').siblings('.tabBox').removeClass('active');
+				},
+				// 获取催作业的状态
+				getUrgeStatus: function(obj){
+					this.$http.post(this.urgeStatusUrl, {
+						homeworkId: this.homeworkId,
+						classId: this.classId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							i++;
+							if(response.data.status == 200) {
+								this.urgeStatus = true;
+							} else {
+								this.urgeStatus = false;
+							}
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				// 催作业
+				urgeHomework: function(obj){
+					this.getStudentList(2)
+					var that = this;
+					setTimeout(function(){
+						if(that.studentData.length>0){
+							that.$http.post(that.urgeUrl, {
+								homeworkId: that.homeworkId,
+								classId: that.classId
+							}, {
+								emulateJSON: 'application/x-www-form-urlencoded'
+							}).then(function (response) {
+								if(response.status == '200'){
+									if(response.data.status == 200) {
+										blackNotify('已给未提交作业的学生发送作业提醒');
+									} else {
+										blackNotify('已催过作业了');
+									}
+								} else {
+									console.log('错误1')
+								}
+							}, function (response) {
+								console.log('错误2')
+							})
+						}else{
+							blackNotify('暂无未提交学生');
+						}
+					},500)
+
+
+				},
+				//跳转习题详情
+				exerciseId:function(id,workId,index,isp){
+
+					if(isp =='2'){
+						window.location.href = '/index.php/ApiInterface/Version1_3/TeacherHomework/swiperExerciseDetails?role='+role+'&userId='+userId+'&homeworkId='+
+						homeworkId+'&status='+status+'&classId='+classId+'&exerciseId='+id+'&workId='+workId+'&flag='+index
+					}
+
+				},
+				returnApp:function(){
+					window.location.href='/index.php/ApiInterface/Version1_3/TeacherHomework/homeworkList?&userId='+this.userId+'&user_id='+this.userId+'&role='+this.role
+				}
+			}
+		})
+		var data = {
+			"page":"hideNativeNavBar",
+			"flag":"1",
+		}
+		postApp(data)
+		$(document).on('click','#arrangeTime,#endTime',function(){
+			var obj = $(this);
+			var data2 = {
+				"page":"selectTime",
+				"time":$(this).val(),
+				"func":"shijian",
+				'id':$(this).attr('id')
+			}
+			postApp(data2)
+		})
+
+		function shijian(id,res){
+
+			if(id =='arrangeTime'){
+				$('#arrangeTime').val(res+':00')
+			}else{
+				$('#endTime').val(res+':00')
+			}
+			var startime = $('#arrangeTime').val();
+			var	startime = startime.substring(0,19);
+			var	startime = startime.replace(/-/g,'/');
+			var startime = new Date(startime).getTime()/1000;
+			var endtime = $('#endTime').val();
+			var	endtime = endtime.substring(0,19);
+			var	endtime = endtime.replace(/-/g,'/');
+			var endtime = new Date(endtime).getTime()/1000;
+			console.log( startime,endtime );
+			if(endtime>startime){
+				$.ajax({
+					url:'/index.php/ApiInterface/Version1_3/TeacherHomework/editHomeWorkTime',
+					type:'post',
+					data:{
+						'homeworkId': homeworkId,
+						'startime':startime,
+						'endtime':endtime
+					},
+					dataType:'json',
+					success:function (response) {
+						if(response.status == 200){
+
+						} else {
+
+						}
+					}
+				})
+			}else{
+
+			}
+
+		}
+
+			function showWebNav(){}//显示web导航
+	</script>
+
+
+</html>

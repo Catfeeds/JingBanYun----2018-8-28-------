@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{$subnav}:{$nav} :: 京版云教育平台</title>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/pctextbook/ebook.css"/>
+    <script src="__PUBLIC__/js/external/jquery-1.10.1.min.js"></script>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+    <script src="__PUBLIC__/jplayer/dist/jplayer/jquery.jplayer.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/pctextbook/kalaokstyle.css"/>
+    <link href="__PUBLIC__/airView/airView.css?v=1" rel="stylesheet" type="text/css"/>
+    <style>
+        #shadow { 
+            position: absolute; 
+            right: -20px;
+            z-index: 9;
+            top: 0;
+        }
+
+        #shadow img { 
+            width: 40px;
+        }
+
+        #pageTable { 
+            overflow: hidden;
+        }
+
+        .pageWrapper {
+            text-align: center !important;
+        }
+
+        .magBox {
+            position: fixed;
+            right: 60px;
+            top: 10px;
+        }
+
+        .magClose {
+            width: 19px;
+            height: 19px;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor: pointer;
+            background: url({$oss_path}public/web_img/Textbook/magClose2.png) no-repeat center;
+        }
+
+        .magClose:hover {
+            background: url({$oss_path}public/web_img/Textbook/magClose.png) no-repeat center;
+        }
+
+        #wrapper, #footer {
+            background : #A8E5B2;
+        }
+
+        .magnifyImg {
+            width: 120px;
+            margin: 15px 15px 0 0;
+        }
+
+        #rectClickImgWrapper {
+            height: 95%;
+        }
+
+        #rectClickImgWrapper .rectClickTable {
+            height: 100%;
+        }
+
+        #kalaok {
+            bottom: 20px;
+        }
+    </style>
+
+</head>
+<body>
+<div id="coverLayer"></div>
+<div id="wrapper">
+    <table id="pageTable" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="right" style="position:relative" class="book_left">
+                <div class="pageWrapper pageindex" id="page1Wrapper" style="text-align: right" >
+                    <img class="page"  onerror="imageError(this)" id="page1">
+                </div>
+                <div id="shadow">
+                    <img src="__PUBLIC_METRO__/img/boolshow.png" alt="">
+                </div>
+
+            </td>
+
+            <td align="left">
+                <div class="pageWrapper pageindex" id="page2Wrapper" style="text-align: left;">
+                    <img class="page " onerror="imageError(this)"  id="page2">
+                </div>
+
+            </td>
+        </tr>
+    </table>
+    <div id="rectClickImgWrapper" style="margin: 0 auto;">
+        <table class="rectClickTable" cellpadding="0" cellspacing="0" style="width: 100%; table-layout: fixed">
+            <tr>
+                <td id="rectClickImgCell" valign="middle" align="center">
+                    <img id="rectClickImg" style="min-width:auto;">
+                    <audio id="rectClickAudio" src=""></audio>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="actionCell" style="vertical-align:middle;position:absolute;top:0;left:0;bottom:0;right:0;margin:auto;display:none;z-index:99999;" valign="middle" align="center">
+
+    </div>
+
+    <table id="actionWrapper" cellpadding="0" cellspacing="0">
+        <tr>
+        </tr>
+    </table>
+</div>
+<div id="footer">
+    <table cellspacing="0" cellpadding="0">
+        <tr>
+
+            <td align="center" valign="middle" style="position:relative">
+                <div id="footerTableCell" width="100" align="center">
+                    <!--<if condition="$book['course_id'] eq 3">-->
+                        <span id="speedCtrl" tapmode onclick="switchSpeed()">正常语速</span>
+                   <!-- </if>-->
+                </div>
+                <!-- <img class="f-content" tapmode src="__PUBLIC_METRO__/img/ebook/icon_content.png" -->
+                     <!-- onclick="turnToContentPage()"> -->
+                <img class="f-pre" tapmode src="__PUBLIC_METRO__/img/ebook/picLeft1.png" onclick="turnToPreviousPage()">
+                <img class="f-nex" tapmode src="__PUBLIC_METRO__/img/ebook/picRight1.png" onclick="turnToNextPage()">
+            </td>
+        </tr>
+    </table>
+<!--     <div class="page_div">
+		    <span class="page_span">
+				跳转到:<input type="text" class="page_input"   onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                           onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'0')}else{this.value=this.value.replace(/\D/g,'')}" onblur="numlength()"/>  页 <span ></span>
+			</span>
+        <img src="" alt="" class="page_img">
+    </div> -->
+</div>
+<div id="kalaok">
+    <div class="text" id="text">
+    </div>
+</div>
+<div id="jplayer"></div>
+<div class="magBox">
+    <div class="magClose"></div>
+    <img src="__PUBLIC_METRO__/img/ebook/picCorner.png" alt="" class="magnifyImg">
+</div>
+
+<!-- 右下角的返回 二维码 分享 -->
+<ul class="bottomRightUl">
+    <li class="bottomRightShare">
+        <div class="bottomRightShareOutter">
+            <div class="bdsharebuttonbox">
+                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/bottomRightCorner.png" alt="" class="bottomRightCorner">
+                <span class="bottomRightSpan">分享到</span>
+                <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+                <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+                <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+            </div>
+        </div>
+    </li>
+    <li class="bottomRightQRcode">
+        <div class="bottomRightQRcodeOutter">
+            <div class="bottomRightQRcodeBox">
+                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/bottomRightCode.png" alt="" class="bottomRightCode">
+                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/bottomRightCorner.png" alt="" class="bottomRightCorner">
+            </div>
+        </div>
+    </li>
+    <li class="bottomRightTop"></li>
+</ul>
+
+</body>
+<script type="text/javascript" src="__PUBLIC__/js/textbook_kalaok.js"></script>
+<script src="__PUBLIC__/airView/airView.js"></script>
+
+<script type="text/javascript">
+    /*var bookId = '{$book.id}';*/
+    var bookId = '{$book.picture_books_id}';
+    /*var bookName = '{$book.name}';*/
+    var bookName = '{$book.picture_books_name}';
+    var currentPageId = [1, 2];
+    var contentPage1Id = 0;
+    var contentPage2Id = 0;
+    /*var serverPath = '{$book.server_path}';*/
+    var serverPath = '{$book.picture_books_config}';
+    var speed = 'normal';//语速 normal 正常 slow 缓慢
+    var book = null;
+    var pageWidth = 1239;//每一页的宽度
+
+    var PUBLIC_METRO = '__PUBLIC_METRO__';
+    var PUBLIC_PATH = '__PUBLIC__';
+
+    var bookInfo = {
+        width: 1239,
+        height: 1004,
+        pages: []
+    };
+
+    var currentPage1Info = null;
+    var currentPage2Info = null;
+
+    var currentPage1KalaOKInfo = [];
+    var currentPage2KalaOKInfo = [];
+
+
+    var pagePos = {
+        paddingTop: 0,
+        paddingBottom: 0
+    };
+
+    var audio = null;
+    var video = null;
+
+    $(function () {
+        adjustPage();
+        loadBookInfo();
+    })
+
+    var flashSwf = ['<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="800" height="600"',
+        '                        codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=20,0,0,0" id="swf">',
+        '                    <param name="movie" value="images/zf03320.swf">',
+        '                    <param name="quality" value="high">',
+        '                    <param name="bgcolor" value="#F0F0F0">',
+        '                    <param name="menu" value="false">',
+        '                    <param name="wmode" value="opaque">',
+        '                    <param name="FlashVars" value="">',
+        '                    <param name="allowScriptAccess" value="always">',
+        '                    <param name="allowNetworking" value="all">',
+        '                    <param name="loop" value="false">',
+        '                    <param name="play" value="true">',
+        '                    <embed name="swf" src="{0}"',
+        '                           width="800" height="600"',
+        '                           align="middle"',
+        '                           quality="high"',
+        '                           menu="false"',
+        '                           play="true"',
+        '                           loop="false"',
+        '                           FlashVars=""',
+        '                           allowScriptAccess="always"',
+        '                           type="application/x-shockwave-flash"',
+        '                           pluginspage="http://www.adobe.com/go/getflashplayer">',
+        '                    </embed>',
+        '                </object>'].join("");
+
+    var flvPlay = '<div style="color:red;">系统识别出该视频格flv格式,因大部分浏览器都不支持该格式，如果播放有问题，请联系管理员将其转换为mp4格式</div><video src="{0}" style="width: 500px;height: 500px;" controls="controls"></video>';
+    var swfVideoPlay = '<embed width="800" height="600" name="plugin" src="{0}" type="application/x-shockwave-flash">';
+    var mp4VideoPlay = '<video  controls="controls" width="600px" height="500px" ><source src="{0}" type="video/mp4" ></video>';
+    var flvVideoPlay = '<div id="flvPlayer"></div>';
+    var mp3AudioPlay = '<audio src="{0}" controls="controls"></audio>';
+    var jPlayer = $("#jplayer");
+    jPlayer.jPlayer({
+        swfPath: "__PUBLIC__/jplayer/dist/jplayer",
+        supplied: "mp3",
+        wmode: "window"
+    });
+
+</script>
+<script src="__PUBLIC__/flvPlayer/swfobject.js"></script>
+<script type="text/javascript" src="__PUBLIC__/pctextbook/pictureBooksHelper.js?v=8"></script>
+<script>
+    $(function () {
+        $.support.cors = true;
+        var p ;
+        var l ;
+        $(window).resize(function () {
+            adjustPage();
+        });
+        console.log(serverPath)
+        $.ajax({
+            url:serverPath +'/index.xml',
+            dataType:'xml',
+            success:function(res){
+//
+                var content = $(res).find('content');
+                console.log(content);
+                p = $($(res).children().children()[0]).attr('GoPage');
+                console.log(p);
+
+            }
+        })
+        $.ajax({
+            url :serverPath +'/Pages.xml',
+            datatype:'xml',
+            success :function(res){
+                var content1 = $(res).find('content');
+                console.log(content1);
+                l = $($(res).children().children()).length;
+
+            }
+        })
+        $('.page_img').click(function(){
+
+            var pagevalue = parseInt($('.page_input').val());
+            if(pagevalue >parseInt(l-p)+3){
+                alert('请输入正确页码');
+                return false
+            }
+            if($('.page_input').val() != ''){
+                $('.pageWrapper').removeClass('pageindex')
+            }else if($('.page_input').val() == ''){
+                return false
+            }
+
+
+            if(pagevalue%2 == 0){
+                onClickContent(parseInt(p)+pagevalue)
+            }else{
+                onClickContent(parseInt(p)-1+pagevalue)
+            }
+            if(pagevalue == 1 ){
+                onClickContent(parseInt(p))
+            }
+
+        })
+    })
+
+    var hei = $('#page2')
+    var a = hei.height;
+    function numlength(){
+        var nl = parseInt($('.page_input').val());
+        if(nl > '150'){
+            alert('请输入正确的页码');
+            $('.page_input').val('')
+        }
+    }
+
+</script>
+
+<script>
+    //右上角提示关闭
+    $('.magClose').click(function(){
+        $('.magBox').hide()
+    })
+
+    //留下了英语（黄色）
+    $('.f-pre').hover(function(){
+        $(this).attr('src','__PUBLIC_METRO__/img/ebook/picLeft2.png')
+    },function(){
+        $(this).attr('src','__PUBLIC_METRO__/img/ebook/picLeft1.png')
+    })
+    $('.f-nex').hover(function(){
+        $(this).attr('src','__PUBLIC_METRO__/img/ebook/picRight2.png')
+    },function(){
+        $(this).attr('src','__PUBLIC_METRO__/img/ebook/picRight1.png')
+    })
+</script>
+</html>

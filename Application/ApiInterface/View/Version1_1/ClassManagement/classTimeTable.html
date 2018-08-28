@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <title>课程表</title>
+    <link rel="stylesheet" type="text/css" href="http://www.w3cschool.cc/try/jeasyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="http://www.w3cschool.cc/try/jeasyui/themes/icon.css">
+    <script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://www.w3cschool.cc/try/jeasyui/jquery.easyui.min.js"></script>
+    <style type="text/css">
+/*
+        .left {
+            width: 120px;
+        }
+        
+        .left table {
+            background: #E0ECFF;
+        }
+        
+        .left td {
+            background: #eee;
+        }
+*/      
+
+        html,body,div,tr,td,p,span,textarea{margin: 0;padding: 0;}
+        
+        .right {
+            width: 90%;
+            padding: 5%;
+            padding-bottom: 3%;
+        }
+        
+        .right table {
+            background: #E0ECFF;
+            
+        }
+        
+        .right td {
+            background: #fafafa;
+            text-align: center;
+            height: 12px;
+        }
+        
+        .right td {
+            background: #fff;
+/*            padding: 4px;*/
+        }
+        
+        .right td.drop {
+            background: #fafafa;
+            width: 90px
+        }
+        
+        .right td.over {
+            background: #FBEC88;
+        }
+        
+/*
+        .item {
+            text-align: center;
+            border: 1px solid #1abc9c;
+            background: #fff;
+            padding: 2px 0;
+            width: 89px;
+        }
+*/
+        
+        .assigned {
+            border: 1px solid transparent;
+            background-color: transparent;
+        }
+        .title,.time{font-size: 14px;}
+    </style>
+    <style>
+        .form-control {
+            display: block;
+            width: 90%;
+            height: 100px;
+            margin: 0 5%;
+            font-size: 14px;
+            line-height: 1.428571429;
+            color: #555555;
+            background-color: white;
+            background-image: none;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            resize: none;
+            padding: 5px;
+            box-sizing: border-box;
+            outline: none
+        }
+        
+        .btn {
+            padding: 6px 12px;
+        }
+        
+        .btn-primary {
+            color: white;
+            background-color: #1abc9c;
+            border-color: #17a689;
+        }
+        
+        .btn {
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: normal;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.428571429;
+            border-radius: 4px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+		
+		td.blank {
+			width: 40px !important;
+		}
+    </style>
+    <script>
+        $(function () {
+            $('.left .item').draggable({
+                revert: true,
+                proxy: 'clone'
+            });
+            $('.right td.drop').droppable({
+                onDragEnter: function () {
+                    $(this).addClass('over');
+                },
+                onDragLeave: function () {
+                    $(this).removeClass('over');
+                },
+                onDrop: function (e, source) {
+                    $(this).removeClass('over');
+                    if ($(source).hasClass('assigned')) {
+                        $(this).append(source);
+                    } else {
+                        var c = $(source).clone().addClass('assigned');
+                        $(this).empty().append(c);
+                        c.draggable({
+                            revert: true
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+    <form id="mainForm" action="__URL__/editTimetable" method="post">
+        <input type="hidden" name="class_id" value="{$classId}">
+        <input type="hidden" name="content" id="content">
+        <div id="timeTable" class="right">
+        </div>
+        <div style="text-align: center; margin-bottom: 10px" >
+            <textarea name="comments" id="comments" rows="2" placeholder="课表备注，不超过200字" class="form-control" Readonly="true" disabled="disabled"></textarea>
+        </div>
+    </form>
+    <script>
+        var status = '{$status}'
+        var classId = {$classId};
+        var HTTP_BASE_URL = window.location.protocol + '//' + window.location.host + '/';
+        if (status == 1) {
+            alert('保存成功,可继续编辑');
+        }
+
+        function submitForm() {
+            var html = $('#timetableWrapper').html();
+            html = html.replace(/\s+|\n/g, " ").replace(/>\s</g, "><");
+            $('#content').val(html);
+            $('#mainForm').submit();
+        }
+    </script>
+    <script src="__PUBLIC__/js/timetable/timetable.js"></script>
+    <script>
+        timeTableObject.refreshClassTimeTable(classId,'timeTable','comments');
+    </script>
+</body>
+
+</html>

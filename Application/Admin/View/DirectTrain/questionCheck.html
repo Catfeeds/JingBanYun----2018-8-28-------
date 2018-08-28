@@ -1,0 +1,43 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/adminDirectTrain.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+<!-- 问题审核 -->
+<div class="trainDetailsBox">
+    <div class="trainDetailsTitle">
+        <div class="authorInfo">
+            <img src="<?php echo !empty($details['avatar']) ? $oss_path.$details['avatar'] : '/Public/img/classManage/teacher_m.png';?>" alt="" class="authorAvatar">
+            <div class="authorName"><?php echo $details['name']?>提问&nbsp;&nbsp;<?php echo $details['creat_time']?></div>
+        </div>
+        <?php if($details['status'] == 3){?>
+        <button class="blueBtn passBtn yes" data-attr="1">审核通过</button>
+        <button class="blueBtn refuseBtn no" data-attr="2">审核拒绝</button>
+        <?php }?>
+    </div>
+    <div class="articleBox">
+        <div class="articleTitle"><?php echo $details['special_column_question_title']?></div>
+        <div class="articleMain"><?php echo  html_entity_decode($details['special_column_question_reply_description'])?></div>
+    </div>
+</div>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+    $('.yes,.no').click(function () {
+        var id = "<?php echo $id?>";
+        var columnStatusNumber = $(this).attr('data-attr');
+        $.ajax({
+            data:{'id':id,'columnStatusNumber':columnStatusNumber},
+            url:'{:U("DirectTrain/updateColumnPutawayStatus")}',
+            type:'post',
+            dataType:'json',
+            success:function (data) {
+                if(data.status == '200'){
+                    window.location.href = 'index.php?m=&&m=Admin&c=DirectTrain&a=historyQuizMgmt';
+                }else{
+                    $.NotifyBox.NotifyPromptOne('错误信息',"审核失败，请稍后重试",'关闭');
+                }
+            }
+        })
+    });
+</script>

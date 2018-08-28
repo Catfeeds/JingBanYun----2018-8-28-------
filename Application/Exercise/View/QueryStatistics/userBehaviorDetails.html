@@ -1,0 +1,421 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<!--<link href="__PUBLIC__/dataTable/css/jquery.dataTables.min.css"/>-->
+<link href="__PUBLIC__/dataTable/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/js/Base64.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter').css('min-height',boxHeight)
+	})
+</script>
+
+<div class="boxOutter">
+	<div id="form" >
+		<div class="filterOutter borderNone pb0">
+			<div class="filterInner of ">
+				<div class="dib mr30">
+					<label for="" class="sixLabel">按时间查询</label>
+					<input type="text" name="startDate" class="inputCommon inputTime" id="startDate" placeholder="开始时间" readonly>
+					至
+					<input type="text" name="endDate" class="inputCommon inputTime" id="endDate" placeholder="结束时间" readonly>
+				</div>
+				<div class="filterBtn dib">
+					<button class="btn" id="" onclick="getQueryParameter('parameters','form');query();">确定</button>
+				</div>
+			</div>
+
+		</div>
+		<div class="mtb10">
+			<span><b>用户姓名：{$userInfo.user_name}</b></span>
+			<span class="ml20"><b>账号：{$userInfo.account}</b></span>
+			<span class="ml20"><b>角色：{$userInfo.role_name}</b></span>
+		</div>
+
+	</div>
+		<table class="tableCommon" id="table">
+			<thead>
+			<tr>
+				<th width="10%">录入习题数目</th>
+				<th width="10%">录入试卷数</th>
+				<th width="10%">标引习题数</th>
+				<th width="10%">审核习题通过数</th>
+				<th width="10%">审核习题不通过数</th>
+				<th width="10%">重新标引数</th>
+				<th width="10%">返工录入数</th>
+				<th width="10%">录入合格率</th>
+				<th width="10%">标引合格率</th>
+				<th width="10%">日期</th>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+	<div class="mt20 versionDiv dn">
+		<div class="color3baeab lh32">
+			用户时间轴
+		</div>
+		<div class="filterOutter borderNone pb0 " id="form1">
+			<div class="filterInner of ">
+				<div class="dib mr30">
+					<label for="" class="sixLabel">行为选择</label>
+					<select name="behavior" id="" class="inputCommon">
+						<option value="0">请选择</option>
+						<volist name="behaviorList" id="list">
+							<option value="{$list.oper_name}">{$list.oper_name}</option>
+						</volist>
+					</select>
+				</div>
+				<div class="dib mr30">
+					<label for="" class="sixLabel">搜索日期</label>
+					<input type="text" name="startDate" class="inputCommon inputTime" id="startDate1" placeholder="开始时间" readonly>
+					至
+					<input type="text" name="endDate" class="inputCommon inputTime" id="endDate1" placeholder="结束时间" readonly>
+				</div>
+				<div class="filterBtn dib">
+					<button class="btn" id="" onclick="getQueryParameter('parameters1','form1');query1();">确定</button>
+				</div>
+			</div>
+		</div>
+		<table id="table1" class="tableCommon">
+			<thead>
+			<tr>
+				<th width="20%">时间</th>
+				<th width="20%">操作</th>
+				<th width="20%">操作IP地址</th>
+				<th width="20%">操作习题ID</th>
+				<th width="20%">操作试卷ID</th>
+			</tr>
+			</thead>
+			<tbody>
+
+			</tbody>
+		</table>
+	</div>
+	<div class="mt30 text-center mb10 cursor detailsAll borderBottomeee p10">
+		查看详细用户行为
+	</div>
+	<div class="shangla dn"></div>
+	<div class="xiala mb0"></div>
+	<div class="mt15 text-center mb10 cursor detailsHide dn borderTopeee pt10">
+		收起
+	</div>
+</div>
+
+<input name="formCondition" type="hidden" id="formCondition" value="">
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+
+<script>
+
+	!function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startDate',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: laydate.now(), //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actend.min = datas; //开始日选好后，重置结束日的最小日期
+			actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endDate',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: laydate.now(),
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+
+	var startMin = actstart.min;
+	var startMax = actstart.max;
+	var endMin = actend.min;
+	var endMax = actend.max;
+
+	function resetDate() {
+		actstart.min = startMin;
+		actstart.max = startMax;
+		actend.min = endMin;
+		actend.max = endMax;
+	}
+
+	$(document).on('click','#laydate_clear',function(){
+		if($('#laydate_box').css('top') < '250px' ) {
+			if($('#startDate').val() == '' && $('#endDate').val() != '') {
+				actend.min = endMin;
+			} else if($('#startDate').val() != '' && $('#endDate').val() == '') {
+				actstart.max = startMax;
+			} else {
+				resetDate()
+			}
+		} else {
+			if($('#startDate1').val() == '' && $('#endDate1').val() != '') {
+				actend1.min = endMin1;
+			} else if($('#startDate1').val() != '' && $('#endDate1').val() == '') {
+				actstart1.max = startMax1;
+			} else {
+				resetDate1()
+			}
+		}
+	})
+
+
+	var actstart1 = {
+		elem: '#startDate1',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: laydate.now(), //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actend1.min = datas; //开始日选好后，重置结束日的最小日期
+			actend1.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend1 = {
+		elem: '#endDate1',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: laydate.now(),
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart1.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart1);
+	laydate(actend1);
+
+	var startMin1 = actstart1.min;
+	var startMax1 = actstart1.max;
+	var endMin1 = actend1.min;
+	var endMax1 = actend1.max;
+
+	function resetDate1() {
+		actstart1.min = startMin1;
+		actstart1.max = startMax1;
+		actend1.min = endMin1;
+		actend1.max = endMax1;
+	}
+</script>
+<script src="__PUBLIC__/dataTable/js/jquery.dataTables.min.js"></script>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+	function loading(name) {
+		$('body').loading({
+			loadingWidth:240,
+			title:'正在查询...',
+			name:name,
+			discription:'这是一个描述...',
+			direction:'row',
+			type:'origin',
+			originBg:'#71EA71',
+			originDivWidth:30,
+			originDivHeight:30,
+			originWidth:4,
+			originHeight:4,
+			smallLoading:false,
+			titleColor:'#388E7A',
+			loadingBg:'#312923',
+			loadingMaskBg:'rgba(22,22,22,0.2)'
+		});
+	}
+
+	function removeLoad(name) {
+		removeLoading(name);
+	}
+</script>
+<script type="text/javascript">
+	$('.xiala,.detailsAll').click(function(){
+		$('.xiala,.detailsAll').hide()
+		$('.shangla,.detailsHide,.versionDiv').show()
+
+	})
+	$('.detailsHide,.shangla').click(function(){
+		$('.shangla,.versionDiv,.detailsHide').hide()
+		$('.xiala,.detailsAll').show()
+
+	})
+</script>
+<script>
+	function getQueryParameter(paras,divId)
+	{
+		eval(paras + "= {userId:{$userInfo['id']}};" );
+		$('#'+divId+' select,'+'#'+divId + ' input').each(function(i,n){
+			if($(n).val().trim() !== '' && $(n).val() !== 0)
+			{
+				var value = $(n).val();
+				if($(n).attr('id') == 'questionId' || $(n).attr('id') == 'paperId')
+					value = value.replace(' ',',').replace('\t',',');
+				eval(paras+"[$(n).attr('name')] = value;");
+			}
+		})
+	}
+	var parameters = {userId:{$userInfo['id']}};
+	var parameters1 = {userId:{$userInfo['id']}};
+
+	var ignoreQuery = false;
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		ignoreQuery = true;
+	}
+	var oTable1 = $('#table1').dataTable({
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=QueryStatistics&a=userBehaviorPage",//这个是请求的地址
+		"fnServerData": retrieveData1 ,
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		},
+
+	});
+
+	var oTable = $("#table").dataTable({
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=QueryStatistics&a=userInfoByDayPage",//这个是请求的地址
+		"fnServerData": retrieveData ,
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		},
+
+	});
+	function query()
+	{
+		//table reset;
+ 		oTable.fnUpdate()
+	}
+    function query1()
+	{
+		oTable1.fnUpdate();
+	}
+	function retrieveData( sSource,aoData, fnCallback) {
+		if(window.location.href.indexOf('#')!=-1)
+		{
+			if(ignoreQuery)
+			{
+				ignoreQuery =false;
+				return;
+			}
+		}
+		var queryData =  $.extend(true,{},parameters); //深度拷贝
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+		// queryData.sEcho = qq.sEcho;
+		loading('loadData');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				oTable.allCount = result.iTotalRecords;
+				if(typeof(result.aaData) == "undefined") $.NotifyBox.NotifyOne('提示',result.message || result.msg,'确定');if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+			},
+			error : function(msg) { 				 			}
+		});
+	}
+
+	function retrieveData1( sSource,aoData, fnCallback) {
+
+		var queryData =  $.extend(true,{},parameters1); //深度拷贝
+		$('#formCondition').val(JSON.stringify(parameters));
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+		// queryData.sEcho = qq.sEcho;
+		loading('loadData1');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				oTable1.allCount = result.iTotalRecords;
+				if(typeof(result.aaData) == "undefined") $.NotifyBox.NotifyOne('提示',result.message || result.msg,'确定');if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData1');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+			},
+			error : function(msg) { 				 			}
+		});
+	}
+
+</script>

@@ -1,0 +1,274 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/adminDirectTrain.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+<div style="margin-bottom: 12px;">
+	<a href="{:U('DirectTrain/addSpecialColumn')}" title="添加编者专栏" class="button primary">添加编者专栏</a>
+</div>
+
+<form id="form_submit" action="" method="post">
+	<div class="grid condensed cellBox">
+		<!--<div class="cell cell2">
+			<label>评论情况：</label>
+			<input type="radio" name="comment" id="noComment" checked>
+			<label for="noComment" class="inputLabel">全部不可评论</label>
+			<input type="radio" name="comment" id="vipComment" disabled>
+			<label for="vipComment" class="inputLabel">团体VIP可评论</label>
+			<input type="radio" name="comment" id="allComment" disabled>
+			<label for="allComment" class="inputLabel">全部可评论</label>
+		</div>-->
+		<div class="row cells3">
+			<div class="cell">
+				<label>审核状态：</label>
+				<select id="column_status" class="input-control" name="column_status">
+					<option value="">全部</option>
+					<option value="3" {$column_status == 3?'selected':''}>待审核</option>
+					<option value="1" {$column_status == 1?'selected':''}>审核已通过</option>
+					<option value="2" {$column_status == 2?'selected':''}>审核已拒绝</option>
+				</select>
+			</div>
+
+			<div class="cell">
+				<label>上下架状态：</label>
+				<select id="putaway_status" class="input-control" name="putaway_status">
+					<option value="">全部</option>
+					<option value="1" {$putaway_status == 1?'selected':''}>已发布</option>
+					<option value="2" {$putaway_status == 2?'selected':''}>已下架</option>
+				</select>
+			</div>
+
+			<div class="cell">
+				<label>学科：</label>
+				<select id="course_id" class="input-control" name="course_id" onchange="getTextbooks()">
+					<option value="">-请选择-</option>
+					<volist name="course_list" id="dataCourse">
+						<option value="{$dataCourse.id}" {$dataCourse['id']==$course_id?'selected':''}>
+						{$dataCourse.name}
+						</option>
+					</volist>
+				</select>
+			</div>
+            
+			<div class="cell">
+				<label>年级：</label>
+				<select id="grade_id" class="input-control" name="grade_id" onchange="getTextbooks()">
+					<option value="">-请选择-</option>
+					<volist name="grade_list" id="dataGrade">
+						<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+						{$dataGrade.name}
+						</option>
+					</volist>
+				</select>
+			</div>
+            
+			<div class="cell">
+				<label>分册：</label>
+				<select id="textbook_id" class="input-control" name="textbook_id">
+					<option value="">-请选择-</option>
+					<option value="1" {$textbook_id == 1?'selected':''}>-上册-</option>
+					<option value="2" {$textbook_id == 2?'selected':''}>-下册-</option>
+					<option value="3" {$textbook_id == 3?'selected':''}>-全一册-</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<input type='submit' value='查询' class='blueBtn'/>
+		<input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+
+<p class="blueText fs16">专栏审核列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+	<tr>
+		<th class="text-center">专栏作者</th>
+		<th class="text-center">专栏名称</th>
+		<th class="text-center">学科</th>
+		<th class="text-center">年级</th>
+		<th class="text-center">分册</th>
+		<th class="text-center">价格</th>
+		<th class="text-center">审核情况</th>
+		<th class="text-center">状态</th>
+		<th class="text-center">操作</th>
+	</tr>
+	</thead>
+	<tbody id="body">
+	<volist name="list" id="data" empty="">
+		<tr id="l_{$data.id}">
+			<td class="text-center">
+				{$data['name']}
+			<td>
+			<a style="text-decoration: none"  title="专栏名称">{$data['special_column_question_title']}</a>
+		</td>
+			<td class="text-center">
+				{$data['course_name']}
+			</td>
+			<td class="text-center">
+				{$data['grade']}
+			</td>
+			<td class="text-center">
+				<if condition="$data['fascicule_id'] eq 1 ">
+					上册
+					<elseif condition="$data['fascicule_id'] eq 2"/>
+					下册
+					<elseif condition="$data['fascicule_id'] eq 3"/>
+					全一册
+				</if>
+			</td>
+			<td class="text-center">
+				{$data['special_column_price']}
+			</td>
+			<td class="text-center column_status">
+				<if condition="$data['status'] eq 1 ">
+					审核通过
+					<elseif condition="$data['status'] eq 2"/>
+					审核不通过
+					<else />
+					待审核
+				</if>
+			</td>
+			<td class="text-center putaway_status">
+				<if condition="$data['putaway_status'] eq 1 ">
+					发布
+					<elseif condition="$data['putaway_status'] eq 2"/>
+					下架
+					<else/>
+					待上架
+				</if>
+			</td>
+			<td class="text-center">
+				<!--<if condition="$data['status'] eq 1 ">
+					<a href="javascript:;" class="button no" data-attr="2" id-attr="{$data['id']}">审核不通过</a>
+					<elseif condition="$data['status'] eq 2"/>
+					<a href="javascript:;" class="button yes" data-attr="1" id-attr="{$data['id']}">审核通过</a>
+					<else />
+					<a href="javascript:;" class="button no" data-attr="2" id-attr="{$data['id']}">审核不通过</a>
+					<a href="javascript:;" class="button yes" data-attr="1" id-attr="{$data['id']}">审核通过</a>
+				</if>-->
+				<if condition="$data['status'] eq 3 ">
+				<a href="{:U('DirectTrain/specialColumnDetails')}&specialColumnId=<?php echo $data['id']?>" class="button">去审核</a>
+				</if>
+				<if condition="$data['status'] eq 1 ">
+					<if condition="$data['putaway_status'] eq 1 ">
+						<a href="javascript:;" class="button down" data-attr="2" id-attr="{$data['id']}">下架</a>
+						<elseif condition="$data['putaway_status'] eq 2"/>
+						<a href="javascript:;" class="button up" data-attr="1" id-attr="{$data['id']}">发布</a>
+						<else/>
+						<a href="javascript:;" class="button up" data-attr="1" id-attr="{$data['id']}">发布</a>
+					</if>
+				</if>
+				<a href="{:U('DirectTrain/saveSpecialColumn?id=')}{$data.id}" class="button">修改</a>
+				<a class="button delete_button danger" attr="{$data.id}">删除</a>
+			</td>
+		</tr>
+	</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+
+<script>
+	$(document).ready(function () {
+		$('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 475) + "px",
+			"scrollCollapse": true,
+			"paging": false,
+			"bSort": false,
+			"aoColumns":[
+				{"width":"8%"},
+				{"width":"20%"},
+				{"width":"8%"},
+				{"width":"8%"},
+				{"width":"8%"},
+				{"width":"8%"},
+				{"width":"10%"},
+				{"width":"10%"},
+				{"width":"20%"}
+			]
+		});
+	});
+</script>
+
+<script>
+	//重置
+	$('.resetButton').click(function(){
+		$('#putaway_status').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+		$('#column_status').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+		$('#course_id').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+		$('#grade_id').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+		$('#textbook_id').find('option:eq(0)').attr('selected',true).siblings('option').removeAttr('selected',true);
+	});
+</script>
+<script>
+	//审核和上下架
+	$('.up,.down').click(function () {
+		var id = $(this).attr('id-attr');
+        var obj = this;
+		var putawayStatusNumber = $(this).attr('data-attr');
+		$.ajax({
+			data:{'id':id,'putawayStatusNumber':putawayStatusNumber},
+			url:'{:U("DirectTrain/updateColumnPutawayStatus")}',
+			type:'post',
+			dataType:'json',
+			success:function () {
+				if(putawayStatusNumber == 1){
+                    $(obj).parent().siblings('.putaway_status').text('发布');
+                    $(obj).text('下架');
+                    $(obj).siblings('.down').hide();
+                    $(obj).attr('data-attr',2);
+				}else{
+                    $(obj).parent().siblings('.putaway_status').text('下架');
+                    $(obj).text('发布');
+                    $(obj).siblings('.up').hide();
+                    $(obj).attr('data-attr',1);
+				}
+			}
+		})
+	});
+	$('.yes,.no').click(function () {
+		var id = $(this).attr('id-attr');
+		var columnStatusNumber = $(this).attr('data-attr');
+		var obj = this;
+		$.ajax({
+			data:{'id':id,'columnStatusNumber':columnStatusNumber},
+			url:'{:U("DirectTrain/updateColumnPutawayStatus")}',
+			type:'post',
+			dataType:'json',
+			success:function () {
+				if(columnStatusNumber == 1){
+					$(obj).parent().siblings('.column_status').text('审核通过');
+					//$(obj).text('审核不通过');
+                    //$(obj).siblings('.no').hide();
+					//$(obj).attr('data-attr',2);
+                    history.go();
+				}else{
+                    $(obj).parent().siblings('.column_status').text('审核不通过');
+					//$(obj).text('审核通过');
+                    //$(obj).siblings('.yes').hide();
+					//$(obj).attr('data-attr',1);
+                    history.go();
+				}
+			}
+		})
+	});
+
+	//删除操作
+	$('.danger').click(function () {
+		var id = $(this).attr('attr');
+		var type = 1;
+		$.ajax({
+			data:{'id':id,'type':type},
+			url:'{:U("DirectTrain/deleteOperation")}',
+			type:'post',
+			dataType:'json',
+			success:function () {
+				history.go();
+			}
+		})
+	})
+</script>

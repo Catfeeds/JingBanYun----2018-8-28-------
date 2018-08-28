@@ -1,0 +1,336 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+</style>
+
+<a href="Javascript:history.go(-1);" title="返回" class="btn btnReturn1" style="position: absolute;">返回</a>
+
+<div class="main_opr">
+    <a href="{:U('TeacherHomework/homeworkList')}" title="作业列表" class="btn btn-main-opr btn-main-opr-active">作业列表</a>
+    <a href="{:U('TeacherHomework/publishHomework')}" title="布置作业" class="btn btn-main-opr">布置作业</a>
+    <a href="{:U('TeacherHomework/myCollectionList')}" title="我的收藏" class="btn btn-main-opr">我的收藏</a>
+    <a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+    <a href="{:U('TeacherHomework/testPaperList')}" title="试卷库" class="btn btn-main-opr">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="homeworkWrapper studentHomeworkWrapper">
+		<div class="exerciseOutter exerciseOutterNoBorder">
+			<div class="exerciseOutterTop">
+				<div class="exerciseBigTitle">
+					<span class="beforeName">
+						{{ WorkData.student_name }}
+						<button class="btnCommon btnCommonSmall" id="homeworkRemark" @click="addAllRemark">评语</button>
+					</span>
+				</div>
+				<div class="exerciseRemark">
+					<span>
+						<img src="__PUBLIC__/img/homeworkV1/tijiaoshijian.png" alt="" class="remarkImg">
+						提交时间：{{ WorkData.submit_at }}
+					</span>&nbsp;&nbsp;&nbsp;&nbsp;
+					<span>
+						<img src="__PUBLIC__/img/homeworkV1/yongshi.png" alt="" class="remarkImg">
+						用时：{{ WorkData.work_timeout }}秒
+					</span>&nbsp;&nbsp;&nbsp;&nbsp;
+					<span>
+						<img src="__PUBLIC__/img/homeworkV1/zhengquelv.png" alt="" class="remarkImg">
+						正确率：{{ WorkData.correct_rate }}
+					</span>
+				</div>
+				<div class="homeworkTitle">{{ WorkData.name }}</div>
+				<div class="allScore">
+					<span class="num">{{ WorkData.score }}</span><span class="text">分</span>
+				</div>
+			</div>
+
+			<include file="./Application/Home/View/HomeworkCommon/exerciseOutter.html"/>
+		</div>
+
+		<!-- 这里是添加评语的弹窗 -->
+		<!-- <div class="remarkMain" style="display: none">
+			<div class="p20 layerMain">
+				<script type="text/plain" id="message" name="message" style="width:100%; height:300px;"></script>
+			</div>
+		</div> -->
+
+		<div class="homeworkBlack"></div>
+		<div class="homeworkFixed ueFixed">
+			<div class="homeworkFixedTitle">
+				添加评语
+				<img src="__PUBLIC__/img/homeworkV1/guanbi.png" alt="" class="closeFixed" @click="addRemarkCancel">
+			</div>
+			<div class="homeworkFixedMain">
+				<script type="text/plain" id="message" name="message" style="width:100%; height:300px;"></script>
+			</div>
+			<div class="homeworkFixedBtnBox">
+				<button class="btnCommon cancelBtn" id="" @click="addRemarkCancel">取消</button>
+				<button class="btnCommon sureBtn" id="" @click="addRemarkSure">确定</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/layer/layer.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.all.js"></script>
+
+<script>
+    var ue = UE.getEditor('message');
+</script>
+
+<script>
+    var userId = "{:session('teacher.id')}";
+    var homeworkId = "{$homeworkId}";
+    var classId = "{$classId}";
+    var studentId = "{$studentId}";
+    var submitId = window.getQueryString('submitId');
+
+
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+			userId: userId,
+			submitId: submitId,
+			url: '/index.php/ApiInterface/Version1_3/TeacherHomework/getStudentHomeWorkDetails',
+            WorkData: {},
+            getListUrl: '/index.php/Home/StudentHomework/getSubmitHomeworkDetail',
+            homeworkList: '',
+            content:"",
+		},
+		created: function () {
+		    this.getStudentWorkDetails();
+		    this.getStudentHomework();
+		},
+		methods: {
+
+		    //添加评语
+
+			// 请求作业顶部
+            getStudentWorkDetails: function(){
+                this.$http.post(this.url, {
+                    homeworkId : homeworkId,
+                    classId : classId,
+                    studentId : studentId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.WorkData = $.parseJSON(response.body).data;
+                        ue.ready(function() {
+                            ue.setContent(homework.WorkData.comment);
+                        });
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            // 请求作业详情
+            getStudentHomework: function(){
+                var parameters = {};
+				parameters['id'] = this.submitId;
+				this.$http.post(this.getListUrl, parameters, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						this.additionalData = response.data.additionalData;
+						this.homeworkList = response.data.data;
+					} else {
+						console.log('错误1')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+            },
+			total:function(index,field){
+			     var sum = 0;
+				 $(this.homeworkList[index].data).each(function(i,data){
+					sum += parseInt(data[field])
+				});
+				return sum;
+			},
+
+			//展开英文释义
+			showExplain: function(e){
+				if($(e.target).hasClass('active')) {
+					$(e.target).removeClass('active').text('英文释义');
+					$(e.target).siblings('.explainBox').slideUp()
+				} else {
+					var parentWordBox = $(e.target).parents('.wordBox');
+					var explainLeft = -parentWordBox.position().left - 30;
+
+					if(parentWordBox.parents('.forBox').siblings('.forBox').length > 0) {
+						parentWordBox.parents('.forBox').siblings('.forBox').find('.wordBox').find('.explainBox').stop(false,true).slideUp('normal',function(){
+							parentWordBox.parents('.forBox').siblings('.forBox').find('.wordBox').find('.explainText').removeClass('active').text('英文释义');
+							$(e.target).addClass('active').text('隐藏释义');
+							$(e.target).siblings('.explainBox').css('left', explainLeft).slideDown()
+						});
+					} else {
+						$(e.target).addClass('active').text('隐藏释义');
+						$(e.target).siblings('.explainBox').css('left', explainLeft).slideDown()
+					}
+					
+				}
+			},
+			// 添加评语
+			addAllRemark: function(){
+				$('.homeworkBlack, .ueFixed').show();
+				$('body').css('overflow-y', 'hidden')
+			},
+			// 确定添加评语
+			addRemarkSure: function(){
+				this.content = ue.getContent();
+
+                this.$http.post("/index.php?m=Home&c=TeacherHomework&a=teacherMasterSendMessage",{
+                    submitId : homework.submitId,
+                    comment:homework.content,
+                },{
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        $('.homeworkBlack, .ueFixed').hide();
+                        $('body').css('overflow-y', 'auto')
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+			},
+			// 确定添加评语
+			addRemarkCancel: function(){
+				$('.homeworkBlack, .ueFixed').hide();
+				$('body').css('overflow-y', 'auto')
+			},
+            // 播放音频
+            play: function(e){
+                var that = $(e.currentTarget);
+                var player = that.parent('.wordMain').siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if (player.paused){
+                    // 其余音频停止播放
+                    $('audio').trigger('pause');
+                    // 其余去掉背景颜色
+                    $('.wordMain').removeClass('active');
+                    // 所有音频图标重置
+                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+
+                    // 所有学生音频图标重置
+                    $('.videoStudent').attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+
+                    that.parent('.wordMain').siblings('.audioHide').attr('src', newUrl);
+                    player.play();
+                    that.parent('.wordMain').addClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoYellow36×30.gif');
+                    player.loop = false;
+                    player.addEventListener('ended', function () {
+                        that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                    }, false);
+                } else {
+                    player.pause();//暂停
+                    that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                }
+            },
+            // 播放单个学生音频
+            playOne: function(e){
+                var that = $(e.currentTarget);
+                var player = that.siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if (player.paused){
+                    // 其余音频停止播放
+                    $('audio').trigger('pause');
+                    // 其余去掉背景颜色
+                    $('.wordMain').removeClass('active');
+                    // 所有音频图标重置
+                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+
+                    // 所有学生音频图标重置
+                    $('.videoStudent').attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+                    that.siblings('.audioHide').attr('src', newUrl);
+                    player.play();
+                    that.attr('src', '__PUBLIC__/img/homeworkV1/bofang.png');
+                    player.loop = false;
+                    player.addEventListener('ended', function () {
+                        that.attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+                    }, false);
+                } else {
+                    player.pause();//暂停
+                    that.attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+                }
+            }
+		},
+        filters:{
+            filtersVoiceNumber:function (val) {
+                val = num(val+"");
+                return val
+            },
+            filtersNumber:function (val) {
+                val = val + homework.exerciseListVocieLength;
+                val = num(val+"");
+                return val
+            }
+        }
+	})
+</script>
+
+<script>
+    function num(n) {
+        if(!/(^[1-9]\d*$)/){
+            return '非法数字';
+        }
+        var uppercase = '千百亿千百十万千百十个';
+        var nLength = n.length;
+        var newStr = '';
+        if(uppercase.length-nLength<0){
+            return '数字过长';
+        }
+        uppercase=uppercase.substr(uppercase.length-nLength);
+        for(var i=0; i < nLength; i++){
+            newStr +='零一二三四五六七八九'.charAt(n[i])+uppercase.charAt(i);
+        };
+        newStr = newStr.substr(0,newStr.length-1);
+        return newStr;
+    }
+</script>
+
+
+
+<script>
+	$(function(){
+		var contentHeight = $('#contentWrapper').height();
+		$('.exerciseOutter').css('min-height', contentHeight)
+	})
+
+	// 查看解析
+    $(document).on('click','.showAnalysis',function(){
+        if($(this).hasClass('active')) {
+            $(this).removeClass('active').text('查看解析').siblings('.analysisOutter').stop(false,true).slideUp();
+        } else {
+            $(this).addClass('active').text('收起').siblings('.analysisOutter').stop(false,true).slideDown();
+        }
+    })
+
+    // 查看评语
+    $(document).on('click','.showComment',function(){
+        if($(this).hasClass('active')) {
+            $(this).removeClass('active').text('查看评语').siblings('.commentOutter').stop(false,true).slideUp();
+        } else {
+            $(this).addClass('active').text('收起').siblings('.commentOutter').stop(false,true).slideDown();
+        }
+    })
+</script>
+

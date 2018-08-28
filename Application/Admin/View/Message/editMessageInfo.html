@@ -1,0 +1,3023 @@
+<layout name="admin_layout_back"/>
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/bootstrap/css/bootstrap.css">
+<script src="__PUBLIC__/js/jquery-2.1.1.min.js"></script>
+<script src="__PUBLIC__/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.all.js"></script>
+
+<style> 
+	ul {
+		list-style: none;
+	}
+	
+    .form_section {
+        margin-bottom: 12px;
+    }
+    html, body, * {
+        box-sizing: inherit;
+    }
+
+    .exampl{
+        content: attr(data-text);
+        text-transform: lowercase;
+        left: 1.5rem;
+        top: 11.875rem;
+        color: gray;
+        display: block;
+        font-size: 1rem;
+        line-height: 1rem;
+        height: 2rem;
+        text-align: right;
+        white-space: nowrap;
+        direction: ltr;
+        width: 1.5rem;
+    }
+	
+	.moreImg {
+		height: 1.75rem
+	}
+	
+	.infoContent {
+		border: 1px solid #333;
+	}
+	
+	.infoP {
+		margin: 0 !important;
+		margin-bottom: 5px !important;
+	}
+	
+	.infoCheckbox {
+		width: 16px;
+		height: 16px;
+		margin-top: -3px;
+		margin-right: 5px;
+	}
+	
+	.infoRole {
+		margin-bottom: 10px;
+	}
+	
+	#myTab {
+		margin: 0;
+	}
+	
+	#myTabContent {
+		background: #fff
+	}
+	
+	.listview {
+		box-sizing: border-box;
+	}
+	
+	.fs14 {
+		font-size: 14px
+	}
+	
+	.num {
+		margin: 0;
+		padding: 0;
+		margin: 10px 0 0 10px
+	}
+	
+	.tabContent {
+		background: #eee;
+	}
+	
+	.roleButton {
+		box-sizing: border-box;
+	}
+	
+	.infoRole span {
+		font-size: 16px;
+		display: inline-block;
+		margin-right: 10px;
+	}
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}" style="box-sizing:border-box;">&lt; 返回 消息列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+	<div class="example" >
+		<span class="exampl">消息接收人</span>
+		<div class="infoRole">
+			<span>教师</span>
+			<span>学生</span>
+			<span>家长</span>
+			<a href="javascript:;" class="detail">去选择>></a>
+		</div>
+<!-- -->
+		<div class="listview set-border padding20 tabContent" style="display: none">
+			<ul id="myTab" class="nav nav-tabs">
+				<li class="active">
+					<a href="#teacherTab" data-toggle="tab">
+						教师
+					</a>
+				</li>
+				<li onclick="stutab()">
+					<a href="#studentTab" data-toggle="tab">
+						学生
+					</a>
+				</li>
+				<li onclick="parenttab()">
+					<a href="#parentTab" data-toggle="tab">
+						家长
+					</a>
+				</li>
+			</ul>
+			<div id="myTabContent" class="tab-content padding10">
+				<!--教师教师教师-->
+				<div class="tab-pane fade in active" id="teacherTab">
+					<p class="num">已选择 <span class="teacher_num">0</span> 人</p>
+					<div class="padding10">
+
+							<div class="grid condensed searchbar">
+								<div class="row cells3 cellBox">
+									<div class="cell">
+										<label>姓名：</label>
+										<input type="text" class="input-control teacher_name" placeholder="请输入姓名">
+									</div>
+									<div class="cell">
+										<label>手机：</label>
+										<input type="text" class="input-control teacher_telephone" placeholder="请输入手机号">
+									</div>
+<!--
+									<div class="cell">
+										<label>所在学校：</label>
+										<select id="school_id" class="input-control" name="school_id">
+											<option value="">-请选择-</option>
+											<volist name="school_result" id="school_item" empty="暂时没有学校">
+												<option  value={$school_item.id} <if condition="$school_item['id']==$school"> selected="true"</if>  >{$school_item.school_name}</option>
+											</volist>
+										</select>
+									</div>
+-->
+									<div id="province" class="cell">
+										<label>省份：</label>
+										<select name="province_id" id="pro_select" class="searchCondition input-control">
+											<option value="">-请选择-</option>
+										</select>
+									</div>
+									<div id="city" class="cell">
+										<label>市区：</label>
+										<select name="city_id" id="city_select" class="searchCondition input-control">
+											<option value="">-请选择-</option>
+										</select>
+									</div>
+									<div id="country" class="cell">
+										<label>区县：</label>
+										<select name="country_id" id="coun_select" class="searchCondition input-control">
+											<option value="">-请选择-</option>
+										</select>
+									</div>
+									<div id="school" class="cell">
+										<label>学校：</label>
+										<select name="school_id" id="sch_select" class="searchCondition input-control">
+											<option value="">-请选择-</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>学科：</label>
+										<select id="teacher_course_id" class="input-control" name="course_id" onchange="{$filterSelect['textbook'] == 1 ? 'getTextbooks()':''}" class="searchCondition">
+											<!--TODO: getTextbooks parameters-->
+											<option value="">-请选择学科-</option>
+											<volist name="courses" id="dataCourse">
+												<option value="{$dataCourse.id}">
+													{$dataCourse.code} : {$dataCourse.course_name}
+												</option>
+											</volist>
+										</select>
+									</div>
+									<div class="cell">
+										<label>年级：</label>
+										<select id="teacher_grade_id" class="input-control" name="grade_id" onchange="getTextbooks()">
+											<option value="">-请选择-</option>
+											<volist name="grades" id="dataGrade">
+												<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+													{$dataGrade.grade}
+												</option>
+											</volist>
+										</select>
+									</div>
+									<div class="cell">
+										<label>账户状态：</label>
+										<select id="teacher_lock_status" class="searchCondition input-control">
+											<option value='0'>-请选择状态-</option>
+											<option value="1" <if condition="$status==1">selected</if> >审核等待中</option>
+											<option value="2" <if condition="$status==2">selected</if> >账号已锁定</option>
+											<option value="3" <if condition="$status==3">selected</if> >审核已通过</option>
+											<option value="4" <if condition="$status==4">selected</if> >审核已拒绝</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>权限类型：</label>
+										<select id="teacher_vip_type" class="input-control" name="type">
+											<option value="">-请选择-</option>
+											<option value="2">普通用户</option>
+											<option value="4">个人VIP</option>
+											<option value="3">团体VIP</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>到期时间：</label>
+										<input type="text" name="time_id" class="input-control teacher_time_id" id="datepicker_t" class="datepicker" placeholder="到期时间" autocomplete="off">
+									</div>
+									<div class="cell">
+										<label>选择状态：</label>
+										<select id="teacher_is_checked" class="input-control" name="">
+											<option value="">-请选择-</option>
+                                            <option value="1">已选择</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>&nbsp;</label>
+										<button type="submit" class="button fs14" onclick="teacher_search()" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+									</div>
+								</div>
+							</div>
+						
+						<p>
+							<label for="onepage_t"><input type="checkbox" id="onepage_t" class="infoCheckbox" name="onepage_t">选择本页</label>&nbsp;&nbsp;&nbsp;
+							<label for="allpage_t"><input type="checkbox" id="allpage_t" class="infoCheckbox" name="allpage_t">选择全部</label>
+						</p>
+						<table id="listWrapper" class="table striped hovered border">
+							<thead>
+							<tr>
+								<th style="width:5%">&nbsp;</th>
+								<th style="width:9%" class="text-center">教师姓名</th> 
+								<th style="width:7%" class="text-center">性别</th> 
+								<th style="width:10%" class="text-center">手机号</th>
+								<th style="width:10%" class="text-center">注册时间</th> 
+								<th style="width:15%" class="text-center">所在学校</th> 
+								<th style="width:8%" class="text-center">权限类型</th> 
+								<th style="width:8%" class="text-center">到期时间</th>
+								<th style="width:10%" class="text-center">邮箱</th>
+								<th style="width:8%" class="text-center">积分</th>
+								<th style="width:10%" class="text-center">状态</th>
+							</tr>
+							</thead>
+							<tbody class="teacherhtml">
+							<tr><td class="text-center" colspan="12">努力加载中...</td></tr>
+							</tbody>
+						</table>
+
+						<div class="Pagination teacherPage"></div>
+						<div class="form-actions" style="text-align: center; clear: both; padding-top: 20px">
+							<button type="submit" class="button" onclick="saveIdsData(2)">保存</button>
+							<button class="button closeTab">关闭</button>
+						</div>
+					</div>
+				</div>
+				<!--学生学生学生-->
+				<div class="tab-pane fade" id="studentTab">
+					<p class="num">已选择 <span class="stu_num">0</span> 人</p>
+					<div class="padding10">
+
+							<div class="grid condensed searchbar">
+								<div class="row cells3 cellBox">
+									<div class="cell">
+										<label>姓名：</label>
+										<input type="text" class="input-control stuname" placeholder="请输入姓名">
+									</div>
+									<div class="cell">
+										<label>家长手机号：</label>
+										<input type="text" class="input-control stuparentphone" name="" value="" placeholder="请输入手机号">
+									</div>
+<!--
+									<div class="cell">
+										<label>所在学校：</label>
+										<select id="school_id" class="input-control" name="school_id">
+											<option value="">-请选择-</option>
+											<volist name="school_result" id="school_item" empty="暂时没有学校">
+												<option  value={$school_item.id} <if condition="$school_item['id']==$school"> selected="true"</if>  >{$school_item.school_name}</option>
+											</volist>
+										</select>
+									</div>
+-->
+									<div id="stu_province" class="cell">
+										<label>省份：</label>
+										<select name="province_id" id="stu_pro_select" class="searchCondition input-control">
+											<option value="">-请选择-</option>
+										</select>
+									</div>
+									<div id="stu_city" class="cell">
+										<label>市区：</label>
+										<select name="city_id" id="stu_city_select" class="searchCondition input-control">
+											<option value="">-请选择-</option>
+										</select>
+									</div>
+									<div id="stu_country" class="cell">
+										<label>区县：</label>
+										<select name="country_id" id="stu_coun_select" class="searchCondition input-control">
+											<option value="">-请选择-</option>
+										</select>
+									</div>
+									<div id="stu_school" class="cell">
+										<label>学校：</label>
+										<select name="school_id" id="stu_sch_select" class="searchCondition input-control">
+											<option value="">-请选择-</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>年级：</label>
+										<select id="stu_grade_id" class="input-control" name="grade_id" onchange="getTextbooks()">
+											<option value="">-请选择-</option>
+											<volist name="grades" id="dataGrade">
+												<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+													{$dataGrade.grade}
+												</option>
+											</volist>
+										</select>
+									</div>
+									<div class="cell">
+										<label>权限类型：</label>
+										<select id="stu_type" class="input-control" name="type">
+											<option value="">-请选择-</option>
+											<option value="2">普通用户</option>
+											<option value="4">个人VIP</option>
+											<option value="3">团体VIP</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>到期时间：</label>
+										<input type="text" name="stu_time_id" class="input-control stu_time_id" id="datepicker_s" class="datepicker" placeholder="到期时间" autocomplete="off">
+									</div>
+									<div class="cell">
+										<label>账户状态：</label>
+										<select id="stu_lock_status" class="input-control">
+											<option value='0'>-请选择状态-</option>
+											<option value="1">正常</option>
+											<option value="2">锁定</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>选择状态：</label>
+										<select id="stu_is_checked" class="input-control" name="">
+											<option value="">-请选择-</option>
+                                            <option value="1">已选择</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>&nbsp;</label>
+										<button type="submit" class="button fs14" onclick="stu_search()" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+									</div>
+								</div>
+							</div>
+
+						
+						<p>
+							<label for="onepage_s"><input type="checkbox" id="onepage_s" class="infoCheckbox" name="onepage_s">选择本页</label>&nbsp;&nbsp;&nbsp;
+							<label for="allpage_s"><input type="checkbox" id="allpage_s" class="infoCheckbox" name="allpage_s">选择全部</label>
+						</p>
+						<table id="stulistWrapper" class="table striped hovered border">
+							<thead>
+							<tr>
+								<th style="width: 5%">&nbsp;</th>
+								<th style="width: 8%" class="text-center">学生姓名</th> 
+								<th style="width: 6%" class="text-center">性别</th> 
+								<th style="width: 8%" class="text-center">家长姓名</th>
+								<th style="width: 8%" class="text-center">学生编号</th> 
+								<th style="width: 8%" class="text-center">出生年月</th> 
+								<th style="width: 12%" class="text-center">所在学校</th> 
+								<th style="width: 8%" class="text-center">注册时间</th>
+								<th style="width: 8%" class="text-center">邮箱</th>
+								<th style="width: 8%" class="text-center">家长手机号</th>
+								<th style="width: 7%" class="text-center">权限类型</th>
+								<th style="width: 8%" class="text-center">到期时间</th>
+								<th style="width: 6%" class="text-center">状态</th>
+							</tr>
+							</thead>
+							<tbody class="stulist">
+							<tr><td class="text-center" colspan="13">努力加载中...</td></tr>
+							</tbody>
+						</table>
+
+						<div class="Pagination stupage"></div>
+						<div class="form-actions" style="text-align: center; ">
+							<button type="submit" class="button" onclick="saveIdsData(3)">保存</button>
+							<button class="button closeTab">关闭</button>
+						</div>
+					</div>
+				</div>
+				<!--家长家长家长-->
+				<div class="tab-pane fade" id="parentTab">
+					<p class="num">已选择 <span class="parent_num">0</span> 人</p>
+					<div class="padding10">
+
+							<div class="grid condensed searchbar">
+								<div class="row cells3 cellBox">
+									<div class="cell">
+										<label>姓名：</label>
+										<input type="text" class="input-control parent_name" placeholder="请输入姓名">
+									</div>
+									<div class="cell">
+										<label>手机：</label>
+										<input type="text" class="input-control parent_phone" placeholder="请输入手机号">
+									</div>
+									<div class="cell">
+										<label>账户状态：</label>
+										<select id="parent_lock_status" class="input-control">
+											<option value='0'>-请选择状态-</option>
+											<option value="1">正常</option>
+											<option value="2">锁定</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>权限类型：</label>
+										<select id="parent_type" class="input-control" name="type">
+											<option value="">-请选择-</option>
+											<option value="2">普通用户</option>
+											<option value="4">个人VIP</option>
+											<option value="3">团体VIP</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>到期时间：</label>
+										<input type="text" name="parent_time_id" class="input-control parent_time_id" id="datepicker_p" class="datepicker" placeholder="到期时间" autocomplete="off">
+									</div>
+									<div class="cell">
+										<label>选择状态：</label>
+										<select id="parent_is_checked" class="input-control" name="">
+											<option value="">-请选择-</option>
+                                            <option value="1">已选择</option>
+										</select>
+									</div>
+									<div class="cell">
+										<label>&nbsp;</label>
+										<button type="submit" class="button fs14" onclick="parent_search()" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+									</div>
+								</div>
+							</div>
+						
+						<p>
+							<label for="onepage_p"><input type="checkbox" id="onepage_p" class="infoCheckbox" name="onepage_p">选择本页</label>&nbsp;&nbsp;&nbsp;
+							<label for="allpage_p"><input type="checkbox" id="allpage_p" class="infoCheckbox" name="allpage_p">选择全部</label>
+						</p>
+						<table class="table striped hovered border">
+							<thead>
+								<tr>
+									<th style="width:6%">&nbsp;</th>
+									<th style="width:10%" class="text-center">家长姓名</th>
+									<th style="width:8%" class="text-center">性别</th>
+									<th style="width:18%" class="text-center">学生姓名</th>
+									<th style="width:10%" class="text-center">手机号</th>
+									<th style="width:10%" class="text-center">注册时间</th>
+									<th style="width:12%" class="text-center">邮箱</th>
+									<th style="width:8%" class="text-center">权限类型</th>
+									<th style="width:10%" class="text-center">到期时间</th>
+									<th style="width:8%" class="text-center">状态</th>
+								</tr>
+							</thead>
+							<tbody id="body" class="parenthtml">
+							<tr><td class="text-center" colspan="13">努力加载中...</td></tr>
+							</tbody>
+						</table>
+						<input type="hidden" value="{$role}" id="role_id" />
+						<div class="Pagination parentpage"></div>
+						<div class="form-actions" style="text-align: center; ">
+							<button type="submit" class="button" onclick="saveIdsData(4)">保存</button>
+							<button class="button closeTab">关闭</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br>
+
+	<?php if ($messageInfo['receive_type'] != 2): ?>
+		<div class="example message_title_is_show"  >
+			<span class="exampl">消息推送头</span>
+			<div class="cell">
+				<label>消息推送头：</label>
+				<input type="text" class="input-control message_title" placeholder="请输入消息推送头" style="width: 90%" value="{$messageInfo.title|default=''}">
+			</div>
+		</div>
+	<?php endif ?>
+
+	<br> 
+	<div class="example" >
+		<span class="exampl">消息内容</span>
+		<div style="width: 100%">
+			<script type="text/plain" id="message" name="message" style="width:100%;height:340px;">{$messageInfo.message_content|default=''}</script>
+		</div>
+	</div>
+	<br>
+	<div class="example" >
+		<span class="exampl">消息接收方式</span>
+		<p class="infoP"><input type="checkbox" class="infoCheckbox apppush"
+			<?php if ($messageInfo['receive_type'] != 2): ?>
+				checked
+			<?php endif ?>
+		>APP推送</label></p>
+		<p class="infoP"><input type="checkbox" class="infoCheckbox" checked disabled>个人中心--我的消息</label></p>
+	</div>
+	<div class="form-actions" style="text-align: center; ">
+		<button type="button" class="button info jinyongsave" onclick="submit_save_data()">保存</button>
+	</div>
+    <input type="hidden" class="teacher_num_count">
+    <input type="hidden" class="stu_num_count">
+    <input type="hidden" class="parent_num_count">
+    <input type="hidden" class="t_idarray" value="{$role_userid.teacherrole|default=''}">
+    <input type="hidden" class="s_idarray" value="{$role_userid.sturole|default=''}">
+    <input type="hidden" class="p_idarray" value="{$role_userid.parentrole|default=''}">
+
+	<input type="hidden" class="is_first_teacher" value="1">
+	<input type="hidden" class="is_first_parent" value="1">
+	<input type="hidden" class="edit_message_id" value="{$messageInfo.id|default=''}">
+
+	<input type="hidden" class="edit_teacher_num_count">
+	<input type="hidden" class="edit_stu_num_count">
+	<input type="hidden" class="edit_parent_num_count">
+
+	<input type="hidden" class="is_all_select_teacher">
+	<input type="hidden" class="is_all_select_stu">
+	<input type="hidden" class="is_all_select_parent">
+</div>
+
+
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+
+
+<script>
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+</script>
+
+<!--------------日历----------------->
+<script>
+	$(function () {
+		$("#datepicker_t,#datepicker_s,#datepicker_p").datepicker({
+			showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+//			maxDate: '0',
+			yearRange: "1950:2050"
+		});
+	});
+</script>
+<script>
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+</script>
+
+<script>
+    var ue = UE.getEditor('message');
+	bindQueryDistrictEvent("/Home/Teach", 'stu_pro_select', 'stu_city_select', 'stu_coun_select', 'stu_sch_select');
+	bindQueryDistrictEvent("/Home/Teach", 'pro_select', 'city_select', 'coun_select', 'sch_select');
+	var arrteacher = new Array();
+	var arrstu = new Array();
+	var arrparent = new Array();
+	var arrrole = new Array();
+	var editcount = 1;
+	var editcounts = 1;
+	var editcountp = 1;
+	//已经选中的要进行重新赋值
+	var t_idarray_isnull = $('.t_idarray').val();
+
+	if (t_idarray_isnull!=''&&t_idarray_isnull!=null){
+		t_idarray_isnull = t_idarray_isnull.split(',');
+
+
+		for(var i=0;i<t_idarray_isnull.length;i++){
+			arrteacher.push(parseInt(t_idarray_isnull[i]));
+			addrole(2);
+		}
+	}
+
+	var s_idarray_isnull = $('.s_idarray').val();
+	if (s_idarray_isnull!=''&&s_idarray_isnull!=null){
+		s_idarray_isnull = s_idarray_isnull.split(',');
+
+		for(var si=0;si<s_idarray_isnull.length;si++){
+			arrstu.push(parseInt(s_idarray_isnull[si]));
+			addrole(3);
+		}
+	}
+
+	var p_idarray_isnull = $('.p_idarray').val();
+
+	if (p_idarray_isnull!=''&&p_idarray_isnull!=null){
+		p_idarray_isnull = p_idarray_isnull.split(',');
+
+		for(var pi=0;pi<p_idarray_isnull.length;pi++){
+			arrparent.push(parseInt(p_idarray_isnull[pi]));
+			addrole(4);
+		}
+	}
+
+
+	//获取选中的角色
+	function addrole( role_id ) {
+		if(! (arrrole.indexOf(role_id)>-1) ) {
+			arrrole.push(role_id);
+		}
+	}
+    //点击进行用户保存数据操作
+	function saveIdsData( type ) {
+		var idstring = '';
+		if ( type == 2) {
+			var isallpage_t = $('#allpage_t').is(':checked');
+			if (isallpage_t != true) {
+				idstring = arrteacher.join(",");
+				$('.t_idarray').val(idstring);
+				addrole(2);
+			} else {
+				$('.is_all_select_teacher').val(1);
+				addrole(2);
+			}
+
+		}else if (type == 3){
+			var isallpage_s = $('#allpage_s').is(':checked');
+			if (isallpage_s != true) {
+				idstring = arrstu.join(",");
+				$('.s_idarray').val(idstring);
+				addrole(3);
+			} else {
+				$('.is_all_select_stu').val(1);
+				addrole(3);
+			}
+
+		}else {
+			var isallpage_p = $('#allpage_p').is(':checked');
+			if (isallpage_p != true){
+				idstring = arrparent.join(",");
+				$('.p_idarray').val(idstring);
+				addrole(4);
+			} else {
+				$('.is_all_select_parent').val(1);
+				addrole(4);
+			}
+
+		}
+		alert("保存成功");
+	}
+
+	//添加js存储 type 2,是 教师 3，是学生 4，家长
+	function addDataToArray( id,type ) {
+
+		if ( type == 2) {
+			if(! (arrteacher.indexOf(id)>-1) ) {
+				arrteacher.push(id);
+			}
+		}else if (type == 3){
+
+			if(! (arrstu.indexOf(id)>-1) ) {
+				arrstu.push(id);
+			}
+		}else {
+			if(! (arrparent.indexOf(id)>-1) ) {
+				arrparent.push(id);
+			}
+		}
+
+	}
+
+	//清空选中的所有用户
+	function clearedArray() {
+		arrteacher=[];
+		arrstu=[];
+		arrparent=[];
+	}
+	//统计选中的人数
+	function countnum( type ) {
+		if ( type == 2) {
+			var num = arrteacher.length;
+			$('.teacher_num').html(num);
+		}else if (type == 3){
+			var num = arrstu.length;
+			$('.stu_num').html(num);
+		}else {
+			var num = arrparent.length;
+			$('.parent_num').html(num);
+		}
+	}
+
+	//索引查询到要删除的元素
+	Array.prototype.removeByValue = function(id) {
+		var id = parseInt( id );
+		for(var i=0; i<this.length; i++) {
+			if(this[i] == id) {
+				this.splice(i, 1);
+				break;
+			}
+		}
+	}
+
+	//删除单页的用户数组里的数据
+	function delDataToArray( id,type ) {
+		if ( type == 2) {
+			arrteacher.removeByValue(id);
+		}else if ( type == 3) {
+			arrstu.removeByValue(id);
+		} else {
+			arrparent.removeByValue(id);
+		}
+	}
+
+	//教师点击搜索
+	function teacher_search() {
+
+		var string = "";
+		var teacher_name = $(".teacher_name").val();
+		var teacher_telephone = $(".teacher_telephone").val();
+		var province_id = $('#pro_select').val();
+		var city_id = $('#city_select').val();
+		var country_id = $('#coun_select').val();
+		var school_id = $('#sch_select').val();
+		var school_id = $('#sch_select').val();
+		var teacher_course_id = $('#teacher_course_id').val();
+		var teacher_grade_id = $('#teacher_grade_id').val();
+		var teacher_lock_status = $('#teacher_lock_status').val();
+		var teacher_vip_type = $('#teacher_vip_type').val();
+		var teacher_time_id = $('.teacher_time_id').val();
+        var teacher_is_checked = $('#teacher_is_checked').val();
+
+		if (province_id != '') {
+			string += '&province_id=' + province_id;
+		}
+		if (city_id != '') {
+			string += '&city_id=' + city_id;
+		}
+
+		if (country_id != '') {
+			string += '&country_id=' + country_id;
+		}
+
+        if (teacher_name != '') {
+            string = '&teacher_name=' + teacher_name;
+        }
+        if (teacher_telephone != '') {
+            string += '&teacher_telephone=' + teacher_telephone;
+        }
+        if (school_id != '') {
+            string += '&school_id=' + school_id;
+        }
+
+        if (teacher_course_id != '') {
+            string += '&course_id=' + teacher_course_id;
+        }
+        if (teacher_grade_id != '') {
+            string += '&grade_id=' + teacher_grade_id;
+        }
+        if (teacher_lock_status != '') {
+            string += '&lock_status=' + teacher_lock_status;
+        }
+        if (teacher_vip_type != '') {
+            string += '&vip_type=' + teacher_vip_type;
+        }
+        if (teacher_time_id != '') {
+            string += '&teacher_time_id=' + teacher_time_id;
+        }
+
+        var isallpage_t = $('#allpage_t').is(':checked');
+
+        if ( teacher_is_checked == 1 ) { //搜索已选择的
+            if (isallpage_t != true) {
+                var idstring = arrteacher.join(",");
+                $.get("index.php?m=Admin&c=Message&a=getTeacherList",{'is_checked':1,'ids':idstring},function(res){
+                    var provinces = res.list;
+                    var page = res.page;
+                    var string = "";
+                    var jishu = 0;
+                    for( var i=0 ; i<provinces.length;i++ ) {
+                        string += '<tr id="l_'+provinces[i].id+'">';
+
+						if (editcount == 2){
+							$('#allpage_t').attr('checked',true);
+						}
+
+						if($('#allpage_t').is(':checked')) { //选中全部
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+						} else {
+
+							if( (arrteacher.indexOf(parseInt(provinces[i].id))>-1) ) {
+								jishu++;
+								string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true"></td>';
+							} else{
+								string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'"></td>';
+							}
+
+						}
+
+                        string += '<td class="text-center">'+provinces[i].name+'</td>';
+                        string += '<td class="text-center">'+provinces[i].sex+'</td>';
+                        string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+                        string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+                        string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+                        if (provinces[i].is_vip_auth_id == 4) {
+                            string += '<td class="text-center">个人VIP</td>';
+                        } else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+                            string += '<td class="text-center">普通权限</td>';
+                        } else {
+                            string += '<td class="text-center">团体VIP</td>';
+                        }
+
+                        if (typeof (provinces[i].vipendtime) != "undefined") {
+                            string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+                        } else {
+                            string += '<td class="text-center"></td>';
+                        }
+
+                        string += '<td class="text-center">'+provinces[i].email+'</td>';
+                        string += '<td class="text-center">'+provinces[i].points+'</td>';
+
+                        if (provinces[i].lock == "0") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">未通过审核</span></td>';
+                        }
+                        if (provinces[i].lock == "1") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+                        }
+                        if (provinces[i].lock == "2") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-green fg_class">通过审核</span></td>';
+                        }
+                        if (provinces[i].lock == "3") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">已拒绝</span></td>';
+                        }
+                        string += '</tr>';
+                    }
+                    $('.teacherhtml').html('');
+                    $('.teacherhtml').html(string);
+                    $('.teacherPage').html(page);
+
+                    var eachnum=0;
+                    $('.checkbox_t').each(function(){
+                        eachnum++;
+                    })
+
+                    if ( eachnum == jishu ) {
+                        $('#onepage_t').attr('checked','checked');
+                        $('#onepage_t').prop('checked','checked');
+                    }
+/*
+                    $('#onepage_t').removeProp('checked','checked');
+                    $('#onepage_t').removeAttr('checked','checked');
+                    $('#allpage_t').removeProp('checked','checked');
+                    $('#allpage_t').removeAttr('checked','checked');*/
+                    var lis_t = $('.checkbox_t');
+                    for (var j = 0; j < lis_t.length; j++) {
+                        lis_t[j].index = j;
+                        lis_t[j].onclick = function () {
+
+                            var dtid = parseInt($(this).attr('attr'));
+                            if ($(this)[0].checked == false) {
+                                delDataToArray(dtid,2);//把用户从数组中剔除
+                                countnum(2);
+                                if($('#onepage_t').is(':checked')) {
+                                    $('#onepage_t').removeAttr('checked','checked');
+                                    $('#onepage_t').removeProp('checked','checked');
+                                } else if($('#allpage_t').is(':checked')) {
+                                    $('#allpage_t').removeAttr('checked','checked');
+                                    $('#allpage_t').removeProp('checked','checked');
+                                }
+                            } else if ($(this)[0].checked == true) {
+                                addDataToArray(dtid,2);//添加用户到数组
+                                countnum(2);
+                                if (lis_t.length == $("[name='checkbox_t']:checked").length) {
+                                    if(!$('#onepage_t').is(':checked') && sessionStorage.tname == undefined ) {
+                                        $('#onepage_t').attr('checked','checked');
+                                        $('#onepage_t').prop('checked','checked');
+                                    } else if(!$('#allpage_t').is(':checked') && sessionStorage.tname == "allYes") {
+                                        $('#allpage_t').attr('checked','checked');
+                                        $('#allpage_t').prop('checked','checked');
+                                    }
+
+                                };
+                            }
+                        }
+                    };
+
+                });
+            } else {
+                $.get("index.php?m=Admin&c=Message&a=getTeacherList"+string,{'':''},function(res){
+                    var provinces = res.list;
+                    var page = res.page;
+                    var string = "";
+                    var jishu = 0;
+                    for( var i=0 ; i<provinces.length;i++ ) {
+                        string += '<tr id="l_'+provinces[i].id+'">';
+
+						if (editcount == 2){
+							$('#allpage_t').attr('checked',true);
+						}
+
+						if($('#allpage_t').is(':checked')) { //选中全部
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+						} else {
+
+							if( (arrteacher.indexOf(parseInt(provinces[i].id))>-1) ) {
+								jishu++;
+								string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true"></td>';
+							} else{
+								string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'"></td>';
+							}
+						}
+
+                        string += '<td class="text-center">'+provinces[i].name+'</td>';
+                        string += '<td class="text-center">'+provinces[i].sex+'</td>';
+                        string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+                        string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+                        string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+                        if (provinces[i].is_vip_auth_id == 4) {
+                            string += '<td class="text-center">个人VIP</td>';
+                        } else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+                            string += '<td class="text-center">普通权限</td>';
+                        } else {
+                            string += '<td class="text-center">团体VIP</td>';
+                        }
+
+                        if (typeof (provinces[i].vipendtime) != "undefined") {
+                            string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+                        } else {
+                            string += '<td class="text-center"></td>';
+                        }
+
+                        string += '<td class="text-center">'+provinces[i].email+'</td>';
+                        string += '<td class="text-center">'+provinces[i].points+'</td>';
+
+                        if (provinces[i].lock == "0") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">未通过审核</span></td>';
+                        }
+                        if (provinces[i].lock == "1") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+                        }
+                        if (provinces[i].lock == "2") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-green fg_class">通过审核</span></td>';
+                        }
+                        if (provinces[i].lock == "3") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">已拒绝</span></td>';
+                        }
+                        string += '</tr>';
+                    }
+                    $('.teacherhtml').html('');
+                    $('.teacherhtml').html(string);
+                    $('.teacherPage').html(page);
+
+                    var eachnum=0;
+                    $('.checkbox_t').each(function(){
+                        eachnum++;
+                    })
+
+                    if ( eachnum == jishu ) {
+                        $('#onepage_t').attr('checked','checked');
+                        $('#onepage_t').prop('checked','checked');
+                    }
+
+                    $('#onepage_t').removeProp('checked','checked');
+                    $('#onepage_t').removeAttr('checked','checked');
+                    $('#allpage_t').removeProp('checked','checked');
+                    $('#allpage_t').removeAttr('checked','checked');
+                    var lis_t = $('.checkbox_t');
+                    for (var j = 0; j < lis_t.length; j++) {
+                        lis_t[j].index = j;
+                        lis_t[j].onclick = function () {
+
+                            var dtid = parseInt($(this).attr('attr'));
+                            if ($(this)[0].checked == false) {
+                                delDataToArray(dtid,2);//把用户从数组中剔除
+                                countnum(2);
+                                if($('#onepage_t').is(':checked')) {
+                                    $('#onepage_t').removeAttr('checked','checked');
+                                    $('#onepage_t').removeProp('checked','checked');
+                                } else if($('#allpage_t').is(':checked')) {
+                                    $('#allpage_t').removeAttr('checked','checked');
+                                    $('#allpage_t').removeProp('checked','checked');
+                                }
+                            } else if ($(this)[0].checked == true) {
+                                addDataToArray(dtid,2);//添加用户到数组
+                                countnum(2);
+                                if (lis_t.length == $("[name='checkbox_t']:checked").length) {
+                                    if(!$('#onepage_t').is(':checked') && sessionStorage.tname == undefined ) {
+                                        $('#onepage_t').attr('checked','checked');
+                                        $('#onepage_t').prop('checked','checked');
+                                    } else if(!$('#allpage_t').is(':checked') && sessionStorage.tname == "allYes") {
+                                        $('#allpage_t').attr('checked','checked');
+                                        $('#allpage_t').prop('checked','checked');
+                                    }
+
+                                };
+                            }
+                        }
+                    };
+
+                });
+            }
+        } else {
+            $.get("index.php?m=Admin&c=Message&a=getTeacherList"+string,{'':''},function(res){
+                var provinces = res.list;
+                var page = res.page;
+                var string = "";
+                var jishu = 0;
+                for( var i=0 ; i<provinces.length;i++ ) {
+                    string += '<tr id="l_'+provinces[i].id+'">';
+
+					if (editcount == 2 && i==0){
+
+						$('#allpage_t').prop('checked','checked');
+
+					}
+
+					if($('#allpage_t').is(':checked')) { //选中全部
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+					} else {
+
+						if( (arrteacher.indexOf(parseInt(provinces[i].id))>-1) ) {
+							jishu++;
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true"></td>';
+						} else{
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'"></td>';
+						}
+					}
+
+                    string += '<td class="text-center">'+provinces[i].name+'</td>';
+                    string += '<td class="text-center">'+provinces[i].sex+'</td>';
+                    string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+                    string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+                    string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+                    if (provinces[i].is_vip_auth_id == 4) {
+                        string += '<td class="text-center">个人VIP</td>';
+                    } else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+                        string += '<td class="text-center">普通权限</td>';
+                    } else {
+                        string += '<td class="text-center">团体VIP</td>';
+                    }
+
+                    if (typeof (provinces[i].vipendtime) != "undefined") {
+                        string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+                    } else {
+                        string += '<td class="text-center"></td>';
+                    }
+
+                    string += '<td class="text-center">'+provinces[i].email+'</td>';
+                    string += '<td class="text-center">'+provinces[i].points+'</td>';
+
+                    if (provinces[i].lock == "0") {
+
+                        string += '<td class="text-center fg_lock"><span class="fg-red fg_class">未通过审核</span></td>';
+                    }
+                    if (provinces[i].lock == "1") {
+
+                        string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+                    }
+                    if (provinces[i].lock == "2") {
+
+                        string += '<td class="text-center fg_lock"><span class="fg-green fg_class">通过审核</span></td>';
+                    }
+                    if (provinces[i].lock == "3") {
+
+                        string += '<td class="text-center fg_lock"><span class="fg-red fg_class">已拒绝</span></td>';
+                    }
+                    string += '</tr>';
+                }
+                $('.teacherhtml').html('');
+                $('.teacherhtml').html(string);
+                $('.teacherPage').html(page);
+
+                var eachnum=0;
+                $('.checkbox_t').each(function(){
+                    eachnum++;
+                })
+
+                if ( eachnum == jishu ) {
+                    $('#onepage_t').attr('checked','checked');
+                    $('#onepage_t').prop('checked','checked');
+                }
+
+                $('#onepage_t').removeProp('checked','checked');
+                $('#onepage_t').removeAttr('checked','checked');
+				if (editcount != 2) {
+					$('#allpage_t').removeProp('checked','checked');
+					$('#allpage_t').removeAttr('checked','checked');
+				}
+
+                var lis_t = $('.checkbox_t');
+                for (var j = 0; j < lis_t.length; j++) {
+                    lis_t[j].index = j;
+                    lis_t[j].onclick = function () {
+
+                        var dtid = parseInt($(this).attr('attr'));
+                        if ($(this)[0].checked == false) {
+                            delDataToArray(dtid,2);//把用户从数组中剔除
+                            countnum(2);
+                            if($('#onepage_t').is(':checked')) {
+                                $('#onepage_t').removeAttr('checked','checked');
+                                $('#onepage_t').removeProp('checked','checked');
+                            } else if($('#allpage_t').is(':checked')) {
+                                $('#allpage_t').removeAttr('checked','checked');
+                                $('#allpage_t').removeProp('checked','checked');
+                            }
+                        } else if ($(this)[0].checked == true) {
+                            addDataToArray(dtid,2);//添加用户到数组
+                            countnum(2);
+                            if (lis_t.length == $("[name='checkbox_t']:checked").length) {
+                                if(!$('#onepage_t').is(':checked') && sessionStorage.tname == undefined ) {
+                                    $('#onepage_t').attr('checked','checked');
+                                    $('#onepage_t').prop('checked','checked');
+                                } else if(!$('#allpage_t').is(':checked') && sessionStorage.tname == "allYes") {
+                                    $('#allpage_t').attr('checked','checked');
+                                    $('#allpage_t').prop('checked','checked');
+                                }
+
+                            };
+                        }
+                    }
+                };
+
+            });
+        }
+	}
+
+	//教师分页列表
+	function queryList(url) {
+		$.get(url,{'':''},function(res){
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+			var jishu = 0;
+			for( var i=0 ; i<provinces.length;i++ ) {
+				//教师全选1
+				if($('#onepage_t').is(':checked')) {
+					 $('#onepage_t').removeAttr('checked','checked');
+					 $('#onepage_t').removeProp('checked','checked');
+				 }
+				string += '<tr id="l_'+provinces[i].id+'">';
+
+				if (editcount == 2){
+					$('#allpage_t').attr('checked',true);
+				}
+
+				if($('#allpage_t').is(':checked')) { //选中全部
+					string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+				} else {
+
+					if( (arrteacher.indexOf(parseInt(provinces[i].id))>-1) ) {
+						jishu++;
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true"></td>';
+					} else{
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'"></td>';
+					}
+
+				}
+				
+				string += '<td class="text-center">'+provinces[i].name+'</td>';
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+				string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+				string += '<td class="text-center">'+provinces[i].points+'</td>';
+
+				if (provinces[i].lock == "0") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">未通过审核</span></td>';
+				}
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				}
+				if (provinces[i].lock == "2") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">通过审核</span></td>';
+				}
+				if (provinces[i].lock == "3") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">已拒绝</span></td>';
+				}
+				string += '</tr>';
+			}
+			var eachnum=0;
+			$('.checkbox_t').each(function(){
+				eachnum++;
+			})
+
+			if ( eachnum == jishu ) {
+				$('#onepage_t').attr('checked','checked');
+				$('#onepage_t').prop('checked','checked');
+			}
+
+			$('.teacherhtml').html('');
+			$('.teacherhtml').html(string);
+			$('.teacherPage').html(page);
+			
+			//教师全选2
+			//取消全选
+			var lis_t = $('.checkbox_t');
+			for (var j = 0; j < lis_t.length; j++) {
+				lis_t[j].index = j;
+				lis_t[j].onclick = function () {
+
+					var dtid = parseInt($(this).attr('attr'));
+					if ($(this)[0].checked == false) {
+						delDataToArray(dtid,2);//把用户从数组中剔除
+						countnum(2);
+						 if($('#onepage_t').is(':checked')) {
+							 $('#onepage_t').removeAttr('checked','checked');
+							 $('#onepage_t').removeProp('checked','checked');
+						 } else if($('#allpage_t').is(':checked')) {
+							 $('#allpage_t').removeAttr('checked','checked');
+							 $('#allpage_t').removeProp('checked','checked');
+						 }
+					} else if ($(this)[0].checked == true) {
+						addDataToArray(dtid,2);//添加用户到数组
+						countnum(2);
+						if (lis_t.length == $("[name='checkbox_t']:checked").length) {
+							if(!$('#onepage_t').is(':checked') && sessionStorage.tname == undefined ) {
+								 $('#onepage_t').attr('checked','checked');
+								 $('#onepage_t').prop('checked','checked');
+							 } else if(!$('#allpage_t').is(':checked') && sessionStorage.tname == "allYes") {
+								 $('#allpage_t').attr('checked','checked');
+								 $('#allpage_t').prop('checked','checked');
+							 }
+
+						};
+					}
+				}
+			};
+			
+		});
+	}
+
+	//加载当前教师第一页列表
+	$.get("index.php?m=Admin&c=Message&a=getTeacherList",{'':''},function(res){
+        $('.teacher_num_count').val(res.count);
+		$('.edit_teacher_num_count').val(res.count);
+		var provinces = res.list;
+		var page = res.page;
+		var string = "";
+		var jishu = 0;
+		for( var i=0 ; i<provinces.length;i++ ) {
+			string += '<tr id="l_'+provinces[i].id+'">';
+			var edit_teacher_num_count = $('.edit_teacher_num_count').val();
+			var tlength = arrteacher.length;
+
+			if (edit_teacher_num_count == tlength && i==0){
+				editcount = 2;
+				$('#allpage_t').attr('checked',true);
+			}
+			if($('#allpage_t').is(':checked')) { //选中全部
+				string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+			} else {
+
+				if( (arrteacher.indexOf(parseInt(provinces[i].id))>-1) ) {
+					jishu++;
+					string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'" checked="true"></td>';
+				} else{
+					string += '<td><input type="checkbox" class="infoCheckbox checkbox_t" name="checkbox_t" attr="'+provinces[i].id+'"></td>';
+				}
+
+			}
+
+			string += '<td class="text-center">'+provinces[i].name+'</td>';
+			string += '<td class="text-center">'+provinces[i].sex+'</td>';
+			string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+			string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+			string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+			if (provinces[i].is_vip_auth_id == 4) {
+				string += '<td class="text-center">个人VIP</td>';
+			} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+				string += '<td class="text-center">普通权限</td>';
+			} else {
+				string += '<td class="text-center">团体VIP</td>';
+			}
+
+			if (typeof (provinces[i].vipendtime) != "undefined") {
+				string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+			} else {
+				string += '<td class="text-center"></td>';
+			}
+
+			string += '<td class="text-center">'+provinces[i].email+'</td>';
+			string += '<td class="text-center">'+provinces[i].points+'</td>';
+
+			if (provinces[i].lock == "0") {
+
+				string += '<td class="text-center fg_lock"><span class="fg-red fg_class">未通过审核</span></td>';
+			}
+			if (provinces[i].lock == "1") {
+
+				string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+			}
+			if (provinces[i].lock == "2") {
+
+				string += '<td class="text-center fg_lock"><span class="fg-green fg_class">通过审核</span></td>';
+			}
+			if (provinces[i].lock == "3") {
+
+				string += '<td class="text-center fg_lock"><span class="fg-red fg_class">已拒绝</span></td>';
+			}
+			string += '</tr>';
+		}
+		$('.teacherhtml').html('');
+		$('.teacherhtml').html(string);
+		$('.teacherPage').html(page);
+
+		var eachnum=0;
+		$('.checkbox_t').each(function(){
+			eachnum++;
+		})
+
+		if ( eachnum == jishu ) {
+			$('#onepage_t').attr('checked','checked');
+			$('#onepage_t').prop('checked','checked');
+		}
+
+		//教师全选3
+		//全选和反选中
+		$('#onepage_t').click(function(){
+			$('.is_all_select_teacher').val(2);
+			var all_checkbox_t=$('.checkbox_t');
+			var temp_status=true;
+			if($(this)[0].checked==true){
+				//本次选中
+				temp_status=true;
+				$('#onepage_t').prop('checked','checked');
+				$('#onepage_t').attr('checked','checked');
+				$('#allpage_t').removeProp('checked','checked');
+				$('#allpage_t').removeAttr('checked','checked');
+//				$('.checkbox_t').disabled = true;
+				sessionStorage.clear();
+			}else{
+				//本次取消
+				temp_status=false;
+				$('#onepage_t').removeProp('checked','checked');
+				$('#onepage_t').removeAttr('checked','checked');
+				b = 0;
+			}
+
+			for(var i=0;i<all_checkbox_t.length;i++){
+				var tid = parseInt($(all_checkbox_t[i]).attr('attr'));
+				if (temp_status == true) {
+					addDataToArray(tid,2);//添加用户到数组
+					countnum(2);
+				} else {
+					delDataToArray(tid,2);//把用户从数组中剔除
+					countnum(2);
+				}
+				all_checkbox_t[i].checked=temp_status;
+				all_checkbox_t[i].disabled = false;
+			}
+		});
+		
+		//选择全部
+		$('#allpage_t').click(function(){
+			clearedArray();
+            var tcount = $('.teacher_num_count').val();
+            $('.teacher_num').html(tcount);
+			var all_checkbox_t=$('.checkbox_t');
+			var temp_status=true;
+			if($(this)[0].checked==true){
+				//本次选中
+				temp_status=true;
+				$('#allpage_t').prop('checked','checked');
+				$('#allpage_t').attr('checked','checked');
+				$('#onepage_t').removeProp('checked','checked');
+				$('#onepage_t').removeAttr('checked','checked');
+				sessionStorage.tname="allYes";
+			}else{
+				//本次取消
+				temp_status=false;
+				$('#allpage_t').removeProp('checked','checked');
+				$('#allpage_t').removeAttr('checked','checked');
+			}
+			for(var i=0;i<all_checkbox_t.length;i++){
+				all_checkbox_t[i].checked=temp_status;
+				all_checkbox_t[i].disabled = temp_status;
+			}
+		});
+		
+		//取消全选
+		var lis_t = $('.checkbox_t');
+		for (var j = 0; j < lis_t.length; j++) {
+			lis_t[j].index = j;
+			lis_t[j].onclick = function () {
+				var dtid = parseInt($(this).attr('attr'));
+				if ($(this)[0].checked == false) {
+					delDataToArray(dtid,2);//把用户从数组中剔除
+					countnum(2);
+					 if($('#onepage_t').is(':checked')) {
+						 $('#onepage_t').removeAttr('checked','checked');
+					 	 $('#onepage_t').removeProp('checked','checked');
+					 } else if($('#allpage_t').is(':checked')) {
+						 $('#allpage_t').removeAttr('checked','checked');
+					 	 $('#allpage_t').removeProp('checked','checked');
+					 }
+				} else if ($(this)[0].checked == true) {
+					addDataToArray(dtid,2);//添加用户到数组
+					countnum(2);
+					if (lis_t.length == $("[name='checkbox_t']:checked").length) {
+						if(!$('#onepage_t').is(':checked') && sessionStorage.tname == undefined ) {
+							 $('#onepage_t').attr('checked','checked');
+							 $('#onepage_t').prop('checked','checked');
+						 } else if(!$('#allpage_t').is(':checked') && sessionStorage.tname == "allYes") {
+							 $('#allpage_t').attr('checked','checked');
+							 $('#allpage_t').prop('checked','checked');
+						 }
+						
+					};
+				}
+			}
+		};
+
+		countnum(2);
+
+	});
+
+
+	//点击加载学生
+	function stutab() {
+		var is_first_teacher = $('.is_first_teacher').val();
+		if (is_first_teacher == 1) {
+			$.get("index.php?m=Admin&c=Message&a=getStuList",{'':''},function(res){
+				$('.stu_num_count').val(res.count);
+				$('.edit_stu_num_count').val(res.count);
+				var provinces = res.list;
+				var page = res.page;
+				var string = "";
+				var jishu = 0;
+
+				for( var i=0 ; i<provinces.length;i++ ) {
+					string += '<tr id="l_'+provinces[i].id+'">';
+
+					var edit_stu_num_count = $('.edit_stu_num_count').val();
+					var slength = arrstu.length;
+
+					if (edit_stu_num_count == slength){
+						editcounts = 2;
+						$('#allpage_s').attr('checked',true);
+					}
+					if($('#allpage_s').is(':checked')) { //选中全部
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+					} else {
+
+						if( (arrstu.indexOf(parseInt(provinces[i].id))>-1) ) {
+							jishu++;
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'" checked="true"></td>';
+						} else{
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'"></td>';
+						}
+					}
+
+					if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+					} else {
+						string += '<td></td>';
+					}
+					string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+					if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].student_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+					} else {
+						string += '<td class="text-center">没有关联家长</td>';
+					}
+					string += '<td class="text-center">'+provinces[i].student_id+'</td>';
+					string += '<td class="text-center">'+provinces[i].birth_date+'</td>';
+
+					if ( typeof (provinces[i].school_name) != "undefined" && provinces[i].school_name !='' && provinces[i].school_name !=null && provinces[i].school_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+					} else {
+						string += '<td class="text-center">学校审核中</td>';
+					}
+
+
+					string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+					string += '<td class="text-center">'+provinces[i].email+'</td>';
+					string += '<td class="text-center">'+provinces[i].parent_tel+'</td>';
+					if (provinces[i].is_vip_auth_id == 4) {
+						string += '<td class="text-center">个人VIP</td>';
+					} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+						string += '<td class="text-center">普通权限</td>';
+					} else {
+						string += '<td class="text-center">团体VIP</td>';
+					}
+
+					if (typeof (provinces[i].vipendtime) != "undefined") {
+						string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+					} else {
+						string += '<td class="text-center"></td>';
+					}
+
+					if (provinces[i].lock == "1") {
+
+						string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+					} else {
+						string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+					}
+
+					string += '</tr>';
+				}
+				$('.stulist').html('');
+				$('.stulist').html(string);
+				$('.stupage').html(page);
+
+				var eachnum=0;
+				$('.checkbox_s').each(function(){
+					eachnum++;
+				})
+
+				if ( eachnum == jishu ) {
+					$('#onepage_s').attr('checked','checked');
+					$('#onepage_s').prop('checked','checked');
+				}
+
+				//学生全选3
+				//全选和反选中
+				$('#onepage_s').click(function(){
+					$('.is_all_select_stu').val(2);
+					var all_checkbox_s=$('.checkbox_s');
+					var temp_status=true;
+					if($(this)[0].checked==true){
+						//本次选中
+						temp_status=true;
+						$('#onepage_s').prop('checked','checked');
+						$('#onepage_s').attr('checked','checked');
+						$('#allpage_s').removeProp('checked','checked');
+						$('#allpage_s').removeAttr('checked','checked');
+						sessionStorage.clear();
+					}else{
+						//本次取消
+						temp_status=false;
+						$('#onepage_s').removeProp('checked','checked');
+						$('#onepage_s').removeAttr('checked','checked');
+						b = 0;
+					}
+					for(var i=0;i<all_checkbox_s.length;i++){
+						var tid = parseInt($(all_checkbox_s[i]).attr('attr'));
+						if (temp_status == true) {
+							addDataToArray(tid,3);//添加用户到数组
+							countnum(3);
+						} else {
+							delDataToArray(tid,3);//把用户从数组中剔除
+							countnum(3);
+						}
+						all_checkbox_s[i].checked=temp_status;
+						all_checkbox_s[i].disabled = false;
+					}
+				});
+
+				//选择全部
+				$('#allpage_s').click(function(){
+					clearedArray();
+					var scount = $('.stu_num_count').val();
+					$('.stu_num').html(scount);
+					var all_checkbox_s=$('.checkbox_s');
+					var temp_status=true;
+					if($(this)[0].checked==true){
+						//本次选中
+						temp_status=true;
+						$('#allpage_s').prop('checked','checked');
+						$('#allpage_s').attr('checked','checked');
+						$('#onepage_s').removeProp('checked','checked');
+						$('#onepage_s').removeAttr('checked','checked');
+						sessionStorage.sname="allYes";
+					}else{
+						//本次取消
+						temp_status=false;
+						$('#allpage_s').removeProp('checked','checked');
+						$('#allpage_s').removeAttr('checked','checked');
+					}
+					for(var i=0;i<all_checkbox_s.length;i++){
+						all_checkbox_s[i].checked=temp_status;
+						all_checkbox_s[i].disabled = temp_status;
+					}
+				});
+
+				//取消全选
+				var lis_s = $('.checkbox_s');
+				for (var j = 0; j < lis_s.length; j++) {
+					lis_s[j].index = j;
+					lis_s[j].onclick = function () {
+						var dtid = parseInt($(this).attr('attr'));
+						if ($(this)[0].checked == false) {
+							delDataToArray(dtid,3);//把用户从数组中剔除
+							countnum(3);
+							if($('#onepage_s').is(':checked')) {
+								$('#onepage_s').removeAttr('checked','checked');
+								$('#onepage_s').removeProp('checked','checked');
+							} else if($('#allpage_s').is(':checked')) {
+								$('#allpage_s').removeAttr('checked','checked');
+								$('#allpage_s').removeProp('checked','checked');
+							}
+						} else if ($(this)[0].checked == true) {
+							addDataToArray(dtid,3);//添加用户到数组
+							countnum(3);
+							if (lis_s.length == $("[name='checkbox_s']:checked").length) {
+								if(!$('#onepage_s').is(':checked') && sessionStorage.sname == undefined ) {
+									$('#onepage_s').attr('checked','checked');
+									$('#onepage_s').prop('checked','checked');
+								} else if(!$('#allpage_s').is(':checked') && sessionStorage.sname == "allYes") {
+									$('#allpage_s').attr('checked','checked');
+									$('#allpage_s').prop('checked','checked');
+								}
+
+							};
+						}
+					}
+				};
+
+			});
+			$('.is_first_teacher').val('2');
+		}
+		countnum(3);
+	}
+
+	//点击学生加载
+	function stuQueryList( url ) {
+		$.get(url,{'':''},function(res){
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+			var jishu = 0;
+
+			for( var i=0 ; i<provinces.length;i++ ) {
+				//学生全选1
+				if($('#onepage_s').is(':checked')) {
+					 $('#onepage_s').removeAttr('checked','checked');
+					 $('#onepage_s').removeProp('checked','checked');
+				 }
+				string += '<tr id="l_'+provinces[i].id+'">';
+				if($('#allpage_s').is(':checked')) {
+					string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+				} else {
+					if( (arrstu.toString().indexOf(provinces[i].id)>-1) ) {
+						jishu++;
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'" checked="true"></td>';
+					} else{
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'"></td>';
+					}
+				}
+
+				if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+				if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+				} else {
+					string += '<td class="text-center">没有关联家长</td>';
+				}
+				string += '<td class="text-center">'+provinces[i].student_id+'</td>';
+				string += '<td class="text-center">'+provinces[i].birth_date+'</td>';
+
+				if ( typeof (provinces[i].school_name) != "undefined" && provinces[i].school_name !='' && provinces[i].school_name !=null && provinces[i].school_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+				} else {
+					string += '<td class="text-center">学校审核中</td>';
+				}
+
+
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+				string += '<td class="text-center">'+provinces[i].parent_tel+'</td>';
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				} else {
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+				}
+
+				string += '</tr>';
+			}
+			$('.stulist').html('');
+			$('.stulist').html(string);
+			$('.stupage').html(page);
+
+			var eachnum=0;
+			$('.checkbox_s').each(function(){
+				eachnum++;
+			})
+
+			if ( eachnum == jishu ) {
+				$('#onepage_s').attr('checked','checked');
+				$('#onepage_s').prop('checked','checked');
+			}
+			
+			//学生全选2
+			//取消全选
+			var lis_s = $('.checkbox_s');
+			for (var j = 0; j < lis_s.length; j++) {
+				lis_s[j].index = j;
+				lis_s[j].onclick = function () {
+					var dtid = parseInt($(this).attr('attr'));
+					if ($(this)[0].checked == false) {
+						delDataToArray(dtid,3);//把用户从数组中剔除
+						countnum(3);
+						 if($('#onepage_s').is(':checked')) {
+							 $('#onepage_s').removeAttr('checked','checked');
+							 $('#onepage_s').removeProp('checked','checked');
+						 } else if($('#allpage_s').is(':checked')) {
+							 $('#allpage_s').removeAttr('checked','checked');
+							 $('#allpage_s').removeProp('checked','checked');
+						 }
+					} else if ($(this)[0].checked == true) {
+						addDataToArray(dtid,3);//添加用户到数组
+						countnum(3);
+						if (lis_s.length == $("[name='checkbox_s']:checked").length) {
+							if(!$('#onepage_s').is(':checked') && sessionStorage.sname == undefined ) {
+								 $('#onepage_s').attr('checked','checked');
+								 $('#onepage_s').prop('checked','checked');
+							 } else if(!$('#allpage_s').is(':checked') && sessionStorage.sname == "allYes") {
+								 $('#allpage_s').attr('checked','checked');
+								 $('#allpage_s').prop('checked','checked');
+							 }
+
+						};
+					}
+				}
+			};
+			
+		});
+	}
+	//搜索学生
+	function stu_search(){
+		var string = "";
+		var stuname = $(".stuname").val();
+		var stuparentphone = $(".stuparentphone").val();
+
+		var province_id = $('#stu_pro_select').val();
+		var city_id = $('#stu_city_select').val();
+		var country_id = $('#stu_coun_select').val();
+		var school_id = $('#stu_sch_select').val();
+		var stu_grade_id = $('#stu_grade_id').val();
+		var stu_lock_status = $('#stu_lock_status').val();
+		var stu_type = $('#stu_type').val();
+		var stu_time_id = $('.stu_time_id').val();
+        var stu_is_checked = $('#stu_is_checked').val();
+
+		if (province_id != '') {
+			string += '&province_id=' + province_id;
+		}
+		if (city_id != '') {
+			string += '&city_id=' + city_id;
+		}
+
+		if (country_id != '') {
+			string += '&country_id=' + country_id;
+		}
+
+		if (stuname != '') {
+			string = '&stuname=' + stuname;
+		}
+		if (stuparentphone != '') {
+			string += '&stuparentphone=' + stuparentphone;
+		}
+		if (school_id != '') {
+			string += '&school_id=' + school_id;
+		}
+		if (stu_grade_id != '') {
+			string += '&stu_grade_id=' + stu_grade_id;
+		}
+		if (stu_lock_status != '') {
+			string += '&status=' + stu_lock_status;
+		}
+		if (stu_type != '') {
+			string += '&vip_type=' + stu_type;
+		}
+		if (stu_time_id != '') {
+			string += '&stu_time_id=' + stu_time_id;
+		}
+
+        var isallpage_s = $('#allpage_s').is(':checked');
+
+        if ( stu_is_checked == 1 ) { //搜索已选择的
+            if (isallpage_s != true) {
+                var idstring = arrstu.join(",");
+                $.get("index.php?m=Admin&c=Message&a=getStuList",{'is_checked':1,'ids':idstring},function(res){
+                    var provinces = res.list;
+                    var page = res.page;
+                    var string = "";
+                    var jishu = 0;
+
+                    for( var i=0 ; i<provinces.length;i++ ) {
+                        string += '<tr id="l_'+provinces[i].id+'">';
+
+                        if( (arrstu.toString().indexOf(provinces[i].id)>-1) ) {
+                            jishu++;
+                            string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'" checked="true"></td>';
+                        } else{
+                            string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'"></td>';
+                        }
+
+                        if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+                        } else {
+                            string += '<td></td>';
+                        }
+                        string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+                        if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].student_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+                        } else {
+                            string += '<td class="text-center">没有关联家长</td>';
+                        }
+                        string += '<td class="text-center">'+provinces[i].student_id+'</td>';
+                        string += '<td class="text-center">'+provinces[i].birth_date+'</td>';
+
+                        if ( typeof (provinces[i].school_name) != "undefined" && provinces[i].school_name !='' && provinces[i].school_name !=null && provinces[i].school_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+                        } else {
+                            string += '<td class="text-center">学校审核中</td>';
+                        }
+
+
+                        string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+                        string += '<td class="text-center">'+provinces[i].email+'</td>';
+                        string += '<td class="text-center">'+provinces[i].parent_tel+'</td>';
+                        if (provinces[i].is_vip_auth_id == 4) {
+                            string += '<td class="text-center">个人VIP</td>';
+                        } else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+                            string += '<td class="text-center">普通权限</td>';
+                        } else {
+                            string += '<td class="text-center">团体VIP</td>';
+                        }
+
+                        if (typeof (provinces[i].vipendtime) != "undefined") {
+                            string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+                        } else {
+                            string += '<td class="text-center"></td>';
+                        }
+
+                        if (provinces[i].lock == "1") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+                        } else {
+                            string += '<td class="text-center"><span class="fg-green fg_class">正常</span></td>';
+                        }
+                        string += '</tr>';
+                    }
+                    $('.stulist').html('');
+                    $('.stulist').html(string);
+                    $('.stupage').html(page);
+
+                    var eachnum=0;
+                    $('.checkbox_s').each(function(){
+                        eachnum++;
+                    })
+
+                    if ( eachnum == jishu ) {
+                        $('#onepage_s').attr('checked','checked');
+                        $('#onepage_s').prop('checked','checked');
+                    }
+                    //学生全选2
+                    //取消全选
+                   /* $('#onepage_s').removeProp('checked','checked');
+                    $('#onepage_s').removeAttr('checked','checked');
+                    $('#allpage_s').removeProp('checked','checked');
+                    $('#allpage_s').removeAttr('checked','checked');*/
+                    var lis_s = $('.checkbox_s');
+                    for (var j = 0; j < lis_s.length; j++) {
+                        lis_s[j].index = j;
+                        lis_s[j].onclick = function () {
+                            var dtid = parseInt($(this).attr('attr'));
+                            if ($(this)[0].checked == false) {
+                                delDataToArray(dtid,3);//把用户从数组中剔除
+                                countnum(3);
+                                if($('#onepage_s').is(':checked')) {
+                                    $('#onepage_s').removeAttr('checked','checked');
+                                    $('#onepage_s').removeProp('checked','checked');
+                                } else if($('#allpage_s').is(':checked')) {
+                                    $('#allpage_s').removeAttr('checked','checked');
+                                    $('#allpage_s').removeProp('checked','checked');
+                                }
+                            } else if ($(this)[0].checked == true) {
+                                addDataToArray(dtid,3);//添加用户到数组
+                                countnum(3);
+                                if (lis_s.length == $("[name='checkbox_s']:checked").length) {
+                                    if(!$('#onepage_s').is(':checked') && sessionStorage.sname == undefined ) {
+                                        $('#onepage_s').attr('checked','checked');
+                                        $('#onepage_s').prop('checked','checked');
+                                    } else if(!$('#allpage_s').is(':checked') && sessionStorage.sname == "allYes") {
+                                        $('#allpage_s').attr('checked','checked');
+                                        $('#allpage_s').prop('checked','checked');
+                                    }
+
+                                };
+                            }
+                        }
+                    };
+
+                });
+            } else {
+                $.get("index.php?m=Admin&c=Message&a=getStuList"+string,{'':''},function(res){
+                    var provinces = res.list;
+                    var page = res.page;
+                    var string = "";
+                    var jishu = 0;
+
+                    for( var i=0 ; i<provinces.length;i++ ) {
+                        string += '<tr id="l_'+provinces[i].id+'">';
+
+                        if( (arrstu.toString().indexOf(provinces[i].id)>-1) ) {
+                            jishu++;
+                            string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'" checked="true"></td>';
+                        } else{
+                            string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'"></td>';
+                        }
+
+                        if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+                        } else {
+                            string += '<td></td>';
+                        }
+                        string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+                        if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].student_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+                        } else {
+                            string += '<td class="text-center">没有关联家长</td>';
+                        }
+                        string += '<td class="text-center">'+provinces[i].student_id+'</td>';
+                        string += '<td class="text-center">'+provinces[i].birth_date+'</td>';
+
+                        if ( typeof (provinces[i].school_name) != "undefined" && provinces[i].school_name !='' && provinces[i].school_name !=null && provinces[i].school_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+                        } else {
+                            string += '<td class="text-center">学校审核中</td>';
+                        }
+
+
+                        string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+                        string += '<td class="text-center">'+provinces[i].email+'</td>';
+                        string += '<td class="text-center">'+provinces[i].parent_tel+'</td>';
+                        if (provinces[i].is_vip_auth_id == 4) {
+                            string += '<td class="text-center">个人VIP</td>';
+                        } else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+                            string += '<td class="text-center">普通权限</td>';
+                        } else {
+                            string += '<td class="text-center">团体VIP</td>';
+                        }
+
+                        if (typeof (provinces[i].vipendtime) != "undefined") {
+                            string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+                        } else {
+                            string += '<td class="text-center"></td>';
+                        }
+
+                        if (provinces[i].lock == "1") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+                        } else {
+                            string += '<td class="text-center"><span class="fg-green fg_class">正常</span></td>';
+                        }
+                        string += '</tr>';
+                    }
+                    $('.stulist').html('');
+                    $('.stulist').html(string);
+                    $('.stupage').html(page);
+
+                    var eachnum=0;
+                    $('.checkbox_s').each(function(){
+                        eachnum++;
+                    })
+
+                    if ( eachnum == jishu ) {
+                        $('#onepage_s').attr('checked','checked');
+                        $('#onepage_s').prop('checked','checked');
+                    }
+                    //学生全选2
+                    //取消全选
+                    $('#onepage_s').removeProp('checked','checked');
+                    $('#onepage_s').removeAttr('checked','checked');
+                    $('#allpage_s').removeProp('checked','checked');
+                    $('#allpage_s').removeAttr('checked','checked');
+                    var lis_s = $('.checkbox_s');
+                    for (var j = 0; j < lis_s.length; j++) {
+                        lis_s[j].index = j;
+                        lis_s[j].onclick = function () {
+                            var dtid = parseInt($(this).attr('attr'));
+                            if ($(this)[0].checked == false) {
+                                delDataToArray(dtid,3);//把用户从数组中剔除
+                                countnum(3);
+                                if($('#onepage_s').is(':checked')) {
+                                    $('#onepage_s').removeAttr('checked','checked');
+                                    $('#onepage_s').removeProp('checked','checked');
+                                } else if($('#allpage_s').is(':checked')) {
+                                    $('#allpage_s').removeAttr('checked','checked');
+                                    $('#allpage_s').removeProp('checked','checked');
+                                }
+                            } else if ($(this)[0].checked == true) {
+                                addDataToArray(dtid,3);//添加用户到数组
+                                countnum(3);
+                                if (lis_s.length == $("[name='checkbox_s']:checked").length) {
+                                    if(!$('#onepage_s').is(':checked') && sessionStorage.sname == undefined ) {
+                                        $('#onepage_s').attr('checked','checked');
+                                        $('#onepage_s').prop('checked','checked');
+                                    } else if(!$('#allpage_s').is(':checked') && sessionStorage.sname == "allYes") {
+                                        $('#allpage_s').attr('checked','checked');
+                                        $('#allpage_s').prop('checked','checked');
+                                    }
+
+                                };
+                            }
+                        }
+                    };
+
+                });
+            }
+
+        } else {
+            $.get("index.php?m=Admin&c=Message&a=getStuList"+string,{'':''},function(res){
+                var provinces = res.list;
+                var page = res.page;
+                var string = "";
+                var jishu = 0;
+
+                for( var i=0 ; i<provinces.length;i++ ) {
+                    string += '<tr id="l_'+provinces[i].id+'">';
+
+					if (editcounts == 2 && i==0){
+
+						$('#allpage_s').prop('checked','checked');
+
+					}
+
+					if($('#allpage_s').is(':checked')) { //选中全部
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+					} else {
+
+						if( (arrstu.indexOf(parseInt(provinces[i].id))>-1) ) {
+							jishu++;
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'" checked="true"></td>';
+						} else{
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_s" name="checkbox_s" attr="'+provinces[i].id+'"></td>';
+						}
+					}
+
+                    if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+                        string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+                    } else {
+                        string += '<td></td>';
+                    }
+                    string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+                    if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].student_name !='null' ) {
+                        string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+                    } else {
+                        string += '<td class="text-center">没有关联家长</td>';
+                    }
+                    string += '<td class="text-center">'+provinces[i].student_id+'</td>';
+                    string += '<td class="text-center">'+provinces[i].birth_date+'</td>';
+
+                    if ( typeof (provinces[i].school_name) != "undefined" && provinces[i].school_name !='' && provinces[i].school_name !=null && provinces[i].school_name !='null' ) {
+                        string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+                    } else {
+                        string += '<td class="text-center">学校审核中</td>';
+                    }
+
+
+                    string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+                    string += '<td class="text-center">'+provinces[i].email+'</td>';
+                    string += '<td class="text-center">'+provinces[i].parent_tel+'</td>';
+                    if (provinces[i].is_vip_auth_id == 4) {
+                        string += '<td class="text-center">个人VIP</td>';
+                    } else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+                        string += '<td class="text-center">普通权限</td>';
+                    } else {
+                        string += '<td class="text-center">团体VIP</td>';
+                    }
+
+                    if (typeof (provinces[i].vipendtime) != "undefined") {
+                        string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+                    } else {
+                        string += '<td class="text-center"></td>';
+                    }
+
+                    if (provinces[i].lock == "1") {
+
+                        string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+                    } else {
+                        string += '<td class="text-center"><span class="fg-green fg_class">正常</span></td>';
+                    }
+                    string += '</tr>';
+                }
+                $('.stulist').html('');
+                $('.stulist').html(string);
+                $('.stupage').html(page);
+
+                var eachnum=0;
+                $('.checkbox_s').each(function(){
+                    eachnum++;
+                })
+
+                if ( eachnum == jishu ) {
+                    $('#onepage_s').attr('checked','checked');
+                    $('#onepage_s').prop('checked','checked');
+                }
+                //学生全选2
+                //取消全选
+                $('#onepage_s').removeProp('checked','checked');
+                $('#onepage_s').removeAttr('checked','checked');
+				if (editcounts !=2) {
+					$('#allpage_s').removeProp('checked','checked');
+					$('#allpage_s').removeAttr('checked','checked');
+				}
+
+                var lis_s = $('.checkbox_s');
+                for (var j = 0; j < lis_s.length; j++) {
+                    lis_s[j].index = j;
+                    lis_s[j].onclick = function () {
+                        var dtid = parseInt($(this).attr('attr'));
+                        if ($(this)[0].checked == false) {
+                            delDataToArray(dtid,3);//把用户从数组中剔除
+                            countnum(3);
+                            if($('#onepage_s').is(':checked')) {
+                                $('#onepage_s').removeAttr('checked','checked');
+                                $('#onepage_s').removeProp('checked','checked');
+                            } else if($('#allpage_s').is(':checked')) {
+                                $('#allpage_s').removeAttr('checked','checked');
+                                $('#allpage_s').removeProp('checked','checked');
+                            }
+                        } else if ($(this)[0].checked == true) {
+                            addDataToArray(dtid,3);//添加用户到数组
+                            countnum(3);
+                            if (lis_s.length == $("[name='checkbox_s']:checked").length) {
+                                if(!$('#onepage_s').is(':checked') && sessionStorage.sname == undefined ) {
+                                    $('#onepage_s').attr('checked','checked');
+                                    $('#onepage_s').prop('checked','checked');
+                                } else if(!$('#allpage_s').is(':checked') && sessionStorage.sname == "allYes") {
+                                    $('#allpage_s').attr('checked','checked');
+                                    $('#allpage_s').prop('checked','checked');
+                                }
+
+                            };
+                        }
+                    }
+                };
+
+            });
+        }
+
+	}
+
+	//点击加载家长
+	function parenttab() {
+		var is_first_parent = $('.is_first_parent').val();
+
+		if (is_first_parent == 1) {
+			$.get("index.php?m=Admin&c=Message&a=getParentList",{'':''},function(res){
+				$('.parent_num_count').val(res.count);
+				$('.edit_parent_num_count').val(res.count);
+				var provinces = res.list;
+				var page = res.page;
+				var string = "";
+				var jishu = 0;
+
+				for( var i=0 ; i<provinces.length;i++ ) {
+					string += '<tr id="l_'+provinces[i].id+'">';
+
+					var edit_parent_num_count = $('.edit_parent_num_count').val();
+					var plength = arrparent.length;
+
+					if (edit_parent_num_count == plength){
+						editcountp = 2;
+						$('#allpage_p').attr('checked',true);
+					}
+					if($('#allpage_p').is(':checked')) { //选中全部
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+					} else {
+
+						if( (arrparent.indexOf(parseInt(provinces[i].id))>-1) ) {
+							jishu++;
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true"></td>';
+						} else{
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'"></td>';
+						}
+					}
+
+
+					if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].parent_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+					} else {
+						string += '<td></td>';
+					}
+					string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+					if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+					} else {
+						string += '<td></td>';
+					}
+					string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+					string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+					string += '<td class="text-center">'+provinces[i].email+'</td>';
+
+					if (provinces[i].is_vip_auth_id == 4) {
+						string += '<td class="text-center">个人VIP</td>';
+					} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+						string += '<td class="text-center">普通权限</td>';
+					} else {
+						string += '<td class="text-center">团体VIP</td>';
+					}
+
+					if (typeof (provinces[i].vipendtime) != "undefined") {
+						string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+					} else {
+						string += '<td class="text-center"></td>';
+					}
+
+					if (provinces[i].lock == "1") {
+
+						string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+					} else {
+						string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+					}
+
+					string += '</tr>';
+				}
+				$('.parenthtml').html('');
+				$('.parenthtml').html(string);
+				$('.parentpage').html(page);
+
+				var eachnum=0;
+				$('.checkbox_p').each(function(){
+					eachnum++;
+				})
+
+				if ( eachnum == jishu ) {
+					$('#onepage_p').attr('checked','checked');
+					$('#onepage_p').prop('checked','checked');
+				}
+
+				//教师全选3
+				//全选和反选中
+				$('#onepage_p').click(function(){
+					$('.is_all_select_parent').val(2);
+					var all_checkbox_p=$('.checkbox_p');
+					var temp_status=true;
+					if($(this)[0].checked==true){
+						//本次选中
+						temp_status=true;
+						$('#onepage_p').prop('checked','checked');
+						$('#onepage_p').attr('checked','checked');
+						$('#allpage_p').removeProp('checked','checked');
+						$('#allpage_p').removeAttr('checked','checked');
+						sessionStorage.clear();
+					}else{
+						//本次取消
+						temp_status=false;
+						$('#onepage_p').removeProp('checked','checked');
+						$('#onepage_p').removeAttr('checked','checked');
+						b = 0;
+					}
+					for(var i=0;i<all_checkbox_p.length;i++){
+						var tid = parseInt($(all_checkbox_p[i]).attr('attr'));
+						if (temp_status == true) {
+							addDataToArray(tid,4);//添加用户到数组
+							countnum(4);
+						} else {
+							delDataToArray(tid,4);//把用户从数组中剔除
+							countnum(4);
+						}
+						all_checkbox_p[i].checked=temp_status;
+						all_checkbox_p[i].disabled=false;
+					}
+				});
+
+				//选择全部
+				$('#allpage_p').click(function(){
+					clearedArray();
+					var pcount = $('.parent_num_count').val();
+					$('.parent_num').html(pcount);
+					var all_checkbox_p=$('.checkbox_p');
+					var temp_status=true;
+					if($(this)[0].checked==true){
+						//本次选中
+						temp_status=true;
+						$('#allpage_p').prop('checked','checked');
+						$('#allpage_p').attr('checked','checked');
+						$('#onepage_p').removeProp('checked','checked');
+						$('#onepage_p').removeAttr('checked','checked');
+						sessionStorage.pname="allYes";
+					}else{
+						//本次取消
+						temp_status=false;
+						$('#allpage_p').removeProp('checked','checked');
+						$('#allpage_p').removeAttr('checked','checked');
+					}
+					for(var i=0;i<all_checkbox_p.length;i++){
+						all_checkbox_p[i].checked=temp_status;
+						all_checkbox_p[i].disabled=temp_status;
+					}
+				});
+
+				//取消全选
+				var lis_p = $('.checkbox_p');
+				for (var j = 0; j < lis_p.length; j++) {
+					lis_p[j].index = j;
+					lis_p[j].onclick = function () {
+						var ptid = parseInt($(this).attr('attr'));
+						if ($(this)[0].checked == false) {
+							delDataToArray(ptid,4);//把用户从数组中剔除
+							countnum(4);
+							if($('#onepage_p').is(':checked')) {
+								$('#onepage_p').removeAttr('checked','checked');
+								$('#onepage_p').removeProp('checked','checked');
+							} else if($('#allpage_p').is(':checked')) {
+								$('#allpage_p').removeAttr('checked','checked');
+								$('#allpage_p').removeProp('checked','checked');
+							}
+						} else if ($(this)[0].checked == true) {
+							addDataToArray(ptid,4);//添加用户到数组
+							countnum(4);
+							if (lis_p.length == $("[name='checkbox_p']:checked").length) {
+								if(!$('#onepage_p').is(':checked') && sessionStorage.pname == undefined ) {
+									$('#onepage_p').attr('checked','checked');
+									$('#onepage_p').prop('checked','checked');
+								} else if(!$('#allpage_p').is(':checked') && sessionStorage.pname == "allYes") {
+									$('#allpage_p').attr('checked','checked');
+									$('#allpage_p').prop('checked','checked');
+								}
+
+							};
+						}
+					}
+				};
+
+			});
+			$('.is_first_parent').val('2');
+		}
+
+		countnum(4);
+
+	}
+	
+	//分页加载家长数据
+	function parentQueryList( url ) {
+		$.get(url,{'':''},function(res){
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+			var jishu = 0;
+			for( var i=0 ; i<provinces.length;i++ ) {
+				//家长全选1
+				if($('#onepage_p').is(':checked')) {
+					 $('#onepage_p').removeAttr('checked','checked');
+					 $('#onepage_p').removeProp('checked','checked');
+				 }
+				string += '<tr id="l_'+provinces[i].id+'">';
+				if($('#allpage_p').is(':checked')) {
+					string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+				} else {
+					if( (arrparent.indexOf(parseInt(provinces[i].id))>-1) ) {
+						jishu++;
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true"></td>';
+					} else{
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'"></td>';
+					}
+				}
+
+				if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].parent_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+				if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				} else {
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+				}
+
+				string += '</tr>';
+			}
+			$('.parenthtml').html('');
+			$('.parenthtml').html(string);
+			$('.parentpage').html(page);
+
+			var eachnum=0;
+			$('.checkbox_p').each(function(){
+				eachnum++;
+			})
+
+			if ( eachnum == jishu ) {
+				$('#onepage_p').attr('checked','checked');
+				$('#onepage_p').prop('checked','checked');
+			}
+			
+			//家长全选2
+			//取消全选
+			var lis_p = $('.checkbox_p');
+			for (var j = 0; j < lis_p.length; j++) {
+				lis_p[j].index = j;
+				lis_p[j].onclick = function () {
+					var dtid = parseInt($(this).attr('attr'));
+					if ($(this)[0].checked == false) {
+						 delDataToArray(dtid,4);//把用户从数组中剔除
+						 countnum(4);
+						 if($('#onepage_p').is(':checked')) {
+							 $('#onepage_p').removeAttr('checked','checked');
+							 $('#onepage_p').removeProp('checked','checked');
+						 } else if($('#allpage_p').is(':checked')) {
+							 $('#allpage_p').removeAttr('checked','checked');
+							 $('#allpage_p').removeProp('checked','checked');
+						 }
+					} else if ($(this)[0].checked == true) {
+						addDataToArray(dtid,4);//添加用户到数组
+						countnum(4);
+						if (lis_p.length == $("[name='checkbox_p']:checked").length) {
+							if(!$('#onepage_p').is(':checked') && sessionStorage.pname == undefined ) {
+								 $('#onepage_p').attr('checked','checked');
+								 $('#onepage_p').prop('checked','checked');
+							 } else if(!$('#allpage_p').is(':checked') && sessionStorage.pname == "allYes") {
+								 $('#allpage_p').attr('checked','checked');
+								 $('#allpage_p').prop('checked','checked');
+							 }
+
+						};
+					}
+				}
+			};
+			
+		});
+	}
+
+	//搜索家长
+	
+	function parent_search() {
+		var string = "";
+		var parent_name = $(".parent_name").val();
+		var parent_phone = $(".parent_phone").val();
+		var parent_lock_status = $('#parent_lock_status').val();
+		var parent_type = $('#parent_type').val();
+		var parent_time_id = $('.parent_time_id').val();
+        var parent_is_checked = $('#parent_is_checked').val();
+
+		if (parent_name != '') {
+			string += '&parent_name=' + parent_name;
+		}
+		if (parent_phone != '') {
+			string += '&parent_phone=' + parent_phone;
+		}
+		if (parent_lock_status != '') {
+			string += '&status=' + parent_lock_status;
+		}
+		if (parent_type != '') {
+			string += '&parent_type=' + parent_type;
+		}
+		if (parent_time_id != '') {
+			string += '&parent_time_id=' + parent_time_id;
+		}
+
+        var isallpage_p = $('#allpage_p').is(':checked');
+
+        if ( parent_is_checked == 1 ) { //搜索已选择的
+            if (isallpage_p != true) {
+                var idstring = arrparent.join(",");
+                $.get("index.php?m=Admin&c=Message&a=getParentList",{'is_checked':1,'ids':idstring},function(res){
+                    var provinces = res.list;
+                    var page = res.page;
+                    var string = "";
+                    var jishu = 0;
+
+                    for( var i=0 ; i<provinces.length;i++ ) {
+                        string += '<tr id="l_'+provinces[i].id+'">';
+
+						if (editcountp == 2 && i==0){
+
+							$('#allpage_p').prop('checked','checked');
+
+						}
+
+						if($('#allpage_p').is(':checked')) { //选中全部
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+						} else {
+
+							if( (arrparent.indexOf(parseInt(provinces[i].id))>-1) ) {
+								jishu++;
+								string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true"></td>';
+							} else{
+								string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'"></td>';
+							}
+						}
+
+                        if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].parent_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+                        } else {
+                            string += '<td></td>';
+                        }
+                        string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+                        if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+                        } else {
+                            string += '<td></td>';
+                        }
+                        string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+                        string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+                        string += '<td class="text-center">'+provinces[i].email+'</td>';
+
+                        if (provinces[i].is_vip_auth_id == 4) {
+                            string += '<td class="text-center">个人VIP</td>';
+                        } else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+                            string += '<td class="text-center">普通权限</td>';
+                        } else {
+                            string += '<td class="text-center">团体VIP</td>';
+                        }
+
+                        if (typeof (provinces[i].vipendtime) != "undefined") {
+                            string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+                        } else {
+                            string += '<td class="text-center"></td>';
+                        }
+
+                        if (provinces[i].lock == "1") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+                        } else {
+                            string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+                        }
+
+                        string += '</tr>';
+                    }
+                    $('.parenthtml').html('');
+                    $('.parenthtml').html(string);
+                    $('.parentpage').html(page);
+
+                    var eachnum=0;
+                    $('.checkbox_p').each(function(){
+                        eachnum++;
+                    })
+
+                    if ( eachnum == jishu ) {
+                        $('#onepage_p').attr('checked','checked');
+                        $('#onepage_p').prop('checked','checked');
+                    }
+
+                   /* $('#onepage_p').removeProp('checked','checked');
+                    $('#onepage_p').removeAttr('checked','checked');
+                    $('#allpage_p').removeProp('checked','checked');
+                    $('#allpage_p').removeAttr('checked','checked');*/
+
+
+
+                    //家长全选2
+                    //取消全选
+                    var lis_p = $('.checkbox_p');
+                    for (var j = 0; j < lis_p.length; j++) {
+                        lis_p[j].index = j;
+                        lis_p[j].onclick = function () {
+                            var dtid = parseInt($(this).attr('attr'));
+                            if ($(this)[0].checked == false) {
+                                delDataToArray(dtid,4);//把用户从数组中剔除
+                                countnum(4);
+                                if($('#onepage_p').is(':checked')) {
+                                    $('#onepage_p').removeAttr('checked','checked');
+                                    $('#onepage_p').removeProp('checked','checked');
+                                } else if($('#allpage_p').is(':checked')) {
+                                    $('#allpage_p').removeAttr('checked','checked');
+                                    $('#allpage_p').removeProp('checked','checked');
+                                }
+                            } else if ($(this)[0].checked == true) {
+                                addDataToArray(dtid,4);//添加用户到数组
+                                countnum(4);
+                                if (lis_p.length == $("[name='checkbox_p']:checked").length) {
+                                    if(!$('#onepage_p').is(':checked') && sessionStorage.pname == undefined ) {
+                                        $('#onepage_p').attr('checked','checked');
+                                        $('#onepage_p').prop('checked','checked');
+                                    } else if(!$('#allpage_p').is(':checked') && sessionStorage.pname == "allYes") {
+                                        $('#allpage_p').attr('checked','checked');
+                                        $('#allpage_p').prop('checked','checked');
+                                    }
+
+                                };
+                            }
+                        }
+                    };
+
+                });
+            } else {
+                $.get("index.php?m=Admin&c=Message&a=getParentList"+string,{'':''},function(res){
+                    var provinces = res.list;
+                    var page = res.page;
+                    var string = "";
+                    var jishu = 0;
+
+                    for( var i=0 ; i<provinces.length;i++ ) {
+                        string += '<tr id="l_'+provinces[i].id+'">';
+
+						if (editcountp == 2 && i==0){
+
+							$('#allpage_p').prop('checked','checked');
+
+						}
+
+						if($('#allpage_p').is(':checked')) { //选中全部
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+						} else {
+
+							if( (arrparent.indexOf(parseInt(provinces[i].id))>-1) ) {
+								jishu++;
+								string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true"></td>';
+							} else{
+								string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'"></td>';
+							}
+						}
+
+
+                        if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].parent_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+                        } else {
+                            string += '<td></td>';
+                        }
+                        string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+                        if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+                            string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+                        } else {
+                            string += '<td></td>';
+                        }
+                        string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+                        string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+                        string += '<td class="text-center">'+provinces[i].email+'</td>';
+
+                        if (provinces[i].is_vip_auth_id == 4) {
+                            string += '<td class="text-center">个人VIP</td>';
+                        } else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+                            string += '<td class="text-center">普通权限</td>';
+                        } else {
+                            string += '<td class="text-center">团体VIP</td>';
+                        }
+
+                        if (typeof (provinces[i].vipendtime) != "undefined") {
+                            string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+                        } else {
+                            string += '<td class="text-center"></td>';
+                        }
+
+                        if (provinces[i].lock == "1") {
+
+                            string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+                        } else {
+                            string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+                        }
+
+                        string += '</tr>';
+                    }
+                    $('.parenthtml').html('');
+                    $('.parenthtml').html(string);
+                    $('.parentpage').html(page);
+
+                    var eachnum=0;
+                    $('.checkbox_p').each(function(){
+                        eachnum++;
+                    })
+
+                    if ( eachnum == jishu ) {
+                        $('#onepage_p').attr('checked','checked');
+                        $('#onepage_p').prop('checked','checked');
+                    }
+
+                    $('#onepage_p').removeProp('checked','checked');
+                    $('#onepage_p').removeAttr('checked','checked');
+
+					if (editcountp!=2){
+						$('#allpage_p').removeProp('checked','checked');
+						$('#allpage_p').removeAttr('checked','checked');
+					}
+
+
+
+
+                    //家长全选2
+                    //取消全选
+                    var lis_p = $('.checkbox_p');
+                    for (var j = 0; j < lis_p.length; j++) {
+                        lis_p[j].index = j;
+                        lis_p[j].onclick = function () {
+                            var dtid = parseInt($(this).attr('attr'));
+                            if ($(this)[0].checked == false) {
+                                delDataToArray(dtid,4);//把用户从数组中剔除
+                                countnum(4);
+                                if($('#onepage_p').is(':checked')) {
+                                    $('#onepage_p').removeAttr('checked','checked');
+                                    $('#onepage_p').removeProp('checked','checked');
+                                } else if($('#allpage_p').is(':checked')) {
+                                    $('#allpage_p').removeAttr('checked','checked');
+                                    $('#allpage_p').removeProp('checked','checked');
+                                }
+                            } else if ($(this)[0].checked == true) {
+                                addDataToArray(dtid,4);//添加用户到数组
+                                countnum(4);
+                                if (lis_p.length == $("[name='checkbox_p']:checked").length) {
+                                    if(!$('#onepage_p').is(':checked') && sessionStorage.pname == undefined ) {
+                                        $('#onepage_p').attr('checked','checked');
+                                        $('#onepage_p').prop('checked','checked');
+                                    } else if(!$('#allpage_p').is(':checked') && sessionStorage.pname == "allYes") {
+                                        $('#allpage_p').attr('checked','checked');
+                                        $('#allpage_p').prop('checked','checked');
+                                    }
+
+                                };
+                            }
+                        }
+                    };
+
+                });
+            }
+        } else {
+            $.get("index.php?m=Admin&c=Message&a=getParentList"+string,{'':''},function(res){
+                var provinces = res.list;
+                var page = res.page;
+                var string = "";
+                var jishu = 0;
+
+                for( var i=0 ; i<provinces.length;i++ ) {
+                    string += '<tr id="l_'+provinces[i].id+'">';
+
+					if (editcountp == 2 && i==0){
+
+						$('#allpage_p').prop('checked','checked');
+
+					}
+
+					if($('#allpage_p').is(':checked')) { //选中全部
+						string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true" disabled="true"></td>';
+					} else {
+
+						if( (arrparent.indexOf(parseInt(provinces[i].id))>-1) ) {
+							jishu++;
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'" checked="true"></td>';
+						} else{
+							string += '<td><input type="checkbox" class="infoCheckbox checkbox_p" name="checkbox_p" attr="'+provinces[i].id+'"></td>';
+						}
+					}
+
+
+                    if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].parent_name !='null' ) {
+                        string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+                    } else {
+                        string += '<td></td>';
+                    }
+                    string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+                    if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+                        string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+                    } else {
+                        string += '<td></td>';
+                    }
+                    string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+                    string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+                    string += '<td class="text-center">'+provinces[i].email+'</td>';
+
+                    if (provinces[i].is_vip_auth_id == 4) {
+                        string += '<td class="text-center">个人VIP</td>';
+                    } else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+                        string += '<td class="text-center">普通权限</td>';
+                    } else {
+                        string += '<td class="text-center">团体VIP</td>';
+                    }
+
+                    if (typeof (provinces[i].vipendtime) != "undefined") {
+                        string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+                    } else {
+                        string += '<td class="text-center"></td>';
+                    }
+
+                    if (provinces[i].lock == "1") {
+
+                        string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+                    } else {
+                        string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+                    }
+
+                    string += '</tr>';
+                }
+                $('.parenthtml').html('');
+                $('.parenthtml').html(string);
+                $('.parentpage').html(page);
+
+                var eachnum=0;
+                $('.checkbox_p').each(function(){
+                    eachnum++;
+                })
+
+                if ( eachnum == jishu ) {
+                    $('#onepage_p').attr('checked','checked');
+                    $('#onepage_p').prop('checked','checked');
+                }
+
+                $('#onepage_p').removeProp('checked','checked');
+                $('#onepage_p').removeAttr('checked','checked');
+				if (editcountp!=2){
+					$('#allpage_p').removeProp('checked','checked');
+					$('#allpage_p').removeAttr('checked','checked');
+				}
+
+
+
+                //家长全选2
+                //取消全选
+                var lis_p = $('.checkbox_p');
+                for (var j = 0; j < lis_p.length; j++) {
+                    lis_p[j].index = j;
+                    lis_p[j].onclick = function () {
+                        var dtid = parseInt($(this).attr('attr'));
+                        if ($(this)[0].checked == false) {
+                            delDataToArray(dtid,4);//把用户从数组中剔除
+                            countnum(4);
+                            if($('#onepage_p').is(':checked')) {
+                                $('#onepage_p').removeAttr('checked','checked');
+                                $('#onepage_p').removeProp('checked','checked');
+                            } else if($('#allpage_p').is(':checked')) {
+                                $('#allpage_p').removeAttr('checked','checked');
+                                $('#allpage_p').removeProp('checked','checked');
+                            }
+                        } else if ($(this)[0].checked == true) {
+                            addDataToArray(dtid,4);//添加用户到数组
+                            countnum(4);
+                            if (lis_p.length == $("[name='checkbox_p']:checked").length) {
+                                if(!$('#onepage_p').is(':checked') && sessionStorage.pname == undefined ) {
+                                    $('#onepage_p').attr('checked','checked');
+                                    $('#onepage_p').prop('checked','checked');
+                                } else if(!$('#allpage_p').is(':checked') && sessionStorage.pname == "allYes") {
+                                    $('#allpage_p').attr('checked','checked');
+                                    $('#allpage_p').prop('checked','checked');
+                                }
+
+                            };
+                        }
+                    }
+                };
+
+            });
+        }
+	}
+
+	//保存提交数据
+    function submit_save_data() {
+		$('.jinyongsave').attr('disabled',"disabled");
+        var teaids = $('.t_idarray').val();
+        var stuids = $('.s_idarray').val();
+        var parentids = $('.p_idarray').val();
+		var role_id = arrrole.join(',');
+
+		//获取是否选中全部
+		var is_all_teacher = $('#allpage_t').is(':checked');
+		var is_all_stu = $('#allpage_s').is(':checked');
+		var is_all_parent = $('#allpage_p').is(':checked');
+
+		//判断全部选中后是否进行了保存
+		var is_all_select_teacher = $('.is_all_select_teacher').val();
+		var is_all_select_stu = $('.is_all_select_stu').val();
+		var is_all_select_parent = $('.is_all_select_parent').val();
+
+		//获取要修改的message_id
+		var message_id = $('.edit_message_id').val();
+
+        var apppush = $('.apppush').is(':checked'); //是否推送app
+        if (apppush) {
+            var message_title = $('.message_title').val();
+        }
+        var html = ue.getContent();
+
+        $.ajax({
+            url:"index.php?m=Admin&c=Message&a=saveEditMessage",
+            type:'POST', //GET
+            data:{
+                "teaids":teaids,"stuids":stuids,"parentids":parentids,"is_all_teacher":is_all_teacher,"is_all_stu":is_all_stu,"is_all_parent":is_all_parent,"apppush":apppush,"message_title":message_title,"content":html,"role_id":role_id,"message_id":message_id,"is_all_select_teacher":is_all_select_teacher,"is_all_select_stu":is_all_select_stu,"is_all_select_parent":is_all_select_parent
+            },
+            dataType:'json',
+            success:function(data,textStatus,jqXHR){
+                if (data.code == 200){
+					alert("保存成功");
+					window.location.href="index.php?m=Admin&c=Message&a=messageList";
+				} else {
+					alert(data.info);
+					$('.jinyongsave').attr('disabled',false);
+				}
+            },
+        });
+
+    }
+
+    $('.apppush').click(function(){
+		var is_checked = $(this).is(":checked");
+		if (is_checked == false) {
+			$('.message_title_is_show').hide();
+		} else {
+			$('.message_title_is_show').show();
+		}
+	})
+</script>
+<script>
+    $('.detail').click(function(){
+        if($('.tabContent').is(':hidden')){
+            $('.tabContent').show();
+            $('.detail').html('收起')
+        } else {
+            $('.tabContent').hide();
+            $('.detail').html('去选择>>')
+        }
+
+    })
+
+    $('.closeTab').click(function(){
+        $('.tabContent').hide();
+        $('.detail').html('去选择>>')
+    })
+</script>

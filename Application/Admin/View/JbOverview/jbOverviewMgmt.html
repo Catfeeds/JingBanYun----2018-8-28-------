@@ -1,0 +1,122 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js?v=1"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+    html, body, * {
+        box-sizing: inherit;
+    }
+</style>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/modifyjbOverview" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput" data-show-error-hint="true">
+        <div class="example" data-text="资源内容">
+            <div>
+                <script type="text/plain" id="content" name="content" style="width:100%;height:340px;">{$data.content}</script>
+            </div>
+        </div>
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button primary {:session('btntheme')}">保存</button>
+        </div>
+    </form>
+</div>
+
+<table  class="table striped hovered border">
+<thead>
+    <tr>
+        <th>状态</th>
+        <in name="Think.session.admin.role" value="2">
+            <th class="text-center">操作</th>
+        </in>
+</thead>
+<tbody>
+    <tr >
+        <td>
+            <if condition="$data.status eq 1">
+                审核未通过
+            <elseif condition="$data['status'] eq 2" />
+                审核通过
+            <else />
+                已拒绝
+            </if>
+        </td>
+        <in name="Think.session.admin.role" value="2">
+            <td class="text-center"> 
+                <if condition="$data.status eq 1">
+                    <button onclick="approve({$data.id},this)" class="button info">通过</button>
+                    <button onclick="deny({$data.id},this)" class="button danger">拒绝</button>
+                <elseif condition="$data['status'] eq 2" />
+                    <button onclick="xiajia({$data.id},this)" class="button downR">下架</button> 
+                </if>
+            </td>
+        </in>
+    </tr>
+</tbody>
+</table>
+    
+<script>
+    var um = UM.getEditor('content');
+    
+    //通过
+    function approve(id,obj){
+        $.get('/index.php?m=Admin&c=JbOverview&a=reviewedjbOverview', {'id':id,'status':1}, function (res) {
+            if (res == 'success') { 
+                var downR="<button onclick=xiajia("+id+",this) class='button downR'>下架</button>";
+                $('td').eq(0).text('审核通过');
+                $(obj).before(downR);
+                $(obj).siblings('.danger').remove();
+                $(obj).remove();
+                
+            } else {
+                alert('通过失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    
+    //拒绝
+    function deny(id,obj){
+        $.get('/index.php?m=Admin&c=JbOverview&a=reviewedjbOverview', {'id':id,'status':2}, function (res) {
+            if (res == 'success') { 
+                var downR="<button onclick=xiajia("+id+",this) class='button downR'>下架</button>";
+                $('td').eq(0).text('已拒绝'); 
+                $(obj).siblings('.info').remove();
+                $(obj).remove();
+                
+            } else {
+                alert('拒绝失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    
+    //下架
+    function xiajia(id,obj){
+        $.get('/index.php?m=Admin&c=JbOverview&a=downjbOverview', {id: id}, function (res) {
+            if (res == 'success') { 
+                var temp_info="<button onclick=approve("+id+",this) class='button info'>通过</button>&nbsp;";
+                var temp_danger="<button onclick=deny("+id+",this) class='button danger'>拒绝</button>";
+                $('td').eq(0).text('审核未通过');
+                $(obj).before(temp_info);
+                $(obj).before(temp_danger); 
+                $(obj).remove();
+                
+            } else {
+                alert('下架失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    
+</script>
+<script>
+    function notifyOnErrorInput(input){
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+</script>

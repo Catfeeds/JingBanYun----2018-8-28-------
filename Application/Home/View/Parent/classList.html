@@ -1,0 +1,85 @@
+<layout name="parent_layout_3"/>
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<style>
+  #contentWrapper{
+       padding-bottom: 80px;
+    }
+	.stu_head{
+		width: 80px;
+		height: 80px;
+	}
+	.stu_margin20{
+		margin-bottom: 20px;
+		margin-left: 15px;
+		font-size: 16px
+	}
+	.fullscreen .stu_margin20{
+		margin-top: 40px;
+	}
+</style>
+<div class="main_opr">
+     <a href="{:U('Parent/myChildren')}" title="添加学生" class="btn btn-main-opr ">我的孩子</a> 
+    <a href="{:U('Parent/addMyChildren')}" title="添加学生" class="btn btn-main-opr ">关联孩子</a>
+</div>
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Parent/myChildren')}" title="返回" class="btn btnReturn3">返回</a>
+</div>
+<div class="stu_margin20">
+    <?php if (preg_match('/Resources/', $stuinfo['avatar'])): ?>
+        <img src=<?=C('oss_path').$stuinfo['avatar']?> alt="" class="stu_head">
+    <?php else: ?>
+        <?php if ( $stuinfo['sex']=='男' ): ?>
+        <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_m.png">
+        <?php else: ?>
+        <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_w.png">
+        <?php endif; ?>
+    <?php endif ?>
+
+  <span style="margin:0 40px">{$stuinfo.student_name}</span>
+  <span>{$stuinfo.school_name}</span>
+</div>
+
+<empty name="list">
+    <div class="emptyResult">您的孩子尚未加入任何班级</div>
+</empty>
+<notempty name="list">
+  
+    <table class="table striped hovered border">
+        <thead>
+        <tr>
+            <th width="18%">班级名称</th>
+            <th width="20%">所在学校</th>
+            <th class="text-center">年级</th>
+            <th class="text-center">教师数</th>
+            <th class="text-center">同学数</th>
+            <th class="text-center"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="">
+            <tr id="l_{$data.id}">
+                <td>
+                    {$data.name}
+                </td>
+                <td>
+                    {$data.school_name}
+                </td>
+                <td class="text-center">
+                    {$data.grade}
+                </td>
+                <td class="text-center">
+                    {$data.teacher_count}
+                </td>
+                <td class="text-center">
+                    {$data.student_count}
+                </td>
+                <td class="text-center" nowrap>
+                    <a href="{:U('Parent/classTimetable?classId=')}{$data.id}" title="班级课表" class="button">班级课表</a>
+
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</notempty>

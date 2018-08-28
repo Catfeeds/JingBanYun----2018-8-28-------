@@ -1,0 +1,1105 @@
+<layout name="admin_layout" />
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link href="__PUBLIC__/css/adminActivity.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+
+<style>
+	.input-control input:focus,
+	.input-control textarea:focus,
+	.input-control select:focus,
+	.input-control input:hover,
+	.input-control textarea:hover,
+	.input-control select:hover {
+		border-color: #d9d9d9 !important;
+	}
+
+	.input_control_short:hover {
+		border-color: #d9d9d9;
+	}
+
+	.appImg {
+		display: block;
+		width: auto;
+		max-width: 200px;
+		margin-top: 12px
+	}
+
+	.import_success,
+	.import_fail,
+	.export_success,
+	.export_fail {
+		display: none;
+		width: 500px;
+		height: 300px;
+		position: fixed;
+		top: 50%;
+		left: 35%;
+		z-index: 9999;
+		background: url(/Public/img/home/30.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+
+	.success_top,
+	.fail_top {
+		overflow: hidden;
+		padding: 50px 0 0 80px;
+	}
+
+	.success_top img,
+	.fail_top img {
+		width: 30%;
+		float: left;
+	}
+
+	.success_top p,
+	.fail_top p {
+		float: left;
+		font-size: 40px;
+		color: #666;
+/*		padding-top: 35px;*/
+	}
+
+	.success_bottom,
+	.fail_bottom {
+		text-align: center;
+	}
+
+	.success_bottom button,
+	.fail_bottom button {
+		width: 120px;
+		height: 50px;
+		border: none;
+		background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+		background-size: 100% 100%;
+		color: #fff;
+		font-size: 20px;
+		position: relative;
+		top: 20px;
+	}
+</style>
+
+<div style="margin-bottom: 12px;">
+	<!--javascript:window.history.go(-1)-->
+	<!--<%= request.getHeader("Referer")%>-->
+	<a href="javascript:window.history.go(-1)" onclick="self.location=document.referrer;" title="返回" class="button {:session('btntheme')}">&lt; 返回</a>
+</div>
+
+<div class="example">
+	<span class="exampl">发布者信息</span>
+	<div class="listview set-border padding10">
+		<div class="padding10" style="border-bottom: 1px solid #ccc;">
+			{$data.publisher} 发布于 {$data.create_at|date="Y-m-d H:i",###}
+		</div>
+	</div>
+</div>
+
+<!--【注意】为了方便，直接复制的样式，仍然用的input，但是是不能编辑的-->
+<div class="example">
+	<span class="exampl">基本信息</span>
+
+	<div class="listview set-border padding10">
+		<div class="padding10">
+			活动主题：{$data.title}
+		</div>
+		<div class="padding10">
+			所属版块：{$data.class_name_data}
+		</div>
+		<div class="padding10">
+			活动分类：{$data.category}
+		</div>
+		<div class="padding10">
+			是否限制人数：<?=$data['is_disable'] ==2?'否':'是' ?>
+		</div>
+		<div class="padding10">
+			限制人数：
+			{$data.apply_people_number}
+		</div>
+		<div class="padding10">
+			备注：{$data.remark}
+		</div>
+		<div class="padding10">
+			是否需要邀请码：
+			<?=$data['is_generate'] ==2?'生成':'不生成' ?>
+				<?php if ($data['is_generate'] ==2): ?>
+					<a href="javascript:;" class="codeCheck" style="display: inline-block;margin-left: 20px">查看</a>
+					<?php endif ?>
+		</div>
+		<div class="padding10">
+			活动开始时间：{$data.activitystart|date="Y-m-d H:i:s",###}
+		</div>
+		<div class="padding10">
+			活动结束时间：{$data.activityend|date="Y-m-d H:i:s",###}
+		</div>
+		<div class="padding10">
+			报名开始时间：{$data.applystart|date="Y-m-d H:i:s",###}
+		</div>
+		<div class="padding10">
+			报名结束时间：{$data.applyend|date="Y-m-d H:i:s",###}
+		</div>
+		<div class="padding10">
+			活动面向人群：{$data.stakeholder}
+		</div>
+		<div class="padding10">
+			图像(显示在移动端的图像,格式jpg或png)：
+			<img src="Resources/socialactivity/{$data.short_content}" alt="" class="appImg">
+		</div>
+		<div class="padding10">
+			是否支持上传附件：
+			<?=$data['is_upload'] ==1?'支持上传':'不支持' ?>
+		</div>
+	</div>
+</div>
+<br>
+
+<div class="example">
+	<span class="exampl">活动信息</span>
+	<div class="listview set-border padding10">
+		{$data.content}
+	</div>
+</div>
+
+<div class="example">
+	<span class="exampl">活动资料</span>
+	<div class="listview set-border padding10 listhuodong">
+
+	</div>
+	<div class="hidden_ids">
+		<volist name="resource_list" id="resource_item" empty="" key="i">
+			<if condition="$resource_item['type'] eq 'video'">
+				<input type="hidden" attr_id="{$resource_item.id}" value="{$resource_item.id}" name="hidden_resource[]" vid_image='{$resource_item.activity_file_path}' attr_type='{$resource_item.type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.activity_file_path}" />
+				<elseif condition="$data['type'] eq 'audio'" />
+				<input type="hidden" attr_id="{$resource_item.id}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.activity_file_path}" />
+				<else />
+				<input type="hidden" attr_id="{$resource_item.id}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="{$resource_item.activity_file_path}" attr_path="{$resource_item.activity_file_path}" />
+			</if>
+		</volist>
+	</div>
+	<br/>
+	<span class="exampl">资源显示</span>
+	<div class="listview set-border padding10">
+		<div class="col-md-5 resource_right_div" style="">
+
+			<div style="width:100%;display: none;" class="resource_image">
+				<img src="{$real_file_path}{$data.file_path}" />
+			</div>
+			<!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.pdf</a>-->
+			<div style="width:100%;display: none;" class="resource_pdf">
+				<a target="_blank" href="{$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+			</div>
+
+			<!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.doc</a>-->
+			<div style="width:100%;display: none;" class="resource_word">
+				<a target="_blank" href="{:U('Teach/downloadResource')}&url={$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+			</div>
+
+
+			<div style="width:100%;display: none;" class="resource_swf">
+				<a target="_blank" href="{$real_file_path}{$data.file_path}">{$real_file_path}{$data.file_path}</a>
+			</div>
+			<!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.swf</a>-->
+
+
+			<div style="width:100%;display: none;" class="resource_swf">
+				<a target="_blank" href="{:U('Teach/downloadResource')}&url={$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+			</div>
+
+
+			<!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.ppt</a>-->
+			<div style="width:100%;display: none;" class="resource_ppt">
+				<a target="_blank" href="{:U('Teach/downloadResource')}&url={$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+			</div>
+
+
+			<div id='plv' style="width:0%;display: none;">
+
+				<audio src="/i/horse.ogg" controls="controls">
+
+				</audio>
+
+
+			</div>
+
+			<div id="plvmp4" style="width:0%;display: none;">
+				<video src="123.mp4" width="400" height="400" controls preload></video>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="example">
+	<span class="exampl">报名情况</span>
+	<div class="listview set-border padding10">
+		<div class="padding10">
+			<div class="grid condensed searchbar" style="width: 70%;float: left;margin-top: 0;margin-bottom: 10px">
+				<div class="row cells3">
+					<div class="cell">
+						<label>省份：</label>
+						<select id="provice" name="provice" class="input-control">
+							<option value="0">-请选择-</option>
+							<volist name="provice_result" id="provice_item" empty="暂时没有省份">
+								<option value={$provice_item.id} <if condition="$provice_item['id']==$provice"> selected="true"</if> >{$provice_item.name}</option>
+							</volist>
+						</select>
+					</div>
+					<div class="cell">
+						<label>市区：</label>
+						<select id="city" name="city" class="input-control">
+							<option value="0">-请选择-</option>
+							<volist name="city_result" id="city_item" empty="暂时没有城市">
+								<option value={$city_item.id} <if condition="$city_item['id']==$city"> selected="true"</if> >{$city_item.name}</option>
+							</volist>
+						</select>
+					</div>
+					<div class="cell">
+						<label>区县：</label>
+						<select id="district" name="district" class="input-control">
+							<option value="0">-请选择-</option>
+							<volist name="district_result" id="district_item" empty="暂时没有区域">
+								<option value={$district_item.id} <if condition="$district_item['id']==$district"> selected="true"</if> >{$district_item.name}</option>
+							</volist>
+						</select>
+					</div>
+					<div class="cell">
+						<label>学校：</label>
+						<select id="school" name="school" class="input-control">
+							<option value="0">-请选择-</option>
+							<volist name="school_result" id="school_item" empty="暂时没有学校">
+								<option value={$school_item.id} <if condition="$school_item['id']==$school"> selected="true"</if> >{$school_item.school_name}</option>
+							</volist>
+						</select>
+					</div>
+					 <if condition="$data.parent_class_id eq 5">
+					<div class="cell">
+						<label>学科：</label>
+						<select id="course_id" name="course_id" class="input-control" onchange="getTextbooks()">
+							<option value="0">-请选择-</option>
+							<volist name="courses" id="dataCourse">
+								<option value="{$dataCourse.id}" {$dataCourse[ 'id']==$course_id? 'selected': ''}>
+									{$dataCourse.code} : {$dataCourse.course_name}
+								</option>
+							</volist>
+						</select>
+					</div>
+					<div class="cell">
+						<label>年级：</label>
+						<select id="grade_id" name="grade_id" class="input-control" onchange="getTextbooks()">
+							<option value="0">-请选择-</option>
+							<volist name="grades" id="dataGrade">
+								<option value="{$dataGrade.id}" {$dataGrade[ 'id']==$grade_id? 'selected': ''}>
+									{$dataGrade.grade}
+								</option>
+							</volist>
+						</select>
+					</div>
+					</if>
+					<div class="cell">
+						<label>报名时间：</label>
+						<input type="text" name="registration_time" class="input-control" id="datepicker" value="" placeholder="-请选择-">
+					</div>
+					 <if condition="$data.parent_class_id eq 5">
+					<div class="cell">
+						<label>状态：</label>
+						<select id="lock_status" class="input-control" name="status">
+							<option value='0'>-请选择-</option>
+							<option value="1" <if condition="$status==1">selected</if> >待审核</option>
+							<option value="2" <if condition="$status==2">selected</if> >通过</option>
+							<option value="3" <if condition="$status==3">selected</if> >拒绝</option>
+						</select>
+					</div>
+					</if>
+				</div>
+			</div>
+
+			<div style="float: right">
+				<div class="input-control text" data-role="input" style="width: 320px;">
+					<input type="text" value="{$keyword}" id="keyword" name="keyword" placeholder="报名人姓名/手机号/参评课题关键字">
+					<button onclick="search()" class="button"><span class="mif-search"></span></button>
+				</div>
+
+			</div>
+			
+			<div style="clear: both; text-align: right">
+				<a href="{:U('Admin/exportRanking?id=')}{$res_id}" id="export_btn" class="button">导出本报名表</a>
+                <if condition="$data.parent_class_id eq 5">
+				<a href="javascript:;" attr-href="{:U('Admin/importRanking?id=')}{$res_id}" id="import_btn" class="button">导入排名信息</a>
+				<!--<a href="javascript:;" onclick="export_btn_all_resource()" class="button">导出所有教师及作品信息</a>-->
+                </if>
+			</div>
+            
+
+			<table class="table striped hovered border">
+
+				<thead>
+					<tr>
+						<?php if($data['parent_class_id'] == 5) : ?>
+						<th>报名人</th>
+						<th class="text-center">手机号码</th>
+						<th class="text-center">学科</th>
+						<th class="text-center">年级</th>
+						<th>所属学校</th>
+						<th>参评课题</th>
+						<th class="text-center">报名时间</th>
+						<th class="text-center">邀请码</th>
+						<th class="text-center">状态</th>
+						<th class="text-center">奖项</th>
+						<th class="text-center">操作</th>
+						<?php else : ?>
+						<th>报名人</th>
+						<th class="text-center">报名信息</th>
+						<th class="text-center">报名时间</th>
+						<?php endif; ?>
+					</tr>
+				</thead>
+
+
+				<tbody class="activityhtml">
+					<tr>
+						<td class="text-center" colspan="11">努力加载中...</td>
+					</tr>
+				</tbody>
+			</table>
+
+		</div>
+	</div>
+</div>
+
+
+<input type="hidden" class="res_id" value="{$res_id}">
+<!--弹窗出现时背景-->
+<div class="fs"></div>
+<!--提示框 【打分】-->
+<div class="remindBox" id="">
+	<h4>请输入奖项</h4>
+	<p>
+		<select type="text" class="numBox scoreNum" name="" style="width:200px">
+		<option value="1">一等奖</option>
+		<option value="2">二等奖</option>
+		<option value="3">三等奖</option>
+		
+		</select>
+	</p>
+	<div class="buttonBox">
+		<a href="javascript:;" class="m0 cancelBtn" save-id="">取消</a>
+		<a href="javascript:;" class="m0 remindBtn" save-id="">确定</a>
+	</div>
+</div>
+
+<!--------------------批量导入----------------------------->
+<div id="import_outer" style="background:#fff;">
+	<div class="import">
+		<div class="close_btn">
+			<img src="__PUBLIC__/img/home/close.png" alt="">
+		</div>
+		<div class="download_form">
+			<a href="{:U('Admin/exportRanking?id=')}{$res_id}" target="_blank" title="下载" class="button">下载示例表格</a>
+		</div>
+		<div class="browse">
+			<input type="text" id="address" placeholder="链接地址">
+			<a href="javascript:;" title="浏览" class="button browse_button">浏览</a>
+			<input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+			<a href="javascript:;" title="上传" class="button upload_file">上传</a>
+		</div>
+	</div>
+</div>
+
+<!--邀请码弹窗-->
+<div class="fullBlack"></div>
+<div class="codeOutter">
+	<span class="codeClose"></span>
+	<div class="codeInner">
+		<table id="listWrapper" class="table striped hovered border">
+			<thead>
+				<tr>
+					<th class="text-center">序号</th>
+					<th class="text-center">邀请码</th>
+					<th class="text-center">是否使用</th>
+					<th class="text-center">状态</th>
+				</tr>
+			</thead>
+			<tbody class="codecentent">
+				<volist name="codelist" id="codedata" key="num" empty="暂时没有生成邀请码">
+					<tr>
+						<td class="text-center">
+							{$num}
+						</td>
+						<td class="text-center">{$codedata.invitation_code}</td>
+
+						<td class="text-center">
+							<?php if ($codedata['status']==1): ?>
+								未使用
+								<?php else: ?>
+									已使用
+									<?php endif ?>
+						</td>
+						<td class="text-center">
+							<?php if ($codedata['status']==1): ?>
+								正常
+								<?php else: ?>
+									废弃
+									<?php endif ?>
+						</td>
+					</tr>
+				</volist>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="import_success">
+	<div class="success_top">
+		<img src="__PUBLIC__/img/home/32.png" alt="">
+		<p>导入成功！</p>
+	</div>
+	<div class="success_bottom">
+		<button type="submit" class="im_success_sure">确定</button>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+
+
+
+<script>
+	function export_btn_all_resource() {
+		var is_pack = "{$data.is_pack}";
+		if (is_pack == 1 || is_pack =='1' ) {
+			alert('该资源还未打包,请等待系统打包');
+		} else {
+			window.location ="{$oss_path}"+is_pack;
+		}
+	}
+
+	$('.im_success_sure').on('click', function () {
+		$('.import_success').css('display', 'none');
+		location.reload();
+	});
+
+	bindQueryDistrictEvent("/Home/Teach", 'provice', 'city', 'district', 'school');
+
+	function getQueryString(name) {
+		var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+		var r = window.location.search.substr(1).match(reg);
+		if (r != null) {
+			return unescape(r[2]);
+		}
+		return 0;
+	}
+	var res_id = $('.res_id').val();
+	$.get("index.php?m=Home&c=Admin&a=getActivityListInfo", {
+		'id': res_id
+	}, function (res) {
+		var html = res.info;
+		$('.activityhtml').html(html);
+	});
+
+	$('.codeCheck').click(function () {
+		$('.fullBlack').css('display', 'block');
+		$('.codeOutter').css('display', 'block');
+	});
+
+	function search() {
+		var string = "";
+		var keyword = $("#keyword").val();
+		var province_id = $('#provice').val();
+		var city_id = $('#city').val();
+		var country_id = $('#district').val();
+		var school_id = $('#school').val();
+
+
+		var course_id = $('#course_id').val();
+		var grade_id = $('#grade_id').val();
+		if (grade_id != '' && grade_id != undefined) {
+			string = '&grade_id=' + grade_id;
+		}
+
+		var datepicker = $('#datepicker').val();
+		var lock_status = $('#lock_status').val();
+		if (course_id != '' && course_id != undefined) {
+			string += '&course_id=' + course_id;
+		}
+
+		if (datepicker != '' && datepicker != undefined) {
+			string += '&register_at=' + datepicker;
+		}
+		if (lock_status != '' && lock_status != undefined) {
+			string += '&lock_status=' + lock_status;
+		}
+
+
+		if (province_id != '' && province_id != undefined) {
+			string += '&province_id=' + province_id;
+		}
+		if (city_id != '' && city_id != undefined) {
+			string += '&city_id=' + city_id;
+		}
+
+		if (country_id != '' && country_id != undefined) {
+			string += '&country_id=' + country_id;
+		}
+
+		if (school_id != '' && school_id != undefined) {
+			string += '&school_id=' + school_id;
+		}
+		if (keyword != '' && keyword != undefined) {
+			string += '&keyword=' + keyword;
+		}
+
+		var res_id = $('.res_id').val();
+
+		$.get("index.php?m=Home&c=Admin&a=getActivityListInfo" + string, {
+			'id': res_id
+		}, function (res) {
+			var html = res.info;
+			$('.activityhtml').html(html);
+		});
+	}
+</script>
+
+<!--------------日历----------------->
+<script>
+	$(function () {
+		$("#datepicker").datepicker({
+			showButtonPanel: true,
+			changeMonth: true,
+			changeYear: true,
+			dateFormat: "yy-mm-dd",
+			//			maxDate: '0',
+			yearRange: "1950:2050"
+		});
+	});
+</script>
+<script>
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+</script>
+
+<script>
+	$('#activityMark').click(function () {
+		$('.remindBox,.fs').show()
+	});
+
+	$('.remindBtn').click(function () {
+		var rid = $(this).attr('save-id');
+		var num = $('.scoreNum').val();
+		if (num < 1) {
+			alert("录入排名不正确");
+			return false;
+		}
+		$.get("index.php?m=Home&c=Admin&a=saveScore", {
+			'id': rid,
+			"num": num
+		}, function (res) {
+			if(res==1001) {
+				$.Notify({
+	             			caption: '提示',
+	             			content: '该教师未上传作品无法打分',
+	             			type: 'warning'
+	             	}); 
+				location.reload();
+			}else if(res == 1002)
+			{
+				$.Notify({
+	             			caption: '提示',
+	             			content: '活动报名未结束,无法打分',
+	             			type: 'warning'
+	             	}); 
+			}
+			else if(res == 1003)
+			{
+				$.Notify({
+	             			caption: '提示',
+	             			content: '活动未打包完成,无法打分',
+	             			type: 'warning'
+	             	}); 
+			}
+			else{
+				if (res == 'success') {
+					$('.remindBox,.fs').hide();
+					$.Notify({
+	             			caption: '提示',
+	             			content: '设置成功',
+	             			type: 'normal'
+	             	}); 
+					location.reload();
+				} else {
+					$('.remindBox,.fs').hide();
+					$.Notify({
+	             			caption: '提示',
+	             			content: '服务器繁忙请稍后重试',
+	             			type: 'warning'
+	             	}); 
+				}
+			}
+
+		});  
+ 	
+		
+	})
+</script>
+
+<!---------------------导入文件-------------------------->
+<script>
+	$('#import_btn').on('click', function () {
+		$('#import_outer,.fs').show();
+	});
+	$('.close_btn').on('click', function () {
+		$('#import_outer,.fs').hide();
+	});
+</script>
+
+<!--查看邀请码-->
+<script>
+	$('.codeCheck').click(function () {
+		$('.fullBlack,.codeOutter').show();
+		$(document.body).css('overflow-y', 'hidden');
+	})
+
+	$('.codeClose').click(function () {
+		$('.fullBlack,.codeOutter').hide();
+		$(document.body).css('overflow-y', 'auto');
+	})
+</script>
+
+<script>
+	var resource_path = '';
+	$('.codeCheck,.check').click(function () {
+		$('.fullBlack,.codeOutter').show();
+		$(document.body).css('overflow-y', 'hidden');
+		$('#newCode').hide();
+	})
+
+	$('.codeClose').click(function () {
+		$('.fullBlack,.codeOutter').hide();
+		$(document.body).css('overflow-y', 'auto');
+	})
+
+	function init_funtion() {
+		//var temp_ul='<div class="qq-uploader-selector qq-uploader"></div>'
+		var temp_li = '<div class="show_div" style="margin-left:10px;margin-top:10px;border 1px gray solid buttom;"><img src=""><input type="hidden" /><span style="margin-left:20px;cursor:pointer;"></span><a href="javascript:" class="delete_button" style="margin-left:10px;cursor:pointer;display: none">删除</a></div>';
+		var other_file_id = 3;
+		var copy_li, copy_ul;
+
+		//这里开始复制
+		var all_exists_input = $('.hidden_ids').children('input');
+		for (var i = 0; i < all_exists_input.length; i++) {
+			copy_li = $(temp_li).clone(true);
+			$(copy_li).find('a').attr('attr_class', ($(all_exists_input[i]).attr('attr_class')));
+			$(copy_li).find('a').attr('attr_type', ($(all_exists_input[i]).attr('attr_type')));
+			//$(copy_li).find('img').css('width',100);
+
+			$(copy_li).find('span').text($(all_exists_input[i]).attr('attr_path'));
+			if ($(all_exists_input[i]).attr('attr_type') == 'video') {
+				var vid_image_path = '';
+				if ($(all_exists_input[i]).attr('vid_image').indexOf('http') == -1) {
+					vid_image_path = "{$oss_path}" + $(all_exists_input[i]).attr('vid_image');
+				} else {
+					vid_image_path = $(all_exists_input[i]).attr('vid_image');
+				}
+
+				//$(copy_li).find('img').attr('src',vid_image_path)
+				$(copy_li).find('input').val($(all_exists_input[i]).attr('attr_path'));
+
+			} else if ($(all_exists_input[i]).attr('attr_type') == 'audio') {
+				//$(copy_li).find('img').remove();
+				$(copy_li).find('input').val($(all_exists_input[i]).attr('attr_path'));
+
+			} else {
+				//$(copy_li).find('img').remove();
+				$(copy_li).find('input').val($(all_exists_input[i]).attr('attr_path'));
+			}
+			if (i == 0) {
+				//console.log($(all_exists_input[i]).attr('attr_path'));
+				//console.log($(all_exists_input[i]).attr('attr_type'));
+				var firstresource = "{$oss_path}" + $(all_exists_input[i]).attr('attr_path');
+				var typeres = $(all_exists_input[i]).attr('attr_type');
+
+				switch (typeres) {
+				case 'image':
+					$(".resource_image").css('display', 'block');
+					$(".resource_image").children('img').attr('src', firstresource);
+					break;
+				case 'png':
+					$(".resource_image").css('display', 'block');
+					$(".resource_image").children('img').attr('src', firstresource);
+					break;
+				case 'jpg':
+					$(".resource_image").css('display', 'block');
+					$(".resource_image").children('img').attr('src', firstresource);
+					break;
+				case 'mp3':
+					$("#plv").find('audio').attr('src', firstresource);
+					$("#plv").css('display', 'block');
+					break;
+				case 'video':
+				case 'audio':
+				case 'mp4':
+					$("#plvmp4").find('video').attr('src', firstresource);
+					$("#plvmp4").css('display', 'block');
+					break;
+				case 'swf':
+					$(".resource_swf").css('display', 'block');
+					$(".resource_swf").children('a').attr('href', firstresource);
+					break;
+				case 'pdf':
+					$(".resource_pdf").css('display', 'block');
+					$(".resource_pdf").children('a').attr('href', firstresource).text(firstresource);
+					break;
+				case 'word':
+				case 'doc':
+					$(".resource_word").css('display', 'block');
+					$(".resource_word").children('a').attr('href', "{:U('Teach/downloadResource')}" + "&url=" + firstresource).text(firstresource);
+					break;
+				case 'ppt':
+					$(".resource_ppt").css('display', 'block');
+					$(".resource_ppt").children('a').attr('href', "{:U('Teach/downloadResource')}" + "&url=" + firstresource).text(firstresource);
+					break;
+				case 'zip':
+					$(".resource_zip").css('display', 'block');
+					$(".resource_zip").children('a').attr('href', firstresource).text(firstresource);
+					break;
+				}
+
+			}
+			console.log(copy_li);
+			$('.listhuodong').append(copy_li);
+		}
+	}
+	init_funtion();
+
+	$(".delete_button").live('click', function () {
+		$('.resource_right_div').find('div').css('display', 'none');
+		var contact_class = $(this).attr('attr_class');
+		var resource_ytpe = $(this).attr('attr_type');
+		$("." + contact_class).remove();
+		$(this).parent().remove();
+		//判断是否还有已存在的,并操作
+		if ($('.show_div').length > 0) {
+			//这里替换右侧
+			resource_path = $('.show_div').eq(0).find('input').val();
+			resource_info_type = $('.show_div').eq(0).find('a').attr('attr_type'); //下一个资源的类型
+			console.log(resource_info_type);
+			switch (resource_info_type) {
+			case 'image':
+				$(".resource_image").children('img').attr('src', resource_path);
+				break;
+			case 'png':
+				$(".resource_image").children('img').attr('src', resource_path);
+				break;
+			case 'jpg':
+				$(".resource_image").children('img').attr('src', resource_path);
+				break;
+			case 'video':
+			case 'audio':
+			case 'mp4':
+				resource_path = "{$oss_path}" + resource_path;
+				$("#plvmp4").find('video').attr('src', resource_path);
+				$("#plvmp4").css('display', 'block');
+				break;
+			case 'mp3':
+				resource_path = "{$oss_path}" + resource_path;
+				$("#plv").find('audio').attr('src', resource_path);
+				$("#plv").css('display', 'block');
+				break;
+
+			case 'swf':
+
+				$(".resource_swf").children('a').attr('href', resource_path).text(resource_path);
+				$(".resource_swf").css('display', 'block');
+				break;
+			case 'pdf':
+
+				$(".resource_pdf").children('a').attr('href', resource_path).text(resource_path);
+				$(".resource_pdf").css('display', 'block');
+				break;
+			case 'word':
+			case 'doc':
+				$(".resource_word").children('a').attr('href', "{:U('Teach/downloadResource')}" + "&url=" + resource_path).text(resource_path);
+				$(".resource_word").css('display', 'block');
+				break;
+			case 'ppt':
+				console.log('进来ppt');
+				$(".resource_ppt").children('a').attr('href', "{:U('Teach/downloadResource')}" + "&url=" + resource_path).text(resource_path);
+				console.log('显示ppt');
+				$(".resource_ppt").css('display', 'block');
+				break;
+			case 'zip':
+				$(".resource_zip").children('a').attr('href', resource_path).text(resource_path);
+				$(".resource_zip").css('display', 'block');
+				break;
+			}
+		} else {
+			//这里删除
+			$(".resource_right_div").remove();
+		}
+	});
+
+	//点击查看大图
+	var pdfTemplate = '<iframe id="resourceFrame" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={0}" width="100%" height="500"></iframe>';
+	function getConvertedPDFfilePath(path)
+	{
+		var orgFilePath = path;
+		var orgFilePathSplitArray = orgFilePath.split('/');
+		orgFilePathSplitArray[orgFilePathSplitArray.length-1];
+		var fileNameSplit = orgFilePathSplitArray[orgFilePathSplitArray.length-1].split('.');
+		var extName = fileNameSplit[1];
+		if(extName == 'pdf')
+			return path;
+		else
+		    return 'Activity/' + '{$data.id}/' + fileNameSplit[0] + '.pdf'
+	}
+	$(".show_div").find('span').live('click', function () {
+		$('.resource_right_div').find('div').css('display', 'none');
+		var resource_ytpe_p = $(this).siblings('a').attr('attr_type');
+
+		switch (resource_ytpe_p) {
+		case 'image':
+			resource_path = $(this).siblings('input').val();
+			resource_path = "{$oss_path}" + resource_path;
+			$(".resource_image").children('img').attr('src', resource_path);
+			$(".resource_image").css('display', 'block');
+			break;
+		case 'png':
+			resource_path = $(this).siblings('input').val();
+			resource_path = "{$oss_path}" + resource_path;
+			$(".resource_image").children('img').attr('src', resource_path);
+			$(".resource_image").css('display', 'block');
+			break;
+		case 'jpg':
+			resource_path = $(this).siblings('input').val();
+			resource_path = "{$oss_path}" + resource_path;
+			$(".resource_image").children('img').attr('src', resource_path);
+			$(".resource_image").css('display', 'block');
+			break;
+		case 'video':
+		case 'audio':
+		case 'mp4':
+			resource_path = $(this).siblings('input').val();
+			resource_path = "{$oss_path}" + resource_path;
+			$("#plvmp4").find('video').attr('src', resource_path);
+			$("#plvmp4").css('display', 'block');
+			break;
+		case 'mp3':
+			resource_path = $(this).siblings('input').val();
+			resource_path = "{$oss_path}" + resource_path;
+			$("#plv").find('audio').attr('src', resource_path);
+			$("#plv").css('display', 'block');
+			break;
+		case 'swf':
+			resource_path = $(this).siblings('input').val();
+			resource_path = "{$oss_path}" + resource_path;
+			$(".resource_swf").children('a').attr('href', resource_path).text();
+			$(".resource_swf").css('display', 'block');
+			break;
+		case 'pdf':
+			resource_path = $(this).siblings('input').val();
+			resource_path = getConvertedPDFfilePath(resource_path);
+			resource_path = "{$oss_path}" + resource_path;
+			$(".resource_pdf").html(pdfTemplate.format(resource_path));
+			$(".resource_pdf").css('display', 'block');
+
+			break;
+		case 'word':
+		case 'doc':
+			resource_path = $(this).siblings('input').val();
+			resource_path = getConvertedPDFfilePath(resource_path);
+			resource_path = "{$oss_path}" + resource_path;
+			$(".resource_word").html(pdfTemplate.format(resource_path));
+			$(".resource_word").css('display', 'block');
+			break;
+		case 'ppt':
+        case 'pptx':
+			resource_path = $(this).siblings('input').val();
+			resource_path = getConvertedPDFfilePath(resource_path);
+			resource_path = "{$oss_path}" + resource_path;
+			$(".resource_ppt").html(pdfTemplate.format(resource_path));
+			$(".resource_ppt").css('display', 'block');
+			break;
+		case 'zip':
+			resource_path = $(this).siblings('input').val();
+			resource_path = "{$oss_path}" + resource_path;
+			$(".resource_zip").children('a').attr('href', resource_path).text('点击查看' + resource_path);
+			$(".resource_zip").css('display', 'block');
+			break;
+		}
+	});
+	$($(".show_div").find('span')[0]).click();
+</script>
+
+<script>
+	//点击文件上传
+	$('.upload_file').click(function () {
+		var id = $('.res_id').val();
+		if ($('#file_csv').val() == '' || !$('#file_csv').val()) {
+			$.Notify({
+				caption: '提示',
+				content: '请选择需要上传的csv格式文件',
+				type: 'warning'
+			});
+		} else {
+			$.ajaxFileUpload({
+				url: 'index.php?m=Home&c=Admin&a=importRanking&id=' + id, //用于文件上传的服务器端请求地址
+				secureuri: false, //是否需要安全协议，一般设置为false
+				fileElementId: 'file_csv', //文件上传域的ID
+				dataType: 'json', //返回值类型 一般设置为json
+				success: function (data) //服务器成功响应处理函数
+					{
+						//$('#address').val('');
+						$('.fs,#import_outer').css('display', 'none');
+
+						if (data.status == 1001) {
+							//$('.notice_message').children('div').text('异常消息：没有上传文件');
+							//$(".notice_message").show();
+							alert('异常消息：没有上传文件')
+
+						} else if (data.status == 1002) {
+							//$('.notice_message').children('div').text('异常消息：上传文件没有信息');
+							//$(".notice_message").show();
+							alert('异常消息：上传文件没有信息')
+
+						} else if (data.status == 1003) {
+							//$(".striped").hide();
+							//$('.notice_message').children('div').text('异常消息：总共有' + data.all_number + '条数据,导入成功' + data.success_number + '条,导入失败' + data.notice_data.length + '条,以下是导入失败的信息。');
+							var errorInfo = '';
+							$(data.notice_data).each(function(i,n){
+							errorInfo += '\n' + n[0] + " : " + data.notice_info[i]; 
+							});
+							alert('异常消息：总共有' + data.all_number + '条数据,导入成功' + data.success_number + '条,导入失败' + data.notice_data.length + '条,以下是导入失败的信息:\n' + errorInfo);
+                            /*
+							$(".notice_message").show();
+							//清空id为body下的所有tr,和thead下的tr,并隐藏所有
+							$(".tr_body_info").remove();
+							$(".tr_head_info").remove();
+							$(".odd").remove();
+
+							$('.dataTables_scrollHead').remove();
+							$('.search_class').hide();
+							$('#searchConditionArray').hide();
+							$('.create_class').hide();
+							$('.grade_class').hide();
+							$('.class_class').hide();
+							$('.import_class').hide();
+
+							for (var i = 0; i < data.notice_data.length; i++) {
+								var temp_tbody = $(tbody).clone(true);
+								$(temp_tbody).find('.text-center').eq(0).text(data.notice_data[i][0]);
+								$(temp_tbody).find('.text-center').eq(2).text(data.notice_data[i][1]);
+								$(temp_tbody).find('.text-center').eq(4).text(data.notice_data[i][2]);
+								$(temp_tbody).find('.text-center').eq(6).text(data.notice_data[i][3]);
+								$(temp_tbody).find('.text-center').eq(6).attr('title', data.notice_data[i][3]);
+
+								$(temp_tbody).find('.text-center').eq(8).text(data.notice_data[i][4]);
+								$(temp_tbody).find('.text-center').eq(8).attr('title', data.notice_data[i][4]);
+
+								$(temp_tbody).find('.text-center').eq(10).text(data.notice_data[i][5]);
+								$(temp_tbody).find('.text-center').eq(10).attr('title', data.notice_data[i][5]);
+
+								$(temp_tbody).find('.text-center').eq(12).text(data.notice_data[i][6]);
+								$(temp_tbody).find('.text-center').eq(12).attr('title', data.notice_data[i][6]);
+								if (role != 3) {
+									$(temp_tbody).find('.text-center').eq(13).text(data.notice_data[i][7]);
+									$(temp_tbody).find('.text-center').eq(13).attr('title', data.notice_data[i][7]);
+								}
+								$("#body").append(temp_tbody);
+							}
+							var temp_head = $(thead).clone(true);
+							$(".class_thead").append(temp_head);
+							$(".notice_message").show();
+							$(".striped").show();
+							$(".back_class").show();
+							$(".Pagination").hide();*/
+
+						}else if(data.status == 1004)
+						{
+							alert('活动报名未结束,无法评分')
+						}
+						else if(data.status == 1005)
+						{
+							alert('活动未打包完成,无法评分')
+						}
+						else {
+							$(".notice_message").hide();
+							$('.import_success').show();
+						}
+
+					},
+				error: function (data, status, e) //服务器响应失败处理函数
+					{
+						$(".notice_message").hide();
+						$('.import_success').show();
+					}
+			})
+		}
+	});
+
+	//input file发生变化
+	$('.file_csv').live('change', function () {
+		var filepath = $('.file_csv').val();
+		var extStart = filepath.lastIndexOf(".");
+		var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+		if (ext == '.CSV') {
+			$('#address').val(filepath);
+		} else {
+			$.Notify({
+				caption: '提示',
+				content: '只支持csv文件上传',
+				type: 'warning'
+			});
+			$('.file_csv').val('');
+		}
+	});
+
+	//点击浏览按钮
+	$('.browse_button').click(function () {
+		//清空input框
+		$("#address").val('');
+		$('.file_csv').trigger('click');
+	});
+	$(document).on('click', '.activityMark', function () {
+		$('.remindBtn').attr('save-id', '');
+		var id = $(this).attr('id-save');
+		$('.remindBtn').attr('save-id', id);
+		$('.remindBox').css('display', 'block');
+	});
+
+	//点击取消
+	$('.cancelBtn').click(function(){
+		$('.remindBox,.fs').hide()
+	})
+</script>

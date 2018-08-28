@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <if condition="$data.file_type eq video">
+    <script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+    <elseif condition="$data.file_type eq audio"/>
+        <link rel="stylesheet" href="__PUBLIC__/audioPlayer/css/reset.css" />
+        <link rel="stylesheet" href="__PUBLIC__/audioPlayer/css/demo.css" />
+        <link rel="stylesheet" href="__PUBLIC__/audioPlayer/css/audioplayer.css" />
+        <script>
+            (function(doc){var addEvent='addEventListener',type='gesturestart',qsa='querySelectorAll',scales=[1,1],meta=qsa in doc?doc[qsa]('meta[name=viewport]'):[];function fix(){meta.content='width=device-width,minimum-scale='+scales[0]+',maximum-scale='+scales[1];doc.removeEventListener(type,fix,true);}if((meta=meta[meta.length-1])&&addEvent in doc){fix();scales=[.25,1.6];doc[addEvent](type,fix,true);}}(document));
+        </script>
+        <script src="__PUBLIC__/audioPlayer/js/jquery.js"></script>
+        <script src="__PUBLIC__/audioPlayer/js/audioplayer.js"></script>
+
+    </if>
+    <script src="https://lkme.cc/js/linkedme.min.js" ></script>
+    <style>
+        body {
+            background: #fff;
+            color: #333;
+            font-size: 16px;
+            font-family: "Lantinghei SC", "Open Sans", Arial, "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", "STHeiti", "WenQuanYi Micro Hei", SimSun, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .container {width: 100%;}
+        .logo {background-image: url(__PUBLIC__/jbresource/logo_web.png); padding-top:10px;background-position-y:10px; background-repeat: no-repeat; height: 46px; line-height: 36px; text-indent: 45px; font-weight: bold; margin: 10px; margin-top:0px;margin-bottom:5px;font-size: 20px; color: #333; font-family: MIcrosoft Yahei;}
+    </style>
+</head>
+<body>
+<header style="container">
+    <div class="logo">北京出版集团</div>
+</header>
+<!--
+<h1>
+    {$data.name}
+</h1>-->
+<!--
+<div class="section">
+    学科：{$data.course_name}&nbsp;年级：{$data.grade}&nbsp;教材：{$data.textbook}
+</div>
+<div class="section">
+    {$data.description}
+</div>-->
+<div class="section">
+    <switch name="data.file_type">
+        <case value="pdf">
+            <iframe id="resourceFrame" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={$oss_path}{$data.resource_path}" width="100%" height="500">
+            </iframe>
+        </case>
+        <case value="word|ppt">
+                <iframe id="resourceFrame" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={$oss_path}<?php
+			                                                        $path = explode('.',basename($data['resource_path']));
+                                                                    $path=$path[0].'.pdf';
+                                                                    $path = 'bjresource/' .$data['id'].'/'.$data['contactid'] .'/' .$path;
+                                                                    echo $path;
+                                                                    ?>" width="100%" height="500">
+                </iframe>
+        </case>
+
+        <case value="video">
+            <video src="{$data.mediaSource}" controls="controls" width="100%" autoplay="autoplay"> </video>
+        </case>
+        <case value="audio">
+            <if condition="$data.resource_path eq ''">
+            <div id="plv" style="height:200px">
+            </div>
+            <script>
+            var player =  polyvObject('#plv').videoPlayer({
+                                                'width': '100%',
+                                                'height': '100%',
+                                                'vid': "{$vid}"
+                                        });
+            </script>
+            <else/>
+                <audio preload="auto" controls >
+                    <source src="{$oss_path}{$data.resource_path}">
+                </audio>
+                <script>$( function() { $( 'audio' ).audioPlayer(); } );</script>
+            </if>
+        </case>
+        <default/>
+        <div>
+        </div>
+    </switch>
+</div>
+</body>
+</html>

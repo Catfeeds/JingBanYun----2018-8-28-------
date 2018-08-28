@@ -1,0 +1,642 @@
+<layout name="teacher_layout_2" />
+
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=2.0" type="text/css" rel="stylesheet">
+
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/myLessonPlannings.css">
+
+<empty name="list">
+    <div>
+        <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+    </div>
+
+    <div class="relative mt5">
+      <div style="overflow:hidden" class="absolute searchDiv text-center">
+            <img src="__PUBLIC__/img/myLessonPlannings/sousuo.png" alt="" / class="m22 left">
+            <div class="dib w900">
+              <!-- <input type="text" placeholder="请选择教案创建时间" id="datepicker" value="{$date}" class="form-control" title="请选择时间" readonly>
+              <div class="search">
+                  <button class="search_btn">搜索</button>
+                  <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入教案名称">
+              </div> -->
+              <div class="timeOutter">
+                <span class="startBox">
+                    <label for="startTime" class="startLabel"></label>
+                    <input type="text" value="{$startDate}" class="timeInput" name='startTime' id="startTime" placeholder="请选择开始日期" onkeydown="return false">
+                </span>
+                <span class="endBox">
+                    <label for="endTime" class="endLabel"></label>
+                    <input type="text" value="{$endDate}" class="timeInput" name='endTime' id="endTime" placeholder="请选择结束日期" onkeydown="return false"  >
+                </span>
+                <span class="endBox">
+                  <label  class="shu"></label>
+                  <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入教案名称">
+                </span>
+                  <button type="submit" class="search_btn">搜索</button>
+              </div>
+            </div>
+            <img src="__PUBLIC__/img/myLessonPlannings/guanbi.png" alt="" / class="right m29 closeSearch_div">
+      </div>
+      <div class="resource_middle " style="position:relative;">
+        <div class="dib left secrch_left">
+        <div class="resource_classify mt10">
+            <p class="classify_p">学科</p><span class="class_img"></span><span class="resource_name"></span>
+            <ul class="classify_ul course_ul">
+
+                <volist name="courses" id="dataCourse">
+                    <li attr_id='{$dataCourse.id}' {$dataCourse['id']==$course_id? 'class="current_selected"': ''}>
+                    {$dataCourse.course_name}
+                    </li>
+                </volist>
+                <if condition="$course_id neq null">
+                    <li {$course_id==null? 'class=""': ''} attr_id='-1'>取消选择</li>
+                </if>
+            </ul>
+        </div>
+        <div class="resource_classify mt10">
+            <p class="classify_p">年级</p><span class="class_img"></span><span class="resource_name"></span>
+            <ul class="classify_ul grade_ul">
+
+                <volist name="grades" id="dataGrade">
+                    <li attr_id="{$dataGrade.code}" {$dataGrade['code']==$grade_id? 'class="current_selected"': ''}>
+                    {$dataGrade.grade}
+                    </li>
+                </volist>
+                <if condition="$grade_id neq null">
+                    <li {$grade_id==null? 'class=""': ''} attr_id='-1'>取消选择</li>
+                </if>
+            </ul>
+        </div>
+        <div class="resource_classify mt10">
+            <p class="classify_p">分册</p><span class="class_img"></span><span class="resource_name"></span>
+            <ul class="classify_ul textbook_ul">
+
+                <li {$textbook_id==1? 'class="current_selected"': ''} attr_id='1'>上册</li>
+                <li {$textbook_id==2? 'class="current_selected"': ''} attr_id='2'>下册</li>
+                <li {$textbook_id==3? 'class="current_selected"': ''} attr_id='3'>全一册</li>
+                <if condition="$textbook_id neq null">
+                    <li {$textbook_id==null? 'class=""': ''} attr_id='-1'>取消选择</li>
+                </if>
+            </ul>
+        </div>
+      </div>
+        <div class="search_icon left secrch_right">
+
+          <div class="img_div">
+            <img src="__PUBLIC__/img/myLessonPlannings/sousuo.png" alt="" / id="searchImg">
+          </div>
+          <if condition="($startDate neq '') OR ($endDate neq '') OR ($keyword neq '')">
+          <span class="seachText">
+            <?php if($startDate != '' || $endDate != '')
+             {
+               if($startDate == '')
+                echo $endDate.'以前';
+               else if($endDate == '')
+                echo $startDate.'至今';
+               else
+                echo $startDate.'-'.$endDate;
+             } ?> {$keyword} <a href="{:U('Teach/myLessonPlannings')}"></a>
+          </span>
+          </if>
+        </div>
+      </div>
+    </div>
+    <if condition="$kw eq 1 ">
+        <div class="emptyDiv">
+            <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+            <p>抱歉，没有搜索到相关的内容！</p>
+        </div>
+    <else />
+        <div id="l_{$data.id}">
+            <div class="datalist" style="position: absolute">
+                <a href="{:U('Teach/createLessonPlanning')}" class="db creat_LP"></a>
+            </div>
+        </div>
+        <div class="emptyDiv">
+            <img src="{$oss_path}public/web_img/Empty/myLessonPlannings.png" alt="">
+            <p>您还没有创建任何教案哦！</p>
+            <a href="{:U('Teach/createLessonPlanning')}">马上创建一个</a>
+        </div>
+    </if>
+
+</empty>
+<notempty name="list">
+    <div class="relative mt5">
+      <div style="overflow:hidden" class="absolute searchDiv text-center">
+            <img src="__PUBLIC__/img/myLessonPlannings/sousuo.png" alt="" / class="m22 left">
+            <div class="dib w900">
+              <!-- <input type="text" placeholder="请选择教案创建时间" id="datepicker" value="{$date}" class="form-control" title="请选择时间" readonly>
+              <div class="search">
+                  <button class="search_btn">搜索</button>
+                  <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入教案名称">
+              </div> -->
+              <div class="timeOutter">
+                <span class="startBox">
+                    <label for="startTime" class="startLabel"></label>
+                    <input type="text" value="{$startDate}" class="timeInput" name='startTime' id="startTime" placeholder="请选择开始日期" onkeydown="return false">
+                </span>
+                <span class="endBox">
+                    <label for="endTime" class="endLabel"></label>
+                    <input type="text" value="{$endDate}" class="timeInput" name='endTime' id="endTime" placeholder="请选择结束日期" onkeydown="return false"  >
+                </span>
+                <span class="endBox">
+                  <label  class="shu"></label>
+                  <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入教案名称">
+                </span>
+                  <button type="submit" class="search_btn">搜索</button>
+              </div>
+            </div>
+            <img src="__PUBLIC__/img/myLessonPlannings/guanbi.png" alt="" / class="right m29 closeSearch_div">
+      </div>
+      <div class="resource_middle " style="position:relative;">
+        <div class="dib left secrch_left">
+        <div class="resource_classify mt10">
+            <p class="classify_p">学科</p><span class="class_img"></span><span class="resource_name"></span>
+            <ul class="classify_ul course_ul">
+
+                <volist name="courses" id="dataCourse">
+                    <li attr_id='{$dataCourse.id}' {$dataCourse['id']==$course_id? 'class="current_selected"': ''}>
+                    {$dataCourse.course_name}
+                    </li>
+                </volist>
+                <if condition="$course_id neq null">
+                    <li {$course_id==null? 'class=""': ''} attr_id='-1'>取消选择</li>
+                </if>
+            </ul>
+        </div>
+        <div class="resource_classify mt10">
+            <p class="classify_p">年级</p><span class="class_img"></span><span class="resource_name"></span>
+            <ul class="classify_ul grade_ul">
+
+                <volist name="grades" id="dataGrade">
+                    <li attr_id="{$dataGrade.code}" {$dataGrade['code']==$grade_id? 'class="current_selected"': ''}>
+                    {$dataGrade.grade}
+                    </li>
+                </volist>
+                <if condition="$grade_id neq null">
+                    <li {$grade_id==null? 'class=""': ''} attr_id='-1'>取消选择</li>
+                </if>
+            </ul>
+        </div>
+        <div class="resource_classify mt10">
+            <p class="classify_p">分册</p><span class="class_img"></span><span class="resource_name"></span>
+            <ul class="classify_ul textbook_ul">
+
+                <li {$textbook_id==1? 'class="current_selected"': ''} attr_id='1'>上册</li>
+                <li {$textbook_id==2? 'class="current_selected"': ''} attr_id='2'>下册</li>
+                <li {$textbook_id==3? 'class="current_selected"': ''} attr_id='3'>全一册</li>
+                <if condition="$textbook_id neq null">
+                    <li {$textbook_id==null? 'class=""': ''} attr_id='-1'>取消选择</li>
+                </if>
+            </ul>
+        </div>
+      </div>
+        <div class="search_icon left secrch_right">
+
+          <div class="img_div">
+            <img src="__PUBLIC__/img/myLessonPlannings/sousuo.png" alt="" / id="searchImg">
+          </div>
+          <if condition="($startDate neq '') OR ($endDate neq '') OR ($keyword neq '')">
+          <span class="seachText">
+            <?php if($startDate != '' || $endDate != '')
+             {
+               if($startDate == '')
+                echo $endDate.'以前';
+               else if($endDate == '')
+                echo $startDate.'至今';
+               else
+                echo $startDate.'-'.$endDate;
+             } ?> {$keyword} <a href="{:U('Teach/myLessonPlannings')}"></a>
+          </span>
+          </if>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+        <div id="l_{$data.id}" class=" col-lg-3 col-md-4 col-sm-6">
+            <div class="datalist ">
+                <a href="{:U('Teach/createLessonPlanning')}" class="db creat_LP"></a>
+            </div>
+        </div>
+    <volist name="list" id="data" empty="">
+        <div id="l_{$data.id}" class=" col-lg-3 col-md-4 col-sm-6">
+            <switch name="data.course_id">
+                <case value="1">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/yuwen.png)">
+                </case>
+                <case value="2">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/shuxue.png)">
+                </case>
+                <case value="3">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/yingyu.png)">
+                </case>
+                <case value="4">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/wuli.png)">
+                </case>
+                <case value="5">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/huaxue.png)">
+                </case>
+                <case value="6">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/zhengzhi.png)">
+                </case>
+                <case value="7">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/lishi.png)">
+                </case>
+                <case value="8">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/dili.png)">
+                </case>
+                <case value="9">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/shengwu.png)">
+                </case>
+                <case value="11">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/meishu.png)">
+                </case>
+                <case value="12">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/tiyuyujiankang.png)">
+                </case>
+                <case value="17">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/laodongjishubeike.png)">
+                </case>
+                <case value="18">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/xinxijishu.png)">
+                </case>
+                <case value="19">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/yanjiuxingxuexishijianyufenxi.png)">
+                </case>
+                <case value="31">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/kexue.png)">
+                </case>
+                <case value="32">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/quanxueke.png)">
+                </case>
+                <case value="33">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/pindeyushenghuo.png)">
+                </case>
+                <case value="34">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/pindeyushehui.png)">
+                </case>
+                <case value="35">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/sixiangpinde.png)">
+                </case>
+                <case value="36">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/sixiangzhengzhibeike.png)">
+                </case>
+                <case value="37">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/yinyue.png)">
+                </case>
+                <case value="38">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/shufa.png)">
+                </case>
+                <case value="39">
+                    <div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/tongyongjishu.png)">
+                </case>
+                <default /><div class="datalist" style="background:url(__PUBLIC__/img/myLessonPlannings/qita.png)">
+
+            </switch>
+
+                <div class="text-center">
+                  <div class="h45">
+                      <button onclick="showDeleteLessonPlanningDialog('{$data.id}')" title="删除" class="del_button"><img src="__PUBLIC__/img/myLessonPlannings/guanbi1.png" alt="" /></button>
+                  </div>
+
+                    <h3 class="list_title p0" title="{$data.name}">
+                        <if condition="$data.ver eq 1 OR $data.ver eq 2">
+                            <a href="{:U('Teach/lessonplanningDetailsBefore')}&id={$data.id}">{$data.name}</a>
+                        <else />
+                            <a href="{:U('Teach/lessonplanningDetails')}&id={$data.id}">{$data.name}</a>
+                        </if>
+                    </h3>
+                </div>
+                <div nowrap class="datalist_t">
+                    <span>&nbsp;&nbsp;&nbsp;{$data.create_at|date="Y/m/d ",###}</span>
+
+
+
+                    <if condition="$data.ver eq 1 OR $data.ver eq 2">
+                            <a href="{:U('Teach/createLessonPlanningBefore')}&id={$data.id}" title="修改" class="button">修改</a>
+                    <else />
+                        <a href="{:U('Teach/createLessonPlanning')}&id={$data.id}" title="修改" class="button">修改</a>
+                    </if>
+                </div>
+            </div>
+        </div>
+    </volist>
+    </div>
+    <div class="Pagination">{$page}</div>
+</notempty>
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+    /*function externQuery()
+    {
+    }
+
+    externQuery.prototype = new localQuery();
+    externQuery.prototype.getQueryParas = function(){
+        var orgParas = localQuery.prototype.getQueryParas();
+        //add add paras
+        var string = "";
+        var date = $("#datepicker").val();
+        var keyword = $(".search_text").val();
+        if (date != '') {
+            string = '&date=' + date;
+        }
+        if (keyword != '') {
+            string += '&keyword=' + keyword;
+        }
+        return orgParas + string;
+    }*/
+    window.onload = function(){
+      rightWidth()
+    }
+    $(window).resize(function(){
+      rightWidth()
+    })
+    $('#fullscreen_ctrl,#escfullscreen_ctrl').click(function(){
+      rightWidth()
+    })
+    function rightWidth(){
+      var rw = $('.resource_middle').width();
+      var slw = $('.secrch_left').width();
+      var srw = rw - slw ;
+      var secrch_rightWidth = $('.secrch_right').width(srw-0.5);
+    }
+
+
+</script>
+<script>
+    var currentResourceId = 0;
+
+    function showDeleteLessonPlanningDialog(resourceId) {
+        currentResourceId = resourceId;
+        $.NotifyBox.NotifyPromptTwoCo("提示","确定删除？", "确定", "取消", function() {
+          $.get('index.php?m=Home&c=Teach&a=deleteLessonPlanning', {
+              id: currentResourceId
+          }, function (res) {
+              if (res == 'success') {
+                  hideDeleteDialog();
+                  window.location.reload();
+              } else {
+                  alert('删除失败，请刷新页面后重新尝试');
+              }
+          })
+        })
+    }
+
+    function deleteResource() {
+        $.get('index.php?m=Home&c=Teach&a=deleteLessonPlanning', {
+            id: currentResourceId
+        }, function (res) {
+            if (res == 'success') {
+                hideDeleteDialog();
+                window.location.reload();
+            } else {
+                alert('删除失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+    function hideDeleteDialog() {
+        $('#deleteLessonPlanningDialog').modal('hide')
+        currentResourceId = 0;
+    }
+</script>
+<script>
+    $(function () {
+        $("#datepicker").datepicker({
+            dateFormat: "yy-mm-dd",
+            showOn: "both",
+            buttonImage: "/Public/img/rili.png",
+            buttonImageOnly: true,
+            showButtonPanel: true,
+            changeMonth: true,
+            maxDate: '0',
+            changeYear: true,
+            yearRange: "1950:2050",
+            buttonText: "请选择时间"
+
+        });
+    });
+</script>
+<script>
+    jQuery(function ($) {
+        $.datepicker.regional['zh-CN'] = {
+            clearText: '清除',
+            clearStatus: '清除已选日期',
+            closeText: '关闭',
+            closeStatus: '不改变当前选择',
+            prevText: '<上月',
+            prevStatus: '显示上月',
+            prevBigText: '<<',
+            prevBigStatus: '显示上一年',
+            nextText: '下月>',
+            nextStatus: '显示下月',
+            nextBigText: '>>',
+            nextBigStatus: '显示下一年',
+            currentText: '今天',
+            currentStatus: '显示本月',
+            monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthStatus: '选择月份',
+            yearStatus: '选择年份',
+            weekHeader: '周',
+            weekStatus: '年内周次',
+            dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+            dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+            dayStatus: '设置 DD 为一周起始',
+            dateStatus: '选择 m月 d日, DD',
+            dateFormat: 'yy-mm-dd',
+            firstDay: 1,
+            initStatus: '请选择日期',
+            isRTL: false
+        };
+        $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+    });
+</script>
+<script>
+    //    $('.ui-datepicker-trigger').attr('title', '请选择时间')
+    var btnimg = document.getElementsByClassName('ui-datepicker-trigger');
+    btnimg.title = "请选择时间"
+</script>
+<script>
+    $(document).ready(function () {
+        $("#datepicker,.search_text").keydown(function (evt) {
+            if (event.keyCode == "13") { //keyCode=13是回车键
+                var evt = (evt) ? evt : ((window.event) ? window.event : "")
+                var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+
+                var string = '';
+
+                string = join_string() ;
+                if(string===false){
+                    return false;
+                }
+                location.href = "index.php?m=Home&c=Teach&a=myLessonPlannings" + string;
+            }
+        })
+
+        //点击搜索框
+        $('.search_btn').click(function () {
+            var string = '';
+
+            string = join_string() ;
+            if(string===false){
+                return false;
+            }
+            location.href = "index.php?m=Home&c=Teach&a=myLessonPlannings" + string;
+        });
+
+        $(".classify_ul").find('li').click(function(){
+            $(this).siblings('li').removeClass('current_selected');
+            $(this).addClass('current_selected');
+            var string = '';
+            string = join_string() ;
+            location.href = "index.php?m=Home&c=Teach&a=myLessonPlannings" + string;
+        });
+
+        function IsDate(mystring) {
+            var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+            var str = mystring;
+            if (!reg.test(str)  || RegExp.$2>12 || RegExp.$3>31){
+                return false;
+            }
+            return true;
+        }
+        //拼接语句
+        function join_string() {
+            var string = "";
+            var startDate = $("#startTime").val();
+            var endDate = $("#endTime").val();
+            var keyword = $(".search_text").val();
+            var course_id = $(".course_ul").find('.current_selected,.current_selected1').attr('attr_id');
+            var grade_id = $(".grade_ul").find('.current_selected,.current_selected1').attr('attr_id');
+            var textbook_id = $(".textbook_ul").find('.current_selected,.current_selected1').attr('attr_id');
+            if (startDate != '') {
+                if((IsDate(startDate))==false){
+                    return false;
+                }
+                string = '&startDate=' + startDate;
+            }
+            if (endDate != '') {
+                if((IsDate(endDate))==false){
+                    return false;
+                }
+                string += '&endDate=' + endDate;
+            }
+            if (keyword != '') {
+                string += '&keyword=' + keyword;
+            }
+            if (typeof(course_id)!='undefined'){
+                if (course_id != '-1') {
+                    string += '&course=' + course_id;
+                }
+            }
+            if (typeof(grade_id)!='undefined'){
+                if (grade_id != '-1') {
+                    string += '&grade=' + grade_id;
+                }
+            }
+            if (typeof(textbook_id)!='undefined'){
+                if (textbook_id != '-1') {
+                    string += '&textbook=' + textbook_id;
+                }
+            }
+            return string;
+        }
+    $('.resource_classify').hover(function(){
+      $(this).children('.classify_p').addClass('p_border')
+			$(this).children('.classify_ul').filter(':not(:animated)').slideDown()
+		},function(){
+			$(this).children('.classify_ul').slideUp();
+      $(this).children('.classify_p').removeClass('p_border')
+		})
+		$('.current_selected').each(function(i,n){
+			  var cho = $.trim($(this).html());
+              $(this).parent().siblings('.resource_name').html(cho)
+		})
+    });
+    $('#searchImg').click(function(){
+      $('.absolute').animate({left:"-5px"});
+    })
+    $('.closeSearch_div').click(function(){
+      $('.absolute').animate({left:"200%"});
+    })
+</script>
+<script type="text/javascript">
+Date.prototype.Format = function (fmt) { //author: meizz
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
+</script>
+<!--开始时间 结束时间-->
+<script>
+    !function(){
+        laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var actstart = {
+        elem: '#startTime',
+        format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+        max: '2099-06-16', //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            actend.min = datas; //开始日选好后，重置结束日的最小日期
+            actend.start = datas; //将结束日的初始值设定为开始日
+            time('#startTime')
+        }
+    };
+
+    var actend = {
+        elem: '#endTime',
+        format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+        max: '2099-06-16',
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            actstart.max = datas; //结束日选好后，充值开始日的最大日期
+            time('#endTime')
+        }
+    };
+    laydate(actstart);
+    laydate(actend);
+</script>
+
+<script>
+    var startLeft;
+    $('#startTime').click(function(){
+        startLeft = $('#laydate_box').css('left');
+    })
+    var a = 0;
+    function time(id_){
+        if($(id_).val() != '') {
+            $(id_).siblings('label').addClass('yellow')
+        } else {
+            $(id_).siblings('label').removeClass('yellow')
+        }
+        $('#laydate_clear').click(function(){
+            if($('#laydate_box').css('left') == startLeft) {
+                $('#startTime').siblings('label').removeClass('yellow');
+            } else {
+                $('#endTime').siblings('label').removeClass('yellow')
+            }
+        })
+    }
+</script>

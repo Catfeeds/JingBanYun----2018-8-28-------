@@ -1,0 +1,836 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+
+<style>
+    #list_page {
+        display: none;
+    }
+    
+    .left {
+        float: left;
+    }
+    
+    .right {
+        float: right;
+    }
+    
+    .item {
+        position: relative;
+        display: inline-block;
+        width: 375px;
+        height: 424px;
+        float: left;
+        margin: 0px 40px;
+    }
+    
+    .item .avatar {
+        position: absolute;
+        left: 0;
+        top: 50px;
+        width: 70px;
+        height: 70px;
+        z-index: 10;
+        border: 1px solid transparent;
+        border-radius: 8px;
+    }
+    
+    .item .square_bg {
+        position: absolute;
+        left: 55px;
+        top: 20px;
+        width: 320px;
+        height: 400px;
+    }
+    
+    .item .info {
+        position: absolute;
+        left: 82px;
+        top: 55px;
+        width: 202px;
+        height: 202px;
+        z-index: 11;
+        background: transparent;
+        line-height: 26px;
+    }
+    
+    .info a,
+    .info span {
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+    }
+    
+    .info a,
+    .info .title_content {
+        width: 116px;
+    }
+    
+    .item .iconcheck {
+        position: absolute;
+        top: 125px;
+        left: 20px;
+        width: 20px;
+        height: 20px;
+        z-index: 10;
+        border: 1px solid transparent;
+        border-radius: 8px;
+    }
+    
+    .tdcheck {
+        width: 20px;
+        height: 20px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+    }
+    
+    #all_choice {
+        width: 20px;
+        height: 20px;
+    }
+    
+    #list_page #single_choice {
+        width: 20px;
+        height: 20px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+    }
+    /*-------------导入框----------------*/
+    
+    #import_outer {
+        display: none;
+    }
+    
+    .import {
+        width: 800px;
+        height: 400px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        margin-left: -400px;
+        margin-top: -200px;
+        background: url(__PUBLIC__/img/home/33.png) no-repeat left top;
+        background-size: 100% 100%;
+        z-index: 9999
+    }
+    
+    .close_btn {
+        float: right;
+        margin: 25px 35px 0 0;
+        cursor: pointer;
+    }
+    
+    .close_btn img {
+        width: 20px;
+    }
+    
+    .info .title_content {
+        width: 115px;
+    }
+    
+    .item {
+        width: 28%;
+    }
+    
+    .download_form {
+        width: 100%;
+        margin: 80px 0 50px 55px;
+    }
+    
+    .browse {
+        width: 100%;
+        margin-left: 70px;
+    }
+    
+    .browse input {
+        width: 500px;
+    }
+    
+    .file {
+        width: 100%;
+        margin: 30px 0 0 70px;
+    }
+    
+    .outer {
+        width: 650px;
+        height: 17px;
+        border: 1px solid #ccc;
+        float: left;
+        margin-top: 8px;
+    }
+    
+    .inner {
+        width: 2%;
+        height: 15px;
+        background: #E9C232;
+    }
+    /*-----------------导入成功-------------------*/
+    
+    .import_success,
+    .import_fail,
+    .export_success,
+    .export_fail {
+        display: none;
+        width: 500px;
+        height: 300px;
+        position: fixed;
+        top: 40%;
+        left: 32%;
+        z-index: 9999;
+        background: url(/Public/img/home/30.png) no-repeat center;
+        background-size: 100% 100%;
+    }
+    
+    .success_top,
+    .fail_top {
+        overflow: hidden;
+        padding: 50px 0 0 80px;
+    }
+    
+    .success_top img,
+    .fail_top img {
+        width: 30%;
+        float: left;
+    }
+    
+    .success_top p,
+    .fail_top p {
+        float: left;
+        font-size: 40px;
+        color: #666;
+        padding-top: 35px;
+    }
+    
+    .success_bottom,
+    .fail_bottom {
+        text-align: center;
+    }
+    
+    .success_bottom button,
+    .fail_bottom button {
+        width: 120px;
+        height: 50px;
+        border: none;
+        background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+        background-size: 100% 100%;
+        color: #fff;
+        font-size: 20px;
+        position:relative;
+        top:20px;
+    }
+    /*-----------------选择大图标 小图标 列表-------------------*/
+    
+    #dropDownList {
+        width: 154px;
+        height: 34px;
+        border: 2px solid #E9C232;
+        margin: 30px 0 0 210px;
+        position: relative;
+        text-align: center;
+        line-height: 28px;
+        cursor: pointer;
+        background: #fff;
+    }
+    
+    #dropDownList img {
+        width: 70%;
+    }
+    
+    #drop_left {
+        float: left;
+        width: 120px;
+        height: 30px;
+    }
+    
+    #drop_btn {
+        float: left;
+        width: 30px;
+        height: 30px;
+        border-left: 2px solid #E9C232;
+        background: url(__PUBLIC__/img/classManage/triangle.png) no-repeat center;
+        background-size: 50% 50%;
+        cursor: pointer;
+    }
+    
+    #drop_ul {
+        display: none;
+        width: 124px;
+        overflow: hidden;
+        position: absolute;
+        left: -2px;
+        top: 32px;
+        padding: 0;
+        z-index: 1005;
+        background: #fff;
+    }
+    
+    #drop_ul li {
+        width: 124px;
+        border: 2px solid #E9C232;
+        border-top: none;
+        cursor: pointer;
+    }
+    
+    .btn {
+        font-size: 16px;
+    }
+    
+    #bg {
+        display: none;
+        position: fixed;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index: 1001;
+        -moz-opacity: 0.7;
+        opacity: .70;
+        filter: alpha(opacity=70);
+    }
+	
+	#contentWrapper{
+		padding-bottom: 80px
+	}
+	
+	.notify-container {
+		z-index: 20161031;
+	}
+	.notify{width: 300px;height: 80px ;font-size: 30px;line-height:30px;} 
+	.notify-text{font-size: 18px !important}
+	.notify-title{font-size: 18px !important}
+</style>
+<div id="bg"></div>
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/classList')}" title="返回 班级管理" class="btn btnReturn3">返回</a>
+</div>
+<div style="margin-bottom: 12px;height:98px">
+    <div id="large_all" style="float: left; padding-left:20px; font-size: 16px; color: #60584D;">
+        <label for="all_choice">
+            <input type="checkbox" name="all_choice" id="all_choice" onclick="changeState(this.checked)">&nbsp;全选</label>
+        <div>学生总数:<?php echo count($list); ?> 人</div>
+    </div>
+    <div style="float: right;">
+        <a href="{:U('Teach/addStudent')}&classId={$classId}" class="btn btn3before">+添加</a>
+        <a href="javascript:;" id="import_btn" class="btn btn3before">批量导入</a>
+        <a href="javascript:;" id="export_btn" class="btn btn3before" style="margin-right:50px">批量导出</a>
+        <div id="dropDownList" onclick="return adjustPageLayoutclass()">
+            <div id="drop_left" >
+                <img src="__PUBLIC__/img/classManage/largeIcon.png" alt="">
+            </div>
+            <div id="drop_btn" ></div>
+            <ul id="drop_ul" >
+                <li><img src="__PUBLIC__/img/classManage/largeIcon.png" alt=""></li>
+                <!--               <li><img src="__PUBLIC__/img/classManage/smallIcon.png" alt=""></li>-->
+                <li><img src="__PUBLIC__/img/classManage/listIcon.png" alt="" ></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+<empty name="list">
+    <div class="emptyResult">该班级尚未有学生加入</div>
+</empty>
+<notempty name="list">
+    <!-------------------------图标页---------------------------->
+    <div style="overflow:hidden" id="large_page">
+        <volist name="list" id="data" empty="">
+            <div class="item">
+                
+                <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+                <img class="avatar" onerror="img_teacher(this)" src="<?php echo C('oss_path').$data['avatar']?>">
+                <?php else: ?>
+                    <img class="avatar" onerror="img_teacher(this)" src="__ROOT__/Uploads/StudentAvatars/{$data.avatar}">
+                <?php endif; ?>
+                
+
+                <input type="checkbox" id="" class="iconcheck" data-id="{$data.id}">
+                <img class="square_bg" src="__PUBLIC__/img/square_bg.png">
+
+                <div class="info">
+                    <span class="info_title">学生姓名：</span>
+                    <span class="title_content">{$data.student_name}</span>
+                    <span class="info_title">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span><span class="title_content">{$data.sex}</span>
+                    <span class="info_title">出生年月：</span><span class="title_content">{$data.birth_date}</span>
+                    <span class="info_title">学生编号：</span><span class="title_content" title="{$data.student_id}">{$data.student_id}</span>
+                    <span class="info_title">身份证号：</span><span class="title_content" title="{$data.id_card}">{$data.id_card}</span>
+                    <span class="info_title">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</span><span class="title_content" title="111">{$data.email}</span>
+                    <span class="info_title">家长手机号：</span><span class="title_content" title="{$data.parent_tel}">{$data.parent_tel}</span>
+
+                    <div style="text-align: center;margin-top: 20px;width: 271px;">
+                        <if condition="$data['status'] eq 1">
+                            <button class="btn btn3before" onclick="approve({$data.id})">同意加入</button>
+                            <button class="btn btn3before" onclick="decline({$data.id})">拒绝加入</button>
+                            <elseif condition="$data['status'] eq 2" />
+                            <a class="btn btn3before" href="{:U('Teach/editStudent')}&id={$data.id}&classId={$classId}" style="margin-left:0">修改信息</a>
+                            <button class="btn btn3before" onclick="deny({$data.id})">移出班级</button>
+                            <else/>
+                        </if>
+                    </div>
+
+                </div>
+            </div>
+        </volist>
+    </div>
+    <!--------------------------列表页---------------------------->
+    <div style="clear:both;padding-top:10px;" id="list_page">
+        <table class="table striped hovered border">
+            <thead>
+                <tr>
+                    <th class="text-center" style="font-size: 16px; color: #60584D;">
+                        <label for="all_choice" style="margin-bottom:0">
+                            <input type="checkbox" name="all_choice" id="all_choice" onclick="changeState(this.checked)" style="position:relative;top:5px">&nbsp;全选</label>
+                    </th>
+                    <th class="text-center">学生姓名</th>
+                    <th class="text-center">性别</th>
+                    <th class="text-center">出生年月</th>
+                    <th class="text-center">学生编号</th>
+                    <th class="text-center">身份证号</th>
+                    <th class="text-center">邮箱</th>
+                    <th class="text-center">家长手机号</th>
+                    <th class="text-center">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <volist name="list" id="data" empty="">
+                    <tr id="l_{$data.id}">
+                        <td class="text-center">
+                            <input type="checkbox" class="tdcheck" id="single_choice{$data.id}" data-id="{$data.id}">
+                        </td>
+                        <td class="text-center">
+                            <span class="title_content">{$data.student_name}</span>
+                        </td>
+                        <td class="text-center">
+                            {$data.sex}
+                        </td>
+                        <td class="text-center">
+                            {$data.birth_date}
+                        </td>
+                        <td class="text-center">
+                            {$data.student_id}
+                        </td>
+                        <td class="text-center">
+                            {$data.id_card}
+                        </td>
+                        <td class="text-center">
+                            {$data.email}
+                        </td>
+                        <td class="text-center">
+                            {$data.parent_tel}
+                        </td>
+                        <td class="text-center" nowrap>
+                            <if condition="$data['status'] eq 1">
+                                <button class="btn btnReturn3" onclick="approve({$data.id})">同意加入</button>
+                                <button class="btn btnReturn3" onclick="decline({$data.id})">拒绝加入</button>
+                                <elseif condition="$data['status'] eq 2" />
+                                <a class="btn btnReturn3" href="{:U('Teach/editStudent')}&id={$data.id}&classId={$classId}">修改信息</a>
+                                <button class="btn btnReturn3" onclick="deny({$data.id})">移出班级</button>
+                                <else/>
+                            </if>
+                        </td>
+                    </tr>
+                </volist>
+            </tbody>
+        </table>
+    </div>
+</notempty>
+<!--------------------批量导入----------------------------->
+<div id="import_outer" style="background:#fff;">
+    <div class="import">
+        <div class="close_btn">
+            <img src="__PUBLIC__/img/home/close.png" alt="">
+        </div>
+        <div class="download_form">
+            <a href="{:U('Teach/downloadStudentListFile')}" target="_blank" title="下载" class="button">下载示例表格</a>
+        </div>
+        <div class="browse">
+            <input type="text" id="address" placeholder="链接地址">
+            <a href="javascript:;" title="浏览" class="btn btnReturn3 browse_button">浏览</a>
+            <input type="file" name="file" style="display:none;" accept=".csv" class="file_csv" id="file_csv" />
+            <a href="javascript:;" title="上传" class="btn btnReturn3 upload_file">上传</a>
+        </div>
+        <!--
+        <div class="file">
+            <div class="outer">
+                <div class="inner">
+                
+                </div>
+            </div>
+        </div>
+-->
+    </div>
+</div>
+
+<!-------------------导入成功---------------------->
+<div class="import_success">
+    <div class="success_top">
+        <img src="__PUBLIC__/img/home/32.png" alt="">
+        <p>导入成功！</p>
+    </div>
+    <div style="position:relative;left:20px">
+    导入成功的学生默认已经在平台注册, 请学生使用初始密码123456登录平台
+    </div>
+    <div class="success_bottom">
+        <button type="submit" class="im_success_sure">确定</button>
+    </div>
+
+</div>
+<!-------------------导入失败---------------------->
+<div class="import_fail">
+    <div class="fail_top">
+        <img src="__PUBLIC__/img/home/31.png" alt="">
+        <p id="failMsg">导入失败！</p>
+    </div>
+    <div class="fail_bottom">
+        <button type="submit" class="im_fail_sure">确定</button>
+    </div>
+</div>
+
+<!-------------------导出成功---------------------->
+<div class="export_success">
+    <div class="success_top">
+        <img src="__PUBLIC__/img/home/32.png" alt="">
+        <p>导出成功！</p>
+    </div>
+    <div class="success_bottom">
+        <button type="submit" class="ex_success_sure">确定</button>
+    </div>
+</div>
+<!-------------------导出失败---------------------->
+<div class="export_fail">
+    <div class="fail_top">
+        <img src="__PUBLIC__/img/home/31.png" alt="">
+        <p>导出失败！</p>
+    </div>
+    <div class="fail_bottom">
+        <button type="submit" class="ex_fail_sure">确定</button>
+    </div>
+</div>
+
+<form id="exportForm" action="index.php?m=Home&c=Teach&a=exportStudents&classId={$classId}" method="post">
+    <input id="exportInput" type='hidden' name='list' />
+</form>
+<script type="text/javascript" src="__PUBLIC__/js/layer/layer.js"></script>
+<script>
+    function MySet() {
+        this.data = new Array();
+        this.has = function (key) {
+            var i;
+            for (i = 0; i < this.data.length; i++) {
+                if (key == this.data[i])
+                    return true;
+            }
+            return false;
+        }
+        this.clear = function () {
+            this.data.length = 0;
+        }
+        this.join = function (splitStr) {
+            var i;
+            var str = "";
+            for (i = 0; i < this.data.length; i++) {
+                if (i != this.data.length - 1)
+                    str += this.data[i] + splitStr;
+                else
+                    str += this.data[i];
+            }
+            return str;
+        }
+        this.add = function (key) {
+            var i;
+            for (i = 0; i < this.data.length; i++) {
+                if (key == this.data[i])
+                    return;
+            }
+            this.data.push(key);
+        }
+
+    }
+    var selectedList = new MySet();
+
+    function refreshcheckBox(str) {
+        $(str).each(function (i, n) {
+            if (selectedList.has($(n).attr('data-id')))
+                $(n).get(0).checked = true;
+            else
+                $(n).get(0).checked = false;
+        });
+    }
+    $('.iconcheck').change(function () {
+        selectedList.clear();
+        $('.iconcheck:checked').each(function (i, n) {
+            selectedList.add($(n).attr('data-id'));
+        });
+    });
+    $('.tdcheck ').change(function () {
+        selectedList.clear();
+        $('.tdcheck:checked').each(function (i, n) {
+            selectedList.add($(n).attr('data-id'));
+        });
+    });
+    var classId = '{$classId}';
+
+    function approve(studentId) {
+        $.get('index.php?m=Home&c=Teach&a=approveStudentInClass', {
+            student_id: studentId,
+            class_id: classId
+        }, function (res) {
+            if (res == 'success') {
+                alert('已同意加入')
+                window.location.reload();
+            } else {
+                alert('同意加入失败，请刷新页面后重新尝试');
+            }
+        });
+    }
+
+    function decline(studentId) {
+        $.get('index.php?m=Home&c=Teach&a=declineStudentInClass', {
+            student_id: studentId,
+            class_id: classId
+        }, function (res) {
+            if (res == 'success') {
+                alert('已拒绝加入')
+                window.location.reload();
+            } else {
+                alert('拒绝加入失败，请刷新页面后重新尝试');
+            }
+        });
+    }
+
+    function deny(studentId) {
+        if (confirm('确认要将此学生移除该班级吗？')) {
+            $.get('index.php?m=Home&c=Teach&a=denyStudentInClass', {
+                student_id: studentId,
+                class_id: classId
+            }, function (res) {
+                if (res == 'success') {
+                    alert('已移出班级')
+                    window.location.reload();
+                } else {
+                    alert('移出班级失败，请刷新页面后重新尝试');
+                }
+            });
+        }
+
+    }
+</script>
+
+<!---------------------导入文件-------------------------->
+<script>
+    $('#import_btn').on('click', function () {
+        $('#import_outer').css('display', 'block');
+        $('#bg').css('display', 'block');
+    });
+    $('.close_btn').on('click', function () {
+        $('#import_outer').css('display', 'none');
+        $('#bg').css('display', 'none');
+    });
+</script>
+<!---------------------导入-------------------------->
+<script>
+    $('.im_success_sure').on('click', function () {
+        $('.import_success').css('display', 'none');
+        $('#bg').css('display', 'none');
+        location.reload();
+    });
+
+    $('.im_fail_sure').on('click', function () {
+        $('.import_fail').css('display', 'none');
+        $('#bg').css('display', 'none');
+    });
+</script>
+<!---------------------导出-------------------------->
+<script>
+    $('.ex_success_sure').on('click', function () {
+        $('.export_success').css('display', 'none');
+    });
+
+    $('.ex_fail_sure').on('click', function () {
+        $('.export_fail').css('display', 'none');
+    });
+</script>
+<script>
+    $('.browse_button').click(function () {         
+        //$('#address').val('');
+        $('.file_csv').trigger('click');
+    });
+    var form;
+    $('#export_btn').click(function () {
+
+        var str = selectedList.join(',');
+        if (str.length == 0) {
+            alert("请选择至少一名学生进行导出.");
+            return;
+        }
+        $('#exportInput').val(str);
+        $('#exportForm').submit();
+
+    });
+    var tpl = '<table class="table striped hovered border"><thead><tr>\
+            <th class="text-center">姓名</th> \
+            <th class="text-center">性别</th> \
+            <th class="text-center">学生编号</th> \
+            <th class="text-center">出生年月</th> \
+            <th class="text-center">邮箱</th> \
+            <th class="text-center">家长手机号</th> \
+            <th class="text-center">身份证号</th> \
+            <th class="text-center">错误信息</th> \
+            </tr> \
+            </thead> \
+            <tbody>{0}</tbody></table>';
+    var tbodyTpl = '<tr> \
+            <td class="text-center">{0}</td> \
+            <td class="text-center">{1}</td> \
+            <td class="text-center">{2}</td> \
+            <td class="text-center">{3}</td> \
+            <td class="text-center">{4}</td> \
+            <td class="text-center">{5}</td> \
+            <td class="text-center">{6}</td> \
+            <td class="text-center">{7}</td> \
+            </tr>'
+        //点击文件上传
+    $('.upload_file').click(function () {   
+        $('#bg').css('display', 'block');
+        if ($('#file_csv').val() == '' || !$('#file_csv').val()) {
+            $.Notify({
+                caption: '提示',
+                content: '请选择需要上传的csv格式文件',
+                type: 'warning'
+            });
+        } else {
+            $.ajaxFileUpload({
+                url: 'index.php?m=Home&c=Teach&a=importStudentsList&classId={$classId}', //用于文件上传的服务器端请求地址
+                secureuri: false, //是否需要安全协议，一般设置为false
+                fileElementId: 'file_csv', //文件上传域的ID
+                dataType: 'text', //返回值类型 一般设置为json
+                success: function (data) //服务器成功响应处理函数
+                    {
+                        $('#address').val('');
+                        data = eval('(' + data + ')');
+                        if (data.code == 0) {
+                            $('#import_outer').css('display', 'none');
+                            $('.import_success').show();
+                        } else if (data.code == -1) {
+                            //TODO:show data.msg
+                            $('#failMsg').text(data.msg);
+                            $('.import_fail').show();
+                        } else if (data.code == -2) {
+                            //TODO:open layer.js and show error result
+                            data.msg = eval(data.msg);
+                            var tbody = '';
+                            $.each(data.msg, function (i, n) {
+                                var line = tbodyTpl.format(n[0],
+                                    n[1],
+                                    n[2],
+                                    n[3],
+                                    n[4],
+                                    n[5],
+                                    n[6],
+                                    n[7]);
+                                tbody += line;
+                            });
+                            layer.open({
+                                type: 1,
+                                title: '数据导入异常',
+                                content: tpl.format(tbody),
+                                area: ['950px', '550px']
+                            });
+
+                        }
+
+                    },
+                error: function (data, status, e) //服务器响应失败处理函数
+                    {
+                        alert('导入超时,请刷新页面后重试');
+
+                    }
+            })
+        }
+    });
+
+    //input file发生变化
+    $('.file_csv').change(function () {
+        var filepath = $('.file_csv').val();        
+        var extStart = filepath.lastIndexOf(".");
+        var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+        if (ext == '.CSV') {
+            $('#address').val(filepath);
+        } else {
+            $.Notify({
+                caption: '提示',
+                content: '只支持csv文件上传',
+                type: 'warning'
+            });
+            $('.file_csv').val('');
+        }
+    });
+    $('.im_success_sure').on('click', function () {
+        $('.import_success').css('display', 'none');
+        $('#bg').css('display', 'none');
+    });
+
+    $('.im_fail_sure').on('click', function () {
+        $('.import_fail').css('display', 'none');
+        $('#bg').css('display', 'none');
+    });
+
+    $('.ex_success_sure').on('click', function () {
+        $('.export_success').css('display', 'none');
+        $('#bg').css('display', 'none');
+    });
+
+    $('.ex_fail_sure').on('click', function () {
+        $('.export_fail').css('display', 'none');
+        $('#bg').css('display', 'none');
+    });
+</script>
+<!-------------实现多选---------------->
+<script type="text/javascript">
+    function changeState(isChecked) {
+        var chk_list = document.getElementsByTagName("input");
+        for (var i = 0; i < chk_list.length; i++) {
+            if (chk_list[i].type == "checkbox") {
+                chk_list[i].checked = isChecked;
+            }
+        }
+        if (isChecked) {
+            $('.iconcheck:checked').each(function (i, n) {
+                selectedList.add($(n).attr('data-id'));
+            });
+        } else
+            selectedList.clear();
+    }
+</script>
+<!-----------------大图标 小图标 列表---------------------------->
+<script>
+    $('#dropDownList').click(function () {
+        $('#drop_ul').toggle();
+        //        $('#large_page,#large_all,#list_page').css('padding-top','60px');
+    })
+    $('#drop_ul').children('li').on('click', function () {
+        $('#drop_left').html($(this).html());
+        //        $('#large_page,#large_all,#list_page').css('padding-top','0');
+        if ($(this).index() == 0) {
+            $('#large_page,#large_all').css('display', 'block');
+            $('#list_page').css('display', 'none');
+            refreshcheckBox('.iconcheck');
+        } else {
+            $('#large_page,#large_all').css('display', 'none');
+            $('#list_page').css('display', 'block');
+            refreshcheckBox('.tdcheck');
+        }
+
+    })
+    $('#drop_ul').children('li').blur(function () {
+        $('#drop_ul').css('display', 'none');
+    })
+</script>
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<!--
+<script>
+   var contentheight = '申明一个变量，在有些获取不到contwrapper高度的页面执行一个函数'
+
+        
+</script>-->

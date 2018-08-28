@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>学校后台管理登录</title>
+	<link rel="stylesheet" href="/Public/css/adminRegister.css">
+</head>
+<body>
+	<img src="/Public/img/home/logoWhite.png" class="logoImg" alt="">
+	<span class="title">学校管理后台</span>
+	
+	<div class="fullscr" style="display: block;">
+		<div class="adminNotifyBox">
+			<div class="adminNotifyTitle">账号登录</div>
+			<div class="adminNotifyContent">
+				<div class="errorMsg"></div>
+				<div class="adminSelect">
+					<form action="{:U('Login/login_entry')}" method="post" id="form_login" onsubmit='return act_login()'>
+						<div class="selectBox" style="margin-top: 10px">
+							<label for="">登录账号</label>
+							<input type="text" class="input-control" id="account" name="userName" value="" placeholder="请输入管理员账号">
+						</div>
+						<div class="selectBox">
+							<label for="">登录密码</label>
+							<input type="password" class="input-control" id="password" name="password" value="" placeholder="请输入管理员密码">
+							<a href="javascript:;" class="forgetPass">忘记密码？</a>
+						</div>
+						<div class="selectBox">
+							<label for="">验&nbsp;证&nbsp;码</label>
+							<input type="text" class="input-control" id="codeInput" name="code" value="" placeholder="请输入验证码" style="width: 200px">
+                                                        <div id="code">
+                                                            <img src="{:U('Login/produceVerifyCode')}" alt="" class="refreshA" title="换一个" >
+                                                        </div>
+							<a href="javascript:;" title="换一个" class="refreshB" > 
+								刷新
+							</a>
+
+						</div>
+					
+				</div>
+				<p class="adminNotifyButton">
+					<input type="submit" class="adminNotifyBtn adminNotifyBlue1" id="loginBtn" value="登录" >
+				</p>
+                                </form>
+			</div>
+			<div class="forgetMsg">
+				<img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Admin/icon-close.png" alt="" class="closeImg">
+				<p>如果您忘记密码，请您与我们的客服联系</p>
+				<p><span>400-655-3588</span>或发送邮件至<span>jingbanyun@126.com</span></p>
+			</div>
+		</div>
+	</div>
+	
+	<script typet="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+	<script>
+		//验证码
+		var strCode;
+		function Ypwd(obj){
+			var arr=["0","1","2","3","4","5","6","7","8","9",
+			"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+			"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+			var str=[],colorValue=['','','',''],str0='';
+			for(var i=0;i<4;i++){
+				var rand=Math.floor(Math.random ()*62);
+				var rand2=Math.floor(Math.random ()*90+(-45));
+				for(var j=0;j<6;j++){
+					var rand1=Math.floor(Math.random ()*16);
+					colorValue[i]+=arr[rand1];
+				}
+				str[i]=arr[rand];
+				str0+='<div style="font-family:Helvetica;float:left;color:#'+colorValue[i]+';-webkit-transform:rotate('+rand2+'deg);font-size: 24px; margin-right: 5px">'+str[i]+'</div>';
+			}
+			document.getElementById(obj).innerHTML=str0;
+			strCode = str.join('').toUpperCase();
+			console.log(strCode)
+		}
+		
+		//Ypwd('code');	
+		$('.refreshA').click(function(){
+		    $(this).attr('src',"{:U('Login/produceVerifyCode')}&time="+Math.random());			
+		}); 
+                $('.refreshB').click(function(){
+		    $('.refreshA').attr('src',"{:U('Login/produceVerifyCode')}&time="+Math.random());			
+		});
+		
+                var flag=0;
+		//验证表单
+		function act_login() {
+			var account = $('#account').val();
+			var password = $('#password').val();
+			var codeInput = $('#codeInput').val();
+			
+			if (account == '' || password == '' || codeInput == '') {
+				$('.errorMsg').html('请输入完整信息').show();
+				return false;
+			}
+			
+			if (account == '' || password == '') {
+				$('.errorMsg').html('请输入账号和密码').show();
+				return false;
+			}
+			
+			if (account == '') {
+				$('.errorMsg').html('请输入账号').show();
+				return false;
+			}
+			
+			if (password == '') {
+				$('.errorMsg').html('请输入密码').show();
+				return false;
+			}
+			
+			if (codeInput == '') {
+				$('.errorMsg').html('请输入验证码').show();
+				return false;
+			} 
+                        $.ajax({
+                            type: "POST",
+                            dataType: "json",
+                            url: "{:U('Login/check_verify')}",
+                            async: false,
+                            data: {'code':codeInput},
+                            success: function(msg){
+                                if(msg.status==200){
+                                    $('.errorMsg').html('').hide();
+                                    flag=1;
+                                }else{
+                                    $(".refreshA").trigger('click');
+                                    $('.errorMsg').html('验证码错误').show();
+                                    return false;
+                                }
+                            }
+                        }); 
+                        if(flag==0){
+                            return false;
+                        }
+                        flag=0;
+                        
+                        $.ajax({
+                            type: "POST",
+                            url: "{:U('Login/login')}",
+                            async: false,
+                            dataType: 'json',
+                            data: {'userName':account,'password':password,'code':codeInput},
+                            success: function(msg){ 
+                                if(msg.status==401){
+                                    $(".refreshA").trigger('click');
+                                    $('.errorMsg').html('验证码错误').show();  
+                                    return false;
+                                }else if(msg.status==402){
+                                    $('.errorMsg').html('账号或密码不能为空').show();  
+                                    return false;
+                                }else if(msg.status==403){
+                                    $('.errorMsg').html('账号或密码错误').show();  
+                                    return false;
+                                }else if(msg.status==404){
+                                    $('.errorMsg').html('学校已被禁用,无法登录').show();  
+                                    return false;
+                                }else if(msg.status==405){
+                                    $('.errorMsg').html(msg.msg).show();
+                                    return false;
+								}
+                                else{
+                                    $('.errorMsg').html('').hide();  
+                                    flag=1;
+                                }
+                            }
+                         });     
+                         if(flag==0){
+                             return false;
+                         } 
+			return true
+		}
+	</script>
+	
+	<script>
+		//忘记密码
+		$('.forgetPass').click(function(){
+			$('.forgetMsg').show();
+		})
+		
+		$('.closeImg').click(function(){
+			$('.forgetMsg').hide();
+		})
+	</script>
+</body>
+</html>

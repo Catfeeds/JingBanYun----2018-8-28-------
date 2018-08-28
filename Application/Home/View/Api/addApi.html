@@ -1,0 +1,135 @@
+<layout name="admin_layout"/>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button {:session('btntheme')}">&lt; 返回</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form id="form1" name="form1" action="{:U('Api/saveApi')}" method="post" data-role="validator"
+          data-on-error-input="notifyOnErrorInput"
+          data-show-error-hint="true" enctype="multipart/form-data">
+
+        <div class="grid condensed">
+            <div class="row cells3">
+
+                <div class="form_section">
+                    <label for="name">版本号</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" name="version" id="version">
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="name">控制器名</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" name="controller_name" id="controller_name">
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="name">方法名</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" name="function_name" id="function_name" >
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="name">描述</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" name="describe" id="describe">
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+</div>
+
+<br>
+<div class="form-actions" style="text-align: left; margin-top: 40px;">
+    <button id="submitButton" type="submit" class="button {:session('btntheme')}" onclick="return check();">添加接口</button>
+</div>
+</form>
+
+
+</div>
+
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script type="text/javascript" src="__PUBLIC__/flashUploader/js/stream-v1.js"></script>
+<script>
+    function ossInputChange()
+    {
+        if($('#ebookCheckBox').attr('checked'))
+            $('#ossInput').attr('style','');
+        else
+            $('#ossInput').attr('style','display:none');
+
+
+    }
+    $(function () {
+
+        var options = {
+            success: showResponse, // post-submit callback
+            resetForm: false,
+            dataType: 'json'
+        };
+        $('#form1').submit(function () {
+            $(this).ajaxSubmit(options);
+            return false;
+        });
+    });
+    function check() {
+
+        var version = $('#version').val();
+        if ( version == 'undefined' || version=='' ) {
+            alert('版本号为空');
+            return false;
+        }
+
+        var controller_name = $('#controller_name').val();
+        if ( controller_name == 'undefined' || controller_name=='' ) {
+            alert('控制器名为空');
+            return false;
+        }
+
+
+        var function_name = $('#function_name').val();
+        if ( function_name == 'undefined' || function_name=='' ) {
+            alert('方法名为空');
+            return false;
+        }
+
+        var describe = $('#describe').val();
+        if ( describe == 'undefined' || describe=='' ) {
+            alert('描述为空');
+            return false;
+        }
+
+        return true;
+    }
+    function showResponse(responseText, statusText) {
+        alert(responseText.msg);
+        $('#submitButton').attr('disabled',false).removeClass('disabled');
+        switch (responseText.code) {
+            case 1: //edit success
+                window.location.href = '{:U("Api/apiList")}';
+                //TODO:1. ask if need to modify ebook
+                break;
+            case -1: //add failed
+
+                break;
+            case 0: // add success
+                window.location.href = '{:U("Api/apiList")}';
+                //TODO:upload ebook
+                break;
+            default:
+                break;
+        }
+    }
+</script>

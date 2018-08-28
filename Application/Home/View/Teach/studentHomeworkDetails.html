@@ -1,0 +1,589 @@
+<layout name="teacher_layout_3"/>
+<script src="__PUBLIC__/js/exercise/sha1.js?" type="text/javascript"></script>
+<link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css"/>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css"/>
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script> 
+<script src="__PUBLIC__/js/exercise/render_1.js?" type="text/javascript"></script>
+<style>
+    .main_head {
+        padding: 17px;
+    }
+
+    #scoreWrapper td {
+        padding: 8px;
+    }
+    	.homework_bg {
+	background: #eee;
+		margin: 10px 0; 
+		line-height: 30px;
+		font-size: 18px;
+		padding: 5px 10px
+}
+	.homework_bg p{
+		display: inline-block;
+		margin: 0;
+	}
+</style>
+<div class="main_opr">
+    <a href="{:U('Teach/homework')}" title="作业详情" class="btn btn-main-opr btn-main-opr-active">作业详情</a>
+    <a href="{:U('Teach/wrongHomeworkList')}" title="错题集" class="btn btn-main-opr">错题集</a>
+</div>
+
+<div>
+    <a href="{:U('Teach/homeworkCompleteDetails?homeworkId=')}{$homeworkId}" title="返回" class="btn btnReturn3">返回</a>
+</div>
+
+<div class="main_head">
+    <a href="{:U('Teach/homework')}" title="作业列表" class="btn btn-primary"
+       style="background:#eac31c !important;">作业列表</a>
+    <a href="{:U('Teach/assignHomework')}" title="布置作业" class="btn btn-primary">布置作业</a>
+</div>
+
+<!--
+<div style="padding-left: 17px;font-size:16px;">
+    <p>作业名称：<span class="homework_name">{$exerciseChapter.homework_name}</span></p>
+
+    <p>作业要求：<span class="homework_claim">{$exerciseChapter.claim}</span></p>
+    <p></p>
+</div>
+-->
+    <div id="scoreWrapper">
+      <div class="homework_bg">
+
+        <p>作业名称：<span class="homework_name">{$exerciseChapter.homework_name}</span></p>
+        <p style="float:right">习题数量：<span >{$exerciseChapter.exercises_number}</span></p>
+        </div>
+        <div class="homework_bg">
+            作业要求：<span>{$exerciseChapter.claim}</span>
+        </div>
+        <div class="homework_bg">
+            作业涉及章节：
+            <volist name="chapter_data" id="item_data">
+                <span>{$item_data.chapter},{$item_data.festival}</span>&nbsp;
+            </volist> 
+        </div>
+</div>
+<div id="scoreWrapper" style="overflow: hidden;">
+    <form action="{:U('Teach/doGrade')}" method="post" onsubmit="return doGrade();">
+
+        <input type="hidden" name="details_id" id="details_id" value="{$id}">
+        <input type="hidden" name="score_details" id="score_details" value="">
+        <input type="hidden" name="total_score" id="total_score" value="">
+        <input type="hidden" name="homework_id" id="homework_id" value="{$homework.homework_id}">
+        <table id="scoreDetails" cellspacing="0" cellpadding="0" style="table-layout:fixed;float:left;">
+            <tr id="scoreDetails_row1">
+            </tr>
+            <tr id="scoreDetails_row2">
+            </tr>
+        </table>
+        <div style="float: left;margin:20px 0 0 10px;">
+            <button id="submitHomework" class="btn btn-primary">打分</button>
+        </div>
+    </form>
+</div>
+<div style="margin-top: 30px">
+    <div id="exerciseWrapper">
+    </div>
+</div>
+<script>
+    String.prototype.replaceAll = function (s1, s2) {
+        return this.replace(new RegExp(s1, "gm"), s2);
+    }
+</script>
+<script> 
+    var studentId = '{$homework.student_id}';
+    var homeworkId = '{$homework.homework_id}';
+    var homeworkAnswers = '';
+    var global_score_details = '{$homework.score_details}';
+    var totalScore = '{$homework.points}';
+    var doStatus = '{$homework.status}';
+
+    var chapterId = '{$exerciseChapter.exercise_chapter_id}';
+    var exercises = [];
+    var isShowCorrectAnswer = false;
+
+    var exerciseCount = parseInt('{$exerciseCount}');
+
+    $(function () {
+        loadHomework();
+    })
+    function loadHomework() {
+        is_show_goback=2;  
+        isShowCorrectAnswerAfterQuestion = true;
+        //renderExerciseLibraryChapter(chapterId, exercises, loadData);
+        createExerciseLibraryChapter(homeworkId, exercises, loadData);
+    }
+
+    function renderScoreController() {
+        var html_row1 = [], html_row2 = [];
+        html_row1.push('<td>题号</td>');
+        html_row2.push('<td>得分</td>');
+
+        //console.log(exercises);
+        for (var i = 0; i < exercises.length; i++) {
+            html_row1.push('<td>{0}</td>'.format(i + 1));
+            html_row2.push('<td><input class="scoreInput" type="number" min="0" questionid="{2}" id="s_{0}" name="s_{0}" value="0" data-points="{1}"/></td>'.format((i + 1), exercises[i].points, exercises[i].questions_primary_id));
+        }
+
+        html_row1.push('<td>总分</td>');
+        html_row2.push('<td id="totalScore" style="font-weight: 600;padding: 0 10px;">0</td>');
+
+        $('#scoreDetails_row1').html(html_row1.join(''));
+        $('#scoreDetails_row2').html(html_row2.join(''));
+        $('#totalScore').html(totalScore)
+        $('#scoreDetails').width(80 * (exercises.length + 2)); 
+        /*try {       
+            var score_details = JSON.parse(global_score_details);
+            var fields = $('#scoreDetails_row2 input');
+
+            $.each(fields, function (i, n) {
+                var name = $(n).attr('name');
+                if (typeof score_details[name] != 'undefined') {
+                    $(n).val(score_details[name]);  
+                }
+            });
+        } catch (ex) {
+        }*/
+
+
+        $('#scoreDetails_row2 input').blur(function () {
+            getTotalScore();
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    function doGrade() {
+        var score_details = getScoreDetails();
+        getTotalScore();
+        $('#score_details').val(score_details);
+        var t = $('#totalScore').text();
+        $('#total_score').val(t);
+        var scoreDetails = getScoreDetailsObject();
+        if ("" == scoreDetails)
+            return false;
+        //每个题的打分录入 todo
+        $.ajax({
+            url: 'index.php?m=Home&c=Teach&a=addScoreDetailsIntoDb',
+            async: false,
+            type: "POST",
+            data: {
+                'student_id': studentId,
+                'homework_id': homeworkId,
+                'details': scoreDetails
+            },
+            success: function (res) {
+                if (res == 'success') {
+                    //$('form').submit();
+                } else {
+                    alert('打分失败,请重新尝试');
+                    return false;
+                }
+            }
+        });
+        return true;
+    }
+     
+    function in_array(search,array){
+        for(var i in array){    //console.log(search);console.log(i);
+            if(i==search){
+                return true;
+            } 
+        } return false;
+    }  
+    var questionid_array=[];
+    var questionid_length_array=[];
+    
+    //收藏或取消收藏
+    function collectExercise(obj){ 
+        var exercise_pri_id=0;
+        exercise_pri_id=$(obj).parents('.exerciseQuestion').attr('data-originalid'); 
+        $.get("index.php?m=Home&c=Teach&a=collectExercise",{id:exercise_pri_id},function(data){ 
+            if(data==0){
+                alert('操作失败');
+            }else if(data==1){
+                //添加收藏
+                $(obj).attr('src',"/Public/img/icon/collect2.png");
+            }else{
+                //删除收藏
+                $(obj).attr('src',"/Public/img/icon/collect1.png");
+            }
+        });
+    }
+    
+    function loadData() {   
+        //这里操作收藏  
+        $('#exerciseWrapper .exerciseQuestion').each(function (i, n) {
+            var exercise_id=$(n).attr('data-originalid');
+            $.getJSON('index.php?m=Home&c=Teach&a=ExerciseCollect',{id:exercise_id},function(msg){ 
+                if(msg.is_collect=='no'){
+                        $(n).append('<img class="collectImg" onclick="collectExercise(this)" src="/Public/img/icon/collect1.png">');
+                    }else{
+                        $(n).append('<img class="collectImg" onclick="collectExercise(this)" src="/Public/img/icon/collect2.png">');
+                    }
+                    var audioType= typeof($('.mp3_player'));
+                        if(audioType == 'object'){
+                                $('.mp3_player').parent().css({
+                                        position:'relative'
+                                })
+                                $('.mp3_player').siblings('.collectImg').css({
+                                        position:'absolute',
+                                        left: '50%',
+                                        top: '0'
+                                })
+                        }
+            });
+        });
+        
+        renderScoreController();
+        questionId=7; 
+        
+        var url = "{:U('Student/getHomeworkAnswers?id=')}{$homework.id}";
+        $.get(url, function (res) {
+            if (res == null) return;
+            homeworkAnswers = res;
+            answers = homeworkAnswers;
+            //赋值
+            var fields = $('#exerciseWrapper input,#exerciseWrapper select,#exerciseWrapper textarea'); 
+            var array_tag=0,exercise_points,exercise_point;
+            
+            $.each(fields, function (i, n) { 
+                    var inputType = $(n).attr('type');
+                    var inputFieldId = $(n).attr('id');
+                    var questionName = $(n).attr('name');
+                    var questionId = $(n).attr('questionid');
+                    var isAnswer = $(n).attr('isanswer');
+                    var points = $(n).attr('points');
+                    switch (inputType) {
+                        case 'radio':
+                        case 'checkbox':
+                            if (typeof answers[inputFieldId] != 'undefined') {
+                                var correctEle = $('#' + questionName + '_' + answers[questionName]);
+                                //$('input[name=' + questionName + '][value=' + answers[questionName] + ']').attr('checked', 'true');
+                                $('#' + inputFieldId).attr('checked', 'true');
+                                //这是帮老师自动评分客观题，请不要删除
+                                //if (doStatus != 2 && isAnswer == 'true' && $(n).attr('id') == correctEle.attr('id')) { 
+                                if (doStatus != 2) {
+                                    autoScore();
+                                }
+                            }
+                            break;
+                        case 'text': 
+                            if (typeof answers[questionName] != 'undefined') {
+                                    var inner_value=answers[questionName];
+                                    $('#' + questionName).val(inner_value);  
+                                    //
+                                    var exercise_number=0;
+                                    var q_id=0;
+                                    q_id=$(n).attr('questionid');   
+                                    if(in_array(q_id,questionid_array)==false){
+                                        //这里主要是兼顾到填空含多个小题
+                                        var current_index,prev_index,next_index;
+                                        var next_tag=0;
+                                        exercise_number=$(n).parents('.tianKongInput').find('input[type="text"]').length;      
+                                        current_index=$(n).parents('.tianKongInput').index(); 
+                                        prev_index= next_index=current_index; 
+                                         
+                                        while(true){
+                                            prev_index--; 
+                                            if($(n).parents('.tianKongInput').siblings('div').eq(prev_index).hasClass('exerciseQuestion')){
+                                                break;
+                                            }else if($(n).parents('.tianKongInput').siblings('div').eq(prev_index).hasClass('tianKongInput')){
+                                                exercise_number+=$(n).parents('.tianKongInput').siblings('div').eq(prev_index).find('input[type="text"]').length;
+                                                
+                                            }else if(typeof($(n).parents('.tianKongInput').siblings('div').eq(prev_index).html())=='undefined'){
+                                                break;
+                                            }else{
+                                                continue;
+                                            }
+                                        }   
+                                        while(true){
+                                            prev_index++; 
+                                            if($(n).parents('.tianKongInput').siblings('div').eq(prev_index).hasClass('exerciseQuestion')){
+                                                break;
+                                            }else if($(n).parents('.tianKongInput').siblings('div').eq(prev_index).hasClass('tianKongInput')){
+                                                exercise_number+=$(n).parents('.tianKongInput').siblings('div').eq(prev_index).find('input[type="text"]').length;
+                                                
+                                            }else if(typeof($(n).parents('.tianKongInput').siblings('div').eq(prev_index).html())=='undefined'){
+                                                break;
+                                            }else{
+                                                continue;
+                                            }
+                                        }        
+                                        questionid_length_array[q_id]=exercise_number;
+                                    }       
+                                    var num=questionid_length_array[q_id];
+                                    if(num!=0){     
+                                        var current_val=$(n).val().toLowerCase();
+                                        current_val=sha1(current_val);
+                                        var current_answer=$(n).attr('data_answer');
+
+                                        if(current_val==current_answer){ 
+                                            //exercise_points=$(n).parents('.tianKongInput').prev().attr('data-points'); 
+                                            if(exercise_points=$(n).parents('.tianKongInput').prev().hasClass('exerciseQuestion')){
+                                                exercise_points=exercise_points=$(n).parents('.tianKongInput').prev().attr('data-points')
+                                            }else{
+                                                exercise_points=exercise_points=$(n).parents('.tianKongInput').prev().prev().attr('data-points')
+                                            } 
+                                            exercise_point=exercise_points/num;     
+
+                                            if(array_tag==0){
+                                                questionid_array[q_id]=exercise_point;
+                                                array_tag=1;
+                                            }else{
+                                                if(in_array(q_id,questionid_array)==true){
+                                                    questionid_array[q_id]=questionid_array[q_id]+exercise_point;
+                                                }else{  
+                                                    questionid_array[q_id]=exercise_point;
+                                                }
+                                            }
+                                        }   
+                                    } 
+                                }  
+                            break;
+                        case 'textarea':
+                            if (typeof answers[questionName] != 'undefined') {
+                                $('#' + questionName).val(answers[questionName]); 
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+            });         
+            //对填空题进行赋值打分
+            if(questionid_array.length){
+                for(var k in questionid_array){  
+                    $("#scoreDetails_row2").find("input[questionid="+k+"]").val(questionid_array[k]);
+                }
+            }
+            
+            //连线题 top每个间隔130 画布宽度为300 学生的回答在右侧里 自动打分
+            var out_fields=$('.matchQuestion'); 
+            if(out_fields.length>0){ 
+                
+                var lastX, lastY,linestyle = "#0C6";//存放遍历坐标
+                $.each(out_fields,function(oi,on){     
+                    var canvasx=$('.match_canvas')[oi]; 
+                    var context = canvasx.getContext('2d');  //canvas追加2d画图
+                    
+                    var r_line_fields=$(on).find('.matchQuestionRightWrapper').find('.matchQuestionShowItem');  
+                    var x_position=0,y_position=60;  
+                    var str_arr=$(on).attr('id').split('_');
+                    var q_id=str_arr[1]; 
+                    var answer_key,answer_value;  
+                    var points,point,answer_point=0;
+                    points=$(on).prev().attr('data-points');   
+                    point=points/r_line_fields.length;  
+                     
+                    context.lineWidth = 2;  
+                    $.each(r_line_fields,function(li,ln){
+                        var mx=[],my=[];
+                        answer_key=parseInt(li)+1;
+                        answer_key=q_id+'_'+answer_key; 
+                        
+                        if (typeof answers[answer_key] != 'undefined') {        
+                            answer_value=answers[answer_key]; //是左边的元素的位置
+                            if(answer_value!=''){       console.log(answers[answer_key]);
+                                if(answer_value==0){
+                                    mx.push(0);
+                                    my.push(60);
+                                    mx.push(300);
+                                    if(li==0){ 
+                                        my.push(60);
+                                    }else{
+                                        my.push(li*130+60);
+                                    }
+                                }else{
+                                    mx.push(0);
+                                    my.push(answer_value*130+60);
+                                    mx.push(300);
+                                    if(li==0){ 
+                                        my.push(60);
+                                    }else{
+                                        my.push(li*130+60);
+                                    }
+                                }
+                                for (var i = 0; i < my.length; i++) { 
+                                    if (i== 0) {     
+                                        context.moveTo(mx[i], my[i]);
+                                    } else { 
+                                        context.lineTo(mx[i], my[i]);
+                                    }
+                                }
+                                context.strokeStyle = linestyle;
+                                context.stroke();
+                                //这里开始计算打分
+                                var left_current_value=$(on).find('.matchQuestionLeftWrapper').find('.matchQuestionShowItem').eq(answer_value).attr('data-answer');   
+
+                                var right_index=parseInt(li)+1;     
+                                if(left_current_value==right_index){        
+                                    answer_point+=point;
+                                }
+                            }
+                        }
+                        
+                    });console.log('/'); 
+                    //连线赋值给分 
+                    $("#scoreDetails_row2").find("input[questionid="+q_id+"]").val(answer_point);
+                }); 
+            }
+             
+            getTotalScore();
+
+        });
+    }
+
+    function autoScore() {  
+        
+        $(exercises).each(function (i, n) {
+            //var questionId = n.question_id;           
+            var original_questionId = n.question_id;  
+            var questionId = n.id;      
+            var points = n.points;
+            var templateName = n.template_name; 
+            var inputs = $('input[questionid=' + original_questionId + ']');
+            var score = 0;              
+            switch (templateName) {
+                case '单项文字选择题':
+                case '判断题':
+                    $(inputs).each(function (j, m) {
+                        if ($(m).attr('isanswer') == 'true' && m.checked) {        
+                            score = points;     
+                            return false;
+                        }
+                    });
+                    break;
+                case '多项文字选择题':
+                    var flag = true;
+                    $(inputs).each(function (j, m) {
+                        if ($(m).attr('isanswer') == 'true' && !m.checked) {
+                            flag = false;
+                            return false;
+                        }
+                        if ($(m).attr('isanswer') != 'true' && m.checked) {
+                            flag = false;
+                            return false;
+                        }
+                    });
+                    if (flag)score = points;
+                    break;
+                case '判断题[含多个小题]':
+                case '单项选择题[含多个小题]':
+                    var subQuestions = [];
+                    $(inputs).each(function (j, m) {
+                        var subQuestionId = $(m).attr('name');
+                        if ($.inArray(subQuestionId, subQuestions) == -1) {
+                            subQuestions.push(subQuestionId);
+                        }
+                    });
+                    $(subQuestions).each(function (k, o) {
+                        var subInputs = $('input[name=' + o + ']');
+                        $(subInputs).each(function (j, m) {
+                            if ($(m).attr('isanswer') == 'true' && m.checked) {
+                                score = score + parseInt($(m).attr('points'));
+                                return false;
+                            }
+                        });
+                    });
+                    break;
+                case '多项选择题[含多个小题]':
+                    var subQuestions = []; 
+                    $(inputs).each(function (j, m) {    
+                        var subQuestionId = $(m).attr('name');
+                        if ($.inArray(subQuestionId, subQuestions) == -1) { 
+                            subQuestions.push(subQuestionId);
+                        }
+                    });     
+                    $(subQuestions).each(function (k, o) {  //console.log(o+'?')
+                        var subInputs = $('input[name=' + o + ']');    
+                        var flag = true;
+                        var subQuestionScore = 0;
+                        
+                        $(subInputs).each(function (t, p) { 
+                            if(typeof($(p).attr('points'))!='undefined'){
+                                subQuestionScore = parseInt($(p).attr('points'));
+                            } 
+                            
+                            if ($(p).attr('isanswer') == 'true' && !p.checked) {
+                                flag = false;
+                                return false;
+                            }
+                            if ($(p).attr('isanswer') != 'true' && p.checked) {
+                                flag = false;
+                                return false;
+                            } 
+                        });
+                        
+                        console.log('-'); 
+                        if (flag) {
+                            score = score + subQuestionScore;
+                        }
+                    }); 
+                    break; 
+            } 
+            //$('#s_' + questionId).val(score);    
+            if(templateName=='填空题[含多个小题]' || templateName=='连线题' || templateName=='填空题'){
+                
+            }else{
+                $("#scoreDetails_row2").find(":input[questionid="+questionId+"]").val(score); 
+            }
+        }); 
+    }
+
+    function getScoreDetails() {
+        var data = {};
+        var fields = $('#scoreDetails input');
+        $.each(fields, function (i, n) {
+            var name = $(n).attr('name');
+            data[name] = $(n).val();
+        });
+        data['total'] = $('#totalScore').text();
+        return JSON.stringify(data);
+    }
+
+    function getScoreDetailsObject() {
+        var data = [];
+        var fields = $('#scoreDetails input');
+        var pointError = 0;
+        $.each(fields, function (i, n) {
+            var points = parseInt($(n).attr('data-points'));
+            var score = parseInt($(n).val());
+            var questionId = parseInt($(n).attr('id').replace('s_', ''));
+            var questionOrgId = parseInt($(n).attr('questionid'));
+            var flag = 2;
+            if (points == score && score != 0)flag = 1;
+            if (points < score && score != 0) {
+                alert("第" + questionId + "题得分超过总分，请重新修改得分!");
+                flag = 3;
+                pointError = 1;
+                return false;
+            }
+            var item = questionId + '|' + score + '|' + points + '|' + flag + '|' + questionOrgId;
+            data.push(item);
+        });
+        if (1 == pointError)
+            return "";
+        return data.join('#');
+    }
+
+    function getTotalScore() {
+        var inputs = $('#scoreDetails_row2 input');
+        var score = 0;
+        $(inputs).each(function (i, n) {
+            var s = parseInt($(n).val());
+            if(s!=''){
+                score = score + s;
+                //console.log(score);
+            } 
+        }); 
+         
+        $('#totalScore').html(score);
+    }
+
+
+</script>
+<script>                          
+    var contentheight = '申明一个变量，在有些获取不到contwrapper高度的页面执行一个函数'
+    
+</script>

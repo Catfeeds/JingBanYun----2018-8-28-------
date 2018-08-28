@@ -1,0 +1,527 @@
+<layout name="parent_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<link rel="stylesheet" href="__PUBLIC__/swiper/swiper-3.4.2.min.css" media="screen" title="no title" charset="utf-8">
+<script type="text/javascript" src="__PUBLIC__/swiper/swiper-3.4.2.jquery.min.js"></script>
+<script src="__PUBLIC__/highcharts/code/highcharts.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/exporting.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/export-data.js"></script>
+
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		background: #fff;
+	}
+</style>
+
+<div id="homework" v-cloak>
+	<div class="parentIndexOutter">
+		<div class="swiperOutter">
+			<div class="swiperBtn swiperLeftBtn"></div>
+			<div class="swiper-container swiper-no-swiping swiperInner">
+				<div class="swiper-wrapper">
+					<div class="swiper-slide swiperBox" :class="{active:index==0}" @click="changeStudent($event)" :getstudentId="sData.student_id" v-for="(sData, index) in studentData">
+						<div class="swiperBoxTop">
+							<img :src="sData.avatar" alt="" class="avatarImg">
+							<div class="studentInfo">
+								<div class="name textHidden">{{ sData.student_name }}</div>
+								<div class="school textHidden">{{ sData.school_name }}</div>
+								<div class="class textHidden">
+									<span v-for="(classdata, index) in sData.class_grade_list">
+										{{ classdata.grade }}{{ classdata.name }}
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="swiperBoxBottom"></div>
+					</div>
+				</div>
+			</div>
+			<div class="swiperBtn swiperRightBtn"></div>
+		</div>
+		
+		<div class="stuHomeworkMain">
+			<div class="indexTitle">
+				学生作业
+				<a href="javascript:;" class="moreHomework" v-on:click="lookAllHomeWorkList" v-if="homeList != '' && homeList != null || homeLength == 4 ">全部作业>></a>
+			</div>
+			<img src="__PUBLIC__/img/homeworkV1/stuNoHomework.png" alt="" class="stuNoHomework" v-if="homeList == '' || homeList == null">
+			<div class="stuHomeworkInner" v-else>
+				<a href="javascript:;" class="stuHomeworkBox" v-on:click="goDetails(hdata.content4, hdata.homeworkId, hdata.classId, hdata.submitId)" v-for="(hdata, index) in homeList">
+					<div class="subject">
+						{{ hdata.content9 }}
+						<img src="__PUBLIC__/img/homeworkV1/statusNotComplete.png" v-if="hdata.content4 === '做作业'" alt="" class="statusImg">
+						<img src="__PUBLIC__/img/homeworkV1/statusNotSubmit.png" v-else-if="hdata.content4 === '已过期'" alt="" class="statusImg">
+						<img src="__PUBLIC__/img/homeworkV1/statusSubmit.png" alt=""  v-else-if="hdata.content4 === '待批改'" class="statusImg">
+						<img src="__PUBLIC__/img/homeworkV1/statusComplete.png" alt="" v-else class="statusImg">
+					</div>
+					<div class="teacher">{{ hdata.content6 }}</div>
+					<div class="title">{{ hdata.content1 }}</div>
+					<div class="numScore">
+						<div class="numScoreBox">
+							<img src="__PUBLIC__/img/homeworkV1/exerciseNum.png" alt="" class="numScoreImg">
+							<span class="bigText">{{ hdata.content10 }}</span>道<br>试题
+						</div>
+						<div class="numScoreBox">
+							<img src="__PUBLIC__/img/homeworkV1/exerciseScore.png" alt="" class="numScoreImg">
+							<span class="bigText">{{ hdata.content11 }}</span>分<br>总分
+						</div>
+					</div>
+					<div class="endTime">{{ hdata.content3 }}</div>
+					<div class="doImg" :homeworkId="hdata.homeworkId" :homeworkstatus="hdata.content4" v-on:click="lookHomeWorkDetails" >查看作业</div>
+				</a>
+			</div>
+		</div>
+
+		<div class="chartMain">
+			<div class="indexTitle">学习轨迹</div>
+
+			<div class="learningSituationOutter">
+		        <select id="course_id" name="course_id" class="form-control" v-on:change="indexSelect">
+		            <option  v-bind:value="cdata.id" v-for="(cdata, index) in courseList">{{ cdata.name }}</option>
+		        </select>
+
+			    <div class="timeOutter">
+			    	<span class="startBox">
+			    		<label for="startTime" class="startLabel"></label>
+			    		<input type="text" class="timeInput" name='' id="startTime" placeholder="请选择开始日期" onkeydown="return false" autocomplete="off">
+			    	</span>
+			        <span class="endBox">
+			    		<label for="endTime" class="endLabel"></label>
+			    		<input type="text" class="timeInput" name='' id="endTime" placeholder="请选择结束日期" onkeydown="return false"   autocomplete="off">
+			    	</span>
+			        <button type="submit" class="searchTime" v-on:click="searchTime"></button>
+			    </div>
+
+				<div class="emptyBox chartEmpty" style="display: none">
+					<img src="__PUBLIC__/img/admin/zanwuxueqingfenxi.png" alt="" class="emptyImg">
+					<div class="emptyText">暂无学情分析</div>
+				</div>
+
+			    <div id="learningSituation" class="lineDiv mt20"></div>
+				<div class="coverBox"></div>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+
+<script>
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+            startTime:'',
+            endTime:'',
+            userId:0,
+			url: '',
+			studentLength: '',
+			courseLength: '',
+            studentList:'/index.php?m=Home&c=HomeworkParent&a=myChildren',
+            studentData:[],
+            url:"/index.php/ApiInterface/Version1_3/HomeworkParent/getHomeworkList",
+			homeList:[],
+			homeLength: '',
+			learUrl:"/index.php?m=Home&c=HomeworkParent&a=getStudentLearningHomeWork",
+            courseId:"",
+            settime:"",
+            guiList:{},
+			courseUrl:"/index.php/ApiInterface/Version1_3/HomeworkParent/getCourseList",
+            courseList:[],
+            swiperAllowed: true,
+        },
+		created: function () {
+			// 获取学生列表
+			this.getStudentList();
+			// 获取学习轨迹
+
+
+			//获取作业列表
+
+			//获取学科
+			this.getCourseList();
+		},
+		methods: {
+
+		    //查看全部作业
+            lookAllHomeWorkList:function(){
+				window.location.href = "/index.php?m=Home&c=ParentHomework&a=homeworkBooks&studentId="+this.userId;
+			},
+
+		    //查看作业详情
+            lookHomeWorkDetails:function(e){
+                var id = $(e.currentTarget).attr('homeworkId');
+                var status = $(e.currentTarget).attr('homeworkstatus');
+
+                switch(status)
+                {
+                    case "做作业":
+                        //跳转
+                        break;
+                    case "已提交":
+                        //跳转
+                        break;
+                    case "已完成":
+                        //跳转
+                        break;
+                    case "逾期未交":
+                        //跳转
+                        break;
+
+                }
+			},
+
+		    //获取学科
+			getCourseList:function(){
+                this.$http.post(this.courseUrl, {
+                    studentId:this.userId,
+                    courseId:this.courseId,
+                    time:this.settime,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.courseList =  JSON.parse(response.data).data;
+                        if(JSON.parse(response.data).data) {
+                        	this.courseLength = JSON.parse(response.data).data.length;
+                        }
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+			},
+
+		    //获取学习轨迹
+            getStudentLearningHomeWork:function(){
+
+                this.$http.post(this.learUrl, {
+                    studentId:this.userId,
+                    courseId:this.courseId,
+                    start_time:this.startTime,
+                    end_time:this.endTime,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.guiList =  JSON.parse(response.data).data;
+                        this.getChartHomewrok();
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+			},
+
+		    //获取作业列表
+			getHomeWorkList:function(){
+                this.$http.post(this.url, {
+                    userId:this.userId,
+                    role:3,
+					pageSize:4,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.homeList =  JSON.parse(response.data).data;
+                        if(JSON.parse(response.data).data) {
+                        	this.homeLength = JSON.parse(response.data).data.length
+                        }
+
+                        this.$nextTick(function(){
+							title()
+						})
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+			},
+
+			// 获取学生列表
+			getStudentList: function(){
+				// this.studentLength = 1;
+				if(this.studentLength == 1) {
+					$('.swiperInner').css('width', '500px')
+				}
+                this.getStudentData();
+			},
+
+			getStudentData:function(){
+                this.$http.post(this.studentList, {
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.studentData = JSON.parse(response.data).data;
+                        if (this.userId == 0) {
+                        	this.userId = this.studentData[0].student_id;
+                        }
+                        
+                        this.getHomeWorkList();
+                        this.getStudentLearningHomeWork();
+
+		                this.$nextTick(function(){
+		                	if(this.swiperAllowed == true) {
+		                		swiper()
+		                	}
+						})
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+			},
+
+			// 改变学生
+			changeStudent: function(e) {
+				if(!$(e.currentTarget).hasClass('active')) {
+					$(e.currentTarget).addClass('active').siblings('.swiperBox').removeClass('active')
+				}
+                this.userId = $(e.currentTarget).attr('getstudentId');
+                this.getStudentList();
+			},
+			// 获取学习轨迹
+			getChartHomewrok: function(){
+				if(this.guiList.setX == '') {
+					$('.chartEmpty').show();
+					$('#learningSituation').hide();
+				} else {
+					$('.chartEmpty').hide();
+					$('#learningSituation').show();
+
+					// 折线图-学情分析
+					Highcharts.chart('learningSituation', {
+						title: {
+							text: ''
+						},
+						subtitle: {
+							text: ''
+						},
+						yAxis: {
+							title: {
+								text: '分数(分)',
+								align: 'high',
+								rotation: 360,
+								offset: 40,
+								y: 15,
+								style: { 
+									"font-weight": "bold"
+								}
+							},
+							lineWidth: 1,
+							endOnTick: false
+						},
+						xAxis: {
+							title: {
+								text: '作业名称',
+								align: 'high',
+								style: { 
+									"font-weight": "bold"
+								}
+							},
+							categories: homework.guiList.setX,
+						},
+						exporting: {
+							enabled: false,
+						},
+						legend: {
+							enabled: false,
+						},
+						plotOptions: {
+							series: {
+								label: {
+									connectorAllowed: false
+								}
+							}
+						},
+						series: [{
+							name: '成绩', 
+							data: homework.guiList.setY
+						}],
+						responsive: {
+							rules: [{
+								condition: {
+									maxWidth: 500
+								},
+								chartOptions: {
+									legend: {
+										layout: 'horizontal',
+										align: 'center',
+										verticalAlign: 'bottom'
+									}
+								}
+							}]
+						}
+					});
+				}
+			},
+			// 筛选学习轨迹
+			searchTime: function(){
+				var startTime = $('#startTime').val();
+                var endTime = $('#endTime').val();
+                this.startTime = startTime;
+                this.endTime = endTime;
+                this.getStudentLearningHomeWork();
+			},
+
+			//改变学科
+            indexSelect(event){
+                this.courseId = event.target.value;
+                this.getStudentLearningHomeWork();
+            },
+
+            //跳转到详情
+            goDetails: function(status, homeworkId, classId, submitId){
+            	if(status == '做作业' || status == '已过期') {
+            		window.location.href = "/index.php?m=Home&c=ParentHomework&a=homeworkNotSubmit&userId=" + this.userId + "&homeworkId=" + homeworkId + "&classId=" + classId + "&submitId=" + submitId;
+            	} else {
+            		window.location.href = "/index.php?m=Home&c=ParentHomework&a=homeworkSubmit&userId=" + this.userId + "&homeworkId=" + homeworkId + "&classId=" + classId + "&submitId=" + submitId;
+            	}
+            }
+		}
+	})
+</script>
+
+<script>
+	// 标题格式
+	function title() {
+		$('.stuHomeworkBox .title').each(function(i, n){
+			if($(this).text().length <= 11) {
+				$(this).css({
+					'text-align': 'center',
+					'line-height': '85px',
+					'padding': 0
+				})
+			} else if($(this).text().length > 11 && $(this).text().length <= 16) {
+				$(this).css({
+					'text-align': 'left',
+					'line-height': '28px',
+					'padding': '14.5px 0'
+				})
+			} else if($(this).text().length > 16) {
+				$(this).css({
+					'text-align': 'left',
+					'line-height': '28px',
+					'padding': 0
+				})
+			}
+			console.log()
+		})
+	}
+
+	title()
+
+	function swiper() {
+		var swiper = new Swiper('.swiper-container', {
+	        pagination: '.swiper-pagination',
+	        slidesPerView: 'auto',
+	        paginationClickable: true,
+	        freeMode: true,
+	        cancelable: false,
+	        nextButton: '.swiperRightBtn',
+    		prevButton: '.swiperLeftBtn'
+	    });
+
+	    homework.swiperAllowed = false
+	}
+</script>
+
+<!--开始时间 结束时间-->
+<script>
+    !function(){
+        laydate.skin('huang');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var actstart = {
+        elem: '#startTime',
+        format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+        max: laydate.now(), //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            actend.min = datas; //开始日选好后，重置结束日的最小日期
+            actend.start = datas; //将结束日的初始值设定为开始日
+            time('#startTime')
+        }
+    };
+
+    var actend = {
+        elem: '#endTime',
+        format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+        max: laydate.now(),
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            actstart.max = datas; //结束日选好后，充值开始日的最大日期
+            time('#endTime')
+        }
+    };
+    laydate(actstart);
+    laydate(actend);
+
+    //给input赋值
+    // $('#startTime').val(admin.startTime);
+    // $('#endTime').val(admin.endTime);
+
+    var startMin = actstart.min;
+	var startMax = actstart.max;
+	var endMin = actend.min;
+	var endMax = actend.max;
+	function resetDate() {
+		actstart.min = startMin;
+		actstart.max = startMax;
+		actend.min = endMin;
+		actend.max = endMax;
+	}
+
+	$(document).on('click','#laydate_clear',function(){
+		if($('#startTime').val() == '' && $('#endTime').val() != '') {
+			actend.min = endMin;
+		} else if($('#startTime').val() != '' && $('#endTime').val() == '') {
+			actstart.max = startMax;
+		} else {
+			resetDate()
+		}
+
+		if($('#laydate_box').css('left') == startLeft) {
+            $('#startTime').siblings('label').removeClass('yellow');
+        } else {
+            $('#endTime').siblings('label').removeClass('yellow')
+        }
+	})
+
+
+    var startLeft;
+    $('#startTime').click(function(){
+        startLeft = $('#laydate_box').css('left');
+    })
+    var a = 0;
+    function time(id_){
+        if($(id_).val() != '') {
+            $(id_).siblings('label').addClass('yellow')
+        } else {
+            $(id_).siblings('label').removeClass('yellow')
+        }
+        $('#laydate_clear').click(function(){
+            if($('#laydate_box').css('left') == startLeft) {
+                $('#startTime').siblings('label').removeClass('yellow');
+            } else {
+                $('#endTime').siblings('label').removeClass('yellow')
+            }
+        })
+    }
+</script>
+

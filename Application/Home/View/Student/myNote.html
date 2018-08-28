@@ -1,0 +1,224 @@
+﻿<layout name="student_layout_withouticon" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<style>
+	.subject {
+		width: 200px;
+		text-align: center;
+		border-bottom: 2px solid #ccc;
+		height: 40px;
+		font-size: 16px;
+		position: relative
+	}
+	
+	.subject span {
+		height: 100%;
+		display: inline-block;
+		width: 100px;
+		background: url(__PUBLIC__/img/home/descending.png) no-repeat;
+		background-size: 11px 11px;
+		background-position: 70px 5px
+	}
+	
+	.subject ul {
+		overflow: hidden;
+		padding: 10px 0;
+		display: none;
+		position: absolute;
+		top: 40px;
+		left: 0;
+		background: #fff;
+		z-index: 2;
+	}
+	
+	.subject li {
+		min-width: 100px;
+		float: left;
+		line-height: 30px;
+		cursor: pointer;
+	}
+	
+	.notetable {
+		width: 100%;
+		font-size: 16px;
+		margin-top: 30px
+	}
+	
+	table {
+		border: 1px solid #eee
+	}
+	
+	.notetable thead {
+		background: #fff4f3;
+	}
+	
+	.notetable thead p {
+		margin: 10px 0;
+		border-right: 1px solid #e9573f;
+	}
+	
+	tbody td {
+		font-size: 16px;
+		line-height: 40px;
+		border-bottom: 1px solid #eee;
+	}
+	
+	.removeTr {
+		padding: 3px 7px;
+		border: 1px solid #e9573f;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+	
+	.removeTr:hover {
+		background: #e9573f;
+		color: #fff
+	}
+	
+	.btn-main-opr {
+		color: #333;
+	}
+	
+	.Pagination .current {
+		background-color: #cb5f61;
+	}
+	
+	.Pagination a:hover {
+		background-color: #cb5f61;
+	}
+	
+	.Pagination {
+		position: inherit !important;
+	}
+</style>
+<div class="main_opr">
+	<a href="javascript:;" title="我的笔记" class="btn btn-main-opr btn-main-opr-active">我的笔记</a>
+</div>
+<!-- <a href="{:U('Student/me')}" title="返回" class="btn btnReturn1">返回</a> -->
+<div style="overflow:hidden">
+	<div class="search">
+		<button class="search_btn" onclick="search()">搜索</button>
+		<input type="text" id="keyword" class="search_text" placeholder="请输入关键字" value="{$keyword|default=''}">
+	</div>
+</div>
+<div class="subject">
+	<span>学科</span>
+	<ul>
+		<volist name="courses" id="coursesdata" empty="">
+			<li onclick="search('{$coursesdata.id}')">{$coursesdata.course_name}</li>
+		</volist>
+	</ul>
+</div>
+
+<empty name="list">
+	<div class="emptyDiv">
+		<if condition="$kw eq 1 ">
+			<img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+			<p>抱歉，没有搜索到相关的笔记！</p>
+		<else />
+			<img src="{$oss_path}public/web_img/Empty/myNote.png" alt="">
+		</if>
+	</div>
+</empty>
+<notempty name="list">
+<table class="notetable ">
+	<thead>
+		<tr>
+			<th width="10%" class="text-center">
+				<p>序号</p>
+			</th>
+			<th width="10%" class="text-center">
+				<p>年级</p>
+			</th>
+			<th class="text-center" width="10%">
+				<p>学科</p>
+			</th>
+			<th class="text-center" width="10%">
+				<p>分册</p>
+			</th>
+			<th width="50%" style="text-indent:20px">
+				<p>笔记内容</p>
+			</th>
+			<th width="10%" class="text-center">
+				<p style="border:none">操作</p>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<volist name="list" id="data" empty="">
+			<tr>
+				<td class="text-center">
+					{$data.id}
+				</td>
+				<td class="text-center">
+					{$data.grade}
+				</td>
+				<td class="text-center">
+					{$data.course}
+				</td>
+				<td class="text-center">
+					{$data.textbook}
+				</td>
+				<td style="text-indent:20px">
+					{$data.content}
+
+				</td>
+				<td class="text-center">
+					<span class="removeTr delete_button" attr="{$data.id}">删除</span>
+				</td>
+			</tr>
+		</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+</notempty>
+
+<script>
+	$('.subject').hover(function () {
+		$(this).find('ul').stop(false,true).slideDown()
+	}, function () {
+		$(this).find('ul').stop(false,true).slideUp()
+	})
+
+	function search(id) {
+		var string = "";
+		var keyword = $('#keyword').val();
+
+		if (keyword != '' && keyword != undefined) {
+			string = '&keyword=' + keyword;
+		}
+
+		if (id != '' && id != undefined) {
+			string += '&c_id=' + id;
+		}
+
+		var url = 'index.php?m=Home&c=Student&a=myNote' + string;
+		window.location.href = url;
+	}
+
+
+	//点击删除
+	$('.delete_button').click(function () {
+		var id = $(this).attr('attr');
+		$.NotifyBox.NotifyPromptTwoCo("提示", "确定删除？", "确定", "取消", function () {
+			var obj = this;
+			$.get("index.php?m=Home&c=Student&a=deleteMyNote", {
+				'id': id
+			}, function (msg) {
+				if (msg == 'success') {
+					$(obj).parent().parent().remove();
+					location.reload(true)
+				} else {
+					alert('删除时候,请刷新页面后重试');
+				}
+			});
+		})
+	});
+	//回车搜索
+	$(".search_text").keydown(function (evt) {
+		if (event.keyCode == "13") { //keyCode=13是回车键
+			var evt = (evt) ? evt : ((window.event) ? window.event : "")
+			var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+			search()
+		}
+	})
+</script>

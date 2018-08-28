@@ -1,0 +1,180 @@
+<layout name="admin_layout_back"/> 
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<style>
+	.left {
+		float: left;
+	}
+	
+	.right {
+		float: right;
+	}
+	
+    .list_avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+	
+	.left_child {
+		margin-bottom: 10px;
+	}
+	
+	.conLeft {
+		width: 20%;
+	}
+	
+	.conRight {
+		width: 80%;
+	}
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 资源列表" class="button primary {:session('btntheme')}">&lt; 返回 资源列表</a>
+</div>
+<div class="example" data-text="作者信息">
+    <div class="listview set-border padding10">
+        <div class="padding10" style="border-bottom: 1px solid #ccc;">
+            <if condition="strpos($data['avatar'],'default')===false">
+                <img onerror="img_teacher(this)" class="list_avatar" src="<?php echo C('oss_path').$data['avatar']?>">
+            <else />
+                <img onerror="img_teacher(this)" class="list_avatar" src="__ROOT__/Uploads/Avatars/{$data.teacher_id}_t.jpg">
+            </if>
+             
+            &nbsp;<a href="{:U('Teacher/updateTeacher?id=')}{$data.teacher_id}">{$data.teacher_name}</a>
+        </div>
+        <div class="padding10">
+            简介：{$data.teacher_brief_intro}
+        </div>
+        <div class="padding10">
+            积分：{$data.points}
+        </div>
+    </div>
+</div>
+
+<div class="example" data-text="资源类别">
+    <div class="listview set-border padding10">
+        <div class="padding10">
+            关联学科：{$data.course_name}
+        </div>
+        <div class="padding10">
+            关联年级：{$data.grade}
+        </div>
+        <div class="padding10">
+            教材分册：{$data.textbook}
+        </div>
+        <div class="padding10">
+            资源类型：{$data.type}
+        </div>
+        <div class="padding10">
+            资源描述：{$data.description}
+        </div>
+    </div>
+</div>
+<div class="example" data-text="资源内容">
+    <div class="listview set-border padding10">
+        <div class="padding10">
+            <div class="content">
+                <div class="left conLeft"> 
+                    <volist name="resource_list" id="resource_item" key="i" >
+                        <div class="left_child">
+                            <input type="hidden" value="{$oss_path}{$resource_item.resource_path}" attr_id="{$resource_item.vvid}" />
+                            <a style="cursor:pointer;"><span>查看第{$i}个资源</span></a>
+                        </div>
+                    </volist>
+                </div> 
+                <div class="left conRight">  
+                    <switch name="data.type">
+                        <case value="image">
+                            <div style="width:100%;" class="resource_image">
+                                <img src="{$oss_path}{$data.file_path}" />
+                            </div>
+                        </case>
+                        <case value="pdf"> 
+                            <div style="width:100%;" class="resource_pdf">
+                                <a target="_blank" href="{$oss_path}{$data.file_path}">{$oss_path}{$data.file_path}</a>
+                            </div>
+                        </case>
+                        <case value="word"> 
+                            <div style="width:100%;" class="resource_word">
+                                <a target="_blank" href="{$oss_path}{$data.file_path}">{$oss_path}{$data.file_path}</a>
+                            </div>
+                        </case>
+                        <case value="swf">
+                            <div style="width:100%;" class="resource_swf">
+                                <a target="_blank" href="{$oss_path}{$data.file_path}">{$oss_path}{$data.file_path}</a>
+                            </div> 
+                        </case> 
+                        <case value="ppt"> 
+                            <div style="width:100%;" class="resource_ppt">
+                                <a target="_blank" href="{$oss_path}{$data.file_path}">{$oss_path}{$data.file_path}</a>
+                            </div>
+                        </case> 
+                        <case value="video"> 
+                            <div id='plv'></div>
+                            <script>
+                                var player = polyvObject('#plv').videoPlayer({
+                                    'vid' : '{$data.vid}'
+                                });
+                            </script>
+                        </case>
+                        <case value="audio">
+                            <!--<div id='plv'></div>-->
+                            <div id='plv'></div>
+                            <script>
+                                var player = polyvObject('#plv').videoPlayer({
+                                    'vid' : '{$data.vid}'
+                                });
+                            </script>
+                        </case>
+                        <default/>
+
+                        <div>
+                        </div>
+                    </switch>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function img_teacher(obj) { 
+        obj.src = './Public/img/teacher.jpg';
+    } 
+    
+    resource_ytpe="{$data.type}";
+     var resource_path='';
+    //点击切换
+    $(".left_child").find('a').live('click',function(){  
+        switch(resource_ytpe){
+            case 'image':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_image").children('img').attr('src',resource_path);
+                break;
+            case 'video':
+            case 'audio':
+                resource_path=$(this).siblings('input').attr('attr_id');
+                var player = polyvObject('#plv').videoPlayer({
+                                'vid' : resource_path
+                            });
+                break;
+            case 'swf':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_swf").children('a').attr('href',resource_path).text(resource_path);
+                break;
+            case 'pdf':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_pdf").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                break;
+            case 'word':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_word").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                break;
+            case 'ppt':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_ppt").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                break; 
+        } 
+    });
+</script>

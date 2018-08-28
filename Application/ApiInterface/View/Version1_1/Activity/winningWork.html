@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<title>获奖作品</title>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	<script src="__PUBLIC__/js/jquery-2.1.1.min.js"></script>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			word-break: break-all;
+		}
+
+		body {
+			padding: 15px;
+		}
+
+		.content_top{
+			line-height: 30px;
+			font-size: 18px;
+			color: #333;
+		}
+
+		.work_title{
+			line-height: 20px;
+			font-size: 18px;
+			color: #333;
+			border-left: 5px solid #f06358;
+			padding-left: 5px;
+			margin: 5px 0;
+		}
+
+		.worklist{
+			border-top: 1px solid #ededed
+		}
+
+		.worklist li{
+			list-style: none;
+			width: 33.33%;
+			float: left;
+			margin: 20px 0;
+			border-bottom: 1px solid #ededed
+		}
+
+		.listimg {
+	    	width: 100px;
+			height: 110px;
+		}
+
+		.text-center {
+			text-align: center;
+		}
+
+		.of {
+			overflow: hidden;
+		}
+
+		.ellipsis {
+			display: block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			width: 100px;
+			margin: 0 auto;
+			font-size: 18px;
+			color: #333;
+			line-height: 30px;
+		}
+
+		.text_right {
+			text-align: right;
+			font-size: 18px;
+			color: #333;
+			line-height: 30px;
+			width: 100px;
+			margin: 0 auto
+		}
+
+		.workDescription_content, .authorMessage_content{
+			padding: 20px;
+			font-size: 18px;
+			line-height: 30px;
+			color: #333;
+			text-align: justify;
+		}
+	</style>
+</head>
+
+<body>
+    <if condition="$displayBlock eq 1">
+    <div class="workMain_content">
+	<div class="content_top">
+		<p>作品：{$workInfo['works_name']}</p>
+		<p>年级：{$workInfo['grade']}</p>
+		<p>学科：{$courses.course_name}</p>
+		<p>姓名：{$workInfo['user_name']}</p>
+	</div>
+	<div class="work_title">
+		作品详情
+	</div>
+	<div class="worklist">
+		<ul class="of">
+			<volist name="works" id="works" key="i">
+			<li class="text-center">
+				<a  href="/ApiInterface/Version1_1/BjResource/bjResourceDetails?id={$works.id}&role={$role}&user_id={$userId}">
+				<switch name="works.type">
+			        <case value="pdf" ><img src="__PUBLIC__/img/app/pdf.png" alt="" class="listimg"></case>
+					<case value="ppt" ><img src="__PUBLIC__/img/app/ppt.png" alt="" class="listimg"></case>
+					<case value="word" ><img src="__PUBLIC__/img/app/word.png" alt="" class="listimg"></case>
+					<case value="video" ><img src="__PUBLIC__/img/app/vedio.png" alt="" class="listimg"></case>
+					<case value="image" ><img src="__PUBLIC__/img/app/image.png" alt="" class="listimg"></case>
+					<case value="audio" ><img src="__PUBLIC__/img/app/audio.png" alt="" class="listimg"></case>
+					<case value="swf" ><img src="__PUBLIC__/img/app/swf.png" alt="" class="listimg"></case>
+				</switch>
+				</a>
+			<p class="text_right">{$works.file_type}</p>
+			<p  class="ellipsis">{$works.name}</p>
+			</li>
+			</volist>
+		</ul>
+	</div>
+	</div>
+	<elseif condition="$displayBlock eq 2" />
+		<div class="workDescription_content">
+			{$workInfo.works_description}
+		</div>
+	<div class="authorMessage_content">
+		{$workInfo.author_remarks}
+	</div>
+	<else />
+		<div class="authorMessage_content">
+			{$workInfo.author_remarks}
+		</div>
+	</if>
+</body>
+<script>
+	var userId={$userId};
+	var role={$role};
+	<if condition="$displayBlock eq 1">
+	function rightUI()
+	{
+        var data = ["showDescription","showMessage","favorWork"];
+		if(role == 5) data.pop();
+		return {
+			'type':1,
+			'data':data,
+			'isfavor':{$existedFavor == 'yes'? 1:0}
+		};
+	}
+	</if>
+	function showDescription()
+	{
+		location.href +=  "&display=Des";
+
+	}
+
+	function showMessage()
+	{
+		location.href +=  "&display=Msg";
+
+	}
+	function favorWork()
+	{
+		var returnResult = -1;
+		if(userId==false || role==false || {$workInfo['id']}==false){
+			return false;
+		}else{
+			$.ajax({
+				url: "{:U('ApiInterface/Version1_1/activity/operationWorksFavor')}", //请求的url地址
+				dataType: "json", //返回格式为json
+				async: false, //请求是否异步，默认为异步，这也是ajax重要特性
+				data: {id:{$workInfo['id']},role:role,user_id:userId},
+				type: "POST", //请求方式
+				beforeSend: function () {
+					//请求前的处理
+				},
+				success: function (req) {
+					var msg = eval(req);
+					if(msg.status==200){
+						if(msg.result == 'yes')
+						{
+							returnResult = 1;
+						}
+						else
+						{
+							returnResult = 0;
+						}
+					}else{
+						returnResult = -1;
+					}
+				},
+				complete: function () {
+					//请求完成的处理
+				},
+				error: function () {
+					returnResult = -1;
+				}
+			});
+			return returnResult;
+		}
+	}
+
+</script>
+</html>

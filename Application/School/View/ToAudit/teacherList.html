@@ -1,0 +1,114 @@
+<layout name="admin_layout_school"/>
+
+<style>
+	.classContent .classTab.active {
+		background: #fff url({$oss_path}public/web_img/Admin/tiao.png) no-repeat center top;
+	}
+</style>
+
+<div class="indexOutter overHidden">
+	<div class="standardMain classContent tableContent">
+		<div class="classContentTop">
+			<div class="classTabBox">
+				<a href="{:U('Teacher/teacherList')}" class="classTab swiper-slide">现有人员</a>
+				<a href="javascript:;" class="classTab swiper-slide active">待审核人员</a>
+				<div class="classTabLine"></div>
+				<div class="classTabLine top"></div>
+			</div>
+		</div>
+		<div class="standardMain roleBtnContent">
+			<a href="javascript:;" class="commonBtnBlue operateBtnTwo active">教师</a>
+			<a href="{:U('ToAudit/studentList')}" class="commonBtnBlue operateBtnTwo">学生</a>
+		</div>
+
+		<div class="tableOutter">
+			<p class="tableTitle">教师列表</p>
+			<table id="listWrapper" class="table striped hovered border newTable">
+				<thead>
+			        <tr>
+			            <th style="width: 100px">序号</th>
+			            <th style="width: 165px">教师姓名</th>
+			            <th style="width: 165px">教师手机号</th>
+			            <th style="width: 165px">任教班级</th>
+			            <th style="width: 165px">任教学科</th>
+			            <th style="width: 165px">申请时间</th>
+			            <th>操作</th>
+			        </tr>
+				</thead>
+				<tbody id="body">
+					<empty name="list">
+					    <tr>
+		                    <td colspan="7" style="color: #999">
+								暂无信息
+							</td>
+						</tr>
+					</empty>
+					<notempty name="list">
+			            <volist name="list" id="item" key="key" empty="123">
+			                <tr>
+								<td>
+									{$key}
+								</td>
+								<td>
+									{$item.teacher_name}
+								</td>
+								<td>
+									{$item.telephone}
+								</td>
+								<td title="{$item.class_name}">
+									{$item.class_name}
+								</td>
+								<td title="{$item.course}">
+									{$item.course}
+								</td>
+								<td>
+		                            2018-01-02
+								</td>
+								<td>
+		                            <a href="javascript:;" class="operBtn operBtnBig operBtnYes apply_status allow_status" id="">同意</a>
+									<a href="javascript:;" class="operBtn operBtnBig operBtnNo apply_status deny_status" id="">拒绝</a>
+									<input type='hidden' value="{$item.teacher_id}" class="teacher_ids" />
+								</td>
+							</tr>
+					    </volist>
+				    </notempty>
+				</tbody>
+			</table>
+			<div class="Pagination">{$page}</div>
+		</div>
+	</div>
+</div>
+
+<script>
+    //同意或拒绝加入学校
+    $('.apply_status').click(function(){
+        if($(this).hasClass('allow_status')){
+            var status = 1;
+            var notifyText = '同意';
+        }else{
+            var status = 2;
+            var notifyText = '拒绝';
+        }
+        var id=$(this).siblings('.teacher_ids').val();
+        var obj=this;
+
+        $.NotifyBox.NotifyTwoCallOneBlue('提示', '确定要'+notifyText+'吗？', '确定', '取消', function(){
+        	$.ajax({
+	            type:"post",
+	            url:"{:U('Teacher/updateApplyStatus')}",
+	            dataType:"json",
+	            data:{'id':id,'status':status},
+	            success: function(msg){
+	                if(msg.status==200){
+	                    location.reload();
+	                }else if(msg.status==400){
+	                    $.NotifyBox.NotifyNotLogin();
+	                }else{
+	                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+	                    return false;
+	                }
+	            }
+	        })
+        })
+    });
+</script>

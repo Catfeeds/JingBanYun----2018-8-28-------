@@ -1,0 +1,168 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<script>
+  $(function(){
+    var boxHeight = $(window).height() - 180;
+    $('.boxOutter').css('min-height',boxHeight);
+    $('#form input,select').val('');
+  })
+</script>
+
+<div class="boxOutter">
+  <div class="color3baeab spanTitle">
+      账号基本信息
+  </div>
+<!--   <div class="p30">
+      <span class="mr20">姓名：<?php echo $info['user_name']?></span><span>角色：<?php echo $info['role_name']?></span><span>手机号：<?php echo $info['mobile_phone']?></span>
+  </div> -->
+  <div class="filterOutter of pt10 pb0 borderNone">
+        <div class="filterBox">
+            <label>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</label> - <?php echo $info['user_name']?>
+        </div>
+        <div class="filterBox">
+            <label>角&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;色</label> - <?php echo $info['role_name']?>
+        </div>
+        <div class="filterBox">
+            <label>手&nbsp;&nbsp;机&nbsp;&nbsp;号</label> - <?php echo $info['mobile_phone']?>
+        </div>
+    </div>
+  <div class="borderBottom  mb30 pb20 of">
+      <span class="color3baeab left spanTitle">操作信息</span>
+     <!--  <button type="button" name="button" class="btn btn2 right">异常行为</button>
+      <button type="button" name="button" class="btn btn2 right">全部行为</button> -->
+ </div>
+
+ <form action="/index.php?m=Exercise&c=UserManagement&a=roleQuery&id=<?php echo $id?>" method="post" id="form">
+	<div class="filterOutter borderNone pb10">
+		<div class="filterInner">
+			<div class="filterBox">
+				<label for="">行&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;为</label>
+				<select name="behavior" class="inputCommon">
+					<option value="">请选择</option>
+					<option value="1" <?php if($behavior == 1){ echo 'selected';}?>>异常行为</option>
+					<option value="2" <?php if($behavior == 2){ echo 'selected';}?>>正常行为</option>
+				</select>
+			</div>
+
+			<div class="filterBox">
+				<label for="">日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期</label>
+				<input type="text" name="starTime" class="inputCommon inputTime" id="startTime" value="<?php echo $starTime ?>" placeholder="开始时间" readonly>
+			    至
+			    <input type="text" name="endTime" class="inputCommon inputTime" id="endTime" value="<?php echo $endTime ?>" placeholder="结束时间" readonly>
+			</div>
+
+			<div class="filterBtn">
+				<button type="submit" class="btn" name="button" onclick="resetDate()">确定</button>
+			</div>
+		</div>
+	</div>
+</form>
+
+  <table class="tableCommon">
+    <thead>
+      <tr >
+        <th width=20%>时间</th>
+        <th width=20%>操作</th>
+        <th width=20%>操作IP地址</th>
+        <th width=10%>操作试题ID</th>
+        <th width=10%>操作试卷ID</th>
+        <th width=10%>被操作姓名</th>
+        <th width=10%>被操作账号</th>
+    </thead>
+    <tbody>
+    <?php if(!empty($list)){?>
+	<?php foreach($list as $item){?>
+    <?php if(!empty($item['id'])){?>
+      <tr ><!-试卷操作记录!>
+        <td><?php echo $item['oper_time']?></td>
+        <td><?php echo $item['oper_name']?></td>
+        <td><?php echo $item['ip_address']?></td>
+        <td><?php echo !empty($item['question_id']) ? $item['question_id'] : '' ;?></td>
+        <td class="text-center"><?php echo !empty($item['paper_id']) ? $item['paper_id'] : '' ;?></td>
+        <td><?php echo $item['poperator_name']?></td>
+        <td><?php echo $item['poperator_account']?></td>
+      </tr>
+  <?php }else{?>
+        <p style="position: relative;top: 64px;border: 1px solid #ddd;line-height: 31px;text-align: center;">
+            暂无数据
+        <p>
+    <?php }}}else{?>
+        <tr><td colspan="7">无数据</td></tr>
+    <?php }?>
+    </tbody>
+  </table>
+  <div class="pagination">{$page}</div>
+</div>
+
+<!-- 弹窗：添加备注 -->
+<div class="fullBack"></div>
+<div class="adminNotifyBox" id="addRemarks">
+  <div class="adminNotifyTitle">
+    添加备注
+  </div>
+  <div class="adminNotifyContent">
+    <textarea name="" id="" class="remarksMain" rows="6" placeholder="请输入通过的理由，限100字" maxlength="100"></textarea>
+  </div>
+  <p class="adminNotifyButton">
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksSure">完成</a>
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksCancel">取消</a>
+  </p>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+  !function(){
+    laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+  }();
+
+  //活动起始时间
+  var actstart = {
+    elem: '#startTime',
+    format: 'YYYY-MM-DD',
+//    min: laydate.now(), //设定最小日期为当前日期
+    max: laydate.now(), //最大日期
+    istime: true,
+    istoday: false,
+    choose: function(datas){
+       actend.min = datas; //开始日选好后，重置结束日的最小日期
+       actend.start = datas; //将结束日的初始值设定为开始日
+    }
+  };
+
+  var actend = {
+    elem: '#endTime',
+    format: 'YYYY-MM-DD',
+//    min: laydate.now(),
+    max: laydate.now(),
+    istime: true,
+    istoday: false,
+    choose: function(datas){
+      actstart.max = datas; //结束日选好后，充值开始日的最大日期
+    }
+  };
+  laydate(actstart);
+  laydate(actend);
+
+	var startMin = actstart.min;
+	var startMax = actstart.max;
+	var endMin = actend.min;
+	var endMax = actend.max;
+	function resetDate() {
+		actstart.min = startMin;
+		actstart.max = startMax;
+		actend.min = endMin;
+		actend.max = endMax;
+	}
+
+	$(document).on('click','#laydate_clear',function(){
+		if($('#startTime').val() == '' && $('#endTime').val() != '') {
+			actend.min = endMin;
+		} else if($('#startTime').val() != '' && $('#endTime').val() == '') {
+			actstart.max = startMax;
+		} else {
+			resetDate()
+		}
+	})
+</script>

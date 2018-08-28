@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>已完成作业</title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				font-size: 16px;
+					-webkit-tap-highlight-color: rgba(0,0,0,0);
+				-webkit-tap-highlight-color: transparent;
+			}
+			body{
+				color: #333;
+			}
+			.p20{
+				padding:10px 20px
+			}
+			li{
+				list-style: none;
+			}
+			.top ul li{
+				overflow: hidden;
+				line-height: 32px;
+				border-bottom: 1px solid #eee
+			}
+
+			.top p {
+				word-break: break-all;
+			}
+			
+			.left{
+				float: left;
+			}
+			.titleft{
+				height: 100%
+			}
+			.pright{
+				width:calc(100% - 80px);
+			}
+			.yellow{
+				color: #f2b718
+			}
+			.right{
+				float: right;
+			}
+			.color999{
+				color: #999
+			}
+			.m10{
+				margin: 10px 0
+			}
+			.border{
+				height: 1px ;
+				background: #eee;
+				position: relative;
+				z-index: 1;
+				top:17px
+			}
+			.text-center{
+				text-align: center;
+			}
+			.of{
+				overflow: hidden;
+			}
+			.title{
+				display: inline-block;
+				padding: 5px 10px;
+				background: #fff;
+				position: relative;
+				z-index: 2
+			}
+			a{
+				text-decoration: none;
+				color:#999
+			}
+			.w20{
+				width: 20%;
+				display: inline-block;
+			}
+			.qbtn{
+
+			}
+			.border-top{
+				border-top: 5px solid #f4f4f4
+			}
+			.fraction{
+				position: absolute;
+				top: 10px;
+				right: 20px;
+				background: url(__PUBLIC__/img/Apphomework/fenshu.png);
+				width: 60px;
+				height: 60px;
+				text-align: center;
+				line-height: 60px;
+				background-size: 100%;
+				color: #ed2222;
+				font-size: 20px
+			}
+			.btnFalse{
+				width: 40px;
+				height: 40px;
+				display: inline-block;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 50%;
+				border: 1px solid #c77609;
+				margin: 5px;
+				background: #fff;
+				color: #994c00;
+			}
+
+			.btnTrue{
+				width: 40px;
+				height: 40px;
+				display: inline-block;
+				text-align: center;
+				line-height: 40px;
+				border-radius: 50%;
+				border: 1px solid #c77609;
+				margin: 5px;
+				background: #fec93f;
+				color: #fff;
+			}
+
+			.questionMark {
+				width: 25px;
+				vertical-align: middle;
+				position: relative;
+				top: -1px;
+				left: 5px;
+			}
+
+			.explainMark {
+				/*width: 280px;*/
+				/*height: 234px;*/
+				width: 250px;
+				height: 371px;
+				background: url(__PUBLIC__/img/Apphomework/explainMarkNew.png) no-repeat center;
+				background-size: 100% 100%;
+				display: none;
+				position: fixed;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				margin: auto;
+				z-index: 3
+			}
+
+			.explainMark .closeMark {
+				width: 30px;
+				height: 30px;
+				float: right;
+			}
+
+			.fullBackMark {
+				display: none;
+				width: 100%;
+				height: 100%;
+				background: rgba(0,0,0,.3);
+				position: fixed;
+				left: 0;
+				right: 0;
+				top: 0;
+				bottom: 0;
+				z-index: 2
+			}
+
+			.dimBox {
+				width: 100%;
+				overflow: hidden;
+				font-size: 14px;
+				color: #999;
+				padding: 15px 5px;
+			}
+
+			.dimBox .dimCircle {
+				float: left;
+			    width: 19px;
+			    height: 19px;
+			    display: inline-block;
+			    border-radius: 50%;
+			    background: #fec93f;
+			    border: 1px solid #c77609;
+			}
+
+			.dimBox .dimCircle.circleNo {
+			    background: #fff;
+			}
+
+			.dimBox .dimAnswer {
+				float: left;
+				margin: 0 10px 0 5px
+			}
+
+			.dimBox .dimAnswer.answerNo {
+				color: #e78b13;
+			}
+
+			/*大于600的手机*/
+			@media (min-width:600px){
+				.explainMark {
+					/*width: 510px;*/
+					/*height: 426px;*/
+					width: 350px;
+					height: 520px;
+				}
+
+				.explainMark .closeMark {
+					width: 60px;
+					height: 60px;
+				}
+
+				.dimBox {
+					font-size: 16px;
+				}
+
+				.dimBox .dimCircle {
+				    width: 21px;
+				    height: 21px;
+				}
+			}
+
+			@media  (max-width:359px) and (min-width:0){
+				.fraction {
+					right: 5px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="top p20">
+			<ul>
+				<li>
+					<p class="left">
+						正确率：
+					</p>
+					<p class="left">
+						{$result._right}
+					</p>
+				</li>
+				<li>
+					<p class="left">
+						提交时间：
+					</p>
+					<p class="left">
+						{$result.submittime}
+					</p>
+				</li>
+				<li>
+					<p class="left">
+						作业状态：
+					</p>
+					<p class="left">
+						{$result.status}
+					</p>
+				</li>
+				<li>
+					<p class="left">
+						布置时间：
+					</p>
+					<p class="left buzhi">
+						<!-- {$result.releaseTime} -->
+					</p>
+				</li>
+				<li>
+					<p class="left">
+						截止时间：
+					</p>
+					<p class="left jiezhi">
+						<!-- {$result.endTime} -->
+					</p>
+				</li>
+				<li>
+					<p class="left">
+						作业要求：
+					</p>
+					<p class="left require pright">
+						<!-- {$result.requirement} -->
+					</p>
+				</li>
+			</ul>
+			<div class="fraction">
+				{$result.point}分
+			</div>
+		</div>
+
+
+		<div class="p20 border-top">
+			<div class="m10">
+				共<span class="totalCount">0</span>道题<span class="color999">(<span class="totalScore"></span>分)</span>
+				<img src="__PUBLIC__/img/Apphomework/questionMark.png" alt="" class="questionMark">
+			</div>
+			<?php foreach ($result['data'] as $key => $value): ?>
+			<div class="text-center">
+				<div class="border"></div>
+				<p class="title">
+					<?=$value['name']?>
+				</p>
+			</div>
+			
+			<div class="dimBox">
+				<span class="dimCircle circleYes"></span>
+				<span class="dimAnswer answerYes">已作答</span>
+				<span class="dimCircle circleNo"></span>
+				<span class="dimAnswer answerNo">未作答</span>
+			</div>
+			<div >
+
+
+				<?php foreach ($value['data'] as $k => $v): ?>
+				<div class="parent_index">
+					<p class="color999">
+						<?=$v['name']?>
+					</p>
+					<div class="of">
+							<?php foreach ($v['data'] as $ek => $ev): ?>
+								<?php if ($ev['url'] !='' ): ?>
+										<a href="javascript:" class=" w20 left "><span class="btnTrue qbtn">{$ek+1}</span></a>
+								<?php else: ?>
+										<a href="javascript:" class=" w20 left "><span class="btnFalse qbtn">{$ek+1}</span></a>
+								<?php endif ?>
+							<?php endforeach; ?>
+					</div>
+				</div>
+				<?php endforeach; ?>
+			</div>
+			<?php endforeach; ?>
+		</div>
+
+		<div class="fullBackMark"></div>
+		<div class="explainMark">
+			<div class="closeMark"></div>
+		</div>
+
+	</body>
+	<script src="__PUBLIC__/js/external/jquery.js" type="text/javascript"></script>
+
+	<script>
+		var userId = "{$userId}";
+		var role = "{$role}";
+		var homeworkId = "{$homeworkId}";
+		var classId = "{$classId}";
+		var dataList={'userId':userId,'role':role,'homeworkId':homeworkId,'classId':classId};
+		var submitId = "{$submitId}";
+		var name = '';
+		//__URL__/exerciseDetails?userId={$userId}&role={$role}&id={$homeworkId}&type=1
+		$(document).on('click','.qbtn',function(){
+			var i =0;
+			var a = 0;
+			var c = 0;
+			if($(this).parents('.parent_index').index() == 0){
+				var i = $(this).parent().index();
+			}else{
+				var a = $(this).parents('.parent_index').index();
+				for(var b = 0;b<a;b++){
+					c += $('.parent_index').eq(b).find('.w20').length;
+					i = c
+				}
+				 i = i + $(this).parent().index()
+			}
+
+
+			window.location.href = "__URL__/exerciseDetails?submitId={$submitId}&userId={$userId}&role={$role}&id={$homeworkId}&type=2&flag="+i+"&name="+name
+		})
+
+		$.ajax({
+			type: 'POST',
+			url: '/ApiInterface/Version1_2/HomeworkParent/getHomeworkAbstract',
+			cache: false,
+			data:dataList,
+			dataType:'json',
+			success: function(msg){
+				$('.buzhi').html(msg.data.releaseTime);
+				$('.jiezhi').html(msg.data.endTime);
+				$('.require').html(msg.data.requirement);
+				$('.totalCount').html(msg.data.totalCount);
+				$('.totalScore').html(msg.data.totalScore);
+				name = msg.data.name;
+				$('title').html(name);
+			}
+		})
+
+
+		$('.questionMark').click(function(){
+			$('.fullBackMark,.explainMark').show();
+			$('body').css('overflow-y','hidden')
+		})
+
+		$('.fullBackMark,.closeMark').click(function(){
+			$('.fullBackMark,.explainMark').hide();
+			$('body').css('overflow-y','auto')
+		})
+	</script>
+
+</html>

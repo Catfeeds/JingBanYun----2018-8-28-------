@@ -1,0 +1,132 @@
+<layout name="admin_layout_exercise"/>
+<div class="boxOutter">
+	<div class="of borderBottom pt10">
+		<span class="tabBtn text-center">试题详情</span>
+		<button type="button" name="button" class="btn right mt_10" id="batchReject">审核不通过</button>
+		<button type="button" name="button" class="btn right mt_10" id="biaoyin" pid="{$exercise_info.id}" state="<?= EXERCISE_STATE_WAITASSIGN?>">提交标引</button>
+	</div>
+	<div class="filterOutter  of pt20 pb10">
+		<div class="filterInner">
+				<div class="filterBox">
+					<label for="">试&nbsp;题&nbsp;ID</label> -
+					{$exercise_info['id']}
+					<input type="hidden" id="exercise_status_{$exercise_info['id']}" value={$exercise_info['status']}{$exercise_info['is_delete']} />
+				</div>
+
+				<div class="filterBox">
+					<label for="">题&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型</label> -
+
+					{$exercise_info['topic_type_name']['name']}
+
+
+				</div>
+				<div class="filterBox">
+					<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科</label> -
+
+					{$exercise_info['course_name']}
+
+				</div>
+
+				<div class="filterBox ">
+					<label for="" class="w64">习题来源</label> -
+					{$exercise_info['exercise_source_name']['name']}
+				</div>
+
+				<div class="filterBox">
+					<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;段</label> -
+
+					{$exercise_info['study_section_name']['name']}
+
+				</div>
+
+				<div class="filterBox">
+					<label for="">分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;值</label> -
+
+					{$exercise_info['count_score']}
+
+				</div>
+		</div>
+	</div>
+	<!--<div class="borderBottom  mb30 of pt20">
+	<p class="tabBtn left mt_10 text-center ">知识点信息</p>
+	</div>
+	<table class="tableCommon">
+	<thead>
+		<tr>
+		<th width=8%>序号</th>
+		<th width=13%>知识点</th>
+		<th width=8%>教材版本</th>
+	</thead>
+	<tbody>
+		<?php foreach ($textbook_tree_List as $treeK => $treeV): ?>
+			<tr>
+			<td><a href="javascript:;" class="tableAName">{$treeV['id']}</a></td>
+
+			<td>{$treeV['knowledge_name']}</td>
+
+			<td>{$treeV['version_name']}</td>
+			</tr>
+		<?php endforeach ?>
+	</tbody>
+	</table>-->
+	<div class="exerciseDetails">
+
+	</div>
+	<div class="borderBottom">
+		<span class="text-center tabBtn">试题追踪</span>
+	</div>
+	<table class="tableCommon borderNone mt20">
+		<thead>
+		<tr>
+			<th width="20%">序号</th>
+			<th width="20%">操作</th>
+			<th width="20%">操作人</th>
+			<th width="20%">时间</th>
+			<th width="20%">备注</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php foreach ($exercise_info['track'] as $trackK => $trackV): ?>
+		<tr>
+			<td><?=$trackK+1?></td>
+			<td><?=$trackV['oper_name']?></td>
+			<td><?=$trackV['operator_name']?></td>
+			<td><?=$trackV['oper_time']?></td>
+			<td class="showDetails"><a href="javascript:"><?=$trackV['comment']?></a></td>
+		</tr>
+		<?php endforeach ?>
+		</tbody>
+	</table>
+</div>
+
+<!-- 弹窗：添加备注 -->
+<div class="adminNotifyBox" id="addRemarks" style="z-index:100">
+	<div class="adminNotifyTitle">
+		添加备注
+	</div>
+	<div class="adminNotifyContent">
+		<textarea name="" id="" class="remarksMain" rows="6" placeholder="请输入返工的理由，限100字" maxlength="100"></textarea>
+	</div>
+	<p class="adminNotifyButton">
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" pid="{$exercise_info.id}" state="<?= EXERCISE_STATE_REPROCESS ?>" id="addRemarksSure">完成</a>
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksCancel">取消</a>
+	</p>
+</div>
+<input type="hidden" name="repeat_commit" class="repeat_commit" value="{:session('TOKEN')}">
+<input type="hidden" class="nextE" value="{$NextE.id}">
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script type="text/javascript">
+	var exercise_id = '{$exercise_info.id}';
+	var difficulty = "{$exercise_info['difficulty_name']}";
+	$.ajax({
+		type:'GET',
+		url:'/index.php?m=Exercise&c=CreateExercise&a=getApiExercisesInfo&id='+exercise_id,
+		dataType:'json',
+		success:function(msg){
+			console.log(msg);
+			$('.exerciseDetails').append(msg.data.json_html);
+			$('.exerciseDetails').find('.difficulty,.exerciseDifficulty').children('span:last-child').text(difficulty)
+		}
+	})
+</script>

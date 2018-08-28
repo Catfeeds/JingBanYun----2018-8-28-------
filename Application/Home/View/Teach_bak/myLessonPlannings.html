@@ -1,0 +1,76 @@
+<layout name="teacher_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/createLessonPlanning')}" title="创建教案" class="btn btn-primary">创建教案</a>
+    &nbsp;
+    <a href="{:U('Teach/lessonPlanningLib')}" title="从公共课件库中创建" class="btn btn-primary">从公共课件库中创建</a>
+</div>
+
+<table class="table striped hovered border">
+    <thead>
+    <tr>
+        <th>教案名称</th>
+        <th class="text-center">创建时间</th>
+        <th class="text-center">修改时间</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="暂时没有教案">
+        <tr id="l_{$data.id}">
+            <td>
+                <h3 class="list_title">
+                    {$data.name}
+                </h3>
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">{$data.update_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                <a href="{:U('Teach/editLessonPlanningFromLib')}&id={$data.id}" title="修改">修改</a>
+                &nbsp;
+                <a href="javascript:showDeleteDialog('{$data.id}')"  title="删除">删除</a>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="modal fade" id="deleteDialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">删除前确认</h4>
+            </div>
+            <div class="modal-body">
+                <p>请再次确定您要讲这项记录删除请再次确定您要讲这项记录删除</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="deleteResource()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var currentResourceId = 0;
+    function showDeleteDialog(resourceId) {
+        $('#deleteDialog').modal('show')
+        currentResourceId = resourceId;
+    }
+    function deleteResource() {
+        $.get('index.php?m=Home&c=Teach&a=deleteLessonPlanning', {id: currentResourceId}, function (res) {
+            if (res == 'success') {
+                hideDeleteDialog();
+                window.location.reload();
+            } else {
+                alert('删除失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+    function hideDeleteDialog() {
+        $('#deleteDialog').modal('hide')
+        currentResourceId = 0;
+    }
+
+</script>

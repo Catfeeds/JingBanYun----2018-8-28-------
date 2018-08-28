@@ -1,0 +1,562 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="__PUBLIC__/adminExercise/css/render.css" >
+
+
+<style>
+    .laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+        box-sizing: content-box;
+    }
+
+    #laydate_hms {
+        display: none !important;
+    }
+
+     .layui-layer-title {
+         background: #0072c6 !important;
+     }
+
+</style>
+
+<!--
+<div class="titleBox">
+	<p class="blueText fs18 underline1">班级管理</p>
+	<div class="underline2"></div>
+</div>
+-->
+
+<div class="titleBox">
+    <p class="blueText fs18 underline1">
+        习题录入系统习题问题反馈
+        <span class="blueSpan">
+			<a href="javascript:;">问题反馈</a>>>
+			<a href="javascript:;">问题反馈列表</a>
+		</span>
+    </p>
+    <div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php?m=Admin&c=ExercisesFeedback&a=feedbackList" method="post">
+    <p class="blueText fs16">反馈查询</p>
+    <div class="grid condensed cellBox">
+        <div class="row cells3">
+            <div class="cell">
+                <label>反馈人：</label>
+                <input type="text" class="input-control school_name" name="name" value="{$name}" placeholder="反馈人">
+            </div>
+            <div class="cell">
+                <label>反馈人手机号：</label>
+                <input type="text" class="input-control school_code" name="telephone" value="{$telephone}" placeholder="反馈人手机号">
+            </div>
+            <div class="cell">
+                <label>问题ID：</label>
+                <input type="text" class="input-control school_code" name="id" value="{$id}" placeholder="问题ID">
+            </div>
+            <div class="cell">
+                <label>状态：</label>
+                <select id="school_status" class="input-control" name="feedbackStatus">
+                    <option value="">-请选择-</option>
+                    <option value="1" <if condition="$feedbackStatus===1"> selected="true"</if> >待解决</option>
+                    <option value="2" <if condition="$feedbackStatus===2"> selected="true"</if> >待确认</option>
+                    <option value="3" <if condition="$feedbackStatus===3"> selected="true"</if> >已解决</option>
+                </select>
+            </div>
+            <div class="cell">
+                <label>问题类型：</label>
+                <select id="city_list" class="input-control" name="exercisesType">
+                    <option value="">-请选择-</option>
+                    <option value="1" <if condition="$exercisesType===1"> selected="true"</if> >解析问题</option>
+                    <option value="2" <if condition="$exercisesType===2"> selected="true"</if> >试题问题</option>
+                    <option value="3" <if condition="$exercisesType===3"> selected="true"</if> >答案问题</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <input type='hidden' name='order' class="order_class" value='0' />
+    <hr class="thin bg-grayLighter">
+    <div class="searchBtnBox text-center">
+        <!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+        <button class="blueBtn" id="resetBtn">重&nbsp;置</button>-->
+        <input type='submit' value='查询' class='blueBtn' />
+        <input type='button' value='重置' class='blueBtn resetButton' />
+    </div>
+</form>
+
+<p class="blueText fs16">反馈列表</p>
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">序号</th>
+        <th class="text-center">反馈人</th>
+        <th class="text-center">反馈人手机号</th>
+        <th class="text-center">反馈时间</th>
+        <th class="text-center">问题类型</th>
+        <th class="text-center">问题说明</th>
+        <th class="text-center">问题ID号</th>
+        <th class="text-center">状态</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody id="body">
+    <volist name="list" id="item" key="key">
+        <tr>
+            <td class="text-center">
+                {$key}
+            </td>
+            <td class="text-center" title="{$item.name}">
+                {$item.name}
+            </td>
+            <td class="text-center" title="{$item.telephone}">
+                {$item.telephone}
+            </td>
+            <td class="text-center">
+                {$item.time}
+            </td>
+            <td class="text-center">
+               <?php $newarr = explode(',',$item['flag_type']);
+                    foreach($newarr as $item2){
+                        if($item2 == '1'){
+                            echo '解析问题';
+                        }
+                       if($item2 == '2'){
+                            echo '&nbsp试题问题';
+                        }
+                        if($item2 == '3'){
+                            echo '&nbsp答案问题';
+                        }
+                    }?>
+            </td>
+            <td class="text-center">
+                {$item.content}
+            </td>
+            <td class="text-center">
+                {$item.exercise_id}
+            </td>
+            <td class="text-center feedbackStatus">
+                <?php
+                        if($item['status'] == '1'){
+                            echo '待解决';
+                        }
+                       if($item['status'] == '2'){
+                            echo '待确认';
+                        }
+                        if($item['status'] == '3'){
+                            echo '已解决';
+                        }
+                    ?>
+            </td>
+            <td class="text-center">
+                <a href="javascript:;" class="operBtn watch" attr-data="{$item['exercise_id']}">查看原题</a>
+                <if condition="$item['status'] eq 1">
+                    <a href="javascript:;" class="operBtn createAdminButton solve" attr-data="{$item['id']}">解决</a>
+                    <a href="javascript:;" class="operBtn createAdminButton really" attr-data="{$item['id']}">待确认</a>
+                </if>
+                <if condition="$item['status'] eq 2">
+                    <a href="javascript:;" class="operBtn createAdminButton solve" attr-data="{$item['id']}">解决</a>
+                </if>
+                <if condition="$item['status'] eq 3">
+                    <a href="javascript:;" class="operBtn createAdminButton explain" attr-data="{$item['id']}">查看解决说明</a>
+                </if>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">
+        <input type="text"name="p" value="{$pageNum}" id="page"><input type="submit"name="" value="GO" id="pageGo">
+    {$page}
+</div>
+
+
+<!--查看习题-->
+<div class="adminSelect pt20 json_html">
+
+</div>
+<div class="solve_html" style="display: none;">
+    <div class="adminSelect pt20">
+        <script type="text/plain" id="content" name="solve_content"></script>
+    </div>
+        <p class="adminNotifyButton">
+            <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureExplain">确定</a>
+            <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelExplain">取消</a>
+        </p>
+</div>
+
+<div class="adminSelect pt20 explain_html">
+
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.core.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.ui.datepicker.js"></script>
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js?v=1"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="/Public/js/layer/layer.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns": [
+                {"width": "5%"},
+                {"width": "5%"},
+                {"width": "14%"},
+                {"width": "6%"},
+                {"width": "8%"},
+                {"width": "6%"},
+                {"width": "10%"},
+                {"width": "8%"},
+                {"width": "8%"},
+                {"width": "10%"},
+                {"width": "20%"}
+            ]
+        });
+    });
+
+    /***********************************************************************************************************/
+    $('#pageGo').bind('click',function () {
+        var page = $('#page').val();
+        var telephone = "<?php echo $telephone?>";
+        var id = "<?php echo $id?>";
+        var feedbackStatus = "<?php echo $feedbackStatus?>";
+        var exercisesType = "<?php echo $exercisesType?>";
+        var name = "<?php echo $name?>";
+        window.location.href ='/index.php?m=Admin&c=ExercisesFeedback&a=feedbackList&p='+page+'&name='+name+'&telephone='+telephone+'&id='+id+'&feedbackStatus='+feedbackStatus+'&exercisesType='+exercisesType;
+    })
+    var um = UM.getEditor('content');
+    /**********************************************查看说明****************************************************************/
+    $(document).on('click',".explain",function(){
+        layer.open({
+            type: 1,
+            shade: 0,
+            zIndex: 20160922,
+            content: $('.explain_html'),
+            area: ['auto', '60%'],
+            closeBtn: 1,
+            move: false,
+            scrollbar: false,
+            title: ['查看说明', 'color：#fff']
+        });
+        var id= $(this).attr('attr-data');
+        $.ajax({
+            type:"post",
+            url:"{:U('ExercisesFeedback/showExplain')}",
+            dataType:"json",
+            data: {'id':id},
+            success: function(msg){
+                if(msg.status==200){
+                   $('.explain_html').html(msg.data);
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    /**********************************************查看原题****************************************************************/
+    $(".watch").click(function(){
+        layer.open({
+            type: 1,
+            shade: 0,
+            zIndex: 20160922,
+            content: $('.json_html'),
+            area: ['auto', '60%'],
+            closeBtn: 1,
+            move: false,
+            scrollbar: false,
+            title: ['习题预览', 'color：#fff']
+        });
+//        $("#watch").show();
+        var id= $(this).attr('attr-data');
+        $.ajax({
+            type:"post",
+            url:"{:U('ExercisesFeedback/showExercises')}",
+            dataType:"json",
+            data: {'id':id},
+            success: function(msg){
+                if(msg.status==200){
+                    $(".json_html").html(msg.data);
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    /**********************************************确认操作****************************************************************/
+    $(".really").click(function () {
+        var obj = this;
+        var id= $(this).attr('attr-data');
+        $.ajax({
+            type:"post",
+            url:"{:U('ExercisesFeedback/addFeedback')}",
+            dataType:"json",
+            data: {'reallyStatus':2,'id':id},
+            success: function(msg){
+                if(msg.status==200){
+                    $(obj).parent().siblings('.feedbackStatus').text('待确认');
+                    $(obj).hide();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    })
+    obj = '';
+    id = '';
+    $(".solve").bind('click',function(){
+        layer.open({
+            type: 1,
+            shade: 0,
+            zIndex: 20160922,
+            content: $('.solve_html'),
+            area: ['auto', '60%+'],
+            closeBtn: 1,
+            move: false,
+            scrollbar: false,
+            title: ['解决', 'color：#fff']
+        });
+        $("#sureExplain").show();
+        obj = this;
+        id= $(this).attr('attr-data');
+        um.setContent('');
+    });
+    $('#sureExplain').bind('click',function(){
+        var solve_content = um.getContent();
+        layer.closeAll();
+        /**********************************************提交反馈解决方案****************************************************************/
+        $.ajax({
+            type:"post",
+            url:"{:U('ExercisesFeedback/addFeedback')}",
+            dataType:"json",
+            data: {'solve_content':solve_content,'id':id,'solve_status':3},
+            success: function(msg){
+                if(msg.status==200){
+                    $(obj).parent().siblings('.feedbackStatus').text('已解决');
+                    if($(obj).siblings('.really').length > 0){
+                        $(obj).siblings('.really').hide();
+                    }
+                    str = '<a href="javascript:;" class="operBtn createAdminButton explain" attr-data="'+id+'">查看解决说明</a>';
+                    $(obj).after(str);
+                    $(obj).hide();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    $('#cancelWatch').click(function(){
+        $('#watch').hide();
+    });
+    $('#cancelExplain').click(function(){
+        layer.closeAll();
+    });
+
+    //点击批量导出
+    $(".export_btn").click(function(){
+        var check_input=$('#body').find("[name='checkbox']:checked");
+        if(check_input.length<1){
+            $.Notify({
+                caption: '提示',
+                content: '请勾选您要导出的账号',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('School/exportedSchool')}");
+        form.attr('method','post');
+
+        for(var i=0;i<check_input.length;i++){
+            var temp_val=$(check_input[i]).attr('attr');
+            var temp= $("<input type='hidden' name='hid[]'/>")
+            $(temp).attr('value',temp_val);
+            form.append(temp);
+        }
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+
+    function IsDate(mystring) {
+        var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+        var str = mystring;
+        if (!reg.test(str)  || RegExp.$2>12 || RegExp.$3>31){
+            return false;
+        }
+        return true;
+    }
+
+    function checkAdminData(){
+        var admin_account,admin_password;
+        admin_account=$('.create_admin_account').val();
+        admin_password=$('.create_admin_password').val();
+        if(admin_account==''){
+            $.NotifyBox.NotifyOne('注意','管理员账号不能为空！','确定');
+            return false;
+        }
+        if(admin_password==''){
+            $.NotifyBox.NotifyOne('注意','管理员密码不能为空！','确定');
+            return false;
+        }
+
+        //姓名
+        var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+        var linkmanName = $('.create_admin_realname').val();
+        if (!regName.test(linkmanName)) {
+            $.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+            return false;
+        } else if (linkmanName == '') {
+            $.NotifyBox.NotifyOne('注意','姓名不能为空！','确定');
+            return false;
+        }
+
+        //电话
+        var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        var linkmanPhone = $('.create_admin_telephone').val();
+        if (!regMobilePhone.test(linkmanPhone)) {
+            $.NotifyBox.NotifyOne('注意','手机号格式错误！','确定');
+            return false;
+        } else if (linkmanPhone == '') {
+            $.NotifyBox.NotifyOne('注意','请输入管理员手机号！','确定');
+            return false;
+        }
+        return true;
+
+    }
+</script>
+
+<script>
+    //点击重置
+    $('.resetButton').click(function(){
+        $('#province_list').find('option:eq(0)').attr('selected',true);
+        $('#city_list').find('option:eq(0)').attr('selected',true);
+        $('#district_list').find('option:eq(0)').attr('selected',true);
+        $('#school_list').find('option:eq(0)').attr('selected',true);
+        $('.school_name').val('');
+        $('.school_code').val('');
+        $('#school_status').find('option:eq(0)').attr('selected',true);
+        $('#is_create_administartor').find('option:eq(0)').attr('selected',true);
+        $('#privilege_type').find('option:eq(0)').attr('selected',true);
+        $('#school_category').find('option:eq(0)').attr('selected',true);
+
+    });
+
+
+    //点击排序
+    $('.upBtn').click(function(){
+        if(!$(this).hasClass('upBtnBlue')){
+            $(this).addClass('upBtnBlue');
+        }
+        $('.downBtn').removeClass('downBtnBlue');
+        $('.order_class').val(1);
+        $('#form_submit').submit();
+    });
+
+    $('.downBtn').click(function(){
+        if(!$(this).hasClass('downBtnBlue')){
+            $(this).addClass('downBtnBlue');
+        }
+        $('.upBtn').removeClass('upBtnBlue');
+        $('.order_class').val(0);
+        $('#form_submit').submit();
+    });
+
+
+
+
+
+
+
+
+
+    //全选
+    $('.check_all').click(function () {
+        var childCheck = $('.check_child');
+        var temp_status = true;
+        if ($(this)[0].checked == true) {
+            //本次选中
+            temp_status = true;
+        } else {
+            //本次取消
+            temp_status = false;
+        }
+        for (var i = 0; i < childCheck.length; i++) {
+            childCheck[i].checked = temp_status
+        }
+    });
+
+    //取消全选
+    var lis_m = document.getElementsByClassName('check_child');
+    for (var j = 0; j < lis_m.length; j++) {
+        lis_m[j].index = j;
+        lis_m[j].onclick = function () {
+            if ($(this)[0].checked == false) {
+                $('.check_all').removeAttr('checked', 'checked');
+                $('.check_all').removeProp('checked', 'checked');
+            } else if ($(this)[0].checked == true) {
+                if (lis_m.length == $("[name='checkbox']:checked").length) {
+                    $('.check_all').attr('checked', 'checked');
+                    $('.check_all').prop('checked', 'checked');
+                };
+            }
+        }
+    };
+</script>
+
+<script type="text/javascript">
+    !function(){
+        laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var startTime = {
+        elem: '#startTime',
+        format: 'YYYY-MM-DD',
+        min: laydate.now(), //设定最小日期为当前日期
+        max: '2099-06-16', //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            endTime.min = datas; //开始日选好后，重置结束日的最小日期
+            endTime.start = datas; //将结束日的初始值设定为开始日
+//			 appstart.max = datas;
+//			 append.max = datas;
+        }
+    };
+
+    var endTime = {
+        elem: '#endTime',
+        format: 'YYYY-MM-DD',
+        min: laydate.now(),
+        max: '2099-06-16',
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            startTime.max = datas; //结束日选好后，充值开始日的最大日期
+        }
+    };
+    laydate(startTime);
+    laydate(endTime);
+</script>
+
+<!--VIP权限修改-->
+<script>
+    $('#sureVip').click(function(){
+        $('#vipModify').hide();
+        $('body').css('overflow-y','auto')
+    })
+    $('#cancelVip').click(function(){
+        $('#vipModify').hide();
+        $('body').css('overflow-y','auto')
+    })
+</script>
+

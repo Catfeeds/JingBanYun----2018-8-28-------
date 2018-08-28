@@ -1,0 +1,220 @@
+<div class="table_wrapper" id="lesson_info_table_wrapper">
+    <div id="courseware_list" style="overflow-y: auto;">
+        <if condition="$platform neq 'pc'">
+            <div id="top">
+                f(x) = <input type="text" value="(x+4)^2*(x-6)+60sinx" id="input" /><input type="button" value="生成" id="simplify" />
+            </div>
+            <div id="wrapper">
+                <div id="result_xcalc"></div>
+            </div>
+        </if>
+        <empty name="lessonPlannings">
+            <div class="emptyResult">您还没有关联任何课件，请到京版云网站修改</div>
+        </empty>
+        <notempty name="lessonPlannings">
+            <table class="table striped hovered border" cellpadding="0" cellspacing="0">
+                <thead>
+                <tr>
+                    <th>
+                        课件名称
+                    </th>
+                    <th class="text-center">
+                        关联资源
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <volist name="lessonPlannings" id="data_lesson">
+                    <tr id="l_{$data_lesson.id}">
+                        <td>
+                            <h3 class="list_title" title="{$data_lesson.name}">
+                                {$data_lesson.name}
+                            </h3>
+                        </td>
+                        <td class="text-center" nowrap>
+                            <if condition="$data_lesson['ver'] eq 2">
+                            <empty name="data_lesson.details">
+                                <span>没有资源</span>
+                            </empty>
+                            <volist name="data_lesson.details" id="data_lesson_details">
+                                <button onclick="onOpenLessonPlannings('{$data_lesson_details.id}','{$data_lesson_details.type}')"
+                                        title="打开"
+                                        class="button">{$data_lesson_details.type}
+                                </button>
+                                &nbsp;&nbsp;
+                            </volist>
+                            <elseif condition="$data_lesson['ver'] eq 3"/>
+                                <button onclick="onOpenLessonPlanningsV3('{$data_lesson.id}')"
+                                        title="打开"
+                                        class="button">打开备课资料
+                                </button>
+                            </if>
+                        </td>
+                    </tr>
+                </volist>
+                </tbody>
+            </table>
+        </notempty>
+    </div>
+
+
+
+    <div id="lesson_planning_show" style="display: none;">
+        <div style="margin-bottom: 4px;">
+            <button class="sub_opr" onclick="onReturnToLessonPlannings()">返回课件列表</button>
+        </div>
+        <div id="lesson_planning_show_wrapper">
+        </div>
+    </div>
+</div>
+<div id="btn_tuya_lesson_wrapper">
+    <img onclick="toggleTuYaForLesson()" id="btn_tuya_lesson_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png" title="启用/禁用白板">
+    <img onclick="beginTuYaLesson()" id="btn_tuya_lesson_ctrl_pen" class="btn_tuya_sub_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_deactive.png" style="display: none;" title="绘制">
+    <img onclick="clearLessonTuYa()" id="btn_tuya_lesson_ctrl_eraser" class="btn_tuya_sub_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_deactive.png" style="display: none;"
+         title="擦除">
+    <img onclick="clearAllLessonTuYa()" id="btn_tuya_lesson_ctrl_clear" class="btn_tuya_sub_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_blank_deactive.png" style="display: none;"
+         title="清空">
+    <img onclick="toggleTuYaForLessonOpacity()" id="btn_tuya_lesson_ctrl_opacity" class="btn_tuya_sub_ctrl"
+         width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_deactive.png" style="display: none;"
+         title="透明控制">
+
+    <div id="lessonColorPickerWrapper" class="colorPickerWrapper btn_tuya_sub_ctrl" style="display: none;">
+        <span onclick="changeLessonTuyaLineColor('#ff0000')" class="colorPicker colorPicker_red selected"
+              data-color="#ff0000"></span>
+        <br>
+        <span onclick="changeLessonTuyaLineColor('#D8A209')" class="colorPicker colorPicker_yellow"
+              data-color="#D8A209"></span>
+        <br>
+        <span onclick="changeLessonTuyaLineColor('green')" class="colorPicker colorPicker_green"
+              data-color="green"></span>
+        <br>
+        <span onclick="changeLessonTuyaLineColor('#000000')" class="colorPicker colorPicker_black"
+              data-color="#000000"></span>
+        <br>
+    </div>
+</div>
+<div id="whiteboard_lesson" class="whiteboard">
+    <canvas id="lesson_canvas">
+        您的浏览器不支持白板功能
+    </canvas>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/DigitalClassroom/index_xcalc.js"></script>
+<script>
+    var videoState = {
+        'playState':'stop',
+        'currentTime':0,
+        'currentResourceId':0
+    }
+    function onOpenLessonPlannings(id, type) {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        currentClassroomState.is_showing_lesson_list = 'false';
+        currentClassroomState.the_opening_lesson = id;
+        currentClassroomState.the_opening_lesson_type = type;
+
+        sendSocket("lesson|openLessonPlannings|" + id + "," + type);
+        openLessonPlannings(id, type)
+    }
+    function onOpenLessonPlanningsV3(id)
+    {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        currentClassroomState.is_showing_lesson_list = 'false';
+        currentClassroomState.the_opening_lesson = id;
+
+        sendSocket("lesson|openLessonPlanningsV3|" + id );
+        openLessonPlanningsV3(id)
+
+    }
+    function openLessonPlanningsV3(id) {
+        $('#courseware_list').hide();
+        $('#lesson_planning_show').show();
+
+        $('#lesson_planning_show_wrapper').attr('data-id', id).load('__URL__/lesson_planning_V3' + '?id=' + id);
+    }
+    function openLessonPlannings(id, type) {
+        $('#courseware_list').hide();
+        $('#lesson_planning_show').show();
+
+        type = type.toLowerCase();
+
+        if (type == 'audio')type = 'video';
+
+        if (platform == 'pad' && (type == 'pdf' || type == 'word')) {
+
+        }
+
+        $('#lesson_planning_show_wrapper').attr('data-id', id).load('__URL__/lesson_planning_show_' + type + '?id=' + id);
+    }
+
+    function onReturnToLessonPlannings() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+        currentClassroomState.is_showing_lesson_list = 'true';
+        sendSocket("lesson|returnToLessonPlannings|");
+        returnToLessonPlannings();
+    }
+
+    function returnToLessonPlannings() {
+        //如果有视频，关闭视频
+        if (typeof player !== 'undefined' && player != null) {
+            player.j2s_pauseVideo();
+            player = null;
+        }
+
+        $('#courseware_list').show();
+        $('#lesson_planning_show').hide();
+        $('#plvContainer').remove();
+
+        $('#lesson_planning_show_wrapper').attr('data-id', '').html('');
+    }
+
+    function gotoSpecifiedPPT(lessonPlanningId, pageIndex) {
+
+        function specifiedPPT(pageIndex) {
+            var obj = document.getElementById('preview_ppt');
+            var dataSource = $(obj).attr('data-source');
+            //judge index is valid
+            var total = parseInt($(obj).attr('data-pages'));
+            if (pageIndex > total) {
+                pageIndex = 1;
+            }
+            var slideSrc = dataSource + pageIndex + '.jpg';
+            $(obj).attr({'src': slideSrc, 'data-index': pageIndex});
+        }
+
+        var currentLessonPlanningId = $('#lesson_planning_show_wrapper').attr('data-id');
+        if (lessonPlanningId != currentLessonPlanningId) {
+            $('#courseware_list').hide();
+            $('#lesson_planning_show').show();
+            $('#lesson_planning_show_wrapper').attr('data-id', lessonPlanningId).load('__URL__/lesson_planning_show_ppt?id=' + lessonPlanningId, function () {
+                specifiedPPT(pageIndex);
+            });
+        } else {
+            specifiedPPT(pageIndex);
+        }
+
+    }
+
+
+    function adjustLessonInfoLayout() {
+        $('#courseware_list').height($(window).height() - 80);
+    }
+
+    $(function () {
+        adjustLessonInfoLayout();
+        $(window).on('resize', adjustLessonInfoLayout);
+    })
+
+</script>

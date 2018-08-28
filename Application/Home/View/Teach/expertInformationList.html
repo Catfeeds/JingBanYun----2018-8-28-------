@@ -1,0 +1,79 @@
+<layout name="teacher_layout_1"/>
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/activity.css" type="text/css" rel="stylesheet">
+
+<div class="exports">
+   <div class="exports_top">
+        <div class="search">
+            <button class="search_btn"></button>
+            <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资讯名称">
+        </div>
+    </div>
+    <ul class="row exports_ul">
+        <volist name="list" id="data" empty="暂时没有资讯信息">
+            <li class="col-md-4 exports_li col-lg-3 col-sm-6">
+                <div class="exports_box">
+                    <a href="{:U('Teach/expertInformationDetails?id=')}{$data.id}">
+                        <img class="exports_img" src="/Resources/expertinformation/{$data.short_content}" alt="">
+                        <p class="exports_title">{$data.title}</p>
+                    </a>
+                    <p class="exports_p">
+                        <span class="left">{$data.publisher}</span>
+                        <span class="right">{$data.create_at|date="Y-m-d H:i",###}</span>
+                    </p>
+                </div>
+            </li>
+        </volist> 
+    </ul>
+</div>
+<div class="Pagination">{$page}</div>
+
+
+<script>
+	$(document).ready(function () {
+		var sort = "{$sort_column}" ? "{$sort_column}" : 0;
+
+		//点击搜索框
+		$('.search_btn').click(function () {
+			var string = '';
+			var keyword = $(".search_text").val();
+			if (keyword != '') {
+				keyword = '&keyword=' + keyword;
+			}
+
+			string = keyword + join_string() + get_sort_string();
+			location.href = "index.php?m=Home&c=Teach&a=expertInformationList" + string;
+		});
+		//回车搜索
+		$(".search_text").keydown(function (evt) {
+				if (event.keyCode == "13") { //keyCode=13是回车键
+					var evt = (evt) ? evt : ((window.event) ? window.event : "")
+					var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+					var string = '';
+					var keyword = $(".search_text").val();
+					if (keyword != '') {
+						keyword = '&keyword=' + keyword;
+					}
+					string = keyword + join_string() + get_sort_string();
+					location.href = "index.php?m=Home&c=Teach&a=expertInformationList" + string;
+
+				}
+			})
+		//拿到排序的当前值
+		function get_sort_string() {
+			sort = '&sort_column=' + sort;
+			return sort;
+		}
+
+		//拼接语句
+		function join_string() {
+			var string = "";
+			var keyword = $(".search_text").val();
+			if (keyword != '') {
+				string = '&keyword=' + keyword;
+			}
+
+			return string;
+		}
+	});
+</script>

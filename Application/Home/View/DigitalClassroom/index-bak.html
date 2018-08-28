@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="Access-Control-Allow-Origin" content = "*"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>数字课堂 :: 京版云教育平台</title>
+    <link href="http://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/pctextbook/ebook.css"/>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <!--<script src='https://player.polyv.net/script/polyvplayer.min.js'></script>-->
+    <script>
+    var videoArray = {};
+    var currentVideoPlayer;
+    var videoState = {
+        'playState':'stop',
+        'currentTime':0,
+        'currentResourceId':0
+    }
+    var socketSendFlag = true;
+    function sendVideoState(state)
+    {
+        if(true == socketSendFlag)
+        sendSocket('videoState='+JSON.stringify(state)+';socketSendFlag=false;refreshVideoState(videoState);socketSendFlag=true;');
+    }
+    function s2j_onVideoPlay()
+    {
+        videoState.playState = 'play';
+        getVideoPlayTime();
+        sendVideoState(videoState);
+    }
+    function s2j_onVideoPause()
+    {
+        videoState.playState = 'pause';
+        getVideoPlayTime();
+        sendVideoState(videoState);
+    }
+    function s2j_onVideoSeek(before, after)
+    {
+        videoState.currentTime = after;
+        sendVideoState(videoState);
+    }
+    function getVideoPlayTime()
+    {
+        try {
+            videoState.currentTime = currentVideoPlayer.currentTime;
+        }
+        catch(e){;}
+    }
+    function refreshListener()
+    {
+        $.each(videoArray,function(i,n){
+            var video = document.getElementById("video_"+i);
+            video.addEventListener("play", function() {
+                videoState.playState = 'play';
+                getVideoPlayTime();
+                sendVideoState(videoState);
+            }, false);
+            video.addEventListener("pause", function() {
+                videoState.playState = 'pause';
+                getVideoPlayTime();
+                sendVideoState(videoState);
+            }, false);
+        });
+
+
+    }
+    function refreshVideoState(state) {
+        try {
+            currentVideoPlayer = videoArray[parseInt(state.currentResourceId)];
+            currentVideoPlayer.currentTime = parseFloat(state.currentTime);
+            if (state.playState == 'pause' && !currentVideoPlayer.paused)
+                currentVideoPlayer.pause();
+            else if (state.playState == 'play' && currentVideoPlayer.paused)
+                currentVideoPlayer.play();
+        }catch(e){;}
+    }
+    </script>
+    <style>
+        html {
+            font-family: Microsoft YaHei, "微软雅黑", Lucida, Verdana, Hiragino Sans GB, STHeiti, WenQuanYi Micro Hei, Droid Sans Fallback, SimSun, sans-serif;
+        }
+
+        a {
+            color: #3BBAFF;
+            text-decoration: none;
+        }
+
+        #mainTable {
+            width: 100%;
+        }
+
+        #mainTable td {
+            padding: 0;
+        }
+
+        .ctrl {
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+            padding: 20px 10px;
+            cursor: pointer;
+        }
+
+        .ctrl.cur {
+            background-color: #3BBAFF;
+            color: white;
+        }
+
+        #leftWrapper {
+
+        }
+
+        .featureWrapper {
+            display: none;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid #ccc;
+
+        }
+    </style>
+    <style>
+        .class_subfeature {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            display: none;
+            background-color: #E2E2E2;
+        }
+
+        .tab {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            width: 400px;
+            overflow: hidden;
+        }
+
+        .tab li ,#lockStudent{
+            float: left;
+            width: 100px;
+            height: 49px;
+            background: #fff;
+            color: #333;
+            text-align: center;
+            line-height: 49px;
+            cursor: pointer;
+        }
+        .tabv {
+
+            margin-top: 25px;
+            padding-left: 0;
+            list-style: none;
+            width: 42px;
+            height:155px;
+
+
+        }
+
+        .tabv li {
+            border-radius: 4px;
+		    padding-top:4px;
+			writing-mode:vertical-rl;
+            width: 42px;
+            height: 45px;
+            background: #fff;
+            color: #333;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
+
+        }
+        .on {
+            display: block;
+        }
+
+        .tab li.cur {
+            background: #3BBAFF;
+            color: white;
+        }
+        .tabv li.cur {
+            background: #3BBAFF;
+            color: white;
+        }
+        .resource_item {
+            height: 56px;
+            line-height: 56px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #fff;
+            padding-left: 20px;
+        }
+
+        .resource_content {
+            display: none;
+        }
+    </style>
+    <style>
+        .pptTable {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+
+        .pptTable td {
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .pptTableNav {
+            width: 200px;
+            overflow: auto;
+        }
+
+        .ppt_img_wrapper {
+            margin: 6px;
+            border: 1px solid #ccc;
+            display: inline-block;
+        }
+
+        .ppt_img_wrapper img {
+            width: 100%;
+        }
+
+        .pptTableContent {
+            text-align: center;
+        }
+
+        .pptTableContent img {
+            width: 90%;
+            max-height: 95% !important;
+        }
+    </style>
+    <style>
+        #kalaok {
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100px;
+            z-index: 1000;
+            background-color: #fff;
+            display: none;
+            padding-left: 20px;
+        }
+
+        .text {
+            position: relative;
+            top: 8px;
+            display: -webkit-box;
+            display: -moz-box;
+            -webkit-box-orient: horizontal;
+            -moz-box-orient: horizontal;
+            -webkit-box-align: center;
+            -moz-box-align: center;
+            font: normal normal bold 20px 微软雅黑, sans-serif;
+            -webkit-filter: brightness(2);
+            filter: brightness(2);
+        }
+
+        .text p {
+            background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%), -webkit-linear-gradient(left, #f00 0%, #00f 0%);
+            background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%), -moz-linear-gradient(left, #f00 0%, #00f 0%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /*-webkit-text-stroke:1px #f00;*/
+            -webkit-filter: drop-shadow(0px 0px 1px #f00);
+
+        }
+
+        .ctrl {
+            position: relative;
+            <if condition="$platform neq 'pad'">
+            top: 25px;
+            </if>
+            background: #0aa;
+            display: -webkit-box;
+            display: -moz-box;
+            -webkit-box-shadow: 0 0 5px #646464;
+            -moz-box-shadow: 0 0 5px #646464;
+            border-radius: 4px;
+        }
+
+        .ctrl span {
+            padding: 0 10px;
+        }
+
+        .ctrl span:hover {
+            background: #088;
+            cursor: pointer;
+        }
+
+        .studentlist{
+            text-align:center;
+            display:none;
+        }
+        #stuCountInfo{
+            position:absolute;right:20px;line-height:49px;
+        }
+		#lockStudent{
+            float:left;
+        }
+        #lockStudent .subitem
+        {background: #FFFFFF ;border: 1px solid #B0C4DE;position: absolute; top: 48px; left: 295px; width: 7em;}
+        #lockStudent .subitem
+        {display:none;visibility:hidden}
+        #lockStudent:hover .subitem
+        {display: block;visibility:visible;list-style:none;line-height:25px;z-index:1000;}
+		
+		#lockStudent-v{
+            float:left;
+			writing-mode:vertical-rl;
+			text-align: center;
+        }
+        #lockStudent-v .subitem-v
+        {background: #FFFFFF ;border: 1px solid #B0C4DE;position: absolute; top: 305px; left: 43px; width: 7em;}
+        #lockStudent-v .subitem-v
+        {display:none;visibility:hidden}
+        #lockStudent-v:hover .subitem-v
+        {display: block;visibility:visible;list-style:none;line-height:25px;z-index:1000;}
+    </style>
+</head>
+<body id="body" style="padding: 0;margin: 0;">
+<if condition = "$isTeacher neq 'true'">
+    <div class="mask opacity" id="mask"></div>
+    <style>
+    .mask{height:100%; width:100%; position:fixed; _position:absolute; top:0; z-index:1000; }
+    .opacity{ opacity:0; filter: alpha(opacity=0); background-color:#000; }
+    </style>
+</if>
+<table id="mainTable" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="leftTable" width="10" valign="top">
+            <div id="leftWrapper">
+                <div class="ctrl cur">
+                    互<br>动<br>课<br>堂<br>{$classroomId}
+                </div>
+                <div class="ctrl" onclick="showFeature(this,'job')" style="display: none;">
+                    作业
+                </div>
+                <div class="ctrl" onclick="showFeature(this,'callName')" style="display: none;">
+                    点名
+                </div>
+                <div class="ctrl" onclick="showFeature(this,'checkIn')" style="display: none;">
+                    考勤
+                </div>
+                <if condition="$platform eq 'pad'">
+                    <div class="" id="classWrapper" style="display: block;">
+                    <ul class="tabv">
+                        <li id="class_ctrl_1" data-id="1" class="cur">电子教材</li>
+                        <li id="class_ctrl_2" data-id="2">备课资料</li>
+                        <li id="class_ctrl_3" data-id="3">互动白板</li>
+						<if condition="$isTeacher eq 'true'">
+						<div id="lockStudent-v" >
+                        <div class="menuitem-v">解锁学生</div>
+                        <div id="lockStudentSubMenu" class="subitem-v">
+                            <div id="lockAllStudent">锁定全体学生</div>
+                            <div id="unlockAllStudent">解锁全体学生</div>
+                            <div></br></div>
+                            <div id="lockSpecStudent">锁定指定学生</div>
+                        </div>
+                        </div>
+						</if>
+                    </ul>
+                        </div>
+                    <div id="controlButtons">
+                    <span id="speedCtrl" tapmode onclick="switchSpeed()" width="42px">正常语速</span>
+
+                    <img style="cursor:pointer" width="42px" class="f-content" tapmode src="__PUBLIC_METRO__/img/ebook/icon_content.png"
+                         onclick="turnToContentPage()">
+                    <img style="cursor:pointer" width="42px" id="bPreviousPage" class="f-pre" tapmode src="__PUBLIC_METRO__/img/ebook/icon_pre.png"
+                         onclick="turnToPreviousPage()">
+                    <img style="cursor:pointer" width="42px" id="bNextPage" class="f-nex" tapmode src="__PUBLIC_METRO__/img/ebook/icon_next.png"
+                         onclick="turnToNextPage()">
+                    </div>
+                </if>
+
+            </div>
+        </td>
+         <td valign="top">
+            <div class="featureWrapper" id="classWrapper" style="display: block;">
+                <if condition="$platform neq 'pad'">
+                <ul class="tab">
+                    <li id="class_ctrl_1" data-id="1" class="cur">电子教材</li>
+                    <li id="class_ctrl_2" data-id="2">备课资料</li>
+                    <li id="class_ctrl_3" data-id="3">互动白板</li>
+                    <div id="lockStudent" >
+                        <div class="menuitem">解锁学生</div>
+                        <div id="lockStudentSubMenu" class="subitem">
+                            <div id="lockAllStudent">锁定全体学生</div>
+                            <div id="unlockAllStudent">解锁全体学生</div>
+                            <div></br></div>
+                            <div id="lockSpecStudent">锁定指定学生</div>
+                        </div>
+
+                    </div>
+                    <div id="stuCountInfo">
+
+                    </div>
+                    <!--<button onclick="requestList()">requestList</button>
+                    <button onclick="operateAllLockInfo('true')">operall</button>-->
+                </ul>
+
+                </if>
+                <div class="class_subfeature" id="tab_class_1" style="display: block;">
+                    <div id="bookWrapper">
+                        <div id="coverLayer"></div>
+                        <div id="wrapper">
+                            <table id="pageTable" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="right">
+                                        <div class="pageWrapper" id="page1Wrapper" style="text-align: right">
+                                            <img class="page" id="page1">
+                                        </div>
+                                    </td>
+                                    <td align="left">
+                                        <div class="pageWrapper" id="page2Wrapper" style="text-align: left;">
+                                            <img class="page" id="page2">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table id="rectClickImgWrapper" cellpadding="0" cellspacing="0" style="width:100%">
+                                <tr>
+                                    <td id="rectClickImgCell" valign="middle" align="center">
+                                        <img id="rectClickImg">
+                                        <audio id="rectClickAudio" src=""></audio>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table id="actionWrapper" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td id="actionCell" valign="middle" align="center">
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <if condition="$platform neq 'pad'">
+                        <div id="footer">
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td id="footerTableCell" width="100" align="center">
+                                        <span id="speedCtrl" tapmode onclick="switchSpeed()">正常语速</span>
+                                    </td>
+                                    <td align="center" valign="middle">
+                                        <img class="f-content" tapmode src="__PUBLIC_METRO__/img/ebook/icon_content.png"
+                                             onclick="turnToContentPage()">
+                                        <img id="bPreviousPage" class="f-pre" tapmode src="__PUBLIC_METRO__/img/ebook/icon_pre.png"
+                                             onclick="turnToPreviousPage()">
+                                        <img id="bNextPage" class="f-nex" tapmode src="__PUBLIC_METRO__/img/ebook/icon_next.png"
+                                             onclick="turnToNextPage()">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        </if>
+                        <div id="kalaok">
+                            <div class="text" id="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="class_subfeature" id="tab_class_2" class="on">
+                    <div id="resource_list" style="padding-top: 10px;">
+                        <volist name="lessonPlannings" id="dataLesson" empty="">
+                            <div class="resource_item" data-id="{$dataLesson.id}">
+                                课件：{$dataLesson.name}
+                            </div>
+                        </volist>
+                        <div class="resource_item" data-id="fx">
+                            模拟数学函数
+                        </div>
+                    </div>
+
+                    <div id="resource_content"
+                         style="padding: 10px;display: none;background-color: #fff;border-top: 1px solid #ccc">
+                        <div style="margin-bottom: 20px;">
+                            <a href="javascript:returnResourceList()" style="font-size: 20px;">&lt;返回资料列表</a>
+                        </div>
+                        <volist name="lessonPlannings" id="dataLesson">
+                            <div class="resource_content" id="resource_{$dataLesson.id}" data-id="{$dataLesson.id}" height="100%">
+                                <table class="pptTable" cellpadding="0" cellspacing="0">
+                                    <if condition="$dataLesson.type eq 'PPT'">
+                                        <tr>
+                                            <td class="pptTableNav">
+                                                <div id="resource_pptnav_{$dataLesson.id}"
+                                                     data-pages="{$dataLesson.ppt_pages}" data-oss="{$dataLesson.oss_path}">
+                                                </div>
+                                            </td>
+                                            <td class="pptTableContent">
+                                                <img id="preview_ppt_{$dataLesson.id}">
+                                            </td>
+                                        </tr>
+                                        <!--<if condition="$dataLesson.create_html eq 0">-->
+                                            <!--课件PPT还未转换完毕，请稍候刷新页面重试-->
+                                        <!--</if>-->
+                                        <!--<if condition="$dataLesson.create_html eq 1">-->
+                                        <!--<iframe height="100%" id="lessonplan_{$dataLesson.id}" frameborder="0" width="100%" style="background-color:transparent" allowTransparency="true"-->
+                                            <!--src="" srcstr="{$dataLesson.oss_path}/lessonplanning/{$dataLesson.id}/index.html" ></iframe>-->
+                                        <!--</if>-->
+                                        <!--<if condition="$dataLesson.create_html eq 2">-->
+                                            <!--课件PPT为空-->
+                                        <!--</if>-->
+									</if>
+                                    <if condition="$dataLesson.type eq 'HTML'">
+                                         {$dataLesson.content}
+									</if>
+                                    <if condition="$dataLesson.type eq 'VIDEO'">
+                                        <video id="video_{$dataLesson.id}" src ="{$dataLesson.mediaSource}" controls="controls">
+
+                                        </video>
+                                        <script>
+
+                                            videoArray[{$dataLesson.id}] = video_{$dataLesson.id};
+                                        </script>
+                                    </if>
+
+                                </table>
+                            </div>
+                        </volist>
+                    </div>
+                    <div class="resource_content" id="resource_fx">
+                        <div id="top" style="margin-top: 10px;">
+                            <table style="">
+                                <tr>
+                                    <td width="60">f(x) =</td>
+                                    <td><input type="text" value="sinx" id="input"/></td>
+                                    <td width="60">
+                                        <button id="simplify">生成</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="fxwrapper" style="margin-top: 20px">
+                            <div id="fxresult" style="text-align: center;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="class_subfeature" id="tab_class_3" style="background-color: #fff;">
+                    <iframe id="whiteboard" frameborder="0" width="100%" style="background-color:transparent" allowTransparency="true"
+                            src=""></iframe>
+                </div>
+            </div>
+            <div class="featureWrapper" id="jobWrapper">
+                作业
+            </div>
+            <div class="featureWrapper" id="callNameWrapper">
+                点名
+            </div>
+            <div class="featureWrapper" id="checkInWrapper">
+                考勤
+            </div>
+        </td>
+    </tr>
+</table>
+<div class="studentlist" id="studentlist">
+    DIVCSS5实例
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/modernizr.2.5.3.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/socket.io-1.1.0.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/textbook_kalaok.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/class_resource/hanshu.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/layer/layer.js"></script>
+<script>
+    $('#whiteboard').attr('src','http://'+location.hostname+ '/whiteboard/#/whiteboard/{$classroomId}');
+    window.onunload = function(){
+        if(isTeacher == 'false')
+            socket.emit('client_status', my_room+'|'+ studentId+'|'+ 'false');
+    }
+    $("#lockStudent .menuitem,#lockStudent-v .menuitem-v").hover(function(){
+        $('#lockStudentSubMenu').show();
+    });
+    document.getElementById("lockAllStudent").onclick=function(){
+        operateAllLockInfo('true');
+        $('#lockStudentSubMenu').hide();
+    }
+    document.getElementById("unlockAllStudent").onclick=function() {
+        operateAllLockInfo('false');
+        $('#lockStudentSubMenu').hide();
+    }
+    var frameId =0;
+    document.getElementById("lockSpecStudent").onclick=function(){
+        frameId ++;
+        layer.ready(function(){
+            //官网欢迎页
+            layer.open({
+                type: 2,
+                title: '解锁指定学生',
+                fix: true,
+                shadeClose: true,
+                maxmin: false,
+                //area: ['800px', '900px'],
+                area: ['50%', '90%'],
+                content: '/index.php?m=Home&c=Teach&a=studentlist&classId={$classId}',
+                end: function(){
+                }
+            });
+        });
+    };
+</script>
+<script>
+    var classroomId = '{$classroomId}';
+    var isTeacher = '{$isTeacher}';
+    var studentId = '{$studentId}';
+    var platform = '{$platform}';
+    var studentCount ='{$studentCount}';
+    var switchOnOff = 'Off';
+    function hasControlPower()
+    {
+        if (isTeacher == 'true' || clickState == 1 || switchOnOff == 'On'||  $('#mask').is(':hidden') || (!$('#mask').is(':hidden')&&$('#mask').css('left')!='0px') )
+        return true;
+        else
+        return false;
+    }
+    function getStudentId()
+    {
+        if('{$studentId}' == studentId)
+        return -1;
+        return studentId;
+    }
+</script>
+<script>
+
+        function requestHTMLFromTeacher()
+		{
+		
+		var obj = {
+            "my_room": my_room,
+            "my_name": curSessionId,
+            "my_content": 'initmsgreq'
+        };
+            socket.emit('send_message', JSON.stringify(obj));
+		}
+    var clickState = 0;
+    function sendSocket(str)
+    {
+        var obj = {
+            "my_room": my_room,
+            "my_name": curSessionId,
+            "my_content": 'msg|' + str
+        };
+        socket.emit('send_message', JSON.stringify(obj));
+
+    }
+    $(function () {
+
+        //TODO：request currentDOM from teacher
+        $(document).bind("click", function (e) {
+            if(isTeacher == 'false')
+            return;
+            if(clickState == 1)
+             {clickState = 0;return;}
+             if(hasControlPower() && clickState == 0)
+        {
+            if(undefined != $(e.target).attr('onclick'))
+            {
+             sendSocket( $(e.target).attr('onclick'));
+            }
+            else if(undefined != $(e.target).attr('id'))
+           {
+             var id =   $(e.target).attr('id');
+			 if(id !='lockSpecStudent')
+             sendSocket('$("#'+ id +'").click()');
+           }
+            else if(undefined != $(e.target).attr('href'))
+           {
+            var href =   $(e.target).attr('href');
+            sendSocket(href);
+
+          }
+            else if ('resource_item' == $(e.target).attr('class'))
+           {
+            var dataId =   $(e.target).attr('data-id');
+            sendSocket('$("#resource_list").find("div[data-id=\\"'+dataId+'\\"]").click()');
+           }
+            else if('pptimg_nav' == $(e.target).attr('class'))
+            {
+                var dataIndex =   $(e.target).attr('data-index');
+                var id = $(e.target).attr('data-id');
+                sendSocket('$("#resource_pptnav_'+ id +'").find("img[data-index=\\"'+dataIndex+'\\"]").click()');
+            }
+        }
+        });
+        });
+
+    function showFeature(obj, name) {
+        $('.featureWrapper').hide();
+        $('#' + name + 'Wrapper').show();
+        $('.ctrl').removeClass('cur');
+        $(obj).addClass('cur');
+    }
+</script>
+<script>
+    function loadLessonPlannings() {
+        var lessonEles = $('.resource_content');
+        $(lessonEles).each(function (i, n) {
+            var lessonId = $(this).attr('data-id');
+            loadPPT(lessonId);
+        });
+
+    }
+    function loadPPT(lessonPlanningId) {
+        var wrapper = '#resource_pptnav_' + lessonPlanningId;
+        var pages = parseInt($(wrapper).attr('data-pages'));
+        var ossPath = $(wrapper).attr('data-oss');
+        var html = [];
+        for (var i = 1; i <= pages; i++) {
+            var dataSource = "{0}/lessonplanning/{1}/".format(ossPath, lessonPlanningId);
+            var imgPath = "{0}/lessonplanning/{1}/{2}.jpg".format(ossPath, lessonPlanningId, i);
+            var imgEle = '<div class="ppt_img_wrapper"><img data-id="{1}" data-index="{2}" class="pptimg_nav" src="{0}"></div>'.format(imgPath, lessonPlanningId, i);
+            html.push(imgEle);
+            if (i == 1) {
+                $('#preview_ppt_' + lessonPlanningId).attr({'data-source':dataSource,'data-pages':pages,'src':imgPath,'data-index':1}).click(function(){
+                    if(hasControlPower()) {
+                        gotoNextPPTSlide(this);
+                    }
+                });
+            }
+        }
+        $(wrapper).html(html.join(''));
+        //http://jingbanyun.oss-cn-beijing.aliyuncs.com/lessonplanning/9/1.jpg
+    }
+    //
+    function gotoNextPPTSlide(obj){
+        var currentIndex = $(obj).attr('data-index');
+        var dataSource = $(obj).attr('data-source');
+        var nextIndex = parseInt($(obj).attr('data-index'))+1;
+        //judge index is valid
+        var total = parseInt($(obj).attr('data-pages'));
+        if(nextIndex>total){
+            nextIndex=1;
+        }
+        var nextSlideSrc = dataSource+nextIndex+'.jpg';
+        $(obj).attr({'src':nextSlideSrc,'data-index':nextIndex});
+    }
+
+</script>
+<script>
+    var classWrapperId = 1 ;
+    function refreshClassWrapper(id)
+    {
+        $('#classWrapper .tab li,#classWrapper .tabv li').removeClass('cur');
+        $('#class_ctrl_' + id).addClass('cur');
+        $('.class_subfeature').hide();
+        $('#tab_class_' + id).show();
+        if(id!=2 && currentVideoPlayer != undefined)
+         currentVideoPlayer.pause();
+        if(id==3 && isTeacher == 'false')
+        {
+            $('#mask').show();
+            //TODO:adjust mask width
+			if(screenLocked == 'false')
+            $('#mask').css('left','40px');
+        }
+        else if(screenLocked == 'true') {
+            $('#mask').show();
+            //TODO:adjust mask to full width
+            $('#mask').css('left',0);
+        }
+        else $('#mask').hide();
+
+        <if condition="$platform eq 'pad'">
+            if(1==id)
+            $('#controlButtons').show();
+            else
+            $('#controlButtons').hide();
+        </if>
+    }
+    $(document).ready(function () {
+            $("#classWrapper .tab li,#classWrapper .tabv li").click(function () {
+                if (hasControlPower()) {
+                    classWrapperId = $(this).attr('data-id');
+                    refreshClassWrapper(classWrapperId);
+                }
+            });
+    });
+</script>
+<script type="text/javascript">
+    if (isTeacher == 'true') {
+        //TODO
+    }
+
+    function returnResourceList() {
+        if(hasControlPower()) {
+            $('#resource_content,#resource_fx').hide();
+            $('#resource_list').show();
+        }
+        if(undefined != currentVideoPlayer)
+        currentVideoPlayer.pause();
+    }
+
+    function sendTurnPage(page1Id,page2Id) {
+        if(hasControlPower()) {
+            $('#resource_content,#resource_fx').hide();
+            $('#resource_list').show();
+        }
+    }
+</script>
+<script type="text/javascript">
+    var curSessionId = guid();
+    var my_room = '{$classroomId}';
+    var socket = io("http://{$REMOTE_ADDR}:8091");
+    requestHTMLFromTeacher();
+    //请求当前已加入学生列表
+    function requestList()
+    {
+        socket.emit('request_list', my_room);
+    }
+    //操作所有学生控制权限
+    //输入参数：status: 'true' -- 锁定 'false' --解锁
+    function operateAllLockInfo(status)
+    {
+        socket.emit('operate_all', my_room+'|'+status);
+    }
+    //操作指定学生控制权限
+    //输入参数：    id: 指定学生ID
+    //          status: 'true' -- 锁定 'false' --解锁
+    function operateSpecLockInfo(id,status)
+    {
+        socket.emit('operate_spec', my_room+'|'+id+'|'+status);
+    }
+    socket.on('connect', function () {
+        if('false' == isTeacher)
+        socket.emit('room', my_room+'|'+ isTeacher+'|'+ studentId);
+        else
+        socket.emit('room', my_room+'|'+ isTeacher);
+    });
+    function getOnlineStudentCount(msg)
+    {
+        var count = 0;
+        for(var key in msg){
+            if(key!='roomnum')
+            {
+                if(msg[key]['isonline']=='true')
+                count++;
+            }
+        }
+        return count;
+    }
+    function refreshStudentCount(count,allCount)
+    {
+      $('#stuCountInfo').html('在线人数:'+count + ' 总人数:'+allCount);
+    }
+    //请求当前已加入学生列表SOCKET回调
+    //msg:JSON格式当前课堂学生列表信息
+    socket.on('request_list_ans',function(msg){
+        var count = getOnlineStudentCount(msg);
+        refreshStudentCount(count,studentCount);
+        if(undefined != document.getElementById('layui-layer-iframe'+frameId))
+        document.getElementById('layui-layer-iframe'+frameId).contentWindow.getStudentStatusCallback(msg)
+    });
+    //操作所有学生控制权限回调
+    //msg:'ok'操作正常完成
+    socket.on('operate_all_ans',function(msg){
+    });
+    //操作指定学生控制权限回调
+    //msg:'ok'操作正常完成
+    socket.on('operate_spec_ans',function(msg){
+        document.getElementById('layui-layer-iframe'+frameId).contentWindow.setSpecStudentLockInfoCallback(msg);
+    });
+    var screenLocked = 'true';
+    socket.on('send_lockInfo',function(msg){
+        if(isTeacher == 'false') {
+            screenLocked = msg;
+            if (msg == 'true') {
+                //TODO:adjust mask to full width
+                $('#mask').css('left',0);
+                $('#mask').show();
+                requestHTMLFromTeacher();
+            }
+            else if(classWrapperId !=3)
+                $('#mask').hide();
+			else
+			    {
+				$('#mask').css('left','40px');
+				$('#mask').show();
+				}
+        }
+    });
+    socket.on('send_message', function (msg) {
+        var msg1 = eval('(' + msg + ')');//json数据 序列化成js对象
+        if (msg1.my_name == curSessionId) return;
+        var content = msg1.my_content.split('|');
+        var eventName = content[0];
+        var eventParm1 = content[1];
+		var eventParm2 = content[2];
+		var eventParm3 = content[3];
+		var sourceguid = msg1.my_name;
+        switch (eventName) {
+            case 'msg':
+                if(screenLocked == 'false')
+                 return;
+                if(eventParm1[0] =='$')
+                clickState = 1;
+                switchOnOff = 'On';
+                eval(eventParm1);
+                switchOnOff = 'Off';
+                break;
+				case 'initmsgreq':
+			    if(isTeacher == 'true')
+				{
+				var tab1 = $('#wrapper').html();
+		        var tab2 = $('#tab_class_2').html();
+                var coverLayerStyle = $("#coverLayer").attr("style");
+                var coverLayerEvalStr ="";
+                if(coverLayerStyle !=undefined )
+                    coverLayerEvalStr = '$("#coverLayer").attr("style","'+ coverLayerStyle + '")';
+                getVideoPlayTime();
+				var obj = {
+                "my_room": my_room,
+                "my_name": curSessionId,
+				"obj_name":sourceguid,
+                "my_content": 'initmsg|' + tab1+'|'+tab2+'|'+'currentPageId[0]='+currentPageId[0]+';currentPageId[1]='+currentPageId[1]+';contentPage1Id='+contentPage1Id+';contentPage2Id='+contentPage2Id+';speed=\''+speed+'\';classWrapperId='+classWrapperId+';'+coverLayerEvalStr
+                              +';videoState=eval('+JSON.stringify(videoState)+')'
+                };
+                socket.emit('send_message', JSON.stringify(obj));
+				}
+			case 'initmsg':
+                {
+				var destobj = msg1.obj_name;
+				if(curSessionId != destobj)
+				return;
+				$('#wrapper').html(eventParm1);
+				$('#tab_class_2').html(eventParm2);
+				eval(eventParm3);
+				adjustPage();
+				turnPage(currentPageId[0],currentPageId[1],0);
+                refreshClassWrapper(classWrapperId);
+                refreshPlaySpeed(speed);
+                refreshVideoState(videoState);
+                refreshListener();
+				refreshCoverBindFunction();
+				}			
+				break;
+            default:
+        }
+    });
+
+    function guid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+</script>
+<script type="text/javascript">
+    var bookId = '{$book.id}';
+    var bookName = '{$book.name}';
+    var has_ebook = '{$book.has_ebook}';
+    var currentPageId = [1, 2];
+    var contentPage1Id = 0;
+    var contentPage2Id = 0;
+    var serverPath = '{$book.server_path}';
+    var speed = 'normal';//语速 normal 正常 slow 缓慢
+    var book = null;
+    var pageWidth = 512;//每一页的宽度
+    var bookInfo = {
+        width: 512,
+        height: 713,
+        pages: []
+    };
+
+    var currentPage1Info = null;
+    var currentPage2Info = null;
+    var currentPage1KalaOKInfo = [];
+    var currentPage2KalaOKInfo = [];
+
+    var pagePos = {
+        paddingTop: 0,
+        paddingBottom: 0
+    };
+
+    var audio = null;
+    var video = null;
+
+    $(function () {
+        adjustPage();
+        if (has_ebook == 1) {
+            loadBookInfo();
+        } else {
+            $('#bookWrapper').html(bookName + "这本教材还没有在线的数字教材");
+        }
+        loadLessonPlannings();
+    });
+
+</script>
+<script>
+
+    window.onresize = function(){
+        adjustPage();
+        turnPage(currentPageId[0],currentPageId[1],0);
+    }
+    //固定page高度
+    function adjustPage() {
+        var height = $(window).height();
+        $('#leftWrapper,.featureWrapper').height(height - 15);
+        <if condition="$platform eq 'pad'">
+            $('.class_subfeature,#whiteboard').height(height - 15);
+        </if>
+        <if condition="$platform neq 'pad'">
+                $('.class_subfeature,#whiteboard').height(height -64);
+        </if>
+        <if condition="$platform neq 'pad'">
+        var windowHeight = $(window).height() - 60;
+        var windowWidth = $(window).width() - 36;
+        </if>
+        <if condition="$platform eq 'pad'">
+        var windowHeight = $(window).height() -10 ;
+        var windowWidth = $(window).width();
+        </if>
+        var halfWindowWidth = parseInt(windowWidth / 2);
+		<if condition="$platform neq 'pad'">
+        pageWidth = parseInt((windowHeight - 60) * (512 / 713));
+        </if>
+		<if condition="$platform eq 'pad'">
+		pageWidth = parseInt((windowHeight - 10) * (512 / 713));
+		</if>
+        <if condition="$platform neq 'pad'">
+        $('#wrapper,.pageWrapper,.page').height(windowHeight - 60);
+        </if>
+        <if condition="$platform eq 'pad'">
+        $('#wrapper,.pageWrapper,.page').height(windowHeight - 10);
+        </if>
+        $('.page,.pageWrapper').width(pageWidth);
+        $('#footer,#footerTableCell').height(50);
+		<if condition="$platform neq 'pad'">
+		$('#actionCell').height(windowHeight+40);
+		</if>
+		<if condition="$platform eq 'pad'">
+        $('#actionCell').height(windowHeight-10);
+		</if>
+        $('#rectClickImgCell').height(windowHeight);
+        $('.pptTableNav>div').height(windowHeight - 100);
+		var id = $('#resource_content').find('div[style="display: block;"]').attr('data-id');
+		if(undefined != id)
+		$('#lessonplan_'+id).height($('#tab_class_2').height()-73);
+    }
+</script>
+<script>
+    //加载Book信息
+    function loadBookInfo() {
+        $.get('{0}/Pages.xml'.format(serverPath), function (res) {
+            //debugger
+            var content = $(res).find('content');
+            bookInfo.width = parseInt($(content).attr('width'));
+            bookInfo.height = parseInt($(content).attr('height'));
+            $(content).find('page').each(function (i, n) {
+                bookInfo.pages.push({pageId: i + 1, src: $(n).attr('src')});
+            });
+            turnPage(bookInfo.pages[0].pageId, bookInfo.pages[1].pageId,1);//从第一页封面开始，数组索引为1，即2.png
+
+        });
+    }
+    //加载Page信息
+    function loadPageInfo(pageId, isLeftPage) {
+        if (isLeftPage) {
+            contentPage1Id = pageId - 3;
+            if (contentPage1Id < 0)return false;
+        } else {
+            contentPage2Id = pageId - 3;
+            if (contentPage2Id < 0)return false;
+        }
+        var loadPageId = isLeftPage ? contentPage1Id : contentPage2Id;
+
+        $.get('{0}/Pages/page{1}/index.xml'.format(serverPath, loadPageId), function (pageInfo) {
+            if (pageInfo) {
+                if (isLeftPage) {
+                    currentPage1Info = pageInfo;
+                    currentPage1KalaOKInfo = {};
+                } else {
+                    currentPage2Info = pageInfo;
+                    currentPage2KalaOKInfo = {};
+                }
+                renderClickRects(pageInfo, isLeftPage);
+                renderActions('XueleListenMode', pageInfo, isLeftPage);
+                renderActions('XueleActionClass', pageInfo, isLeftPage);
+                renderActions('XueleShowRedWord', pageInfo, isLeftPage);
+                renderActions('XueleRolePlay', pageInfo, isLeftPage);
+                renderActions('GoPageButton', pageInfo, isLeftPage);
+            } else {
+
+            }
+        });
+        var url = '{0}/Pages/page{1}/kalaok.txt'.format(serverPath, loadPageId);
+        $.get(url, function (res) {
+            var info = JSON.parse(res);
+            if (isLeftPage) {
+                currentPage1KalaOKInfo = info
+            } else {
+                currentPage2KalaOKInfo = info
+            }
+        });
+    }
+
+</script>
+<script>
+    //书本点击信息
+	var rectAudio ;
+	function refreshCoverBindFunction()
+	{
+
+	$('#rectClickImgWrapper,#actionWrapper,#coverLayer').click(function () {
+                $('#rectClickImgWrapper,#coverLayer,#kalaok').hide();
+				$('#actionWrapper,#coverLayer').hide();
+                $('#actionCell').html('');
+				if(undefined != rectAudio)
+                rectAudio.pause();
+            });
+	 $('.resource_item').click(function () {
+         var id = $(this).attr('data-id');
+         $('#resource_list,.resource_content').hide();
+         $('#resource_content').show();
+         $('#resource_' + id).show();
+
+         //VIDEO
+         if(videoArray[id] != undefined ) {
+             currentVideoPlayer = videoArray[id];
+             videoState.currentResourceId = id;
+         }
+         //PPTHTML5
+//         if(undefined != $('#lessonplan_'+id).attr('srcstr'))
+//          $('#lessonplan_'+id).attr('src', $('#lessonplan_'+id).attr('srcstr'));
+     });
+
+        $('.pptimg_nav').click(function () {
+            var lessonId = $(this).attr('data-id');
+            var lessonIndex = $(this).attr('data-index');
+            var currentSrc = $(this).attr('src');
+            $('#preview_ppt_' + lessonId).attr('src', currentSrc).attr('data-index',lessonIndex).unbind('click').click(function(){
+                gotoNextPPTSlide(this);
+            });
+        });
+        adjustPage();
+	}
+	refreshCoverBindFunction();
+    function renderClickRects(pageInfo, isLeftPage) {
+        var clickRectImages = $(pageInfo).find('ClickRectImage');
+        $.each(clickRectImages, function (i, n) {
+            var item = $(n);
+            var clickRect = {
+                name: item.attr('xmlname'),
+                positionX: parseInt(item.attr('positionx')),
+                positionY: parseInt(item.attr('positiony')),
+                width: parseInt(item.attr('width')),
+                height: parseInt(item.attr('height')),
+                fileName: item.attr('filename')
+            };
+            renderClickRect(clickRect, isLeftPage);
+        });
+    }
+    //渲染点击区域
+    function renderClickRect(clickRect, isLeftPage) {
+        var pageWrapperEleId = isLeftPage ? '#page1Wrapper' : '#page2Wrapper';
+        var rate = pageWidth / bookInfo.width;
+        var positionX = parseInt(clickRect.positionX * rate);
+        var positionY = parseInt(clickRect.positionY * rate) + pagePos.paddingTop;
+        var width = parseInt(clickRect.width * rate);
+        var height = parseInt(clickRect.height * rate);
+
+        var rectArea = '<div class="rectClickArea" id="rc_{0}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;" onclick="onClickRect(\'{5}\',{6})"></div>'
+                .format(clickRect.name, positionX, positionY, width, height, clickRect.fileName, isLeftPage ? 'true' : 'false');
+
+        $(pageWrapperEleId).append(rectArea);
+    }
+    //点击行为播放音频
+    function onClickRect(fileName, isLeftPage) {
+        if (hasControlPower()) {
+            var loadPageId = isLeftPage ? contentPage1Id : contentPage2Id;
+            var imgSrc = '{0}/Pages/page{1}/{2}.png'.format(serverPath, loadPageId, fileName);
+            var audioSrc = '{0}/Pages/page{1}/{2}{3}.mp3'.format(serverPath, loadPageId, fileName, speed == 'normal' ? '' : '_slow');
+
+            $('#rectClickImg').attr('src', imgSrc);
+            //play
+            rectAudio = document.getElementById('rectClickAudio');
+            rectAudio.src = audioSrc;
+
+            $('#rectClickImgWrapper,#coverLayer').show();
+			refreshCoverBindFunction();
+            window.setTimeout(function () {
+                rectAudio.play();
+            }, 100);
+
+            var loadPageKalaok = isLeftPage ? currentPage1KalaOKInfo : currentPage2KalaOKInfo;
+            var sayid = fileName.replace('image/say', '');
+            sayid = sayid.replace('image/duihuakuang', '');
+            sayid = sayid.replace('image/duihk-', '');
+            sayid = sayid.replace('image/', '');
+            rectAudio.onplaying = function () {
+                $(loadPageKalaok).each(function (i, n) {
+                    if ((i + 1) == sayid && ("object" == typeof n.kala)) {
+
+                        $('#kalaok').show();
+                        var c = [];
+                        c.push(n)
+                        _processK(c);
+                        //eval('_processK(lines' + index + ')')
+                    }
+                });
+            }
+
+        }
+    }
+    //切换语速
+    function refreshPlaySpeed(speed)
+    {
+        switch (speed) {
+            case 'normal':
+                $('#speedCtrl').html('正常语速');
+                break;
+            case 'slow':
+                $('#speedCtrl').html('缓慢语速');
+                break;
+        }
+
+    }
+    function switchSpeed() {
+        if(hasControlPower()) {
+            switch (speed) {
+                case 'normal':
+                    speed = 'slow';
+                    $('#speedCtrl').html('缓慢语速');
+                    break;
+                case 'slow':
+                    speed = 'normal';
+                    $('#speedCtrl').html('正常语速');
+                    break;
+            }
+        refreshPlaySpeed(speed);
+        }
+    }
+</script>
+<script>
+    //渲染听力部分
+    function renderActions(nodeName, pageInfo, isLeftPage) {
+        var listens = $(pageInfo).find(nodeName);
+        $.each(listens, function (i, n) {
+            var item = $(n);
+            var info = {
+                name: item.attr('xmlname'),
+                positionX: item.attr('positionx'),
+                positionY: item.attr('positiony'),
+                flashFilename: item.attr('FlashFilename'),
+                goPage: item.attr('GoPage')
+            };
+            renderActionArea(nodeName, info, isLeftPage);
+        });
+    }
+    function renderActionArea(nodeName, info, isLeftPage) {
+        var pageWrapperEleId = isLeftPage ? '#page1Wrapper' : '#page2Wrapper';
+        var rate = pageWidth / bookInfo.width;
+
+        var positionX = parseInt((info.positionX) * rate);
+        var positionY = parseInt(info.positionY * rate) + pagePos.paddingTop + 2;
+
+        if (nodeName == 'GoPageButton') {
+            var rectArea = '<div class="contentClickArea" id="bc_{0}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;" onclick="onClickContent(\'{5}\')"></div>'
+                    .format(info.name, positionX, positionY, parseInt(280 * rate), parseInt(20 * rate), info.goPage);
+            $(pageWrapperEleId).append(rectArea);
+        } else {
+            var src = '__PUBLIC_METRO__/img/ebook/icon_{0}.png'.format(nodeName);
+            var areaEle = '<img class="actionArea" id="listen_{0}" style="left:{1}px;top:{2}px;"onclick="onClickActionArea(\'{3}\',{5})" src="{4}">'
+                    .format(info.name, positionX, positionY,encodeURI(info.flashFilename).replace("'", "####"), src, isLeftPage ? 'true' : 'false');
+
+            $(pageWrapperEleId).append(areaEle);
+        }
+    }
+    //播放
+	var swfVideoPlay = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="{1}" height="{2}" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf"><embed width="{1}" height="{2}" name="plugin" src="{0}" type="application/x-shockwave-flash"><param name="loop" value="false"><param name="movie" value="{0}"></object>';
+    function onClickActionArea(flashFilename, isLeftPage) {
+        if(hasControlPower()) {
+            var loadPageId = isLeftPage ? contentPage1Id : contentPage2Id;
+            flashFilename = flashFilename.replace("####", "'")
+            var videoSrc = '{0}/Pages/page{1}/{2}'.format(serverPath, loadPageId, flashFilename);
+            $('#actionWrapper,#coverLayer').show();
+            refreshCoverBindFunction();
+            var resizedFlashSize = getResizeFlash();
+            var videoEle = swfVideoPlay.format(videoSrc,resizedFlashSize.width,resizedFlashSize.height);
+            $('#actionCell').html(videoEle);
+        }
+    }
+
+    function onClickContent(pageId) {
+        pageId = parseInt(pageId);
+        turnPage(pageId - 2, pageId - 1, 1);
+    }
+</script>
+<script>
+    function turnPage(page1Id, page2Id,needSendSocket) {
+        try {
+            currentPageId[0] = parseInt(page1Id);
+            currentPageId[1] = parseInt(page2Id);
+
+            $('.actionArea,.rectClickArea,.contentClickArea').remove();
+            loadPageInfo(page1Id, true);
+            loadPageInfo(page2Id, false);
+            var page1Url = '{0}/content/{1}.png'.format(serverPath, page1Id)
+            var page2Url;
+            if (bookInfo.pages.length < page2Id) {
+                page2Url = '{0}/content/{1}.png'.format(serverPath, 1)
+            } else {
+                page2Url = '{0}/content/{1}.png'.format(serverPath, page2Id)
+            }
+            getEle('page1').src = page1Url;
+            getEle('page2').src = page2Url;
+        }catch (e){;}
+        //翻书声音 todo
+    }
+    function turnToContentPage() {
+        if(hasControlPower()) {
+            turnPage(5, 6, 1);
+        }
+    }
+    function turnToPreviousPage() {
+        if(hasControlPower()) {
+            if (currentPageId[0] == 1) return;
+
+            currentPageId[0] = parseInt(currentPageId[0]) - 2;
+            currentPageId[1] = parseInt(currentPageId[1]) - 2;
+
+            turnPage(currentPageId[0], currentPageId[1], 1);
+        }
+    }
+    function turnToNextPage() {
+        if(hasControlPower()) {
+            if (currentPageId[0] == bookInfo.pages.length || currentPageId[1] == bookInfo.pages.length) return;
+            currentPageId[0] =  parseInt(currentPageId[0]) + 2;
+            currentPageId[1] =  parseInt(currentPageId[1]) + 2;
+
+            turnPage(currentPageId[0], currentPageId[1], 1);
+        }
+    }
+</script>
+<script>
+    function getClientWidthHeight()
+    {
+        return {
+            "height": $("#mainTable").height(),
+            "width": $("#mainTable").width()
+        };
+    }
+    function getResizeFlash()
+    {
+        var clientWidthHeight = getClientWidthHeight();
+        var xResizeCoeff = clientWidthHeight.width / 800;
+        var yResizeCoeff = clientWidthHeight.height / 600;
+        var resizeCoeff = (xResizeCoeff>yResizeCoeff) ? yResizeCoeff:xResizeCoeff;
+		resizeCoeff -= 0.01;
+        var targetWidth = 800 * resizeCoeff;
+        var targetHeight = 600 * resizeCoeff;
+        return {
+            "height": targetHeight,
+            "width": targetWidth
+        };
+    }
+</script>
+</body>
+</html>

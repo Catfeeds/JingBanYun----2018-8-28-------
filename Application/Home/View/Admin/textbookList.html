@@ -1,0 +1,298 @@
+<layout name="admin_layout"/> 
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/pikaday.min.js"></script>
+<link href="__PUBLIC__/css/pikaday.css" type="text/css" rel="stylesheet">
+
+<style>
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 180px;
+        height: 100%;
+/*        padding: .3125rem;*/
+    }
+</style>
+
+<div style="margin-bottom: 12px; float: left;">
+    <a href="{:U('Admin/createTextBook')}" title="创建课本" class="button {:session('btntheme')}">创建课本</a>
+</div>
+<div style="float: right;"> 
+	<div class="input-control text" data-role="input" style="width: 300px;">
+        <input type="text" id="keyword" value='{$keyword}' name="keyword" placeholder="课本名称/版本/出版社">
+        <button onclick="search()" class="button"><span class="mif-search"></span></button>
+    </div>
+</div>     
+<!--<div id="show" style="margin: 20px 0;">-->
+	<div class="grid condensed searchbar" style="width: 60%; margin: 0 auto;">
+		<div class="row cells3">
+			<div class="cell">
+				<label>年级：</label>
+				<select id="grade_id" name="grade_id" class="input-control">
+					<option value="">-请选择-</option>
+					<volist name="grades" id="dataGrade">
+						<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+							{$dataGrade.grade}
+						</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>学科：</label>
+				<select id="course_id" name="course_id" class="input-control">
+					<option value="">-请选择-</option>
+					<volist name="courses" id="dataCourse">
+						<option value="{$dataCourse.id}" {$dataCourse['id']==$course_id?'selected':''}>
+							{$dataCourse.code} : {$dataCourse.course_name}
+						</option>
+					</volist>
+				</select> 
+			</div>
+			<div class="cell">
+				<label>教材分册：</label>
+				<select id="textbook_id" name="textbook_id" class="input-control">
+					<option value="">-请先选择年级和学科-</option>
+					<volist name="textbook" id="textbook_item">
+						<option value="{$textbook_item.id}" {$textbook_item['id']==$textbook_id?'selected':''}>
+							{$textbook_item.name}
+						</option>
+					</volist>
+				</select> 
+			</div>
+			<div class="cell">
+				<label>状态：</label>
+				<select id="lock_status" name="lock_status" class="input-control">
+					<option value='0'>-请选择状态-</option> 
+					<option value="1" <if condition="$status==1">selected</if> >上架</option> 
+					<option value="2" <if condition="$status==2">selected</if> >下架</option> 
+				</select> 
+			</div>
+			<div class="cell">
+				<label>创建时间：</label> 
+        		<input type="text" name="birth_date" class='input-control' id="datepicker"  data-validate-func="required"  value="{$default_date}" style="margin-right: 10px">
+			</div>
+		</div>
+	</div>
+<!--</div>-->
+
+
+<empty name="list">
+    <div class="emptyResult">对不起，您想要搜索的内容不存在</div>
+</empty>
+<notempty name="list">
+    <table id="listWrapper" class="table striped hovered border">
+        <thead>
+        <tr>
+            <th style="width:10%">课本名称</th>
+            <th class="text-center" style="width:15%">出版社</th>
+            <th class="text-center" style="width:10%">ISBN</th>
+            <th class="text-center" style="width:10%">作者</th>
+            <th class="text-center" style="width:10%">版本</th>
+            <th class="text-center" style="width:5%">印次</th>
+            <th class="text-center" style="width:5%">电子版</th>
+            <th class="text-center" style="width:10%">创建时间</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="">
+            <tr id="l_{$data.id}">
+                <td>
+                    <a href="{:U('Admin/textbookDetails?id=')}{$data.id}">{$data.name}</a>
+                </td>
+                <td class="text-center">
+                    {$data.publishing_house}
+                </td>
+                <td class="text-center">
+                    {$data.isbn}
+                </td>
+                <td class="text-center">
+                    {$data.author}
+                </td>
+                <td class="text-center">
+                    {$data.edition}
+                </td>
+                <td class="text-center">
+                    {$data.print}
+                </td>
+                <td class="text-center">
+                    <if condition="$data['has_ebook'] eq 0">
+                        <span class="fg-red">无</span>
+                        <else/>
+                        <span class="fg-green">有</span>
+                    </if>
+                </td>
+                <td class="text-center">
+                    {$data.create_at|date="Y-m-d H:i",###}
+                </td>
+                <td class="text-center">
+                    <a target="_blank" href="{:U('Teach/textbookDetails?id=')}{$data.id}" class="button">查看</a>
+                    <a href="{:U('Admin/createTextBook?id=')}{$data.id}" class="button">修改</a>
+                    <a onclick="deleteTextBook({$data.id})" href="javascript:void(0)" class="button danger">删除</a>
+                    <if condition="$data['flag'] eq 1">
+                        <a onclick="textBookShelfControl({$data.id},2)" href="javascript:void(0)" class="button ">下架</a>
+                    <else/>
+                        <a onclick="textBookShelfControl({$data.id},1)" href="javascript:void(0)" class="button ">上架</a>
+                    </if>
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+    
+    <script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+    <script>
+        function textBookShelfControl(id,flag)
+        {
+            $.post('__URL__/textBookShelfControl', {id: id,flag: flag}, function (res) {
+                alert(res.msg);
+                if (res.code == 0)
+                    location.reload();
+            });
+
+        }
+
+        function deleteTextBook(id)
+        {
+            if(confirm('您确认删除么')) {
+                $.post('__URL__/deleteTextBook', {id: id}, function (res) {
+                    alert(res.msg);
+                    if (res.code == 0)
+                        location.reload();
+                });
+            }
+        }
+
+    </script>
+</notempty>
+<script>
+    function search() {
+        var string='';
+        var keyword = $('#keyword').val();
+        var status=$("#lock_status").val();
+        var grade=$("#grade_id").val();
+        var course=$("#course_id").val();
+        var textbook=$("#textbook_id").val();
+        var date=$("#datepicker").val();
+         
+        if (keyword != '') {
+            string='&keyword='+keyword;
+        }
+        if(status!=0){
+            string+=string+'&status='+status;
+        }
+        if (grade != '') {
+            string+='&grade_id='+grade;
+        }
+        if (course != '') {
+            string+='&course_id='+course;
+        }
+        if (textbook != '') {
+            string+='&textbook_id='+textbook;
+        }
+        if (date != '') {
+            string+='&date='+date;
+        }
+        
+        var url = 'index.php?m=Home&c=Admin&a=textbookList' + string;
+        window.location.href = url;
+    }
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 305) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false
+        });
+    });
+    $("#course_id,#grade_id").change(function(){
+            getTextbooks();
+    });
+    
+    
+//    Date.prototype.Format = function (fmt) { //author: meizz 
+//        var o = {
+//            "M+": this.getMonth() + 1, //月份 
+//            "d+": this.getDate(), //日 
+//            "h+": this.getHours(), //小时 
+//            "m+": this.getMinutes(), //分 
+//            "s+": this.getSeconds(), //秒 
+//            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+//            "S": this.getMilliseconds() //毫秒 
+//        };
+//        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+//        for (var k in o)
+//        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+//        return fmt;
+//    }
+//     
+//    var year=new Date().Format("yyyy"); 
+//     var picker = new Pikaday(
+//    {
+//        field: document.getElementById('datepicker'),
+//        firstDay: 1,
+//        minDate: new Date('1990-01-01'),
+//        maxDate: new Date('2020-12-31'),
+//        yearRange: [1990,year]
+//    });
+//    
+//    $("#datepicker").change(function () {
+//        var time1 = new Date().Format("yyyy-MM-dd");
+//        var time2 = $("#datepicker").val();
+//        if (time2 > time1) {
+//            $("#datepicker").val('');
+//            return false;
+//        }
+//    });
+</script>
+
+<!--------------日历----------------->
+<script>
+	$(function () {
+		$("#datepicker").datepicker({
+			showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+			maxDate: '0',
+			yearRange: "1950:2050"
+		});
+	});
+</script>
+<script>
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+</script>

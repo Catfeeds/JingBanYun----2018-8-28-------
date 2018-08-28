@@ -1,0 +1,1795 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/adminExercise/css/tree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/kityformula-plugin/addKityFormulaDialog.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/kityformula-plugin/getKfContent.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/adminExercise/js/notify_ueditor/ueditor/kityformula-plugin/defaultFilterFix.js"></script>
+<style>
+    .knowPointTitle {
+        display: none !important;
+    }
+
+    .knowPoint .numInput {
+        left: -30px;
+    }
+</style>
+<script>
+    $(function(){
+        var boxHeight = $(window).height() - 180;
+        $('.boxOutter').css('min-height',boxHeight);
+        $('.knowCon').css('min-height',boxHeight-250)
+    })
+</script>
+
+<div class="boxOutter" style="position: relative">
+    <div class="treeLeft">
+        <div class="treeTop">
+            <div class="state">状态：<?php if($treeStatus == 1){echo '完成';}else{echo '创建中';}?></div>
+            <?php if(in_array('CurriculumTree/deleteCurriculumTreeKnowledgePoint',session('exercises_permissions')) || in_array('CurriculumTree/addCurriculumTreeKnowledgePoint',session('exercises_permissions')) || in_array('CurriculumTree/updateCurriculumTreeKnowledgePoint',session('exercises_permissions'))){ ?>
+            <button class="btn right up" onclick="submits(1)" >上架</button>
+            <?php }?>
+            <?php if(in_array('CurriculumTree/deleteCurriculumTreeKnowledgePoint',session('exercises_permissions')) || in_array('CurriculumTree/addCurriculumTreeKnowledgePoint',session('exercises_permissions')) || in_array('CurriculumTree/updateCurriculumTreeKnowledgePoint',session('exercises_permissions'))){ ?>
+            <button class="btn right yes" onclick="submits(2)">保存</button>
+            <?php }?>
+            <button class="btn right reset">重置</button>
+        </div>
+        <div class="notifyText">注：双击文字可修改名称,名称前的方块可修改排序。点击上方的保存按钮保存您所有的操作。</div>
+        <div class="treeOutter">
+            <div class="treeTitle">课标知识树</div>
+
+            <div class="knowCon">
+                <!--学段-->
+
+                    <div class="knowSubject">
+                        <img src="__PUBLIC__/img/icon/icon-plus.png" alt="" class="plusMius knowSubjectTitle">
+                            <span class="knowName chooseSpan" id="course{$tree_item.id}">
+                                 <?php if($Learning_period_id == 1){echo '小学' ;}elseif($Learning_period_id == 2){echo '初中' ;}else{echo '高中' ;}?>
+
+                            </span>
+                        <ul>
+                            <li>
+                                <!--学科-->
+                                <div class="knowGrade">
+                                    <img src="{$oss_path}public/web_img/Admin/icon-plus.png" attr_id="{$textbook_item.id}" alt="" class="plusMius knowUnitTitle">
+                                    <span class="knowName" id="textbook{$textbook_item.id}">
+	                                       <?php echo $course[0]['name']?>
+	                                    </span>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div> 
+
+            </div>
+        </div>
+    </div>
+    <div class="block">
+       <include file="./Application/Exercise/View/TextbookTree/textbookIfrem.html" />
+    </div>
+</div>
+
+<!--添加弹窗-->
+<div class="fullBack" id="addMain">
+    <div class="adminNotifyBox" style="display: block">
+        <div class="adminNotifyTitle">输入名称：</div>
+
+        <div class="adminNotifyContent">
+            <script type="text/plain" id="content" name="content" style="height: 100px; width:423px">{$data.content}</script>
+        </div>
+        <p class="adminNotifyButton">
+            <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn">确定</a>
+            <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn">取消</a>
+        </p>
+    </div>
+</div>
+
+<!--修改弹窗-->
+<div class="fullBack" id="changeMain">
+    <div class="adminNotifyBox" style="display: block">
+        <div class="adminNotifyTitle">输入名称：</div>
+        <div class="adminNotifyContent">
+            <script type="text/plain" id="contentEdit" name="content" style="height: 100px; width: 423px; overflow-y: auto">{$data.content}</script>
+            <p class="adminNotifyButton">
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn2">确定</a>
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn2">取消</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!--自定义知识点-->
+<div class="fullBack" id="customMain">
+    <div class="adminNotifyBox" style="display: block">
+        <div class="adminNotifyTitle">输入名称：</div>
+        <div class="adminNotifyContent">
+            <script type="text/plain" id="custom" name="content" style="height: 100px; width: 423px; overflow-y: auto">{$data.content}</script>
+            <p class="adminNotifyButton">
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn3">确定</a>
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn3">取消</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script>
+    /*userClick("<?php echo $_GET['id']?>","<?php echo $_GET['leve']?>");*/
+    $('.up').removeAttr('disabled');
+    $('.up').removeAttr("style");
+    $('.yes').removeAttr('disabled');
+    $('.yes').removeAttr("style");
+
+    var ueCon = UE.getEditor('content');
+    var ueConEdit = UE.getEditor('contentEdit');
+    var ueCustom = UE.getEditor('custom');
+
+    function sortNumber(a,b)
+    {
+        return a - b
+    }
+    //展开收起
+    var plus_element='/Public/img/icon/icon-plus.png';
+    function toggleDiv(a, b,level) {  
+            $(a).live('click', function () {
+                switch(level){
+                    case 0:
+                            if ($(this).parent().find(b).css('display') == 'none') {
+                                $(this).attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                                $(this).siblings('ul').find('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-plus.png');
+                                $(this).parent().find(b).show().children('a,img,div,ul').show()
+                            } else {
+                                $(this).attr('src', '/Public/img/icon/icon-plus.png');
+                                $(this).siblings('ul').find('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-plus.png');  
+                                $(this).parent().find(b).hide().find('div,p,a,img').hide();
+
+                            }
+                        break; 
+                    default:
+                        if($(this).attr('src')==plus_element){       
+                            console.log(1)   
+                            $(this).attr('src', '__PUBLIC__/img/icon/icon-minus.png');         
+                        }else{  
+                            console.log(2)                                           
+                            $(this).attr('src', '/Public/img/icon/icon-plus.png');  
+                        } 
+                        
+                        if($(this).parent().find(b).length){
+                            if ($(this).parent().find(b).css('display') == 'none') { 
+                                $(this).attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                                $(this).siblings('ul').find('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-plus.png');
+                                $(this).siblings('ul').show().find(b).show().children().show().find('span,img').show();
+                            } else {
+                                $(this).attr('src', '/Public/img/icon/icon-plus.png');
+                                $(this).siblings('ul').find('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-plus.png');
+                                $(this).siblings('ul').hide().find(b).hide().find('div,span,img').hide();
+                            }
+                        }else{
+                            var id=$(this).attr('attr_id');
+                            if(id == ''){
+                                var id = -1;//这是在父级也是新增的情况下添加节点
+                            }
+                            var obj=this;
+                            if(level == 1){ //获取一级知识点
+                                var Learning_period_id = "<?php echo $Learning_period_id ?>";
+                                var course = "<?php echo $courseId ?>";
+                                request_url="{:U('CurriculumTree/getNextLevelKnowledge')}&Learning_period_id="+Learning_period_id+'&course='+course+'&level='+level;
+
+                            }else{
+                                request_url="{:U('CurriculumTree/getNextLevelKnowledge')}&id="+id+'&level='+level;
+                            }
+                            $.ajax({
+                                type: 'get', 
+                                url: request_url,  
+                                cache: false,
+                                async: false,
+                                dataType:'json',
+                                success: function(msg){
+                                    if(msg.data.length){
+                                        switch(level){
+                                            case 1:  
+                                                var element_ul='<ul class="chapterUl"></ul>';
+                                                var element='<li><!--第一章-->'+
+                                                                '<div class="knowChapter" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addChapter" title="增加">'+
+                                                                    '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowChapterTitle">'+
+                                                                    '<span class="knowName" level_point="chapter" >'+
+                                                                        '<font>第一章</font>'+
+                                                                        '<input type="text" class="numInput" onchange="sort($(this))" value="3">'+
+                                                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                                                    '</span>'+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break;
+                                            case 2:  
+                                                var element_ul='<ul class="sectionUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--第一节-->'+
+                                                                '<div class="knowSection" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addSection" title="增加">'+
+                                                                    '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowSectionTitle">'+
+                                                                    '<span class="knowName" level_point="festival">'+
+                                                                        '<font>第一节</font>'+
+                                                                        '<input type="text" class="numInput" onchange="sort($(this))" value="3">'+
+                                                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                                                    '</span>'+
+                                                                '</div>'+  
+                                                            '</li>';
+                                                break;
+                                            case 3: 
+                                                var element_ul='<ul class="pointUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--第一节的知识点-->'+
+                                                                '<div class="knowPoint" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addPoint" title="增加">'+
+                                                                    '<span class="knowName" level_point="knowledge">'+
+                                                                    '<font>第一节的知识点</font>'+
+                                                                    '<input type="text" class="numInput" onchange="sort($(this))" value="3">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                                                    '</span> '+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break;
+                                            case 4: 
+                                                var element_ul='<ul class="KeyUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--知识点详情-->'+
+                                                                '<div class="knowKey" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addKey" title="增加">'+
+                                                                    '<span class="knowName" level_point="child_knowledge">'+
+                                                                        '<font>知识点1</font>'+
+                                                                        '<input type="text" class="numInput" onchange="sort($(this))" value="3">'+
+                                                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                                                    '</span>'+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break; 
+                                        }
+                                        if(msg.data.length){
+                                            var clone_url=$(element_ul).clone(true);
+                                            for(var i=0;i<msg.data.length;i++){ 
+                                                var clone_data=$(element).clone(true);
+                                                if(i!=0){
+                                                    $(clone_data).find('img').eq(0).remove();
+                                                }
+                                                if(level==4){
+                                                    $(clone_data).find('.rtImg').attr('attr_id',msg.data[i].id);
+                                                }
+                                                $(clone_data).find('.plusMius').attr('attr_id',msg.data[i].id); 
+                                                $(clone_data).find('.knowName').find('font').eq(0).html(msg.data[i].tree_point_name);
+                                                $(clone_data).find('.knowName').find('font').eq(0).attr('html',msg.data[i].tree_point_name);
+                                                $(clone_data).find('.knowName').find('input').val(msg.data[i].sort);
+                                                //var level_class=$(clone_data).find('.knowName').attr('level_point');
+                                                //level_class=level_class+msg.data[i].id;
+
+                                                var search_class=$(clone_data).find('.knowName').attr('level_point');
+                                                search_class=search_class+msg.data[i].id;
+                                                $(clone_data).find('.knowName').addClass(search_class);
+
+                                                var level_class=msg.data[i].id;
+                                                $(clone_data).find('.knowName').attr('id',level_class);
+                                                $(clone_url).append(clone_data); 
+                                            }
+                                            $(obj).parent().append(clone_url);
+                                        }
+                                    } else{
+                                        switch(level){
+                                            case 1:  
+                                                var element_ul='<ul class="chapterUl"></ul>';
+                                                var element='<li><!--第一章-->'+
+                                                                '<div class="knowChapter" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addChapter" title="增加">'+
+                                                                '</div>'+
+                                                            '</li>';
+                                            
+                                                break;
+                                            case 2:  
+                                                var element_ul='<ul class="sectionUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--第一节-->'+
+                                                                '<div class="knowSection" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addSection" title="增加">'+
+                                                                '</div>'+  
+                                                            '</li>';
+                                                break;
+                                            case 3: 
+                                                var element_ul='<ul class="pointUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--第一节的知识点-->'+
+                                                                '<div class="knowPoint" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addPoint" title="增加">'+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break;
+                                            case 4: 
+                                                var element_ul='<ul class="KeyUl"></ul>';
+                                                var element='<li>'+
+                                                                '<!--知识点详情-->'+
+                                                                '<div class="knowKey" style="display: block;">'+
+                                                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addKey" title="增加">'+
+                                                                '</div>'+
+                                                            '</li>';
+                                                break; 
+                                        }
+                                        var clone_ul= $(element_ul).append(element);
+                                        $(obj).parent().append(clone_ul);
+                                    }
+                                }
+                            });
+                        }
+                        break;
+                }
+            })
+    }
+ 
+     toggleDiv('.knowSubjectTitle', '.knowGrade',0);
+    toggleDiv('.knowUnitTitle', '.knowChapter',1);
+    toggleDiv('.knowChapterTitle', '.knowSection',2);
+    toggleDiv('.knowSectionTitle', '.knowPoint',3);
+    // toggleDiv('.knowPointTitle', '.knowKey',4);
+    
+    var empty_add_li='';
+    var operation_ul='';
+    function operation_type_class(obj,flag){
+        //1这里为点击删除
+        if(flag==1){
+            if($(obj).parent().parent().hasClass('knowKey')){
+                empty_add_li=$(emtpy_child_knowledge).clone(true);
+                operation_ul='KeyUl';
+                
+            }else if($(obj).parent().parent().hasClass('knowPoint')){
+                empty_add_li=$(empty_knowledge_element).clone(true);
+                operation_ul='pointUl';
+                
+            }else if($(obj).parent().parent().hasClass('knowSection')){
+                empty_add_li=$(empty_festival_element).clone(true);
+                operation_ul='sectionUl';
+                
+            }else if($(obj).parent().parent().hasClass('knowChapter')){
+                empty_add_li=$(empty_chapter_element).clone(true);//之前这里是empty_add_li=$(empty_festival_element)
+                operation_ul='chapterUl';
+            }
+        } else {
+            //点击新增
+            if($(obj).parent().hasClass('knowKey')){
+                empty_add_li=$(emtpy_child_knowledge).clone(true);
+                operation_ul='KeyUl';
+                
+            }else if($(obj).parent().hasClass('knowPoint')){
+                empty_add_li=$(empty_knowledge_element).clone(true);
+                operation_ul='pointUl';
+                
+            }else if($(obj).parent().hasClass('knowSection')){
+                empty_add_li=$(empty_festival_element).clone(true);
+                operation_ul='sectionUl';
+                
+            }else if($(obj).parent().hasClass('knowChapter')){
+                empty_add_li=$(empty_festival_element).clone(true);
+                operation_ul='chapterUl';
+            }
+        }
+    }
+        
+        
+    var aaa;
+    //删除操作
+    $('.rtImg').live('click',function(){
+//        aaa = 1;
+        
+        //得到知识点id
+//        if($(this).parent().parent().hasClass('knowKey')){
+//            var id=$(this).attr('attr_id');
+//        }else{
+//            var id=$(this).parent().siblings('.plusMius').attr('attr_id');
+//        }
+//        if(id=='' || typeof(id)=='undefined'){
+//            return false;
+//        }
+        operation_type_class(this,1);
+
+        var obj=this;
+        $.NotifyBox.NotifyTwoCallOneBlue('提示','确定删除吗？','确定','取消',function () {
+            //如果为新增的数据进行删除操作时的操作
+            if($(obj).parent().attr('attr-status') == 'add'){
+                $(obj).parent().removeClass('submit');
+            }else{
+                $(obj).parent().attr('attr-status','remove');//删除的添加一个属性
+                $(obj).parent().addClass('submit');//添加一个要提交的属性
+            }
+
+            var index=$(obj).parent().parent().parent().index();//添加了一个parent()
+            if(index==0){
+                $(obj).parents('.'+operation_ul).prepend(empty_add_li);//添加了一个parent()====已恢复原样
+            }
+            if($(obj).parent().attr('level_point') == 'chapter'){
+                if($(obj).parent().parent().parent().parent().find('span[level_point="chapter"]').length>1){
+                    //$(obj).parent().parent().parent().parent().find('span[level_point="chapter"]').eq(1).addClass('chooseSpan');
+                }else{
+                    //上级得到当前光标
+                    $(obj).parent().parent().parent().parent().siblings('span').eq(0).addClass('chooseSpan');
+                }
+            }else if($(obj).parent().attr('level_point') == 'festival'){
+                if($(obj).parent().parent().parent().parent().find('span[level_point="festival"]').length>1){
+                    //$(obj).parent().parent().parent().parent().find('span[level_point="festival"]').eq(1).addClass('chooseSpan');
+                }else{
+                    //上级得到当前光标
+                    $(obj).parent().parent().parent().parent().siblings('span').eq(0).addClass('chooseSpan');
+                }
+            }else if($(obj).parent().attr('level_point') == 'knowledge'){
+                if($(obj).parent().parent().parent().parent().find('span[level_point="knowledge"]').length>1){
+                   // $(obj).parent().parent().parent().parent().find('span[level_point="knowledge"]').eq(1).addClass('chooseSpan');
+                }else{
+                    //上级得到当前光标
+                    $(obj).parent().parent().parent().parent().siblings('span').eq(0).addClass('chooseSpan');
+                }
+            }else if($(obj).parent().attr('level_point') == 'child_knowledge'){
+                if($(obj).parent().parent().parent().parent().find('span[level_point="child_knowledge"]').length>1){
+                   // $(obj).parent().parent().parent().parent().find('span[level_point="child_knowledge"]').eq(1).addClass('chooseSpan');
+                }else{
+                    //上级得到当前光标
+                    $(obj).parent().parent().parent().parent().siblings('span').eq(0).addClass('chooseSpan');
+                }
+            }
+            $(obj).parent().parent().parent().hide();//多了一个parent（），已删除====已恢复原样
+//
+        });
+//        setTimeout(function(){aaa =0},1000)
+    });
+        
+    //增加类目
+    var that, lastKnowName, lastNum, parentId; 
+    var addId = 1000;
+    function add(){
+        $('.addUnit,.addChapter,.addSection,.addPoint').live('click',function(){
+            $('#addMain').show();
+            $('body').css('overflow-y','hidden');
+            $('.addName').attr('value','');
+            ueCon.setContent('');
+            $('.addNum').attr('value','');
+            that = $(this);
+        })
+    }
+    add();
+    $('#sureBtn').click(function(){
+        operation_type_class(that,2);
+        var addName = $.trim(ueCon.getContentTxt());//编辑器中的纯文本
+        var addHTML = $.trim(ueCon.getPlainTxt());//编辑器中的样式文本
+
+        if(addName == '' && addHTML == ''){
+            $.NotifyBox.NotifyOne('提示','名称不能为空','确定');
+            return false;
+        }
+
+                var id=$(that).parent().parent().parent().siblings('.plusMius').attr('attr_id');   //获取分册ID
+
+                if($(that).attr('class') == 'addChapter'){
+                   var is_chapter = 'yes';
+                }else{
+                    var is_chapter = 'no';
+                }
+        if(operation_ul=='chapterUl') {  //如果是添加章
+            var empty_add_li3=$(empty_chapter_element).clone(true);
+            var clone_element=$(chapter_element).clone(true); 
+            $(clone_element).find('.addChapter').remove();
+            lastKnowName=$(that).parents('.chapterUl').children().last().find('span[level_point="chapter"]');
+            lastNum = lastKnowName.children('.numInput').val();
+            parentId = $(that).parents('.chapterUl').siblings('span').attr('id');
+        }else if(operation_ul=='sectionUl'){  //如果是添加节
+            var empty_add_li3=$(empty_festival_element).clone(true);
+            var clone_element=$(festival_element).clone(true);
+            $(clone_element).find('.addSection').remove();
+            lastKnowName=$(that).parents('.sectionUl').children().last().find('span[level_point="festival"]');
+            lastNum = lastKnowName.children('.numInput').val();
+            parentId = $(that).parents('.sectionUl').siblings('span').attr('id');        
+        }else if(operation_ul=='pointUl'){  //如果是添加知识点
+            var empty_add_li3=$(empty_knowledge_element).clone(true);
+            var clone_element=$(knowledge_element).clone(true);
+            $(clone_element).find('.addPoint').remove();
+            lastKnowName=$(that).parents('.pointUl').children().last().find('span[level_point="knowledge"]');
+            lastNum = lastKnowName.children('.numInput').val();
+            parentId = $(that).parents('.pointUl').siblings('span').attr('id');
+        }else{
+            var empty_add_li3=$(emtpy_child_knowledge).clone(true);
+            var clone_element=$(child_knowledge_element).clone(true);
+            $(clone_element).find('.addKey').remove();
+            lastKnowName=$(that).parents('.KeyUl').children().last().find('span[level_point="child_knowledge"]');
+            lastNum = lastKnowName.children('.numInput').val();
+            parentId = $(that).parents('.KeyUl').siblings('span').attr('id');
+        }
+
+        $(clone_element).find('.knowName').find('font').eq(0).html(addHTML);
+        $(clone_element).find('.knowName').find('font').eq(0).attr('html',addHTML);
+        if(lastNum == undefined){
+            $(clone_element).find('.knowName').find('.numInput').val(1);
+        } else{
+            $(clone_element).find('.knowName').find('.numInput').val(parseInt(lastNum)+parseInt(1));
+        }
+        var level_class=$(clone_element).find('.knowName').attr('level_point');
+        $(clone_element).find('.knowName').attr('parent_id', parentId);//给新加的元素加上父ID
+        addId = ++addId;//动态id
+        $(clone_element).find('.knowName').attr('id',level_class+'-'+addId);//给新加的元素加上自己的ID
+        $('.knowName').removeClass('chooseSpan');
+        $(clone_element).find('.knowName').addClass('chooseSpan');
+        $(that).parent().parent().parent().append(clone_element);
+        $('#addMain').hide();
+        $('body').css('overflow-y','auto');
+    })
+    
+    //修改名称
+    var that2,newName,newNum;
+    $('.knowName').find('font').live('dblclick',function(){ 
+        if(!$(this).parent().hasClass('knowName')){
+            return false;
+        }
+        $('#changeMain').show();
+        $('body').css('overflow-y','hidden');
+        if($(this).attr('html') != '' && $(this).attr('html') != undefined)
+        // $('#contentEdit').html($(this).attr('html'));
+        ueConEdit.setContent($(this).attr('html'));
+        else
+        // $('#contentEdit').html($(this).text());
+        ueConEdit.setContent($(this).text());
+        $('.editNum').val($(this).siblings('span').find('font').text()); 
+        that2=this;
+    })
+    
+    $('#sureBtn2').click(function(){  
+        //var editName = $.trim($('#contentEdit').text());
+        //var editHTML = $.trim($('#contentEdit').html());
+        var editName = $.trim(ueConEdit.getContentTxt());
+        var editHTML = $.trim(ueConEdit.getPlainTxt()); 
+        //var editNum = parseInt($.trim($('.editNum').val()));
+        var regNum = /^[1-9]\d*$/;
+
+//        var temp_arr = new Array();
+//        var temp_arr2 = new Array();
+//        if($(that2).parent().attr('level_point') == 'chapter'){
+//            temp_arr.push($(that2).parent().parent().parent().parent().find('span[level_point="chapter"]'));
+//      }else if($(that2).parent().attr('level_point') == 'festival'){
+//            temp_arr.push($(that2).parent().parent().parent().parent().find('span[level_point="festival"]'));
+//      }else if($(that2).parent().attr('level_point') == 'knowledge'){
+//            temp_arr.push($(that2).parent().parent().parent().parent().find('span[level_point="knowledge"]'));
+//      }else if($(that2).parent().attr('level_point') == 'child_knowledge'){
+//            temp_arr.push($(that2).parent().parent().parent().parent().find('span[level_point="child_knowledge"]'));
+//      }
+//        for(var r=0;r<temp_arr[0].length;r++){
+//          if($(that2).parent().find('font').eq(1).text() != $(temp_arr[0][r]).find('font').eq(1).text())
+//            temp_arr2.push($(temp_arr[0][r]).find('font').eq(1).text());
+//        }
+//
+//        if(editName == ''){
+//            $.NotifyBox.NotifyOne('提示','名称不能为空','确定');
+//            return false;
+//        }
+//
+//        if($(that2).parent().parent().hasClass('knowKey')){
+//            var id=$(that2).siblings('.rtImg').attr('attr_id');
+//        }else{
+//            var id=$(that2).parent().siblings('.plusMius').attr('attr_id');
+//        }
+//        if(id=='' || typeof(id)=='undefined'){
+//            return false;
+//        }
+        
+        if($(that2).parent().attr('attr-status') == undefined) {
+            $(that2).parent().attr('attr-status','save');//修改的添加一个属性
+            $(that2).parent().addClass('submit');//修改一个要提交的属性
+        }
+        
+        var current_li=$(that2).parent().parent().parent().clone(true);
+        var current_index=$(that2).parent().parent().parent().index();
+//        var error=0;
+//        var Jdata='';
+//        var data={'name':editName,'html':editHTML,'id':id};
+//        $.ajax({
+//            type: 'post',
+//            url: "{:U('TextbookTree/updateKnowledgePoint')}",
+//            data:data,
+//            cache: false,
+//            async: false,
+//            dataType:'json',
+//            success: function(msg){
+//                if(msg.status!=200){
+//                    $.NotifyBox.NotifyOne('提示','操作失败','确定');
+//                    error=1;
+//                    return false;
+//                }else{
+                    $(current_li).children('div').children('.knowName').find('font').eq(0).html(editHTML);//有可能有问题
+                    $(current_li).children('div').children('.knowName').find('font').eq(0).attr('html',editHTML);//有可能有问题
+                    /*$(current_li).children('div').children('.knowName').find('font').eq(1).text(editNum);//有可能有问题*/
+                    /*Jdata=msg.data;
+                }
+            }
+        });
+        if(error==1){
+            return false;
+        }   */
+        var allKnowName=new Array();        
+        var empty_add_li='';
+            
+        if($(that2).parent().parent().hasClass('knowKey')){
+            var allKnowNameL=$(that2).parents('.KeyUl').find('span[level_point="child_knowledge"]');
+            empty_add_li=$(emtpy_child_knowledge).clone(true);
+            
+//            for(var i=0;i<allKnowNameL.length;i++){
+//                if($(allKnowNameL[i]).find('.rtImg').attr('attr_id')==id){
+//                    continue;
+//                }
+//                allKnowName.push($(allKnowNameL[i]));
+//            }
+
+        }else{
+            if($(that2).parent().parent().hasClass('knowPoint')){
+                var allKnowNameL=$(that2).parents('.pointUl').find('span[level_point="knowledge"]');
+                empty_add_li=$(empty_knowledge_element).clone(true);
+
+            }else if($(that2).parent().parent().hasClass('knowSection')){
+                var allKnowNameL=$(that2).parents('.sectionUl').find('span[level_point="festival"]');
+                empty_add_li=$(empty_festival_element).clone(true);
+
+            }else if($(that2).parent().parent().hasClass('knowChapter')){
+                var allKnowNameL=$(that2).parents('.chapterUl').find('span[level_point="chapter"]');
+                empty_add_li=$(empty_chapter_element).clone(true);
+                
+            }
+//            for(var i=0;i<allKnowNameL.length;i++){
+//                if($(allKnowNameL[i]).siblings('.plusMius').attr('attr_id')==id){
+//                    continue;
+//                }
+//                allKnowName.push($(allKnowNameL[i]));
+//            }
+        } 
+            
+                
+                //取到所有同级,比较 
+//                var n_length=allKnowName.length;        //8
+//                var p_sort,n_sort;
+//                //var min_num_arr=new Array();
+//                var temp_arrs2=new Array();
+//                if(n_length > 1){
+//                    //$(allKnowName[i]).parent().parent().parent().parent().find('.addPoint').remove();
+//                    /*if(current_index==0){
+//                        $(current_li).find('.addPoint').remove();//此处操作好像没用上？？
+//                    }*/
+//                    var max_sort,min_sort;
+//                    for(var i=0;i < n_length;i++){
+//                        temp_arrs2.push($(allKnowName[i][0]).find('font').eq(1).text());
+//                    }
+//                    temp_arrs2.sort(sortNumber);
+//                    max_sort = temp_arrs2.pop();
+//                    min_sort = temp_arrs2.shift();
+//                    if($(that2).parent().parent().children().eq(0).attr('title') == '增加'){
+//                        $(that2).parent().parent().parent().remove();
+//                        //$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                        for(var i=0;i<n_length;i++){
+//                            p_sort=$(allKnowName[i][0]).find('font').eq(1).text();
+//                            n_sort=$(allKnowName[i+1][0]).find('font').eq(1).text();
+//                            if(min_sort > editNum){ //最小
+//                                $(allKnowName[i][0]).parent().parent().before(current_li);
+//                                break;
+//                            }else if(editNum > p_sort && editNum < n_sort){ //在中间
+//                                //先删除加号的操作，后生成加号
+//
+//                                $(allKnowName[i][0]).parent().parent().parent().prepend(empty_add_li);//添加新加号
+//                                $(allKnowName[i][0]).parent().parent().after(current_li);//ul
+//                                $(current_li).children().children().eq(0).remove();//删除本身的加号
+//                              break;
+//                                //$(allKnowName[0][i]).parent().parent().parent().append(current_li);
+//
+//                               /* if(i==(n_length-1)){
+//                                    $(allKnowName[i]).parent().parent().parent().append(current_li);
+//                                }*/
+//                            }else if(editNum > max_sort){ //最大
+//                              //先删除加号，然后再添加加号
+//
+//                                $(allKnowName[i][0]).parent().parent().parent().prepend(empty_add_li);//添加新加号
+//                                $(allKnowName[i][0]).parent().parent().parent().append(current_li);//ul
+//                                $(current_li).children().children().eq(0).remove();//删除本身的加号
+//                              break;
+//                                //$(allKnowName[0][i]).parent().parent().parent().append(current_li);
+//                          }
+//                        }
+//                  }else{
+//                        $(that2).parent().parent().parent().remove();
+//                        //$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                        for(var i=0;i<n_length;i++){
+//                            p_sort=$(allKnowName[i][0]).find('font').eq(1).text();
+//                            n_sort=$(allKnowName[i+1][0]).find('font').eq(1).text();
+//                            if(min_sort > editNum){ //最小
+//                              if($(allKnowName[i][0]).parent().children().eq(0).attr('title') == '增加'){
+////删除排序为第一的加号，然后再添加加号
+//                                    $(allKnowName[i][0]).parent().children().eq(0).remove();
+//
+//                                    $(allKnowName[i][0]).parent().parent().before(empty_add_li);
+//                                    $(allKnowName[i][0]).parent().parent().before(current_li);
+//                                    break;
+//                              }else{
+//                                    $(allKnowName[i][0]).parent().parent().before(current_li);
+//                                    break;
+//                              }
+//
+//                            }else if(editNum > p_sort && editNum < n_sort){ //在中间
+//                                //
+//                                $(allKnowName[i][0]).parent().parent().after(current_li);
+//                              break;
+//                              /* if(i==(n_length-1)){
+//                               $(allKnowName[0][i]).parent().parent().parent().append(current_li);
+//                               }*/
+//                            }else if(editNum > max_sort){ //最大
+//                                $(allKnowName[i][0]).parent().parent().parent().append(current_li);
+//                                break;
+//                          }
+//                        }
+//                  }
+//                  //$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                    //$(allKnowName[0]).parent().parent().parent().prepend(empty_add_li);
+//
+//
+//
+//
+//
+//
+//                }else if(n_length == 1) {
+//                    if($(that2).parent().parent().children().eq(0).attr('title') == '增加'){
+//                        $(that2).parent().parent().parent().remove();
+//                        //$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                            if(allKnowName[0][0] > editNum){ //最小
+//                                $(allKnowName[0][0]).parent().parent().before(current_li);//li
+//                            }else{ //最大
+//                                //先删除加号，然后再添加加号
+//                                $(allKnowName[0][0]).parent().parent().before(empty_add_li);//添加新加号
+//                                $(allKnowName[0][0]).parent().parent().parent().append(current_li);//ul
+//                               $(current_li).children().eq(0).remove();//删除本身的加号
+//                            }
+//
+//                    }else{ //加号分离了
+//                        $(that2).parent().parent().parent().remove();
+//                        //$(allKnowName[i]).parent().parent().parent().parent().children('li').children('div').children('img').remove();
+//                            if(allKnowName[0][0] > editNum){ //最小
+//                                $(allKnowName[0][0]).parent().parent().before(current_li);
+//
+//                            }else if(editNum > allKnowName[0][0]){ //最大
+//                                $(allKnowName[0][0]).parent().parent().parent().append(current_li);
+//                            }
+//                        }
+//                }else{
+//                    //直接生成
+                    $(that2).parent().parent().parent().before(current_li);
+                    $(that2).parent().parent().parent().remove();
+//              }
+
+
+
+
+
+
+            $('#changeMain').hide();
+            $('body').css('overflow-y','auto');
+    });
+
+    //********************************************排序值的修改***********************************************************************************
+    function sort(obj) {
+        //获取所有同级
+        var temp_arr = new Array();
+        var temp_arr2 = new Array();
+        if($(obj).parent().attr('level_point') == 'chapter'){
+            temp_arr.push($(obj).parent().parent().parent().parent().find('span[level_point="chapter"]'));
+            for(var v=0;v<temp_arr[0].length;v++){
+                if($($(temp_arr[0][v]).parent().parent()[0]).css("display") == "none"){
+                    temp_arr[0].splice(v,1);
+                    console.log(temp_arr[0]);
+                    //console.log($($(temp_arr[0][v]).parent().parent()[0]).show());
+                }
+            }
+        }else if($(obj).parent().attr('level_point') == 'festival'){
+            temp_arr.push($(obj).parent().parent().parent().parent().find('span[level_point="festival"]'));
+            for(var v=0;v<temp_arr[0].length;v++){
+                if($($(temp_arr[0][v]).parent().parent()[0]).css("display") == "none"){
+                    temp_arr[0].splice(v,1);
+                    console.log(temp_arr[0]);
+                    //console.log($($(temp_arr[0][v]).parent().parent()[0]).show());
+                }
+            }
+        }else if($(obj).parent().attr('level_point') == 'knowledge'){
+            temp_arr.push($(obj).parent().parent().parent().parent().find('span[level_point="knowledge"]'));
+            for(var v=0;v<temp_arr[0].length;v++){
+                if($($(temp_arr[0][v]).parent().parent()[0]).css("display") == "none"){
+                    temp_arr[0].splice(v,1);
+                    console.log(temp_arr[0]);
+                    //console.log($($(temp_arr[0][v]).parent().parent()[0]).show());
+                }
+            }
+        }else if($(obj).parent().attr('level_point') == 'child_knowledge'){
+            temp_arr.push($(obj).parent().parent().parent().parent().find('span[level_point="child_knowledge"]'));
+            for(var v=0;v<temp_arr[0].length;v++){
+                if($($(temp_arr[0][v]).parent().parent()[0]).css("display") == "none"){
+                    temp_arr[0].splice(v,1);
+                    console.log(temp_arr[0]);
+                    //console.log($($(temp_arr[0][v]).parent().parent()[0]).show());
+                }
+            }
+        }
+        for(var r=0;r<temp_arr[0].length;r++){
+                if($(obj).parent().find('font').text() !== $(temp_arr[0][r]).find('font').text()){
+                    temp_arr2.push($(temp_arr[0][r]).find('input').val());
+                }
+        }
+        //进行比较
+        for(var i=0;i<temp_arr2.length;i++) {
+            if($(obj).val() == temp_arr2[i]){
+                //让保存，上架按钮置灰
+                $('.up').attr('disabled','disabled');
+                $('.up').css('color','#aaaaaa');
+                $('.yes').attr('disabled','disabled');
+                $('.yes').css('color','#aaaaaa');
+                $.NotifyBox.NotifyOne('提示','序号重复','确定');
+                return false;
+            }else{
+                $('.up').removeAttr('disabled');
+                $('.up').removeAttr("style");
+                $('.yes').removeAttr('disabled');
+                $('.yes').removeAttr("style");
+            }
+        }
+
+        //修改成功加状态
+        if($(obj).parent().attr('attr-status') == 'add'){
+
+        }else{
+            $(obj).parent().attr('attr-status','save');//修改的添加一个属性
+            $(obj).parent().addClass('submit');//修改一个要提交的属性
+        }
+
+    }
+    
+    //弹窗隐藏
+    $('#cancelBtn').click(function(){
+            $('#addMain').hide();
+            $('body').css('overflow-y','auto');
+    })
+    $('#cancelBtn2').click(function(){
+            $('#changeMain').hide();
+            $('body').css('overflow-y','auto');
+    })
+    
+        //当前选中加高亮
+    
+        $('.knowName').live('click',function(){
+            if(aaa !=1) {
+                $('.knowName').removeClass('chooseSpan');
+                $(this).addClass('chooseSpan');
+            }
+            
+        });
+        
+        
+        $("#knowledge_level").change(function(){
+            $('.searchUl').find('li').remove();
+        });
+        
+        
+        //请求树形数据
+        function requestTreeData(url){
+            var result;
+            $.ajax({
+                type: 'get', 
+                url: url,  
+                cache: false,
+                async: false,
+                dataType:'json',
+                success: function(msg){     
+                    result=msg;
+                }  
+            });
+            return result;
+        }
+        
+        var chapter_ul='<ul class="chapterUl"></ul>';
+        var chapter_element='<li><!--第一章-->'+
+                                '<div class="knowChapter" style="display: block;">'+
+                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addChapter" title="增加">'+
+                                    '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowChapterTitle">'+
+                                    '<span class="knowName submit" level_point="chapter" attr-status="add">'+
+                                        '<font>第一章</font>'+
+                                        '<input type="text" class="numInput" onchange="sort($(this))" value="3">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                    '</span>'+
+                                '</div>'+
+                            '</li>';
+        var empty_chapter_element='<li>'+
+                                '<div class="knowChapter" style="display: block;">'+
+                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addChapter" title="增加">'+ 
+                                '</div>'+'</li>'
+                           ;//这里把<li></li>标签删除了====已恢复原样
+                    
+                    
+        var festival_ul='<ul class="sectionUl"></ul>';
+        var festival_element='<li>'+
+                                '<!--第一节-->'+
+                                '<div class="knowSection" style="display: block;">'+
+                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addSection" title="增加">'+
+                                    '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowSectionTitle">'+
+                                    '<span class="knowName submit" level_point="festival" attr-status="add">'+
+                                        '<font>第一节</font>'+
+                                        '<input type="text" class="numInput" onchange="sort($(this))" value="3">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                    '</span>'+
+                                '</div>'+  
+                            '</li>';
+        var empty_festival_element='<li>'+
+                                '<!--第一节-->'+
+                                '<div class="knowSection" style="display: block;">'+
+                                    '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addSection" title="增加">'+ 
+                                '</div>'+
+                            '</li>';
+                    
+                    
+        var knowledge_ul='<ul class="pointUl"></ul>';
+        var knowledge_element='<li>'+
+                                    '<!--第一节的知识点-->'+
+                                    '<div class="knowPoint" style="display: block;">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addPoint" title="增加">'+
+                                        '<img src="/Public/img/icon/icon-plus.png" attr_id="" class="plusMius knowPointTitle">'+
+                                        '<span class="knowName submit" level_point="knowledge" attr-status="add">'+
+                                            '<font>第一节的知识点</font>'+
+                                            '<input type="text" class="numInput" onchange="sort($(this))" value="3">'+
+                                            '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                        '</span> '+
+                                    '</div>'+
+                                '</li>';
+        var empty_knowledge_element='<li>'+
+                                    '<!--第一节的知识点-->'+
+                                    '<div class="knowPoint" style="display: block;">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addPoint" title="增加">'+ 
+                                    '</div>'+
+                                '</li>';
+        
+        
+        var child_knowledge_ul='<ul class="KeyUl"></ul>';
+        var child_knowledge_element='<li>'+
+                                        '<!--知识点详情-->'+
+                                        '<div class="knowKey" style="display: block;">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addKey" title="增加">'+
+                                            '<span class="knowName submit" level_point="child_knowledge" attr-status="add">'+
+                                                '<font>知识点1</font>'+
+                                                '<input type="text" class="numInput" onchange="sort($(this))" value="3">'+
+                                                '<img src="{$oss_path}public/web_img/Admin/icon-delete-rt.png" alt="" class="rtImg" title="删除">'+
+                                            '</span>'+
+                                        '</div>'+
+                                    '</li>';
+        var emtpy_child_knowledge='<li>'+
+                                        '<!--知识点详情-->'+
+                                        '<div class="knowKey" style="display: block;">'+
+                                        '<img src="{$oss_path}public/web_img/Admin/addLong.png" alt="" class="addKey" title="增加">'+ 
+                                        '</div>'+
+                                    '</li>';
+</script>
+<script>
+//**************************************************AJAX分页****************************************************************
+function return_ajax($page) {
+        if($page){
+            var page = $page;
+        }
+        $.ajax({
+            url: '/index.php?m=Exercise&c=CurriculumTree&a=ajaxPage',
+            type: 'GET',
+            //dataType: 'json',
+            data:{'p':page},
+            success: function (data) {
+                $('.block').html(data);
+               // $("html,body").animate({scrollTop:0}, 300);
+            },
+            error: function () {
+                // alert('cuo');
+                $.NotifyBox.NotifyOne('提示','错误','确定')
+            }
+        });
+    }
+    
+    function callback(data) {
+        var arr = data.split("&p=");
+        //console.log(arr);return false;
+        return_ajax(arr[1]);
+    }
+</script>
+<script>
+    //************************************************点击保存*********************************************************************************
+
+    function submits(num) {
+        //置灰操作
+        $('.up').attr('disabled','disabled');
+        $('.up').css('color','#aaaaaa');
+        $('.yes').attr('disabled','disabled');
+        $('.yes').css('color','#aaaaaa');
+        setTimeout(function(){
+            sub(num);
+        },1000);
+    }
+    function sub(num) {
+        //添加请求
+        var temp_arr = new Array();
+        var temp_arr2 = new Array();
+        var temp_arr3 = new Array();
+        var temp_arr4 = new Array();
+        temp_arr.push($('.submit'));
+        var submitStatus = '';
+        var curriculum_tree_breviary_id = 0;
+        //无内容提交时
+        if ($(temp_arr[0]).length == 0) {
+            var courseId = "<?php echo $courseId ?>";
+            var Learning_period_id = "<?php echo $Learning_period_id ?>";
+            $.ajax({
+                url: "{:U('CurriculumTree/isExist')}",
+                data: {
+                    'courseId': courseId,
+                    'Learning_period_id': Learning_period_id,
+                    'num': num
+                },
+                dataType: "json",
+                type: "post",
+                async: false,
+                success: function (data) {
+                    if (data.status == 200) {
+                        curriculum_tree_breviary_id = data.data;
+                        window.location = '';
+                    }
+                }
+            });
+        }
+        //有内容提交时
+        if ($(temp_arr[0]).length > 0) {
+
+            var courseId = "<?php echo $courseId ?>";
+            var Learning_period_id = "<?php echo $Learning_period_id ?>";
+            $.ajax({
+                url: "{:U('CurriculumTree/isExist')}",
+                data: {
+                    'courseId': courseId,
+                    'Learning_period_id': Learning_period_id,
+                    'num': num
+                },
+                dataType: "json",
+                type: "post",
+                async: false,
+                success: function (data) {
+                    if (data.status == 200) {
+                        curriculum_tree_breviary_id = data.data;
+                    }
+                }
+            });
+
+            for (var r = 0; r < temp_arr[0].length; r++) {
+                if ($(temp_arr[0][r]).attr('attr-status') == 'add') {
+                    var sort = $(temp_arr[0][r]).find('input').val();
+                    var name = $(temp_arr[0][r]).find('font').html();
+                    var parent_id = $(temp_arr[0][r]).attr('parent_id');
+                    var id = $(temp_arr[0][r]).attr('id');
+                    if ($(temp_arr[0][r]).attr('level_point') == 'festival') {
+                        var level = 2;
+                    } else if ($(temp_arr[0][r]).attr('level_point') == 'knowledge') {
+                        var level = 3;
+                    } else if ($(temp_arr[0][r]).attr('level_point') == 'child_knowledge') {
+                        var level = 4;
+                    }
+                    //父级ID为textbook时的操作
+                    if ($(temp_arr[0][r]).attr('parent_id') == 'textbook') { //章的添加
+                        $.ajax({
+                            url: "{:U('CurriculumTree/addCurriculumTreeKnowledgePoint')}",
+                            data: {
+                                'curriculum_tree_breviary_id': curriculum_tree_breviary_id,
+                                'tree_point_name': name,
+                                'level': 1,
+                                'sort': sort,
+                                'parent_id': 0
+                            },
+                            dataType: "json",
+                            type: "post",
+                            async: false,
+                            success: function (data) {
+                                if (data.status == 200) {
+                                    temp_arr2[id] = data.data['insert_id'];
+                                } else if (data.status == 404) {
+                                    submitStatus = 'error';
+                                    return false;
+                                } else {
+                                    submitStatus = 'error';
+                                    return false;
+                                }
+                            }
+                        });
+                        // temp_arr[0].splice(r, 1);
+                    }
+                    //父级ID是真实ID时
+                    else if (
+                        $(temp_arr[0][r]).attr('level_point') == 'festival'
+                    ) {
+                        //节的添加
+                        if ($(temp_arr[0][r]).attr('parent_id').indexOf('-') == -1) {
+                            $.ajax({
+                                url: "{:U('CurriculumTree/addCurriculumTreeKnowledgePoint')}",
+                                data: {
+                                    'curriculum_tree_breviary_id': curriculum_tree_breviary_id,
+                                    'tree_point_name': name,
+                                    'level': level,
+                                    'sort': sort,
+                                    'parent_id': parent_id
+                                },
+                                dataType: "json",
+                                type: "post",
+                                async: false,
+                                success: function (data) {
+                                    if (data.status == 200) {
+                                        temp_arr3[id] = data.data['insert_id'];
+                                    } else if (data.status == 404) {
+                                        submitStatus = 'error';
+                                        return false;
+                                    } else {
+                                        submitStatus = 'error';
+                                        return false;
+                                    }
+
+                                }
+                            });
+                        } else {
+                            var sort = $(temp_arr[0][r]).find('input').val();
+                            var name = $(temp_arr[0][r]).find('font').html();
+                            var parent_id = $(temp_arr[0][r]).attr('parent_id'); //这里的父级ID（自定义的）
+                            var id = $(temp_arr[0][r]).attr('id');
+                            var level = 2;
+                            var true_parent_id = 0;
+                            var obj = Object.keys(temp_arr2);
+                            for (var s = 0; s < obj.length; s++) {
+                                if (obj[s] == parent_id) {
+                                    true_parent_id = temp_arr2[parent_id];
+                                }
+                            }
+
+
+                            $.ajax({
+                                url: "{:U('CurriculumTree/addCurriculumTreeKnowledgePoint')}",
+                                data: {
+                                    'curriculum_tree_breviary_id': curriculum_tree_breviary_id,
+                                    'tree_point_name': name,
+                                    'level': level,
+                                    'sort': sort,
+                                    'parent_id': true_parent_id
+                                },
+                                dataType: "json",
+                                type: "post",
+                                async: false,
+                                success: function (data) {
+                                    if (data.status == 200) {
+                                        temp_arr3[id] = data.data['insert_id'];
+                                    } else if (data.status == 404) {
+                                        submitStatus = 'error';
+                                        return false;
+                                    } else {
+                                        submitStatus = 'error';
+                                        return false;
+                                    }
+                                }
+                            });
+                        }
+                        //temp_arr[0].splice(r, 1);
+                    } else if ($(temp_arr[0][r]).attr('level_point') == 'knowledge') {
+                        if ($(temp_arr[0][r]).attr('parent_id').indexOf('-') == -1) {
+                            var sort = $(temp_arr[0][r]).find('input').val();
+                            var name = $(temp_arr[0][r]).find('font').html();
+                            var parent_id = $(temp_arr[0][r]).attr('parent_id'); //这里的父级ID（自定义的）
+                            var id = $(temp_arr[0][r]).attr('id');
+                            //知识点的添加
+                            var level = 3;
+                            var true_parent_id = 0;
+                            $.ajax({
+                                url: "{:U('CurriculumTree/addCurriculumTreeKnowledgePoint')}",
+                                data: {
+                                    'curriculum_tree_breviary_id': curriculum_tree_breviary_id,
+                                    'tree_point_name': name,
+                                    'level': level,
+                                    'sort': sort,
+                                    'parent_id': parent_id
+                                },
+                                dataType: "json",
+                                type: "post",
+                                async: false,
+                                success: function (data) {
+                                    if (data.status == 200) {
+                                        temp_arr4[id] = data.data['insert_id'];
+                                    } else if (data.status == 404) {
+                                        submitStatus = 'error';
+                                        return false;
+                                    } else {
+                                        submitStatus = 'error';
+                                        return false;
+                                    }
+
+                                }
+                            });
+                        } else {
+                            var sort = $(temp_arr[0][r]).find('input').val();
+                            var name = $(temp_arr[0][r]).find('font').html();
+                            var parent_id = $(temp_arr[0][r]).attr('parent_id'); //这里的父级ID（自定义的）
+                            var id = $(temp_arr[0][r]).attr('id');
+                            //知识点的添加
+                            var level = 3;
+                            var true_parent_id = 0;
+                            /* $(temp_arr3).each(function (k, v) {
+                                 if (k == parent_id) {
+                                     true_parent_id = v;
+                                 }
+                             });*/
+                            var obj1 = Object.keys(temp_arr3);
+                            for (var s = 0; s < obj1.length; s++) {
+                                if (obj1[s] == parent_id) {
+                                    true_parent_id = temp_arr3[parent_id];
+                                }
+                            }
+                            $.ajax({
+                                url: "{:U('CurriculumTree/addCurriculumTreeKnowledgePoint')}",
+                                data: {
+                                    'curriculum_tree_breviary_id': curriculum_tree_breviary_id,
+                                    'tree_point_name': name,
+                                    'level': level,
+                                    'sort': sort,
+                                    'parent_id': true_parent_id
+                                },
+                                dataType: "json",
+                                type: "post",
+                                async: false,
+                                success: function (data) {
+                                    if (data.status == 200) {
+                                        temp_arr4[id] = data.data['insert_id'];
+                                    } else if (data.status == 404) {
+                                        submitStatus = 'error';
+                                        return false;
+                                    } else {
+                                        submitStatus = 'error';
+                                        return false;
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+                //修改请求
+                for (var r = 0; r < temp_arr[0].length; r++) {
+                    if ($(temp_arr[0][r]).attr('attr-status') == 'save') {
+                        var sort = $(temp_arr[0][r]).find('input').val();
+                        var name = $(temp_arr[0][r]).find('font').html();
+                        var id = $(temp_arr[0][r]).attr('id');
+                        $.ajax({
+                            url: "{:U('CurriculumTree/updateCurriculumTreeKnowledgePoint')}",
+                            data: {
+                                'tree_point_name': name,
+                                'sort': sort,
+                                'id': id
+                            },
+                            dataType: "json",
+                            type: "post",
+                            async: false,
+                            success: function (data) {
+                                if (data.status == 200) {
+
+                                } else if (data.status == 404) {
+                                    submitStatus = 'error';
+                                    return false;
+                                } else {
+                                    submitStatus = 'error';
+                                    return false;
+                                }
+                            }
+                        });
+                        // temp_arr[0].splice(r, 1);
+                    }
+                }
+                //删除请求
+                for (var r = 0; r < temp_arr[0].length; r++) {
+                    if ($(temp_arr[0][r]).attr('attr-status') == 'remove') {
+                        var id = $(temp_arr[0][r]).attr('id');
+                        $.ajax({
+                            url: "{:U('CurriculumTree/deleteCurriculumTreeKnowledgePoint')}",
+                            data: {
+                                'id': id
+                            },
+                            dataType: "json",
+                            type: "post",
+                            async: false,
+                            success: function (data) {
+                                if (data.status == 200) {
+
+                                } else if (data.status == 404) {
+                                    submitStatus = 'error';
+                                    return false;
+                                } else {
+                                    submitStatus = 'error';
+                                    return false;
+                                }
+                            }
+                        });
+                        // temp_arr[0].splice(r, 1);
+                    }
+                }
+                if (submitStatus == 'error') {
+                    // alert('操作失败，请刷新后重试');
+                    $.NotifyBox.NotifyOne('提示', '操作失败，请刷新后重试！', '确定')
+                    window.location='';
+                } else {
+                    //重定向一下
+                    window.location='';
+                }
+
+            }
+
+    }
+    $('.reset').click(function () {
+        window.location='';
+    })
+</script>
+<script>
+    //******************************************************模仿用户点击行为*************************************************************************
+    function userClick(id,search_level) {
+        var knowledge_id = id;
+        var request_url="{:U('CurriculumTree/getKnowledgeTreeData')}&id="+id+"&course=<?php echo $courseId?>&Learning_period_id=<?php echo $Learning_period_id?>";
+        switch(search_level){
+            case '1':
+
+                if($('.chapter'+knowledge_id).length){
+                    $('.chapter'+knowledge_id).parent().find('img').show();
+                    $('.chapter'+knowledge_id).parent().show().parent().show();
+                    $('.chapter'+knowledge_id).parents('.knowChapter').parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.chapter'+knowledge_id).parents('.knowGrade').siblings().children('img').show();
+                    $('.chapter'+knowledge_id).parents('.chapterUl').prevAll().show();
+                    $('.chapter'+knowledge_id).parents('.knowGrade').parent().siblings().children('div').show().children('img').show();
+
+
+                    $('.chapter'+knowledge_id).parents('.knowGrade').show();
+                    $('.chapter'+knowledge_id).parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.chapter'+knowledge_id).parents('.knowSubject').show();
+                    $('.chapter'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.knowName').removeClass('chooseSpan');
+                    $('.chapter'+knowledge_id).addClass('chooseSpan');
+                }else{
+                    msg=requestTreeData(request_url);
+                    if(msg.data.length){
+                        $('.knowName').removeClass('chooseSpan');
+                        var clone_ul=$(chapter_ul).clone(true);
+
+                        for(var i=0;i<msg.data.length;i++){
+                            var clone_chapter=$(chapter_element).clone(true);
+                            if(i!=0){
+                                $(clone_chapter).find('.addChapter').remove();
+                            }
+                            $(clone_chapter).find('.knowName').removeAttr('attr-status');
+                            $(clone_chapter).find('.knowName').removeClass('submit');
+                            $(clone_chapter).find('.knowName').attr('id',msg.data[i].id);
+                            $(clone_chapter).find('.plusMius').attr('attr_id',msg.data[i].id);
+                            $(clone_chapter).find('.knowName').find('font').eq(0).html(msg.data[i].tree_point_name);
+                            $(clone_chapter).find('.knowName').find('font').eq(0).attr('html',msg.data[i].tree_point_name);
+                            $(clone_chapter).find('.knowName').find('input').val(msg.data[i].sort);
+                            var level_class=$(clone_chapter).find('.knowName').attr('level_point');
+                            level_class=level_class+msg.data[i].id;
+                            $(clone_chapter).find('.knowName').addClass(level_class);
+                            $(clone_ul).append(clone_chapter);
+                        }
+                        $('#course').parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('#textbook').parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        /*$('.chapter'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                         $('.chapter'+knowledge_id).parents('.knowSection').show();
+                         $('.chapter'+knowledge_id).parents('.knowSection').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                         $('.chapter'+knowledge_id).parents('.knowChapter').show();
+                         $('.chapter'+knowledge_id).parents('.knowChapter').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                         $('.chapter'+knowledge_id).parents('.knowGrade').show();
+                         $('.chapter'+knowledge_id).parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');*/
+
+    //                    $('.textbook).parents('.knowGrade').parent('li').nextAll('li').find('.knowGrade').show();
+                        $('#textbook').parent().append(clone_ul);
+                        $('#textbook').addClass('chooseSpan') //选中的颜色
+                        $('#textbook').parent().show();
+                        $('#textbook').parent().parent().siblings().children('div').show();
+
+                    }
+                }
+                break;
+            case '2':
+                if($('.festival'+knowledge_id).length){
+
+                    $('.festival'+knowledge_id).parent().find('img').show();
+                    $('.festival'+knowledge_id).parent().show().parent().show();
+                    $('.festival'+knowledge_id).parents('.knowSection').parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.festival'+knowledge_id).parents('.knowChapter').children('span').children('img').show().end().end().parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.festival'+knowledge_id).parents('.knowGrade').parent().siblings().children('div').show().children('img').show();
+                    $('.festival'+knowledge_id).parents('.knowChapter').siblings().children('img').show();
+                    $('.festival'+knowledge_id).parents('.sectionUl').prevAll().show();
+                    $('.festival'+knowledge_id).parents('.chapterUl').prevAll().show();
+
+                    $('.festival'+knowledge_id).parent().show();
+                    $('.festival'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.festival'+knowledge_id).parents('.knowChapter').show();
+                    $('.festival'+knowledge_id).parents('.knowChapter').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.festival'+knowledge_id).parents('.knowGrade').show();
+                    $('.festival'+knowledge_id).parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.festival'+knowledge_id).parents('.knowSubject').show();
+                    $('.festival'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.knowName').removeClass('chooseSpan');
+                    $('.festival'+knowledge_id).addClass('chooseSpan');
+                }else{
+                    msg=requestTreeData(request_url);
+                    if(msg.data.length){
+                        $('.knowName').removeClass('chooseSpan');
+                        var clone_chapter_ul=$(chapter_ul).clone(true);
+
+                        for(var i=0;i<msg.data.length;i++){
+                            var clone_chapter=$(chapter_element).clone(true);
+                            if(i==0){
+                                //这里删除某个分册下所有章,
+  //                              $('.textbook'+msg.data[0].textbook_id).parent().find('.chapterUl').remove();
+                            }else{
+                                //这里删除不是第一个元素前面的加号图片
+                                $(clone_chapter).find('.addChapter').remove();
+                            }
+
+                            $(clone_chapter).find('.knowName').removeAttr('attr-status');
+                            $(clone_chapter).find('.knowName').removeClass('submit');
+                            $(clone_chapter).find('.knowName').attr('id',msg.data[i].id);
+                            $(clone_chapter).find('.plusMius').attr('attr_id',msg.data[i].id);
+                            $(clone_chapter).find('.knowName').find('font').eq(0).html(msg.data[i].tree_point_name);
+                            $(clone_chapter).find('.knowName').find('font').eq(0).attr('html',msg.data[i].tree_point_name);
+                            $(clone_chapter).find('.knowName').find('input').val(msg.data[i].sort);
+                            var level_class=$(clone_chapter).find('.knowName').attr('level_point');
+                            level_class=level_class+msg.data[i].id;
+                            $(clone_chapter).find('.knowName').addClass(level_class);
+                            $(clone_ul).append(clone_chapter);
+
+
+                            if(typeof(msg.data[i].child)!="undefined"){
+                                var clone_festival_url=$(festival_ul).clone(true);
+                                for(var j=0;j<msg.data[i].child.length;j++){
+                                    var clone_festival=$(festival_element).clone(true);
+                                    if(j!=0){
+                                        $(clone_festival).find('.addSection').remove();
+                                    }
+
+                                    $(clone_festival).find('.knowName').removeAttr('attr-status');
+                                    $(clone_festival).find('.knowName').removeClass('submit');
+                                    $(clone_festival).find('.knowName').attr('id',msg.data[i].child[j].id);
+                                    $(clone_festival).find('.plusMius').attr('attr_id',msg.data[i].child[j].id);
+                                    $(clone_festival).find('.knowName').find('font').eq(0).html(msg.data[i].child[j].tree_point_name);
+                                    $(clone_festival).find('.knowName').find('font').eq(0).attr('html',msg.data[i].child[j].tree_point_name);
+                                    $(clone_festival).find('.knowName').find('input').val(msg.data[i].child[j].sort);
+                                    var level_class=$(clone_festival).find('.knowName').attr('level_point');
+                                    level_class=level_class+msg.data[i].child[j].id;
+                                    $(clone_festival).find('.knowName').addClass(level_class);
+                                    $(clone_festival_url).append(clone_festival);
+
+
+                                    /*$(clone_festival).find('.plusMius').attr('attr_id',msg.data[i].child[j].id);
+                                    $(clone_festival).find('.knowName').find('font').eq(0).text(msg.data[i].child[j].knowledge_name);
+                                    $(clone_festival).find('.knowName').find('font').eq(1).text(msg.data[i].child[j].sort);
+                                    var level_class=$(clone_festival).find('.knowName').attr('level_point');
+                                    level_class=level_class+msg.data[i].child[j].id;
+                                    $(clone_festival).find('.knowName').addClass(level_class);
+                                    $(clone_festival_url).append(clone_festival);*/
+
+                                }
+                                $(clone_chapter).find('.knowChapter').append(clone_festival_url);
+                            }
+                            $(clone_chapter_ul).append(clone_chapter);
+                        }
+
+                        //$('#course').addClass('chooseSpan');
+                        $('#course').parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        //$('#textbook').addClass('chooseSpan') //选中的颜色
+                        $('#textbook').parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+
+                        $('#textbook').parent().append(clone_chapter_ul);
+                        $('#textbook').parent().show();
+                        $('#textbook').parent().parent().siblings().children('div').show();
+
+                        $('.festival'+knowledge_id).parents('.knowChapter').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('.festival'+knowledge_id).addClass('chooseSpan') //选中的颜色
+                    }
+                }
+                break;
+            case '3':
+                if($('.knowledge'+knowledge_id).length){
+
+
+                    $('.knowledge'+knowledge_id).parent().find('img').show();
+                    $('.knowledge'+knowledge_id).parent().show().parent().show();
+                    $('.knowledge'+knowledge_id).parent('.knowPoint').parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.knowledge'+knowledge_id).parents('.knowSection').children('img').show().end().children('span').children('img').show().end().end().parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.knowledge'+knowledge_id).parents('.knowChapter').children('span').children('img').show().end().end().parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.knowledge'+knowledge_id).parents('.knowGrade').parent().siblings().children('div').show().children('img').show();
+
+                    $('.knowledge'+knowledge_id).parents('.knowSection').siblings().children('img').show();
+                    $('.knowledge'+knowledge_id).parents('.pointUl').prev().prev().show();
+                    $('.knowledge'+knowledge_id).parents('.sectionUl').prevAll().show();
+                    $('.knowledge'+knowledge_id).parents('.chapterUl').prevAll().show();
+
+
+                    $('.knowledge'+knowledge_id).parent().show();
+                    $('.knowledge'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.knowledge'+knowledge_id).parents('.knowSection').show();
+                    $('.knowledge'+knowledge_id).parents('.knowSection').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.knowledge'+knowledge_id).parents('.knowChapter').show();
+                    $('.knowledge'+knowledge_id).parents('.knowChapter').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.knowledge'+knowledge_id).parents('.knowGrade').show();
+                    $('.knowledge'+knowledge_id).parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.knowledge'+knowledge_id).parents('.knowSubject').show();
+                    $('.knowledge'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.knowName').removeClass('chooseSpan');
+                    $('.knowledge'+knowledge_id).addClass('chooseSpan');
+                }else{
+                    msg=requestTreeData(request_url);
+                    if(msg.data.length){
+                        $('.knowName').removeClass('chooseSpan');
+
+                        var clone_chapter_ul=$(chapter_ul).clone(true);
+                        for(var i=0;i<msg.data.length;i++){
+                            var clone_chapter=$(chapter_element).clone(true);
+                            if(i==0){
+  //                              $('.textbook'+msg.data[0].textbook_id).parent().find('.chapterUl').remove();
+                            }else{
+                                //这里删除不是第一个元素前面的加号图片
+                                $(clone_chapter).find('.addChapter').remove();
+                            }
+
+
+                            $(clone_chapter).find('.knowName').removeAttr('attr-status');
+                            $(clone_chapter).find('.knowName').removeClass('submit');
+                            $(clone_chapter).find('.knowName').attr('id',msg.data[i].id);
+                            $(clone_chapter).find('.plusMius').attr('attr_id',msg.data[i].id);
+                            $(clone_chapter).find('.knowName').find('font').eq(0).html(msg.data[i].tree_point_name);
+                            $(clone_chapter).find('.knowName').find('font').eq(0).attr('html',msg.data[i].tree_point_name);
+                            $(clone_chapter).find('.knowName').find('input').val(msg.data[i].sort);
+                            var level_class=$(clone_chapter).find('.knowName').attr('level_point');
+                            level_class=level_class+msg.data[i].id;
+                            $(clone_chapter).find('.knowName').addClass(level_class);
+                            $(clone_ul).append(clone_chapter);
+
+
+                            /*$(clone_chapter).find('.plusMius').attr('attr_id',msg.data[i].id);
+                            $(clone_chapter).find('.knowName').find('font').eq(0).text(msg.data[i].knowledge_name);
+                            $(clone_chapter).find('.knowName').find('font').eq(1).text(msg.data[i].sort);
+                            var level_class=$(clone_chapter).find('.knowName').attr('level_point');
+                            level_class=level_class+msg.data[i].id;
+                            $(clone_chapter).find('.knowName').addClass(level_class);*/
+
+                            if(typeof(msg.data[i].child)!="undefined"){
+                                var clone_festival_url=$(festival_ul).clone(true);
+                                for(var j=0;j<msg.data[i].child.length;j++){
+                                    var clone_festival=$(festival_element).clone(true);
+                                    if(j==0){
+
+                                    }else{
+                                        $(clone_festival).find('.addSection').remove();
+                                    }
+
+
+                                    $(clone_festival).find('.knowName').removeAttr('attr-status');
+                                    $(clone_festival).find('.knowName').removeClass('submit');
+                                    $(clone_festival).find('.knowName').attr('id',msg.data[i].child[j].id);
+                                    $(clone_festival).find('.plusMius').attr('attr_id',msg.data[i].child[j].id);
+                                    $(clone_festival).find('.knowName').find('font').eq(0).html(msg.data[i].child[j].tree_point_name);
+                                    $(clone_festival).find('.knowName').find('font').eq(0).attr('html',msg.data[i].child[j].tree_point_name);
+                                    $(clone_festival).find('.knowName').find('input').val(msg.data[i].child[j].sort);
+                                    var level_class=$(clone_festival).find('.knowName').attr('level_point');
+                                    level_class=level_class+msg.data[i].child[j].id;
+                                    $(clone_festival).find('.knowName').addClass(level_class);
+                                    $(clone_festival_url).append(clone_festival);
+
+
+                                    /*$(clone_festival).find('.plusMius').attr('attr_id',msg.data[i].child[j].id);
+                                    $(clone_festival).find('.knowName').find('font').eq(0).text(msg.data[i].child[j].knowledge_name);
+                                    $(clone_festival).find('.knowName').find('font').eq(1).text(msg.data[i].child[j].sort);
+                                    var level_class=$(clone_festival).find('.knowName').attr('level_point');
+                                    level_class=level_class+msg.data[i].child[j].id;
+                                    $(clone_festival).find('.knowName').addClass(level_class);*/
+
+                                    if(typeof(msg.data[i].child[j].child)!='undefined'){
+                                        var clone_knowledge_ul=$(knowledge_ul).clone(true);
+                                        for(var k=0;k<msg.data[i].child[j].child.length;k++){
+                                            var clone_knowledge=$(knowledge_element).clone(true);
+                                            if(k!=0){
+                                                $(clone_knowledge).find('.addPoint').remove();
+                                            }
+
+                                            $(clone_knowledge).find('.knowName').removeAttr('attr-status');
+                                            $(clone_knowledge).find('.knowName').removeClass('submit');
+                                            $(clone_knowledge).find('.knowName').attr('id',msg.data[i].child[j].child[k].id);
+
+                                            $(clone_knowledge).find('.plusMius').attr('attr_id',msg.data[i].child[j].child[k].id);
+                                            $(clone_knowledge).find('.knowName').find('font').eq(0).html(msg.data[i].child[j].child[k].tree_point_name);
+                                            $(clone_knowledge).find('.knowName').find('font').eq(0).attr('html',msg.data[i].child[j].child[k].tree_point_name);
+                                            $(clone_knowledge).find('.knowName').find('input').val(msg.data[i].child[j].child[k].sort);
+                                            var level_class=$(clone_knowledge).find('.knowName').attr('level_point');
+                                            level_class=level_class+msg.data[i].child[j].child[k].id;
+                                            $(clone_knowledge).find('.knowName').addClass(level_class);
+                                            $(clone_knowledge_ul).append(clone_knowledge);
+                                        }
+                                        $(clone_festival).find('.knowSection').append(clone_knowledge_ul);
+
+                                    }
+                                    $(clone_festival_url).append(clone_festival);
+                                }
+                                $(clone_chapter).find('.knowChapter').append(clone_festival_url);
+                            }
+                            $(clone_chapter_ul).append(clone_chapter);
+                        }
+  //                      $('.textbook'+msg.data[0].textbook_id).parent().append(clone_chapter_ul);
+
+                        //$('#course').addClass('chooseSpan');
+                        $('#course').parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        //$('#textbook').addClass('chooseSpan') //选中的颜色
+                        $('#textbook').parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+
+                        $('#textbook').parent().append(clone_chapter_ul);
+                        $('#textbook').parent().show();
+                        $('#textbook').parent().parent().siblings().children('div').show();
+
+                        $('.knowledge'+knowledge_id).parents('.knowSection').show();
+                        $('.knowledge'+knowledge_id).parents('.knowSection').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('.knowledge'+knowledge_id).parents('.knowChapter').show();
+                        $('.knowledge'+knowledge_id).parents('.knowChapter').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+
+                        $('.knowledge'+knowledge_id).addClass('chooseSpan');
+                        $('.knowledge'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+
+                       /* $('.knowledge'+knowledge_id).addClass('chooseSpan');
+                        $('.knowledge'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('.knowledge'+knowledge_id).parents('.knowSection').show();
+                        $('.knowledge'+knowledge_id).parents('.knowSection').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('.knowledge'+knowledge_id).parents('.knowChapter').show();
+                        $('.knowledge'+knowledge_id).parents('.knowChapter').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('.knowledge'+knowledge_id).parents('.knowGrade').show();
+                        $('.knowledge'+knowledge_id).parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');*/
+
+
+
+
+
+  //                      $('.textbook'+msg.data[0].textbook_id).parent().show();
+  //                      $('.textbook'+msg.data[0].textbook_id).parent().parent().siblings().children('div').show();
+                    }
+                }
+                break;
+            case '4':
+                if($('.child_knowledge'+knowledge_id).length){
+                    $('.child_knowledge'+knowledge_id).parent().find('img').show();
+                    $('.child_knowledge'+knowledge_id).parent().show().parent().show();
+
+                    $('.child_knowledge'+knowledge_id).parent('.knowKey').parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.child_knowledge'+knowledge_id).parents('.knowPoint').show().children('img').show().end().children('span').children('img').show().end().end().parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.child_knowledge'+knowledge_id).parents('.knowSection').children('img').show().end().children('span').children('img').show().end().end().parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.child_knowledge'+knowledge_id).parents('.knowChapter').children('span').children('img').show().end().end().parent().siblings().children('div').show().children('img').show().end().children('span').children('img').show();
+                    $('.child_knowledge'+knowledge_id).parents('.knowGrade').parent().siblings().children('div').show().children('img').show();
+
+                    $('.child_knowledge'+knowledge_id).parents('.knowKey').siblings().children('img').show();
+                    $('.child_knowledge'+knowledge_id).parents('.KeyUl').prev().prev().show();
+                    $('.child_knowledge'+knowledge_id).parents('.pointUl').prev().prev().show();
+                    $('.child_knowledge'+knowledge_id).parents('.sectionUl').prevAll().show();
+                    $('.child_knowledge'+knowledge_id).parents('.chapterUl').prevAll().show();
+
+                    $('.child_knowledge'+knowledge_id).parent().show();
+                    $('.child_knowledge'+knowledge_id).parents('.KeyUl').show();
+                    $('.child_knowledge'+knowledge_id).parents('.knowSection').show();
+                    $('.child_knowledge'+knowledge_id).parents('.knowSection').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.child_knowledge'+knowledge_id).parents('.knowChapter').show();
+                    $('.child_knowledge'+knowledge_id).parents('.knowChapter').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.child_knowledge'+knowledge_id).parents('.knowGrade').show();
+                    $('.child_knowledge'+knowledge_id).parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                    $('.child_knowledge'+knowledge_id).parents('.knowSubject').show();
+                    $('.child_knowledge'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+
+                    $('.child_knowledge'+knowledge_id).parents('.knowPoint').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+
+                    $('.knowName').removeClass('chooseSpan');
+                    $('.child_knowledge'+knowledge_id).addClass('chooseSpan');
+                }else{
+                    msg=requestTreeData(request_url);
+                    if(msg.data.length){
+                        $('.knowName').removeClass('chooseSpan');
+                        var clone_chapter_ul=$(chapter_ul).clone(true);
+
+                        for(var i=0;i<msg.data.length;i++){
+                            var clone_chapter=$(chapter_element).clone(true);
+                            if(i==0){
+                                //这里删除某个分册下所有章,
+//                                $('.textbook'+msg.data[0].textbook_id).parent().find('.chapterUl').remove();
+                            }else{
+                                //这里删除不是第一个元素前面的加号图片
+                                $(clone_chapter).find('.addChapter').remove();
+                            }
+
+                            $(clone_chapter).find('.plusMius').attr('attr_id',msg.data[i].id);
+                            $(clone_chapter).find('.knowName').find('font').eq(0).text(msg.data[i].knowledge_name);
+                            $(clone_chapter).find('.knowName').find('font').eq(1).text(msg.data[i].sort);
+                            var level_class=$(clone_chapter).find('.knowName').attr('level_point');
+                            level_class=level_class+msg.data[i].id;
+                            $(clone_chapter).find('.knowName').addClass(level_class);
+
+
+                            if(typeof(msg.data[i].child)!="undefined"){
+                                var clone_festival_url=$(festival_ul).clone(true);
+                                for(var j=0;j<msg.data[i].child.length;j++){
+                                    var clone_festival=$(festival_element).clone(true);
+                                    if(j!=0){
+                                        $(clone_festival).find('.addSection').remove();
+                                    }
+                                    $(clone_festival).find('.plusMius').attr('attr_id',msg.data[i].child[j].id);
+                                    $(clone_festival).find('.knowName').find('font').eq(0).text(msg.data[i].child[j].knowledge_name);
+                                    $(clone_festival).find('.knowName').find('font').eq(1).text(msg.data[i].child[j].sort);
+                                    var level_class=$(clone_festival).find('.knowName').attr('level_point');
+                                    level_class=level_class+msg.data[i].child[j].id;
+                                    $(clone_festival).find('.knowName').addClass(level_class);
+
+                                    if(typeof(msg.data[i].child[j].child)!='undefined'){
+                                        var clone_knowledge_ul=$(knowledge_ul).clone(true);
+                                        for(var k=0;k<msg.data[i].child[j].child.length;k++){
+                                            var clone_knowledge=$(knowledge_element).clone(true);
+                                            if(k!=0){
+                                                $(clone_knowledge).find('.addPoint').remove();
+                                            }
+                                            $(clone_knowledge).find('.plusMius').attr('attr_id',msg.data[i].child[j].child[k].id);
+                                            $(clone_knowledge).find('.knowName').find('font').eq(0).text(msg.data[i].child[j].child[k].knowledge_name);
+                                            $(clone_knowledge).find('.knowName').find('font').eq(1).text(msg.data[i].child[j].child[k].sort);
+                                            var level_class=$(clone_knowledge).find('.knowName').attr('level_point');
+                                            level_class=level_class+msg.data[i].child[j].child[k].id;
+                                            $(clone_knowledge).find('.knowName').addClass(level_class);
+
+
+                                            if(typeof(msg.data[i].child[j].child[k].child)!='undefined'){
+                                                var child_knowledge_url=$(child_knowledge_ul).clone(true);
+                                                for(var t=0;t<msg.data[i].child[j].child[k].child.length;t++){
+                                                    var clone_child_knowledge=$(child_knowledge_element).clone(true);
+                                                    if(t!=0){
+                                                        $(clone_child_knowledge).find('.addKey').remove();
+                                                    }
+                                                    $(clone_child_knowledge).find('.knowName').find('font').eq(0).text(msg.data[i].child[j].child[k].child[t].knowledge_name);
+                                                    $(clone_child_knowledge).find('.knowName').find('font').eq(1).text(msg.data[i].child[j].child[k].child[t].sort);
+                                                    $(clone_child_knowledge).find('.rtImg').attr('attr_id',msg.data[i].child[j].child[k].child[t].id);
+                                                    var level_class=$(clone_child_knowledge).find('.knowName').attr('level_point');
+                                                    level_class=level_class+msg.data[i].child[j].child[k].child[t].id;
+                                                    $(clone_child_knowledge).find('.knowName').addClass(level_class);
+                                                    $(child_knowledge_url).append(clone_child_knowledge);
+                                                }
+                                                $(clone_knowledge).find('.knowPoint').append(child_knowledge_url);
+                                            }
+                                            $(clone_knowledge_ul).append(clone_knowledge);
+                                        }
+
+                                        $(clone_festival).find('.knowSection').append(clone_knowledge_ul);
+
+                                    }
+
+                                    $(clone_festival_url).append(clone_festival);
+                                }
+                                $(clone_chapter).find('.knowChapter').append(clone_festival_url);
+                            }
+                            $(clone_chapter_ul).append(clone_chapter);
+                        }
+ //                       $('.textbook'+msg.data[0].textbook_id).parent().append(clone_chapter_ul);
+                        $('.child_knowledge'+knowledge_id).addClass('chooseSpan');
+                        $('.child_knowledge'+knowledge_id).parents('.knowSubject').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('.child_knowledge'+knowledge_id).parents('.knowPoint').show();
+                        $('.child_knowledge'+knowledge_id).parents('.knowPoint').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('.child_knowledge'+knowledge_id).parents('.knowSection').show();
+                        $('.child_knowledge'+knowledge_id).parents('.knowSection').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('.child_knowledge'+knowledge_id).parents('.knowChapter').show();
+                        $('.child_knowledge'+knowledge_id).parents('.knowChapter').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+                        $('.child_knowledge'+knowledge_id).parents('.knowGrade').show();
+                        $('.child_knowledge'+knowledge_id).parents('.knowGrade').children('.plusMius').attr('src', '__PUBLIC__/img/icon/icon-minus.png');
+ //                       $('.textbook'+msg.data[0].textbook_id).parent().show();
+ //                       $('.textbook'+msg.data[0].textbook_id).parent().parent().siblings().children('div').show();
+                    }
+                }
+                break;
+        }
+    }
+    userClick("<?php echo $_GET['id']?>","<?php echo $_GET['leve']?>");
+</script>
+

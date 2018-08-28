@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+
+	<title>投票详情</title>
+	<link href="__PUBLIC__/css/appCommon.css?ver=1" rel="stylesheet" type="text/css"/>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	<script src="__PUBLIC__/js/jquery.min.1.7.js" type="text/javascript"></script>
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.banner img {
+			width: 100%;
+		}
+
+		.voting_text {
+			width: 90%;
+			padding: 10px 5% 10px;
+			word-wrap: break-word;
+			text-indent: 0;
+			line-height: 2.3rem;
+			font-size: 1.4rem;
+			text-align: justify;
+			border-bottom: 1px solid #ededed;
+			color: #333
+		}
+
+		.blod {
+			font-weight: bold;
+			font-size: 1.6rem;
+		}
+
+		.voting_title {
+			border-left: 5px solid #f06358;
+			text-indent: 5px;
+			display: inline-block;
+		}
+
+		.voting_titleDiv {
+			padding: 15px 5%;
+			border-bottom: 1px solid #ededed
+		}
+
+		.left {
+			float: left;
+		}
+
+		.right {
+			float: right;
+		}
+
+		.of {
+			overflow: hidden;
+		}
+
+		.votinglist {
+			margin-left: 3%;
+			padding: 20px 0;
+			padding-right: 5%;
+			position: relative;
+		}
+
+		.votinglistimg {
+			width: 80px;
+/*			height: 50px;*/
+			vertical-align: middle;
+		}
+
+		.votinglist {
+			font-size: 16px;
+			color: #333;
+			border-bottom: 1px solid #ededed;
+		}
+
+		button {
+			width: 66px;
+			height: 30px;
+			outline: none;
+			background: #f06358;
+			color: #fff;
+			border: none;
+			font-size: 14px;
+			border-radius: 5px
+		}
+
+		.text-center {
+			text-align: center;
+		}
+
+		.mt6 {
+			margin-top: 6px;
+		}
+
+		.name {
+			display: inline-block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			position: absolute;
+			font-size: 16px;
+			font-weight: bold;
+
+		}
+
+		.mt10 {
+			margin-top: 10px;
+		}
+
+		.f14 {
+			font-size: 14px;
+		}
+
+		.voting_p {
+			text-align: justify;
+			color: #333;
+			margin: 10px 0;
+			line-height: 2.3rem;
+			font-size: 1.4rem;
+			height: 6.9rem;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.dn {
+			display: none;
+		}
+
+		.p5 {
+			padding: 5px 10px;
+		}
+		.miaoshu{
+			font-size: 1.3rem;
+			color: #666
+		}
+		.gary{
+			background: gray
+		}
+		.votingsuccess{
+			width: 280px;
+			height: 200px;
+			position: fixed;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			top: 0;
+			margin: auto auto;
+			background: #fff;
+			z-index: 100;
+			font-size: 1.6rem;
+			text-align: center;
+			border-radius: 8px;
+			display: none;
+		}
+		.votingsuccess p{
+			line-height: 3rem;
+			border-bottom: 2px solid #ededed;
+		}
+		.votingsuccess div{
+			line-height: 9rem;
+		}
+		.votingsuccess button{
+			background: #28cec2;
+		}
+		.voteToday
+		{
+			font-size:12px;
+			color:grey;
+			position:absolute;
+			margin-top:-20px;
+			right:3px;
+		}
+		.v_align{
+			vertical-align: middle;
+			width: 22px;
+			display: none
+		}
+		.seach{
+			width: 170px;
+			border: 1px solid #ccc;
+			border-radius: 20px;
+			padding: 5px;
+			margin-top: -0.4rem
+		}
+		.seach_btn{
+			 width: 20px;
+				height: 20px;
+			 background: url(__PUBLIC__/img/activity/icon_search.png) no-repeat center;
+				background-size:100% 100%;
+				margin: 0 5px;
+
+		}
+		.seach_input{
+			width: 130px;
+			border: none;
+			outline: none;
+			line-height: 1.6rem
+		}
+		.position_r{
+			position: relative;
+		}
+		.add1{
+			position: absolute;
+			top: -7px;
+			right:0;
+			color:#f06358;
+			display: none;
+		}
+		.dib{
+			display: inline-block;
+		}
+		.votingDiv{
+			min-height: 200px
+		}
+		.maxVotingsNum{
+			position:fixed;
+			bottom: 5%;
+			width: 90%;
+			background: #000;
+			opacity: 0.8;
+			color: #fff;
+			text-align:center;
+			margin-left: 5%;
+			border-radius: 5px;
+			display: none
+		}
+			.maxVotingsNum p{
+				padding: 5px 30px;
+				font-size: 16px;
+				line-height: 24px
+			}
+			.mask{
+				width: 100%;
+				height: 100%;
+				position: fixed;
+				background: #000;
+				top:0;
+				left:0;
+				display: none
+			}
+			.mask img{
+				position: absolute;
+				top:0;
+				left: 0;
+				bottom: 0;
+				right:0;
+				margin: auto auto;
+				max-width: 100%
+			}
+			@media(min-width:600px) {
+				.blod{
+					font-size: 18px
+				}
+				.voting_text{
+					line-height: 30px;
+					font-size: 18px
+				}
+				.seach{
+					margin-top: 0
+				}
+				.seach_input{
+					line-height: 20px;
+					font-size: 16px
+				}
+				.miaoshu{
+					font-size: 18px
+				}
+				.voting_p{
+					line-height: 30px
+				}
+			}
+			.pcGoVote{
+				display: none
+			}
+			.miaoshu a{
+				color: #1abc9c
+			}
+			.mt20{
+				margin-top: 20px
+			}
+	</style>
+</head>
+
+<body>
+	<div class="banner">
+		<img src="__PUBLIC__/img/app/banner.jpg" alt="">
+	</div>
+	<div class="voting_text">
+		<p class="blod">投票主题</p>
+		<p>{$voteInfo['title']}</p>
+	</div>
+	<div class="voting_text">
+		<p class="blod">投票时间</p>
+		<p>{$voteInfo.votestart|date="Y-m-d H:i:s",###}至{$voteInfo.voteend|date="Y-m-d H:i:s",###}</p>
+	</div>
+	<div class="voting_text">
+		<p class="blod">投票规则</p>
+		<p>{$voteInfo['description']}</p>
+	</div>
+
+	<div class="voting_titleDiv">
+		<p class="voting_title blod">投票</p>
+		<p class="seach right">
+			<button type="button" name="button" class="seach_btn left"></button>
+			<input type="text" name="name" value="" class="seach_input left" placeholder="请输入姓名/编号" maxlength="8">
+		</p>
+	</div>
+	<div class="votingDiv">
+	<ul class="votingul">
+		<volist name="details" id="details" keys="i">
+			<li class="votinglist ">
+				<p class="name"><span class="num">{$i}</span>  {$details.candidate_name}</p>
+				<div class="of mt20">
+					<div class="left mt6">
+					<p class="dib">
+						<img src="__PUBLIC__/img/activity/diyiming.png" alt="" / class="v_align">
+					</p>
+						<img src="{$oss_path}{$details.img_path}" alt="" class="votinglistimg">
+
+
+
+					</div>
+					<div class="right text-center">
+						<span class="f14">{$details.votenum}票</span>
+                        <p class="position_r">
+						<?php if($voteInfo['voteend'] >= time() && $voteInfo['votestart'] <= time()) :?>
+							<?php
+								foreach ($voteData as $key=>$val)
+									{
+									if($details['id'] == $key)
+										echo '<span class="add1">+'.$val .'</span>';
+									}
+								?>
+							<button class="mt10 vote" attr-vote="<?php echo $details['id']; ?>">
+								我要投票
+							</button>
+
+						<?php endif; ?>
+						</p>
+					</div>
+				</div>
+
+				<div class="of">
+					<div class="voting_p">
+						<p class="miaoshu">
+							描述:{$details['ad']}
+						</p>
+					</div>
+					<div class="right dn all p5">
+						查看全部
+					</div>
+					<div class="right dn stop p5 ">
+						收起
+					</div>
+				</div>
+			</li>
+
+		</volist>
+		</ul>
+	</div>
+	<div class="votingsuccess">
+		<p>提示</p>
+		<div>
+			投票成功
+		</div>
+		<button>确定</button>
+	</div>
+	<div class="maxVotingsNum">
+			<p>
+				今天投票数已经用完，明天再为他投票吧
+			</p>
+	</div>
+	<div class="mask">
+			<img src="" alt="" />
+	</div>
+</body>
+
+<script src="__PUBLIC__/js/notify/notifyApp.js" type="text/javascript"></script>
+<script>
+	var userId = '{$userId}';
+	var role = '{$role}';
+	var is_Weixin = "{$isWei}";
+	var isFollow = "{$isFollow}";
+	var openid = "{$openid}";
+	function rightUI()
+	{
+		return {
+			'type':0,
+			'share':{
+                'url':"http://{$_SERVER['SERVER_NAME']}__URL__/votingDetails?id={$voteInfo['id']}&activity_id={$activity_id}",
+				'title':"{$voteInfo['title']}",
+				'content':"<?php echo preg_replace('/\s+/','',$details['description']);   ?>"
+			}
+	};
+	}
+	var isShare = userId == '0' ? 1:0;
+    //TODO:if isshare == 1 then clickVote -> fastreg
+	$(function () {
+		// $('.votinglist').eq(0).find('.num').hide().end().find('.v_align').show();
+		// $('.votinglist').eq(1).find('.num').hide().end().find('.v_align').attr('src','__PUBLIC__/img/activity/dierming.png').show();
+		// $('.votinglist').eq(2).find('.num').hide().end().find('.v_align').attr('src','__PUBLIC__/img/activity/disanming.png').show();
+		var text = Array();
+		for(var t = 0 ;t<$('.voting_p>p').length;t++){
+			text.push($('.voting_p>p').eq(t).html())
+		}
+
+		var text_ = Array();
+		$(".voting_p").each(function (i) {
+			var divH = $(this).height();
+			var $p = $("p", $(this)).eq(0);
+			while ($p.outerHeight() > divH) {
+				$p.text($p.text().replace(/(\s)*([a-zA-Z0-9]+|\W)(\.\.\.)?$/, "..."));
+				$(this).siblings('.all').show()
+			};
+
+
+
+		});
+		for(var a = 0 ;a<$('.voting_p>p').length;a++){
+			text_.push($('.voting_p>p').eq(a).html())
+		}
+		$('.all').on('click', function () {
+			var i = $(this).parent().parent('.votinglist').index();
+			$(this).siblings('.voting_p').css('height', 'auto').children('p').html(text[i]);
+			$(this).siblings('.stop').show().end().hide()
+
+		})
+		$('.stop').click(function() {
+			var i_ = $(this).parent().parent('.votinglist').index();
+			$(this).siblings('.voting_p').css('height', '6.9rem').children('p').html(text_[i_]);
+		$(this).siblings('.all').show().end().hide()
+		})
+		$('.vote').click(function () {
+
+			if(is_Weixin ==1) {
+				if (isFollow==1) { //直接投票
+					var id = $(this).attr('attr-vote');
+
+					$.ajax({
+						data:{'id':id,'userId':openid,'role':5},
+						url:"/index.php?m=Home&c=Activity&a=ajax_action_vote",
+						type:'post',
+						success:function (data) {
+							if(data == 'success'){
+								// alert('投票成功');
+								$.NotifyBox.NotifyPromptOneC('提示','投票成功','确定',function(){
+									$('.add1').stop(true).fadeIn(1000).fadeOut(1000);
+									window.location.reload();
+								});
+							}else if(data == 'full')
+								// alert('今天投票数已经用完，明天再为他投票吧');
+								$.NotifyBox.NotifyPromptOne('提示','今天投票数已经用完，<br>明天再为他投票吧！','确定');
+							else
+								// alert('操作异常，请稍后重试');
+								$.NotifyBox.NotifyPromptOne('提示','操作异常，请稍后重试','确定');
+
+						}
+					})
+				} else { //去关注
+					window.location.href="/index.php/ApiInterface/Version1_1/Activity/weChatConcern";
+					//window.location.href="https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzA3NjQ5Njk5OQ==&scene=124#wechat_redirect";
+				}
+			} else {
+				if(1 == isShare)
+				{
+					location.href = '/index.php/ApiInterface/Version1_1/RegisterQuick/loginQuick?url=<?php echo base64_encode($_SERVER['REQUEST_URI']); ?>';
+					return;
+				}
+				if(0 == {$if_vote})
+				{
+					// $('.maxVotingsNum').stop(true).fadeIn(1000).fadeOut(3000);
+					$.NotifyBox.NotifyPromptOne('提示','今天投票数已经用完，<br>明天再为他投票吧！','确定');
+					return
+				}
+				var id = $(this).attr('attr-vote');
+				var newHref = window.location.href;
+				$.ajax({
+					data:{'id':id,'userId':userId,'role':role},
+					url:"/index.php?m=Home&c=Activity&a=ajax_action_vote",
+					type:'post',
+					success:function (data) {
+						if(data == 'success'){
+							// alert('投票成功');
+							$.NotifyBox.NotifyPromptOneC('提示','投票成功','确定',function(){
+								$('.add1').stop(true).fadeIn(1000).fadeOut(1000);
+								window.location.replace(newHref);
+								if(newHref.indexOf('?t=') != -1){
+									window.location.replace(newHref.split("?t=")[0]+"?t="+Math.random())
+								} else {
+									window.location.replace(newHref+"?t="+Math.random());
+								}
+							});
+						}else if(data == 'full')
+							// alert('今天投票数已经用完，明天再为他投票吧');
+							$.NotifyBox.NotifyPromptOne('提示','今天投票数已经用完，<br>明天再为他投票吧！','确定');
+						else
+							// alert('操作异常，请稍后重试');
+							$.NotifyBox.NotifyPromptOne('提示','操作异常，请稍后重试','确定');
+
+					}
+				})
+			}
+
+		})
+	})
+	$('.votingsuccess').find('button').click(function(){
+		$('.votingsuccess').hide()
+	})
+	var vote_name = new Array();
+	var vote_number = new Array();
+	for(var i = 0;i<$('.votinglist').length;i++){
+			vote_name.push($('.votinglist').find('.name').eq(i).html())
+
+	}
+	for(var l = 0;l<$('.votinglist').length;l++){
+			vote_number.push($('.votinglist').find('.num').eq(l).html());
+	}
+	$('.seach_btn').click(function(){
+		$('.votinglist').hide();
+		if($('.search_text').val() != ''){
+			var searchtext = $('.seach_input').val();
+			var nPos;
+			var name_Result = [];//姓名
+			var num_Result = [];//编号
+			for(var i in vote_name){
+								var sTxt=vote_name[i]||'';
+								nPos = find(searchtext, sTxt);
+								if(nPos>=0){
+								name_Result[name_Result.length] = sTxt;
+						}
+			}
+			for(var i in vote_number){
+								var sTxt=vote_number[i]||'';
+								nPos = find(searchtext, sTxt);
+								if(nPos>=0){
+								num_Result[num_Result.length] = sTxt;
+						}
+			}
+			//姓名
+		for(var j = 0;j<name_Result.length;j++){
+				for(var l = 0;l<$('.votinglist').length;l++){
+				if(name_Result[j] == $('.votinglist').find('.name').eq(l).html()){
+					$('.votinglist').eq(l).show();
+				}
+			}
+		}
+		//编号
+		for(var j = 0;j<num_Result.length;j++){
+				for(var l = 0;l<$('.votinglist').length;l++){
+				if(num_Result[j] == $('.votinglist').find('.num').eq(l).html()){
+					$('.votinglist').eq(l).show();
+				}
+			}
+		}
+		if($('.votingul').height() == '0'){
+				// alert('搜索结果为空')
+		}
+		}else{
+			$('.votinglist').show();
+		}
+	})
+	function find(sFind, sObj){
+	var nSize = sFind.length;
+	var nLen = sObj.length;
+	var sCompare;
+	if(nSize <= nLen ){
+		for(var i = 0; i <= nLen - nSize + 1; i++){
+			sCompare = sObj.substring(i, i + nSize);
+			if(sCompare == sFind){
+				return i;
+			}
+		}
+	}
+	return -1;
+	}
+	$('.votinglistimg').click(function(){
+		var src = $(this).attr('src');
+		$('.mask').show().find('img').attr('src',src)
+	})
+	$('.mask').click(function(){
+			$(this).hide()
+	})
+	var webUrl = window.location.href;
+	//alert(sessionStorage.getItem('weizhiId'))
+	var toupiaoID = <?=TOUPIAO_ID?>;
+	var zixunID = <?=ZIXUN_ID?>;
+	var tpId = 'id='+toupiaoID
+	if(webUrl.indexOf(tpId)!= -1){
+		$('.miaoshu>a').click(function(){
+			var vId = $(this).parents('.votinglist').index();
+			sessionStorage.setItem('weizhiId',vId);
+			var obj = {};
+	        var sp_arr = window.location.search.substr(1).split("&");
+	        for (var i = 0; i < sp_arr.length; i++) {
+	            var arr2 = sp_arr[i].split("=");
+	            obj[arr2[0]] = arr2[1];
+	        }
+        	var urlid = obj.id;
+			var urlUserId = obj.userId;
+			var urlRole = obj.role;
+			if(webUrl.indexOf('role')!= -1){
+		window.location.href='/ApiInterface/Version1_2/ExpertInformation/informationDetails?id='+zixunID+'&userId='+obj.userId+'&user_id='+obj.userId+'&role='+obj.role
+			}else{
+				window.location.href='/ApiInterface/Version1_2/ExpertInformation/informationDetails?flagtrue=send&id='+zixunID+'&flag=1'
+			}
+		})
+
+		var schoolHid = sessionStorage.getItem('weizhiId')
+		window.onload = function(){
+			if(schoolHid != null){
+				var windowScrollTop = $('.votingul').children('li').eq(schoolHid).offset().top;
+
+				$("html,body").animate({"scrollTop":  windowScrollTop }, 1);
+			}
+		}
+	}
+	window.alert = function(name){
+      var iframe = document.createElement("IFRAME");
+      iframe.style.display="none";
+      iframe.setAttribute("src", 'data:text/plain,');
+      document.documentElement.appendChild(iframe);
+      window.frames[0].window.alert(name);
+      iframe.parentNode.removeChild(iframe);
+     };
+</script>
+
+
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="__PUBLIC__/js/share.js"></script>
+<script>
+	var appId = '{$signPackage.appId}';
+	var timestamp = '{$signPackage.timestamp}';
+	var nonceStr = '{$signPackage.nonceStr}';
+	var signature = '{$signPackage.signature}';
+	var title = '{$voteInfo.title}';
+	var content = "{$voteInfo['description_copy']}";
+	var linkimgUrl = 'http://{$WEB_URL}/Public/img/sharelogo.png';
+	share_weixin(appId, timestamp, nonceStr, signature, title, content, linkimgUrl);
+</script>
+
+</html>

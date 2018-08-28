@@ -1,0 +1,160 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+<div class="indexOutter overHidden">
+    <div class="standardMain hrefContent">
+        <a href="{:U('Student/studentList')}" class="returnBack">学生列表</a>
+        >
+        <span class="thePage">关联家长</span>
+    </div>
+
+    <div class="standardMain classContent tableContent mt0">
+        <form id="form_submit" action="{:U('Student/studentChooseParent')}" method="post" onsubmit="return checkInfo()">
+            <input type="hidden" value="{$student_id}" name="id" />
+            <div class="blueBox">
+            	<span class="left blueTitle">关联家长</span>
+            	<a href="javascript:;" class="blackText right submitA" id="">
+            		<img src="__PUBLIC__/img/admin/wanchengchuangjian.png" alt="" class="mr10">
+            		<input type='submit' class="submitInput" value='完成创建'/>
+            	</a>
+            </div>
+
+        	<div class="grid condensed cellBox infoOutter infoOutterModify">
+        		<div class="row cells3 infoBox">
+        			<div class="cell">
+        				<label>家长姓名：</label>
+        				<input type="text" class="input-control parent_name" name="" value="" placeholder="请输入家长姓名">
+        			</div>
+        			<div class="cell">
+        				<label>家长手机号：</label>
+        				<input type="text" class="input-control telephone" name="" value="" placeholder="请输入家长手机号">
+        			</div>
+
+                    <span class="commonBtnBlue operateBtn btnBig" id="appendGrade">添加</span>
+        		</div>
+        	</div>
+
+            <div class="tableOutter">
+                <table id="listWrapperClass" class="table striped hovered border newTable" style="display:none;">
+                	<thead>
+                		<tr>
+                			<th class="text-center">序号</th>
+                			<th class="text-center">家长姓名</th>
+                			<th class="text-center">家长手机号</th>
+                			<th class="text-center">操作</th>
+                		</tr>
+                	</thead>
+                	<tbody id="body"> 
+                		       
+                	</tbody>
+                </table>
+                <div class="Pagination">{$page}</div>
+            </div>
+        </form>
+    </div>
+</div>
+ 
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"19%"},
+                {"width":"27%"},
+                {"width":"27%"},
+                {"width":"27%"}
+            ]
+        });
+	})
+</script>
+
+<script>
+    var index=0;
+    var temp_tr='<tr class="tr_">'+
+                    '<td class="text-center"  class="parent_id">1</td>'+
+                    '<td class="text-center">xingming</td>'+
+                    '<td class="text-center">13314562878</td>'+ 
+                    '<td class="text-center"><a href="javascript:;" class="operBtn delete_button">删除</a></td>'+
+                    '</tr>';
+    var temp_input="<input type='hidden' name='parent[]' />";
+    
+        $("#appendGrade").click(function(){
+            var parent_name,telephone;
+            parent_name=$('.parent_name').val();
+            telephone=$('.telephone').val();
+           var  studentId = "<?php echo $student_id?>";
+            if(parent_name==''){
+                $.NotifyBox.NotifyOne('注意','请填写家长姓名！','确定'); 
+                return false;
+            }
+            if(telephone==''){
+                $.NotifyBox.NotifyOne('注意','请填写家长手机号！','确定'); 
+                return false;
+            }
+            var tel_reg=/^1[34578]{1}\d{9}$/;
+            if(tel_reg.test(telephone)==false){
+                $.NotifyBox.NotifyOne('注意','家长手机号格式不正确','确定');
+                return false;
+            }  
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"{:U('Student/getParentInfoByTel')}",
+                data:{'telephone':telephone,'parent_name':parent_name,'studentId':studentId},
+                success: function(msg){
+                    if(msg.data!=null && msg.data.id != undefined){
+                        //判断是否有相同的信息
+                        var allTr=$('#body').find('tr');
+                        for(var i=0;i<allTr.length;i++){
+                            if($(allTr[i]).attr('attr_id') == msg.data['id']){
+                                $.NotifyBox.NotifyOne('注意','该家长信息已存在！','确定');
+                                return false;
+                            }
+                        }
+                        if(msg.data.dataStatus == 'no'){
+                            $.NotifyBox.NotifyOne('注意','该家长信息已关联！','确定');
+                            return false;
+                        }
+                        index++;
+                        var clone_tr=$(temp_tr).clone(true);
+                        $(clone_tr).attr('attr_id',msg.data.id);
+                        $(clone_tr).find('td').eq(0).text(index);  
+                        $(clone_tr).find('td').eq(1).text(parent_name);
+                        $(clone_tr).find('td').eq(2).text(telephone); 
+                        $("#body").append(clone_tr);
+                        $("#listWrapperClass").show();
+                    }else{ 
+                        $.NotifyBox.NotifyOne('注意','库中不存在该家长信息！','确定'); 
+                        return false;
+                    }
+                }
+            });
+        });
+        
+        function checkInfo(){
+        if($('#body').find('.tr_').length){
+            var string='';
+            var allTr=$("#body").find('.tr_');
+            for(var i=0;i<allTr.length;i++){  
+                var clone_input=$(temp_input).clone(true);
+                $(clone_input).val($(allTr[i]).attr('attr_id'));
+                $("#form_submit").append(clone_input);
+            }    
+        } 
+        return true;
+    }
+
+    //移除tr
+    $('.delete_button').live('click',function(){
+        $(this).parent().parent().remove();
+        if(!$('#body').find('.tr_').length){
+            $("#listWrapperClass").hide();
+        }
+    });
+</script>

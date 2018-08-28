@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>{$name}</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/app/studentHomeworkElse.css?v=4">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<style>
+			.homeworkListTabContent .homeListCon.homeListCon1 {
+				padding-bottom: 0;
+			}
+
+			[v-cloak]{
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="cardTop">
+				<div class="circle">
+					<div class="pie_left"><div class="p_left"></div></div>
+					<div class="pie_right"><div class="p_right"></div></div>
+					<div class="maskBottom"></div>
+					<div class="mask">
+						<div class="percentBox"><span class="percentNum">{{ percentNum }}</span>%</div>
+						<div class="accuracy">正确率</div>
+						<div class="scoreBox"><span class="score">{{ score }}</span>分&nbsp;(<span class="totalPoints">{{ totalPoints }}</span>分)</div>
+					</div>
+				</div>
+
+				<div class="resultBottom">
+					<img src="{$oss_path}public/web_img/APPHomework/tijaioshijian.png" alt="" class="">
+					提交时间 {{ create_at_submit }}
+				</div>
+
+				<img src="__PUBLIC__/img/Apphomework/questionMark.png" alt="" class="questionMark">
+			</div>
+
+			<div class="homeworkListTabContent">
+				<div class="homeListCon homeListCon1">
+					<div class="homeListConTitle">
+						<img src="{$oss_path}public/web_img/APPHomework/huangseditu.png" alt="">
+						<span>语音作业</span>
+					</div>
+
+					<div class="dimBox">
+						<span class="dimCircle circleYes"></span>
+						<span class="dimAnswer answerYes">已作答</span>
+						<span class="dimCircle circleNo"></span>
+						<span class="dimAnswer answerNo">未作答</span>
+					</div>
+
+					<div class="">
+
+					<div class="parent_index homeCircleList" v-for="(ex,index) in exlist">
+						<p class="homeCircleName">
+							{{ ex.name }}
+						</p>
+						<ul class="homeCircleUl">
+							<li class="homeCircleLi" v-for="(exchild,cindex) in ex.data">
+								<a href="javascript:" class="qbtn" v-if="(exchild.url == '')">{{ cindex+1 }}</a>
+								<a href="javascript:" class="qbtn finishBtn" v-else>{{ cindex+1 }}</a>
+							</li>
+						</ul>
+					</div>
+
+					</div>
+				</div>
+			</div>
+
+			<div class="fullBack"></div>
+			<div class="successBox">
+				<div class="sucTitle">提交作业成功！</div>
+				<div class="sucMain">您是本班第2个完成作业的同学</div>
+				<div class="sucBtn">确定</div>
+			</div>
+			
+			<div class="fullBackMark"></div>
+			<div class="explainMark">
+				<div class="closeMark"></div>
+			</div>
+			
+		</div>
+	</body>
+
+	<script>
+		$(function(){
+			var winHeight = $(window).height();//屏幕的高度
+			var topHeight = $('.cardTop').outerHeight();//“答题卡顶部”的高度
+			var minusHeight = winHeight*1 - topHeight*1 - 10;//相减的高度
+			$('.homeListCon').css('minHeight',minusHeight);//标签页的最小高度
+
+			// var num = $('.score').text() / $('.totalPoints').text() * 360;
+			// if (num<=180) {
+			// 	$('.p_right').css('transform', "rotate(" + num + "deg)");
+			// } else {
+			// 	$('.p_right').css('transform', "rotate(180deg)");
+			// 	$('.p_left').css('transform', "rotate(" + (num - 180) + "deg)");
+			// };
+		})
+
+		$('.submitBtn').click(function(){
+			$('.fullBack,.successBox').show();
+		})
+		$('.sucBtn').click(function(){
+			$('.fullBack,.successBox').hide();
+		})
+
+		var userId = "{$userId}";
+		var role = "{$role}";
+		var homeworkId = "{$homeworkId}";
+		var classId = "{$classId}";
+		var submitId = "{$submitId}";
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId:0,
+				role:0,
+				homeworkId:0,
+				classId:0,
+				percentNum:'',
+				score:'',
+				totalPoints:'',
+				create_at_submit:'',
+				exlist:'',
+
+			},
+			created: function () { //应用初始化完毕加载
+				this.userId = userId;
+				this.role = role;
+				this.homeworkId = homeworkId;
+				this.classId = classId;
+				this.$http.post('/ApiInterface/Version1_2/HomeworkStudent/getSubmitHomeworkDetail',{userId:userId,role:role,id:submitId,isFlatten:1},{emulateJSON:'application/x-www-form-urlencoded'}).then(function(response){ //发送http请求
+					if(response.data.data.totalpoint==0){
+						this.percentNum = 0;
+					} else {
+						var numpoint = (response.data.data.point/response.data.data.totalpoint)*100;
+						numpoint = numpoint.toFixed(2);
+						this.percentNum =numpoint ;
+					}
+
+
+					this.score = response.data.data.point;
+					this.totalPoints = response.data.data.totalpoint;
+					this.create_at_submit = response.data.data.submittime;
+					this.exlist = response.data.data.data;
+					this.$nextTick(function () {
+
+						if($('.totalPoints').text() == 0){
+							var num = 0;
+						} else {
+							var num = $('.score').text() / $('.totalPoints').text() * 360;
+						}
+
+						if (num<=180) {
+							$('.p_right').css('transform', "rotate(" + num + "deg)");
+						} else {
+							$('.p_right').css('transform', "rotate(180deg)");
+							$('.p_left').css('transform', "rotate(" + (num - 180) + "deg)");
+						};
+					})
+
+				}, function(response){
+					// 响应错误回调
+					console.log('初始化作业信息错误');
+				});
+			},
+		})
+
+		$(document).on('click','.qbtn',function(){
+
+			var i =0;
+			var a = 0;
+			var c = 0;
+			if($(this).parents('.parent_index').index() == 0){
+				var i = $(this).parent().index();
+			}else{
+				var a = $(this).parents('.parent_index').index();
+				for(var b = 0;b<a;b++){
+					c += $('.parent_index').eq(b).find('.homeCircleLi').length;
+					i = c
+				}
+				i = i + $(this).parent().index()
+
+			}
+			window.location.href = "__URL__/exerciseDetails?submitId={$submitId}&userId={$userId}&role={$role}&id={$homeworkId}&type=2&flag="+i; //type=2已做
+			a =0
+		})
+
+
+		$('.questionMark').click(function(){
+			$('.fullBackMark,.explainMark').show();
+			$('body').css('overflow-y','hidden')
+		})
+
+		$('.fullBackMark,.closeMark').click(function(){
+			$('.fullBackMark,.explainMark').hide();
+			$('body').css('overflow-y','auto')
+		})
+	</script>
+</html>

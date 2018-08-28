@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title></title>
+		<link rel="stylesheet" href="__PUBLIC__/swiper/swiper-3.4.2.min.css" media="screen" title="no title" charset="utf-8">
+		<script type="text/javascript" src="__PUBLIC__/js/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/swiper/swiper-3.4.2.jquery.min.js"></script>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				-webkit-tap-highlight-color: rgba(0,0,0,0);
+				-webkit-tap-highlight-color: transparent;
+			}
+			html,body,.swiper-slide,.swiper-container{
+				height: 100%
+			}
+			.swiper-slide{
+				position: relative;
+			}
+			.next{
+				border-bottom: 1px solid #eee;
+				line-height: 30px;
+				margin-top: 45px
+			}
+			.swiper-button-next, .swiper-button-prev{
+				width:auto;
+
+				background: url(__PUBLIC__/img/Apphomework/shang.png) no-repeat 6px 13px;
+				background-size: 8px 13px;
+				position: static;
+				display: inline-block;
+				margin-top: 0;
+				height: auto;
+				padding: 4px 15px;
+				color:#333;
+				border-radius: 7px;
+				text-align: center;
+			}
+			.swiper-button-next{
+				float: right;
+				margin-right: 10px;
+				background: url(__PUBLIC__/img/Apphomework/xia.png) no-repeat 67px 13px;
+				background-size: 8px 13px;
+			}
+			p{
+				word-break: break-all;
+				width: 100%
+			}
+			.Corrections{
+				position: fixed;
+				width: 100%;
+				line-height: 40px;
+				color: #fff;
+				text-align: center;
+				background: #f2b81a;
+				bottom:0
+			}
+			.appTop .appTopTitle {
+				height: 44px;
+				line-height: 44px;
+				font-size: 20px;
+				margin: 0 60px;
+				text-align: center;
+			}
+			.appTop .appTopTitle .title {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				max-width: 100%;
+				display: inline-block;
+			}
+			.appTop .returnBox {
+				width: 44px;
+				height: 100%;
+				background: url(__PUBLIC__/img/Apphomework/fanhui.png) no-repeat center;
+				background-size: 10px 16px;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			.appTop {
+				height: 44px;
+				width: 100%;
+				border-bottom: 1px solid #eee;
+				position: fixed;
+				top: 0;
+				background: #fff;
+				z-index: 100;
+				box-sizing: content-box;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div class="swiper-container"  >
+
+			<div class="swiper-wrapper swiper-no-swiping" id="exerciseDiv">
+
+				<div class="swiper-slide"   v-for="(list,index) in exerciseData1" v-cloak>
+					<div class="appTop">
+						<div class="returnBox"   onclick="window.history.go(-1)"></div>
+						<div class="appTopTitle">
+							<p class="title">批改作业</p>
+						</div>
+					</div>
+					<div class="p20 next">
+						<div class="swiper-button-prev left">上一题</div>
+
+							<div class="swiper-button-next">下一题
+							</div>
+					</div>
+					<div class="neirong" style="padding:10px">
+						<p v-html="list.subject_name" class="existence">
+
+						</p>
+						<p v-html="'答案：'+list.right_key">
+
+						</p>
+						<p v-html="'解析:'+list.analysis">
+
+						</p>
+					</div>
+
+					<div class="Corrections" @click="homeworkCorrecting" :id="list.id">
+						开始批改
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script type="text/javascript">
+		var homeworkId = "{$homeworkId}";
+		var classId = "{$classId}";
+		var status = "{$status}";
+		var userId = "{$userId}";
+		var role= "{$role}";
+		var flag = "{$flag}";
+		var flagIndex = parseInt(flag);
+		var exerciseId = "{$exerciseId}";
+		var workId = "{$workId}";
+		var newdata ;
+		var newindex ;
+		var exercise = new Vue({
+			el : '#exerciseDiv',
+			data:{
+				exerciseData:[],
+				exerciseData1:[],
+				exerciseUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/getCorrectHomeWorkListExWork',
+				homeworkId:homeworkId,
+				classId:classId,
+				flag :flag,
+				userId:userId,
+				exerciseIdData:'',
+				exerciseId:exerciseId,
+				exercisedetailsUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/getExerciseIdAllDetails',
+				nextIndex:0,
+				prevIndex:0,
+				flagIndex:flagIndex,
+				workId:workId,
+			},
+			created :function(){
+				this.exercise();
+
+			},
+	        mounted:function(){
+
+	        },
+			methods:{
+				exercise:function(){
+					this.$http.post(this.exerciseUrl,{
+						homeworkId: this.homeworkId,
+						classId: this.classId,
+					},{
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function(response){
+						for(var a= 0;a<response.data.data.length;a++){
+							if(response.data.data[a].isP =='2'){
+								this.exerciseData.push('')
+							}
+						};
+						for(var i=0;i<response.data.data.length;i++){
+							if(this.exerciseIdData == ''&&response.data.data[i].isP == '2'){
+								this.exerciseIdData =  response.data.data[i].exercises_id
+							}else if(response.data.data[i].isP == '2'){
+								this.exerciseIdData = this.exerciseIdData +','+response.data.data[i].exercises_id
+							}else{
+
+							}
+						}
+						this.exerciseDetails()
+						},function (response) {
+							console.log('错误2')
+						})
+				},
+			exerciseDetails:function(){
+				this.$http.post(this.exercisedetailsUrl,{
+					exercise_id_list: this.exerciseIdData,
+					isArr:2,
+				},{
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function(response1){
+					// console.log(response1.data);
+					this.exerciseData1 = response1.data.data;
+					// console.log(this.exerciseData1);
+					this.$nextTick(function(){
+						var mySwiper = new Swiper ('.swiper-container',{
+							initialSlide:this.flag,
+							prevButton:'.swiper-button-prev',
+							nextButton:'.swiper-button-next',
+						});
+						$('#exerciseDiv').height($(document).height())
+						$('.neirong').css({
+							'height':$(document).height()-125,
+							'overflow-y':'scroll'
+						})
+					})
+
+				},function (response1) {
+					console.log('错误2')
+				},function (response1) {
+					console.log('错误2')
+				})
+			},
+			homeworkCorrecting:function($event){
+				var eid = $event.target.id
+				var flag = $('.swiper-slide-active').index()
+window.location.href='/index.php/ApiInterface/Version1_3/TeacherHomework/homeworkCorrecting?userId='+userId+'&classId='+classId+'&exerciseId='+eid+'&homeworkId='+this.homeworkId+'&flag='+flag+'&all='+this.exerciseData1.length
+
+			},
+		}
+	})
+	function showWebNav(){}//显示web导航
+		</script>
+	</body>
+</html>

@@ -1,0 +1,290 @@
+<layout name="admin_layout_exercise"/>
+<div class="boxOutter">
+  <div class="borderBottom  mb30 pb20 of">
+    <span class="color3baeab left spanTitle">试题详情</span>
+    <?php if(in_array('ExerciseState/setExerciseStateEXERCISE_STATE_REPROCESS',session('exercises_permissions'))){ ?>
+    <button type="button" name="button" class="btn btn2 right"  pid="{$exercise_info.id}" id="rukubatchReject">返工</button>
+    <?php }?>
+    <?php if(in_array('ExerciseState/setExerciseStateEXERCISE_STATE_WAITMARK',session('exercises_permissions'))){ ?>
+    <button type="button" name="button" class="btn btn2 right" id="fenpei">分派</button>
+    <?php }?>
+  </div>
+  <div class="detailsDiv">
+    <ul class="of">
+      <li class="">
+        试&nbsp; 题&nbsp; ID - {$exercise_info['id']}
+        <input type="hidden" id="exercise_status_{$exercise_info['id']}" value={$exercise_info['status']}{$exercise_info['is_delete']} />
+      </li>
+      <li class="">
+        题&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型 - {$exercise_info['topic_type_name']['name']}
+      </li>
+      <li class="">
+        学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科 - {$exercise_info['course_name']}
+      </li>
+      <li class="">
+        分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;值 - {$exercise_info['count_score']}
+      </li>
+      <li class="">
+        试题状态 - <switch name="exercise_info.status" >
+        <case value="19"><span>试卷中的习题待校审</span></case>
+        <case value="20"><span>待校审</span></case>
+        <case value="25"><span>返工</span></case>
+        <case value="24"><span>不通过</span></case>
+        <case value="50"><span>待分派</span></case>
+        <case value="60"><span>待标引</span></case>
+        <case value="70"><span>已完成</span></case>
+        <case value="80"><span>未入库</span></case>
+        <case value="90"><span>已入库</span></case>
+        <case value="110"><span>上架</span></case>
+        <case value="120"><span>下架</span></case>
+      </switch>
+      </li>
+      <li class="">
+        习题来源 - {$exercise_info['exercise_source_name']['name']}
+      </li>
+      <li class="">
+        试&nbsp; 卷&nbsp; ID - {$exercise_info['pid']}
+      </li>
+      <li class="">
+        试卷名称 - {$exercise_info['paper_name']}
+      </li>
+      <li class="">
+        年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份 - {$exercise_info['year']}年
+      </li>
+    </ul>
+  </div>
+  <div class="m30 exerciseDetails">
+
+  </div>
+
+  <div class="borderBottom">
+    <span class="text-center tabBtn">试题追踪</span>
+  </div>
+  <table class="tableCommon borderNone mt20">
+    <thead>
+    <tr>
+      <th width="20%">序号</th>
+      <th width="20%">操作</th>
+      <th width="20%">操作人</th>
+      <th width="20%">时间</th>
+      <th width="20%">备注</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($exercise_info['track'] as $trackK => $trackV): ?>
+    <tr>
+      <td><?=$trackK+1?></td>
+      <td><?=$trackV['oper_name']?></td>
+      <td><?=$trackV['operator_name']?></td>
+      <td><?=$trackV['oper_time']?></td>
+      <td class="showDetails"><a href="javascript:"><?=$trackV['comment']?></a></td>
+    </tr>
+    <?php endforeach ?>
+    </tbody>
+  </table>
+</div>
+
+<!-- 弹窗：添加备注 -->
+<div class="adminNotifyBox" id="addRemarks" style="z-index:100">
+  <div class="adminNotifyTitle">
+    添加备注
+  </div>
+  <div class="adminNotifyContent">
+    <textarea name="" id="" class="remarksMain" rows="6" placeholder="请输入返工的理由，限100字" maxlength="100"></textarea>
+  </div>
+  <p class="adminNotifyButton">
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" pid="{$exercise_info.id}" state="<?= EXERCISE_STATE_REPROCESS ?>" id="addRemarksSure">完成</a>
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksCancel">取消</a>
+  </p>
+</div>
+
+
+<div class="adminNotifyBox" id="teacherAssign" style="z-index:1000">
+  <div class="adminNotifyTitle">
+    分派教师知识标引
+  </div>
+  <div class="adminNotifyContent">
+    <div class="teacherChoose">
+      <label for="" class="w64">选择教师</label>
+      <select name="" id="teacherSelect" class="inputCommon">
+        <option value="0">选择知识标引的教师</option>
+        <volist name="markTeachers" id="markTeachers">
+          <option value="{$markTeachers.id}">{$markTeachers.name}</option>
+        </volist>
+      </select>
+    </div>
+  </div>
+  <p class="adminNotifyButton">
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2"  pid="{$exercise_info.id}" state="<?=  EXERCISE_STATE_WAITMARK ?>" id="teacherAssignSure">完成</a>
+    <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="teacherAssignCancel">取消</a>
+  </p>
+</div>
+
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script>
+
+  $('#rukubatchReject').click(function(){
+    $('#addRemarks').show();
+  });
+
+  //审核习题为返工
+  $('#addRemarksSure').unbind().click(function(){
+    var reason = $('.remarksMain').val().trim();
+    var id = $(this).attr('pid');
+    var state = $(this).attr('state');
+
+    if(reason == '')
+    {
+      $.NotifyBox.NotifyOne('提示','请输入返工录入原因','确定');
+    }
+    else {
+      $('.fullBack,#addRemarks').hide();
+      rukureject(id,state,reason);
+    }
+
+  })
+
+  function rukureject( id,state,reason ) {
+    var requestdata={ids:id,state:state,additionalInfo:reason}
+    $.ajax({
+      type: "POST",   //访问WebService使用Post方式请求
+      url: 'index.php?m=Exercise&c=ExerciseState&a=setExerciseState', //调用WebService的地址和方法名称组合---WsURL/方法名
+      data:requestdata,
+      dataType:'json',
+      beforeSend:function () {
+        loading('createAnswerQuestions');
+      },
+      success: function(res){
+        console.log(res);
+        if (res.status ==200) {
+          removeLoad('createAnswerQuestions');
+          window.history.go(-1);
+        } else {
+          removeLoad('createAnswerQuestions');
+          showError(res.message);
+        }
+      }
+    });
+  }
+
+  // 添加备注
+  $('#addRemarksCancel').click(function(){
+    $('.fullBack,#addRemarks').hide();
+  })
+
+  //提交入库
+
+  $('#rukubiaoyin').click(function(){
+    var id = $(this).attr('pid');
+    var state = "<?= EXERCISE_STATE_INBOUND ?>";
+    $.NotifyBox.NotifyTwoCallTwo('标引','确定要入库吗？','确定','取消',function(){
+      var requestdata={ids:id,state:state}
+      $.ajax({
+        type: "POST",   //访问WebService使用Post方式请求
+        url: 'index.php?m=Exercise&c=ExerciseState&a=setExerciseState', //调用WebService的地址和方法名称组合---WsURL/方法名
+        data:requestdata,
+        dataType:'json',
+        beforeSend:function () {
+          loading('createAnswerQuestions');
+        },
+        success: function(res){
+          console.log(res);
+          if (res.status ==200) {
+            removeLoad('createAnswerQuestions');
+            window.history.go(-1);
+          } else {
+            removeLoad('createAnswerQuestions');
+            showError(res.message);
+          }
+        }
+      });
+    })
+  })
+
+  //重新标引
+  $('#chongxinbiaoyin').click(function(){
+    var id = $(this).attr('pid');
+    var state = "<?= EXERCISE_STATE_WAITMARK ?>";
+    $.NotifyBox.NotifyTwoCallTwo('标引','确定要重新标引吗？','确定','取消',function(){
+      var requestdata={ids:id,state:state}
+      $.ajax({
+        type: "POST",   //访问WebService使用Post方式请求
+        url: 'index.php?m=Exercise&c=ExerciseState&a=setExerciseState', //调用WebService的地址和方法名称组合---WsURL/方法名
+        data:requestdata,
+        dataType:'json',
+        beforeSend:function () {
+          loading('createAnswerQuestions');
+        },
+        success: function(res){
+          console.log(res);
+          if (res.status ==200) {
+            removeLoad('createAnswerQuestions');
+            window.history.go(-1);
+          } else {
+            removeLoad('createAnswerQuestions');
+            showError(res.message);
+          }
+        }
+      });
+    })
+  })
+
+
+  //分派
+  $('#fenpei').click(function(){
+    $('#teacherAssign').show();
+  })
+
+  //重新标引
+  $('#teacherAssignSure').click(function(){
+    $('#teacherAssign').hide();
+    var id = $(this).attr('pid');
+    var state = "<?= EXERCISE_STATE_WAITMARK ?>";
+    var teacherid = $('#teacherSelect').val();
+    if (teacherid<=0) {
+      return false;
+    }
+    $.NotifyBox.NotifyTwoCallTwo('分派','确定要分派吗？','确定','取消',function(){
+      var requestdata={ids:id,state:state,additionalInfo:teacherid}
+      $.ajax({
+        type: "POST",   //访问WebService使用Post方式请求
+        url: 'index.php?m=Exercise&c=ExerciseState&a=setExerciseState', //调用WebService的地址和方法名称组合---WsURL/方法名
+        data:requestdata,
+        dataType:'json',
+        beforeSend:function () {
+          loading('createAnswerQuestions');
+        },
+        success: function(res){
+          console.log(res);
+          if (res.status ==200) {
+            removeLoad('createAnswerQuestions');
+            window.history.go(-1);
+          } else {
+            removeLoad('createAnswerQuestions');
+            showError(res.message);
+          }
+        }
+      });
+    })
+  })
+
+  $('#teacherAssignCancel').click(function(){
+    $('#teacherAssign').hide();
+  })
+
+</script>
+<script type="text/javascript">
+	var exercise_id = '{$exercise_info.id}';
+	var difficulty = "{$exercise_info['difficulty_name']}";
+	$.ajax({
+		type:'GET',
+		url:'/index.php?m=Exercise&c=CreateExercise&a=getApiExercisesInfo&id='+exercise_id,
+		dataType:'json',
+		success:function(msg){
+			console.log(msg);
+			$('.exerciseDetails').append(msg.data.json_html);
+		}
+	})
+</script>

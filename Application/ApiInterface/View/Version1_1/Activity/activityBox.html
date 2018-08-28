@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>活动详情</title>
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			font-family: "宋体" !important;
+		}
+
+		html,
+		body {
+			width: 100%;
+			overflow-y: auto;
+		}
+
+		img, video {
+			max-width: 95%;
+			display: block;
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			margin: auto;
+			background: #000;
+		}
+
+		video {
+			min-width: 60%
+		}
+	</style>
+</head>
+<body>
+	<script>
+		var obj = {};
+        var sp_arr = window.location.search.substr(1).split("?");
+        for (var i = 0; i < sp_arr.length; i++) {
+            var arr2 = sp_arr[i].split("=");
+            obj[arr2[0]] = arr2[1];
+        }
+		
+		var attr_type = obj.detailsType; //类型
+		var attr_path = obj.detailsPath; //地址
+			switch (attr_type) {
+				case 'image':
+					var img = '<img src='+attr_path+' class="actvityImg">';
+					$('body').append(img);
+					break;
+				case 'video':
+				case 'audio':
+					var video = '<video src='+attr_path+' controls class="actvityVideo">';
+					$('body').append(video);
+					break;
+			}
+	</script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<layout name="admin_layout"/>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+    
+    .phone_box {
+        width:100%; 
+        border:1px solid #ccc; 
+        background:#fff; 
+        position:absolute;
+        top:40.8px;
+        left:0;
+        z-index:9999;
+        display:none;
+    }
+    
+    .phone_ul {
+        padding:5px;
+        width:100%;
+        margin:0;
+        list-style:none;
+        font-size: 14px;
+    }
+    
+    .phone_li {
+        cursor: pointer;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 班级信息列表" class="button {:session('btntheme')}">&lt; 返回 班级信息列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/modifyClassOp" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput"
+          data-show-error-hint="true">
+        <div class="example" data-text="基本信息">
+            <input type="hidden" id="id" name="id" value="{$data.id}">
+ 
+            <div class="form_section">
+                <label for="class">班级</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="class" id="class" data-validate-func="required" value="{$data.name}" data-validate-hint="班级不能为空"/>
+                           
+                </div>
+            </div>
+            
+            <!--<div class="form_section">
+                <label for="course">学科</label>
+
+                <div class="input-control text full-size">
+                    <select id="course" name="course" data-validate-func="required" data-validate-hint="学科不能为空">
+                        <option value="">-请选择学科-</option>
+                        <volist name="course" id="course_item">
+                            <option value="{$course_item.id}" <if condition="$course_item['id']==$data['course_id']">selected</if> >{$course_item.course_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>-->
+            
+            <div class="form_section">
+                <label for="contact">班主任手机号</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="telephone" id="telephone" value="{$data.teacher_phone}" autocomplete="off" style="position: relative;">
+                    <div class="phone_box">
+                       <ul class="phone_ul" id="phone_ul"> 
+                       </ul>
+                    </div> 
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="teacher_id">班主任姓名</label>
+
+                <div class="input-control text full-size">
+                    <!--<select id="teacher_id" name="teacher_id" data-validate-func="required" data-validate-hint="请选择班主任">
+                        <option value="">-请选择班主任-</option>
+                        <volist name="teacher" id="teacher_item">
+                            <option value="{$teacher_item.id}" <if condition="$teacher_item['id']==$data['teahcer_id']">selected</if>>{$teacher_item.name}</option>
+                        </volist>
+                    </select>
+                    -->
+                    <input value="{$data.teacher_name}" id="teacher_name" name="teacher_name" data-validate-func="required" data-validate-hint="请填写班主任姓名" disabled="disabled"/>
+                </div>
+            </div> 
+            
+            <div class="form_section">
+                <label for="email">班主任邮箱</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="email" id="email" value="{$data.teacher_email}" disabled="disabled">
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="grade">年级</label>
+
+                <div class="input-control text full-size">
+                    <select id="grade" name="grade" data-validate-func="required" data-validate-hint="年级不能为空">
+                        <option value="">-请选择年级-</option>   
+                        <option value="{$data.grade_id}" selected="true">{$data.grade}</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button {:session('btntheme')}" onclick="return check();">保存</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    var lispan='<li class="phone_li"><span></span> <span style="display: none;"></span> <span style="display: none;"></span></li>';
+    var option="<option value='0'>-请选择-</option>"; 
+      
+    
+    //手机号按钮发生改变
+     $('#telephone').keyup(function(){
+         var tel=$("#telephone").val(); 
+         if(tel==''){
+            $('.phone_box').hide();
+            $('#teacher_name').val('');
+            $("#email").val('');
+         } 
+         $.ajax({
+             type: "post",
+             url: "index.php?m=Home&c=Admin&a=getTeacherInfo",
+             data: {'tel':tel},
+             dataType: "json",
+             success: function(msg){
+                 $(".phone_li").remove();
+                 if(msg.status=='success'){ 
+                    if(msg.data.length>0){ 
+                        for(var i=0;i<msg.data.length;i++){
+                            if(i==0){
+                                $('#teacher_name').val(msg.data[i].name);
+                                $("#email").val(msg.data[i].email);
+                            }
+                            var temp_li_span=$(lispan).clone(true);
+                            $(temp_li_span).children('span').eq(0).text(msg.data[i].telephone);
+                            $(temp_li_span).children('span').eq(1).text(msg.data[i].name);
+                            $(temp_li_span).children('span').eq(2).text(msg.data[i].email);
+                            $("#phone_ul").append(temp_li_span); 
+                        }
+                        $('.phone_box').show();
+                    }else{ 
+                        $('.phone_box').hide();
+                        $('#teacher_name').val('');
+                        $("#email").val('');
+                    }
+                 } 
+             }
+         });
+         //请求年级
+         $.ajax({
+             type: "post",
+             url: "index.php?m=Home&c=Admin&a=getTeachGradeInfo",
+             data: {'tel':tel},
+             dataType: "json",
+             success: function(message){       
+                 $("#grade option:not(:eq(0))").remove();
+                 if(message.status=='success'){  
+                     for(var i=0;i<message.data.length;i++){
+                         var temp_option=$(option).clone(true);
+                         $(temp_option).val(message.data[i].grade_id);
+                         $(temp_option).text(message.data[i].grade);
+                         $("#grade").append(temp_option);
+                     }
+                 }     
+             }
+         });
+     })
+     
+     //点击新增的
+     $(".phone_li").live('click',function(){    
+         $('#telephone').val($(this).children('span').eq(0).text());
+         $('#teacher_name').val($(this).children('span').eq(1).text()); 
+         $('#email').val($(this).children('span').eq(2).text()); 
+         $('.phone_box').hide();
+         $('.phone_li').remove();
+     });
+    
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+    
+    function check() {
+
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regTel.test($("#telephone").val())) {
+            $.Notify({
+                caption: '提示',
+                content: '手机号格式不正确',
+                type: 'warning'
+            });
+            return false;
+        }
+        
+        /*var regEmail = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+        if (!regEmail.test($("#email").val())) {
+            $.Notify({
+                caption: '提示',
+                content: '邮箱格式不正确',
+                type: 'warning'
+            });
+            return false;
+        }*/
+        return true;
+    }
+</script>
+<script>
+    $('#telephone').click(function(){
+        if($(".phone_li").length>0){
+            $('.phone_box').toggle();
+        }
+    })
+ 
+</script>
+</body>
+</html>

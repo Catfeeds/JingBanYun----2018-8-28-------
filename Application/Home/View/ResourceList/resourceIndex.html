@@ -1,0 +1,535 @@
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/resourceList.css?ver=1" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+
+<if condition="$role eq 2">
+	<div class="main_opr">
+		<a href="{:U('ResourceList/resourceIndex')}" title="发布资源" class="btn btn-main-opr btn-main-opr-active">教师分享</a> &nbsp;
+		<a href="{:U('Teach/publishResource')}" title="发布资源" class="btn btn-main-opr">发布资源</a> &nbsp;
+		<a href="{:U('Teach/myPublishResource')}" title="我发布的资源" class="btn btn-main-opr">我发布的资源</a> &nbsp;
+		<!--    <a href="{:U('Teach/myFavorResource')}" title="我收藏的资源" class="btn btn-main-opr">我收藏的资源</a>-->
+	</div>
+</if>
+
+<div class="resource_box">
+	<div class="resource_top">
+		<div class="search">
+			<div class="search_left">
+			
+				<button class="search_btn">搜索</button>
+				<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资源名称" autocomplete="off">
+			</div>
+			<div class="search_right">
+				<a href="javascript:;" class="filter_a">高级检索</a>
+			</div>
+		</div>
+	</div>
+
+<div class="of resource_name" style="margin-right:20px">
+			<div class="resource_left">热读分享</div>
+<!--			<div class="resource_right"><a href="{:U('ResourceList/resourceList')}&column_type={$HOT_READ_SHARE}" class="resource_a">查看全部资源>></a></div>-->
+		</div>
+			<div class="resource_bottom">
+		<ul class="row resource_ul">
+			<volist name="hot_data" id="data" empty="欢迎您的分享，记录您的点滴！" key="i">
+				<li class="col-lg-3 col-md-4  col-sm-6 resource_li" id="l_{$data.id}" onclick="return clearPager;">
+
+					<switch name="data.type">
+						<case value="video">
+							<div class="res_box">
+								<div class="res_abox">
+								
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url('<if condition="strpos($data['vid_image_path'],'http')===false">
+											{$oss_path}{$data.vid_image_path}
+											<else />
+											{$data.vid_image_path}</if>') 0 ; background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								  <a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/shipin.png" alt="" class="type_img">{$data.name}</p>
+									</a>
+									
+						</case>
+						<case value="audio">
+							<div class="res_box">
+								<div class="res_abox">
+								
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_shipin.png) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="type_img">{$data.name}</p>
+
+									</a>
+						</case>
+						<case value="image">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url({$oss_path}{$data.file_path}) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/tupian.png" alt="" class="type_img">{$data.name}</p>
+
+									</a>
+						</case>
+						<case value="condensed">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails')}&id={$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_yasuobao.png) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails')}&id={$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="type_img">{$data.name}</p>
+
+									</a>
+						</case>
+						<case value="word">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_word.png) 0 ;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title" title="{$data.name}"><img src="__PUBLIC__/img/resource/word.png" alt="" class="type_img">{$data.name}</p>
+
+									</a>
+						</case>
+						<case value="ppt">
+							<div class="res_box">
+								<div class="res_abox">
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_ppt.png) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/ppt.png" alt="" class="type_img">{$data.name}</p>
+
+									</a>
+						</case>
+						<case value="pdf">
+							<div class="res_box">
+								<div class="res_abox">
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_pdf.png) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/pdf.png" alt="" class="type_img">{$data.name}</p>
+
+									</a>
+						</case>
+						<case value="swf">
+							<div class="res_box ieSwf">
+								<div class="res_abox">
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_swf.png) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="type_img">{$data.name}</p>
+									</a>
+						</case>
+					</switch>
+                                        
+					<p class="resource_p">
+						<span class="left" style="margin-right:10px">{$data.textbook}</span>
+						
+						<span class="right">{$data.create_at|date="Y-m-d ",###}</span>
+					</p>
+					</div>
+					</div>
+				</li>
+			</volist>
+		</ul>
+		</div>
+			
+
+	<div class="of resource_name">
+		<div class="resource_left">最新分享</div>
+		<div class="resource_right"><a href="{:U('ResourceList/resourceList')}&order=desc" class="resource_a">查看全部资源>></a></div>
+	</div>
+	<div class="resource_bottom">
+		<ul class="row resource_ul">
+			<volist name="new_share_data" id="data" empty="欢迎您的分享，记录您的点滴！" key="i">
+				<li class="resource_li" id="l_{$data.id}" onclick="return clearPager;">
+
+					<switch name="data.type">
+						<case value="video">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url('<if condition="strpos($data['vid_image_path'],'http')===false">
+											{$oss_path}{$data.vid_image_path}
+											<else />
+											{$data.vid_image_path}</if>') 0; background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+										
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/shipin.png" alt="" class="type_img">{$data.name}</p>
+                                </a>
+									
+						</case>
+						<case value="audio">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_shipin.png) 0;background-size:100%">
+									</a>	
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="type_img">{$data.name}</p>
+                                </a>
+									
+						</case>
+						<case value="image">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url({$oss_path}{$data.file_path}) 0;background-size:100% ">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/tupian.png" alt="" class="type_img">{$data.name}</p>
+								</a>
+									
+						</case>
+						<case value="condensed">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails')}&id={$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_yasuobao.png) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>	
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails')}&id={$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}">	<img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="type_img">{$data.name}</p>
+								</a>	
+						</case>
+						<case value="word">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_word.png) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>	
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/word.png" alt="" class="type_img">{$data.name}</p>
+								</a>
+									
+						</case>
+						<case value="ppt">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_ppt.png) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>	
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/ppt.png" alt="" class="type_img">{$data.name}</p>
+								</a>
+									
+						</case>
+						<case value="pdf">
+							<div class="res_box">
+								<div class="res_abox">
+									
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_pdf.png) 0;background-size:100%">
+									</a>
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>	
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/pdf.png" alt="" class="type_img">{$data.name}</p>
+
+									</a>
+						</case>
+						<case value="swf">
+							<div class="res_box ieSwf">
+								<div class="res_abox">
+									<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" style="background:url(__PUBLIC__/img/resource/i_swf.png) 0;background-size:100%">
+										
+										</a>
+										<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank" class="res_school">
+										<span class="left">{$data.teacher_name}</span>
+										<span class="right">{$data.school_name}</span>
+									</a>
+								</div>
+								<div class="res_bottom" >
+								<a href="{:U('ResourceList/resourceDetails?id=')}{$data.id}" target="_blank">
+									<p class="resource_title"  title="{$data.name}"><img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="type_img">{$data.name}</p>
+								</a>
+						</case>
+					</switch>
+
+					<p class="resource_p">
+						<span class="left" style="margin-right:10px">{$data.textbook}</span>
+					
+						<span class="right">{$data.create_at|date="Y-m-d ",###}</span>
+					</p>
+					</div>
+					</div>
+				</li>
+			</volist>
+		</ul>
+		</div>
+		<div class="Pagination">{$page}</div>
+
+		</div>
+			</div>
+			<div class="filtepopups">
+	<img src="__PUBLIC__/img/classManage/icon_delete.png" alt="" class="delete">
+	<p class="fp1">选择检索控制条件</p>
+	<p class="fp2">高级检索是利用多条件组合的方式，指定检索范围以达到检索的精准度要求，以下检索条件均为选填，您可以任意自由组合条件进行检索。</p>
+        
+	<form action="{:U('ResourceList/resourceList')}" method='get'>
+                <input type='hidden' name='m' value='Home'/>
+                <input type='hidden' name='c' value='ResourceList'/>
+                <input type='hidden' name='a' value='resourceList'/>
+                        
+		<div class="formdiv">
+			<label for="">资源名称：</label>
+			<div class="rightdiv">
+				<input type="text" name='keyword' placeholder="请输入资源名称">
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">资源格式：</label>
+			<div class="rightdiv">
+                            <select name="type">
+                                <option value="">--选择--</option>
+                                <volist name="resource_file_type" id="item_file">
+                                    <option value="{$item_file.value}">{$key}</option>
+                                </volist>
+                            </select>
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：</label>
+			<div class="rightdiv">
+				<select name="course" id="t_course">
+                                    <option value="">--选择--</option>
+                                    <volist name="course_list" id="course_item">
+                                        <option value="{$course_item.id}">{$course_item.name}</option>
+                                    </volist>
+                                </select>
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</label>
+			<div class="rightdiv">
+				<select name="grade" id="t_grade">
+                                    <option value="">--选择--</option>
+                                    <volist name="grade_list" id="grade_item">
+                                        <option value="{$grade_item.id}">{$grade_item.name}</option>
+                                    </volist>
+                                </select>
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">教材分册：</label>
+			<div class="rightdiv">
+				<select name="school_term" id="t_textbook">
+					<option value="">--选择--</option> 
+                                        <option value="1">上册</option>
+                                        <option value="2">下册</option>
+                                        <option value="3">全一册</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="formdiv">
+			<label for="">上架时间：</label>
+			<div class="rightdiv">
+				<input type="text" class="select220" name='s_time' id="startTime">
+				&nbsp;至
+				<input type="text" class="select220 right" name='e_time'  id="endTime">
+			</div>
+		</div>
+		<div class="formdiv">
+			<label for="">教&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;师：</label>
+			<div class="rightdiv">
+				<input type="text" name="author" placeholder="请输入作者姓名">
+			</div>
+		</div>
+		<div class="formdiv text-center">
+			<button class="filterbtn">开始检索</button>
+		</div>
+	</form>
+</div>
+<div id="bg"></div>
+		
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	//点击搜索
+	$('.search_btn').click(function(){
+		var keyword=$('.search_text').val();
+		var string='';
+		if(keyword!=''){
+			string+='&keyword='+keyword;
+		}
+		var url="/index.php?m=Home&c=ResourceList&a=resourceList"+string;
+		location.href=url;
+	});
+	$(".search_text").keydown(function (evt) {
+		if (event.keyCode == "13") { //keyCode=13是回车键
+			var evt = (evt) ? evt : ((window.event) ? window.event : "")
+			var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+			$('.search_btn').click();
+		}
+	})
+
+    $('.res_abox>a').hover(function(){
+		$(this).parent().css('border-color','#666');
+		$(this).stop().animate({
+			'background-size':'150%',
+			'background-position':'-30px'
+		})
+	},function(){
+		$(this).parent().css('border-color','#fff');
+		$(this).stop().animate({
+			'background-size':'100%',
+			'background-position':'0'
+		})
+	})
+	
+    !function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+                            
+				$('.resource_classify').hover(function () {
+					$(this).children('.classify_ul').filter(':not(:animated)').slideDown()
+				}, function () {
+					$(this).children('.classify_ul').slideUp()
+				})
+				$('.current_selected').each(function (i, n) {
+					var cho = $.trim($(this).html());
+					$(this).parent().siblings('.resource_name').html(cho)
+				})
+				$('.sort_desc_red,.sort_asc_red').each(function (i, n) {
+					var cho = $.trim($(this).parent().siblings('.sort_text').html());
+					$(this).parent().siblings('.resource_name').html(cho);
+					$(this).parent().parent().parent().siblings('.resource_name').html(cho)
+				})
+				$('.ieSwf').click(function () {
+					var userAgent = navigator.userAgent;
+					var isOpera = userAgent.indexOf("Opera") > -1;
+					if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+						if (userAgent.indexOf("MSIE 9.0") > 0 || userAgent.indexOf("MSIE 10.0")) {
+							$.NotifyBox.NotifyPromptOne('提示','暂不支持IE浏览器查看哦，<br>请选择其他浏览器！','确定');
+							return false;
+						}
+					}
+				})
+	$('.filter_a').on('click', function () {
+		$('#bg,.filtepopups').show();
+		$('body').css('overflow-y','hidden')
+	})
+	$('.delete').click(function () {
+		$('#bg,.filtepopups,.filtepopups_left').hide();
+		$('body').css('overflow-y','auto')
+	})
+	
+	</script>

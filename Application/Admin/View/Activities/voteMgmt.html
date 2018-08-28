@@ -1,0 +1,246 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+    .numInput {
+        height: 2.125rem
+    }
+
+    .saveImg {
+        width: 18px;
+    }
+
+    .topDiv {
+        width: 135px;
+        text-align: right
+    }
+
+    .topDiv .topCheck {
+        width: 18px;
+        height: 18px;
+    }
+    .marginleft_short
+    {
+        margin-left:15px;
+    }
+</style>
+
+<div class="titleBox">
+    <p class="blueText fs18 underline1">
+        投票管理
+        <span class="blueSpan">
+			<a href="{:U('Activities/voteMgmt')}">京版活动管理</a>>>
+			<a href="javascript:;">投票管理</a>
+		</span>
+    </p>
+    <div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="{:U('Activities/voteMgmt')}" method="post">
+    <p class="blueText fs16">投票查询</p>
+    <div class="grid condensed cellBox">
+        <div class="row cells3">
+			<div class="cell">
+				<label>投票名称：</label>
+				<input type="text" value="{$keyword}" id="keyword" class="input-control" name="keyword" placeholder="请输入投票名称">
+            </div>
+            <div class="cell">
+                <label>状态：</label>
+                <select name='flag' id="flag" class="input-control" style="">
+                    <option value='0'>-请选择-</option>
+                    <option value="1" <if condition="$flag==1">selected</if> >审核未通过</option>
+                    <option value="2" <if condition="$flag==2">selected</if> >审核已通过</option>
+                    <option value="3" <if condition="$flag==3">selected</if> >审核已拒绝</option>
+                    <option value="4" <if condition="$flag==4">selected</if> >已上架</option>
+                    <option value="5" <if condition="$flag==5">selected</if> >已下架</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <hr class="thin bg-grayLighter">
+    <div class="searchBtnBox text-center">
+        <input type='submit' value='查询' class='blueBtn'/>
+        <input type='button' value='重置' class='blueBtn resetButton'/>
+    </div>
+</form>
+
+<form id="info-list" action="{:U('Activities/saveSpecialColumnSort')}" method="post">
+    <div class="grayBox">
+        <div class="left">
+			<span class="btns" id="addBtn">
+				<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="">
+				<a href="{:U('Activities/addVote')}">新增投票</a>
+			</span>
+        </div>
+
+    </div>
+
+    <p class="blueText fs16">投票列表</p>
+    <table id="listWrapper" class="table striped hovered border">
+        <thead>
+        <tr>
+            <th class="text-center">序号</th>
+            <th class="text-center">投票ID</th>
+            <th class="text-center">投票名称</th>
+            <th class="text-center">投票时间</th>
+            <th class="text-center">上架状态</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody id="body">
+        <volist name="list" id="item">
+            <tr>
+                <td class="text-center">
+                    {$i}
+                </td>
+                <td class="text-center">
+                    {$item.id}
+                </td>
+                <td class="text-center">
+                    <a href="{:U('Activities/viewVote')}&id={$item.id}">{$item.title}</a>
+                </td>
+                <td class="text-center" >
+                    {$item.votedisplay}
+                </td>
+                <td class="text-center">
+                    <?php if($item['flag'] == 1) : ?>
+                    未审核
+                    <?php elseif($item['flag'] == 2) : ?>
+                    通过审核
+                    <?php elseif($item['flag'] == 3) : ?>
+                    拒绝审核
+                    <?php elseif($item['flag'] == 4) : ?>
+                    已上架
+                    <?php elseif($item['flag'] == 5) : ?>
+                    已下架
+                    <?php endif ?>
+                </td>
+
+
+                <td class="text-center">
+                    <?php if($item['flag'] != 4) : ?>
+                    <a href="{:U('Activities/editVote')}&id={$item.id}" class="operBtn" id="modify_click" title="{$item.title}" attr="{$item.id}" type="{$item.content_type}">修改</a>
+                    <?php endif ?>
+                    <?php if($item['flag'] == 1 || $item['flag'] == 3 ) : ?>
+                    <a href="javascript:void(0)" onclick="setVoteStatus({$item.id},2)" class="operBtn" id="">通过</a>
+                    <?php endif ?>
+                    <?php if($item['flag'] == 1 || $item['flag'] == 2 || $item['flag'] == 5) : ?>
+                    <a href="javascript:void(0)" onclick="setVoteStatus({$item.id},3)" class="operBtn" id="">拒绝</a>
+                    <?php endif ?>
+                    <?php if($item['flag'] == 2 || $item['flag'] == 5) : ?>
+                    <a href="javascript:void(0)" onclick="setVoteStatus({$item.id},4)" class="operBtn" id="">上架</a>
+                    <?php endif ?>
+                    <?php if($item['flag'] == 4) : ?>
+                    <a href="javascript:void(0)" onclick="setVoteStatus({$item.id},5)" class="operBtn" id="">下架</a>
+                    <?php endif ?>
+                    <?php if($item['flag'] != 4) : ?>
+                    <a href="javascript:void(0)" class="operBtn" id="delete_click" attr="{$item.id}">删除</a>
+                    <?php endif ?>
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</form>
+
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"8%"},
+                {"width":"15%"}
+            ]
+        });
+    });
+</script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+
+    var options = {
+        success: showResponse, // post-submit callback
+        resetForm: false,
+        dataType: 'json'
+    };
+
+    // bind to the form's submit event
+    $('#info-list').submit(function () {
+        $(this).ajaxSubmit(options);
+        return false;
+    });
+
+
+    function showResponse(responseText, statusText) {
+        switch (responseText.status) {
+            case "200": //failed
+//                alert('更新成功');
+				$.NotifyBox.NotifyOne('注意','更新成功','确定');
+                history.go();
+                break;
+            default:
+//                alert(responseText.message);
+				$.NotifyBox.NotifyOne('注意','responseText.message','确定');
+                break;
+        }
+    }
+</script>
+<script>
+    function setVoteStatus(id,flag)
+    {
+        $.post("/index.php?m=Admin&c=Activities&a=setVoteFlag", {
+            'id': id ,'flag':flag
+        }, function (res) {
+            res = eval('('+ res + ')');
+            if(res.status == 200)
+            {
+                $.NotifyBox.NotifyOneCall('成功','设置成功','确定',function()
+                {
+                    window.location.reload()
+                })
+            }
+            else
+            {
+                $.NotifyBox.NotifyOne('失败','设置失败','确定');
+            }
+        });
+    }
+    //删除
+    $('#delete_click').live('click',function(){
+        var id=$(this).attr('attr');
+        //alert(column_id);
+        deleteVote(id);
+    });
+
+    function deleteVote(id) {
+        if (confirm('确定要删除吗？')) {
+            $.get('index.php?m=Admin&c=Activities&a=deleteVote', {id: id}, function (res) {
+                res = eval('('+res+')');
+                if (res.status == 200) {
+                    history.go();
+                } else {
+//                    alert('删除失败，请刷新页面后重新尝试');
+					$.NotifyBox.NotifyOne('注意','删除失败，请刷新页面后重新尝试','确定');
+                }
+            })
+        }
+    }
+
+
+    $('.resetButton').click(function(){
+        $('#form_submit').find('input, select').each(function(i,n){
+            if($(n).attr('name'))
+                $(n).val('');
+        })
+        $('#form_submit').submit()
+    })
+</script>

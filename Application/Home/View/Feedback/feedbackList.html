@@ -1,0 +1,112 @@
+<layout name="admin_layout" />
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<style>
+	select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+</style>
+<form action="{:U('Feedback/feedbackList')}" method="post">
+	<div style="text-align: right;">
+		<label>状态：</label>
+		<select id="grade_id" name="model_id" class="input-control" style="margin-right: 50px">
+			<option value="">-请选择-</option> 
+			<volist name="model" id="dataGrade">
+				<option value="{$dataGrade.id}" {$dataGrade['id']==$module_id?'selected':''} >
+					{$dataGrade.node_name}
+				</option>   
+			</volist>
+		</select>
+		<div class="input-control text" data-role="input" style="width: 320px;">
+			<input type="text" value="{$keyword}" id="keyword" name="keyword" placeholder="搜索姓名、角色、意见反馈内容...">
+			<button onclick="search()" class="button"><span class="mif-search"></span></button>
+		</div>
+	</div>
+</form>
+
+<empty name="list">
+    <div class="emptyResult">暂时没有资源</div>
+</empty>
+
+<notempty name="list">
+
+
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+        <tr>
+            <th class="text-center">用户姓名</th>
+            <th class="text-center">用户角色</th>
+            <th class="text-center">所属模块</th>
+            <th class="text-center">意见反馈</th>
+            <th class="text-center">反馈时间</th>
+            <th class="text-center">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <volist name="list" id="data" empty="暂时没有账户数据">
+            <tr id="l_{$data.id}">
+                <td class="text-center">
+                 {$data.user_name}
+                </td>
+                <td class="text-center">
+                 {$data.role_name}
+                </td>
+                <td class="text-center">
+                    <select name="" id="" style="width:70%">
+                        <volist name="data.model_name" id="node">
+                            <option value="">{$node}</option>
+                        </volist>
+                    </select>
+                </td>
+                  <td class="text-center">
+                {$data.feed_info}
+                </td>
+                  <td class="text-center">
+                 {$data.feed_createtime|date="Y-m-d H:i",###}
+                </td>
+                <td class="text-center">
+                    <a href="{:U('Feedback/look?id=')}{$data.id}" class="button info">查看</a>
+                    <a  class="button info delete_button" attr="{$data.id}">删除</a>
+                </td>
+            </tr>
+        </volist>
+    </tbody>
+</table>
+</notempty>
+<div class="Pagination">{$page}</div>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"}
+             
+            ]
+        });
+    });
+
+     //点击删除
+    $('.delete_button').click(function(){
+        if(confirm('您确认删除么')){
+            var id=$(this).attr('attr'); 
+            var obj=this;
+            $.get("index.php?m=Home&c=Feedback&a=deleteFeedback",{'id':id},function(msg){
+                if(msg=='success'){
+                    $(obj).parent().parent().remove();
+                }else{
+                    alert('删除时候,请刷新页面后重试');
+                }
+            });
+        }
+    });
+</script>

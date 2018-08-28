@@ -1,0 +1,219 @@
+<style>
+	.uploadCode {
+		width:160px;
+		height:160px;
+		margin-top:15px;
+	}
+</style>
+<div class="exerciseOutterBottom exerciseOutterBottomDo">
+	<!-- 大题需要循环这里 -->
+	<div :class="{exerciseContent:1,exerciseContentSentence:exercise.data[0].category =='2',exerciseContentElse:(exercise.data[0].category !='1' && exercise.data[0].category !='2')}" v-for="(exercise,index) in homeworkList">
+		<div class="exerciseTitleBox" >
+			<span class="title">{{ index+1 | filtersVoiceNumber }}、{{exercise.name}}</span>
+			<span class="remark">（共{{exercise.data.length}}题，总分值为{{total(index,"score")}}分）</span>
+		</div>
+		<!-- 读单词或者读句子 -->
+		<div v-for="(subExercise,subIndex) in exercise.data" class="innerId" :exerciseId="subExercise.id"><!-- 小题需要循环这里 -->
+
+		<div class="exerciseMainBox" v-if="subExercise.category == '1'" :index="index" :subIndex="subIndex" :answer="subExercise.userAnswer" :id="subExercise.id" :exerciseId="subExercise.id" :point="subExercise.point" :totalPoint="subExercise.score">
+			<div class="wordBox">
+				<div class="wordBoxLeft">
+					<div class="wordTop">
+						<div class="wordNum">{{subIndex+1}}.<span class="ownScore">({{subExercise.score}}分)</span></div>
+						<div class="wordMainBox">
+							<div class="wordMain">
+								<img src="__PUBLIC__/img/homeworkV1/videoGray36×30.png" :audioSrc="subExercise.subject_name" alt="" class="videoPrimary" @click="play($event)">
+								<div class="wordRight">
+									{{subExercise.name}}
+								</div>
+							</div>
+							<audio :src="subExercise.subject_name" class="audioHide"></audio>
+							<div class="wordBottom">
+								<div class="explainText" @click="showExplain($event)">英文释义</div>
+								<div class="explainBox">
+									<div class="word">{{subExercise.name}}</div>
+									<div class="chinese">{{subExercise.translation}}</div>
+								</div>
+							</div>
+							<div style="clear: both"></div>
+						</div>
+					</div>
+				</div>
+				<div class="wordBoxRight">
+					<div class="videoBox">
+						<img src="__PUBLIC__/img/homeworkV1/record.png" @click="startStopRecord($event)"  alt="" class="videoStudent recordImg">
+						<div class="grayText recordTextDiv">点击开始录音</div>
+					</div>
+					<img src="__PUBLIC__/img/homeworkV1/weibofang.png" v-if="subExercise.userAnswer != null" @click="playVoice($event)" :audioSrc="subExercise.userAnswer" alt="" class="videoStudent studentImg">
+					<audio :src="subExercise.userAnswer" class="audioHide"></audio>
+					<div class="grayText recordTextDiv" v-if="subExercise.userAnswer != null">{{Math.round(subExercise.point * subExercise.score / 100)}}分</div>
+				</div>
+				<div style="clear: both"></div>
+			</div>
+		</div>
+		<!--句子-->
+		<div class="exerciseMainBox" v-if="subExercise.category == '2'" :index="index" :subIndex="subIndex" :answer="subExercise.userAnswer" :id="subExercise.id" :exerciseId="subExercise.id" :point="subExercise.point" :totalPoint="subExercise.score">
+			<div class="wordBox">
+				<div class="wordBoxLeft">
+					<div class="wordTop">
+						<div class="wordNum">{{subIndex+1}}.<span class="ownScore">({{subExercise.score}}分)</span></div>
+						<div class="wordMainBox">
+							<div class="wordMain">
+								<img src="__PUBLIC__/img/homeworkV1/videoGray36×30.png" :audioSrc="subExercise.subject_name" alt="" class="videoPrimary" @click="play($event)">
+								<div class="wordRight">
+									{{subExercise.name}}
+								</div>
+							</div>
+							<audio :src="subExercise.subject_name" class="audioHide"></audio>
+						</div>
+					</div>
+				</div>
+				<div class="wordBoxRight">
+					<div class="videoBox">
+						<img src="__PUBLIC__/img/homeworkV1/record.png" alt="" @click="startStopRecord($event)" class="videoStudent recordImg">
+						<div class="grayText recordTextDiv" >点击开始录音</div>
+					</div>
+					<img src="__PUBLIC__/img/homeworkV1/weibofang.png" v-if="subExercise.userAnswer != null" @click="playVoice($event)" :audioSrc="subExercise.userAnswer" alt="" class="videoStudent studentImg">
+					<audio :src="subExercise.userAnswer" class="audioHide"></audio>
+					<div class="grayText recordTextDiv" v-if="subExercise.userAnswer != null">{{Math.round(subExercise.point * subExercise.score / 100)}}分</div>
+				</div>
+				<div style="clear: both"></div>
+			</div>
+		</div>
+		<!--视频-->
+		<div class="exerciseMainBox" v-if="subExercise.category == '3'" :index="index" :subIndex="subIndex" :answer="subExercise.userAnswer" :id="subExercise.id" :exerciseId="subExercise.id" :point="subExercise.point" :totalPoint="subExercise.score">
+			<div class="commonBox">
+				<div class="exerciseNum">{{subIndex+1}}.<span class="ownScore">({{subExercise.score}}分)</span></div>
+				<video :src="subExercise.subject_name" class="videoPlay" controls preload controlsList="nodownload"></video>
+				<!-- 如果已做，加class active -->
+				<span class="doCircle"></span><button class="hasSeenExercise" @click="hasSeenExercise($event)">我已观看</button>
+			</div>
+		</div>
+		
+		<!--课本-->
+		<div class="exerciseMainBox" v-if="subExercise.category == '4'" :index="index" :subIndex="subIndex" :answer="subExercise.userAnswer" :id="subExercise.id" :exerciseId="subExercise.id" :point="subExercise.point" :totalPoint="subExercise.score">
+			<div class="commonBox">
+				<div class="exerciseNum">{{subIndex+1}}.<span class="ownScore">({{subExercise.score}}分)</span></div>
+				<img :src="subExercise.subject_name" alt="" class="bookImg" title="点击可查看大图" onclick="zoomIn(this)">
+				<!-- 如果已做，加class active -->
+				<span class="doCircle"></span><button class="hasSeenExercise" @click="hasSeenExercise($event)" >我已观看</button>
+			</div>
+		</div>
+		<!--选择-->
+		<div class="exerciseMainBox" :topic_type="subExercise.topic_type" v-if="subExercise.topic_type == 1 || subExercise.topic_type == 3" :index="index" :subIndex="subIndex" :answer="subExercise.userAnswer" :id="subExercise.id" :exerciseId="subExercise.id" :point="subExercise.point" :totalPoint="subExercise.score">
+			<div class="exerciseBox">
+				<div class="exerciseNum">{{subIndex+1}}.<span class="ownScore">({{subExercise.score}}分)</span></div>
+				<div class="boxOutter">
+					<div class="exerciseTitle" v-html="subExercise.subject_name"></div>
+					
+					<!--选择题答案渲染-->
+					<div class="exerciseMain" v-if="subExercise.topic_type == 1">
+						<div class="answerChoice">
+							<span class="optionBox" v-for="(answerValue,answerIndex) in subExercise.answer" :class="{w100:subExercise.class_type != 2 && subExercise.class_type != 4, w50:subExercise.class_type == 2, w25:subExercise.class_type == 4}">
+								<span class="option" @click="choose($event)">{{String.fromCharCode(65 + answerIndex)}}.</span>
+								<span v-html="answerValue"></span> 
+							</span>
+						</div>
+					</div>
+					<!--选择填空答案渲染-->
+					<div class="exerciseMain" v-if="subExercise.topic_type == 3" v-for="(nullValue,nullIndex) in subExercise.blankCount">
+						<div class="multipleText">【第{{ nullIndex+1 }}空】</div>
+						<div class="answerChoice">
+							<span class="optionBox" v-for="(answerValue,answerIndex) in subExercise.answerList" :class="{w100:subExercise.class_type != 2 && subExercise.class_type != 4, w50:subExercise.class_type == 2, w25:subExercise.class_type == 4}">
+								<span class="option" @click="choose($event)">{{String.fromCharCode(65 + answerIndex)}}.</span>
+								<span v-html="answerValue"></span>
+							</span>
+						</div>
+					</div>
+					<div class="answerBox " v-if="showAnswer" :class="{active:(subExercise.userAnswer != subExercise.right_key && subExercise.topic_type==1) || ((subExercise.userAnswer != subExercise.answer) && subExercise.topic_type==3)}">
+						<div class="title" v-if="(subExercise.userAnswer == subExercise.right_key) && subExercise.topic_type==1">答对</div>
+						<div class="title" v-else-if="subExercise.topic_type==1">答错</div>
+						<div class="title" v-if="(subExercise.userAnswer == subExercise.answer) && subExercise.topic_type==3">答对</div>
+						<div class="title" v-else-if="subExercise.topic_type==3">答错</div>
+						<div class="studentAnswer">
+							答题者答案
+							<span class="answer" v-if="subExercise.userAnswer == null">未作答</span>
+							<span class="answer" v-else>{{subExercise.userAnswer}}</span>
+						</div>
+						<div class="rightAnswer" v-if="subExercise.topic_type == 1">正确答案 <span class="answer" >{{subExercise.right_key}}</span></div>
+						<div class="rightAnswer" v-if="subExercise.topic_type == 3">正确答案 <span class="answer" >{{subExercise.answer}}</span></div>
+					</div>
+				</div>
+			</div>
+			<div class="exerciseBtnBox">
+				<span class="showAnalysis">显示解析</span>
+				<div class="analysisOutter">
+					<div class="analysisBox">
+						<span class="analysisTitle">答案：</span>
+						<span class="analysisMain" v-if="subExercise.topic_type == 1">{{ subExercise.right_key }}</span>
+						<span class="analysisMain analysisMainMuch" v-if="subExercise.topic_type == 3" v-html="subExercise.answer"></span>
+					</div>
+					<div class="analysisBox">
+						<span class="analysisTitle">解析：</span>
+						<span class="analysisMain analysis" v-html="subExercise.translation"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 连线 -->
+             <div class="exerciseMainBox" v-if="subExercise.topic_type == 4">
+                 <div class="exerciseBox">
+                 暂不支持连线題
+                 </div>
+             </div>
+             <!-- 连线题结束 -->
+             
+		<!--主观-->
+        <div class="exerciseMainBox" v-if="subExercise.topic_type == 2 || subExercise.topic_type == 5 || subExercise.topic_type == 6" :index="index" :subIndex="subIndex" :answer="subExercise.userAnswer" :id="subExercise.id" :exerciseId="subExercise.id" :point="subExercise.point" :totalPoint="subExercise.score">
+			<div class="exerciseBox">
+				<div class="exerciseNum">{{subIndex+1}}.<span class="ownScore">({{subExercise.score}}分)</span></div>
+				<div class="boxOutter">
+					<div class="exerciseTitle" v-html="subExercise.subject_name"></div>
+					<div class="exerciseMain">
+						<img src="" alt="" class="answerImg">
+
+						<div class="uploadBox">
+							<div src="" alt="" class="uploadCode"></div>
+							<span class="uoloadText">请微信扫描二维码上传照片答题</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="exerciseBtnBox">
+				<span class="showAnalysis">显示解析</span>
+				<div class="analysisOutter">
+					<div class="analysisBox">
+						<span class="analysisTitle">解析：</span>
+						<span class="analysisMain analysis" v-html="subExercise.translation"></span>
+					</div>
+				</div>
+			</div>
+		</div>		
+		 
+	  </div>	
+	</div>
+</div>
+
+<!-- 课本图片放大区域 -->
+<div class="zoomInOutter">
+	<div class="zoomInBox" onclick="closeZoomIn()"></div>
+	<img src="" alt="" class="zoomInImg">
+</div>
+
+
+
+<script>
+	// 放大课本图片
+	function zoomIn(obj) {
+		var imgUrl = $(obj).attr('src');
+		$('.zoomInOutter').show().children('.zoomInImg').attr('src', imgUrl);
+		$('body').css('overflow-y', 'hidden')
+	}
+
+	// 缩小课本图片
+	function closeZoomIn() {
+		$('.zoomInOutter').hide();
+		$('body').css('overflow-y', 'auto')
+	}
+</script>

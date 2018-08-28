@@ -1,0 +1,427 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+
+    .exerciseOutter .exerciseDifficulty {
+        display: none;
+    }
+</style>
+
+<a href="Javascript:history.go(-1);" title="返回" class="btn btnReturn1" style="position: absolute;">返回</a>
+
+<div class="main_opr">
+    <a href="{:U('TeacherHomework/homeworkList')}" title="作业列表" class="btn btn-main-opr">作业列表</a>
+    <a href="javascript:;" title="布置作业" class="btn btn-main-opr btn-main-opr-active">布置作业</a>
+    <a href="{:U('TeacherHomework/myCollectionList')}" title="我的收藏" class="btn btn-main-opr">我的收藏</a>
+    <a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+    <a href="{:U('TeacherHomework/testPaperList')}" title="试卷库" class="btn btn-main-opr">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="homeworkLeft homeworkLeftFixed">
+		<div class="homeworkLeftTitle">组题目录</div>
+		<div class="homeworkLeftMain">
+			<div class="homeworkLeftBox" v-for="(VocieData, index) in exerciseListVocieData.data">
+				<div class="homeworkLeftType">{{ index+1 | filtersVoiceNumber }}、{{ VocieData.name}}</div>
+				<div class="homeworkLeftCircleBox">
+					<div class="homeworkLeftCircle" v-for="(childVocieData, cindex) in VocieData.data" :exerciseId="childVocieData.id" @click="goExercise(childVocieData.id)">{{ cindex+1 }}</div>
+				</div>
+			</div>
+
+			<div class="homeworkLeftBox" v-for="(VocieData, index) in exerciseListData.data">
+				<div class="homeworkLeftType">{{ index+1 | filtersNumber }}、{{ VocieData.name}}</div>
+				<div class="homeworkLeftCircleBox">
+					<div class="homeworkLeftCircle" v-for="(childVocieData, cindex) in VocieData.data" :exerciseId="childVocieData.id" @click="goExercise(childVocieData.id)">{{ cindex+1 }}</div>
+				</div>
+			</div>
+
+		</div>
+		<div class="homeworkLeftBtnBox">
+			<button class="btnCommon" id="" @click="ContinueSelectExercise($event)" >继续选题</button>
+			<button class="btnCommon" id="publishNow" :class="{btnDisabled: selectExerciseList.length == 0}">立即布置</button>
+		</div>
+	</div>
+
+	<div class="homeworkRight pt0 pb0">
+		<include file="./Application/Home/View/TeacherHomework/exerciseOutterType.html"/>
+	</div>
+</div>
+<script src="__PUBLIC__/js/store.js"></script>
+
+<script>
+    var userId = "{:session('teacher.id')}";
+	var create_user_name = "{:session('teacher.name')}";
+	var paperId = "{$paperId}";
+	var setuserName = "{:session('teacher.name')}";
+    var setstartTime = "{$setstartTime}";
+    var setendTime = "{$setendTime}";
+    var homeworkId = "";
+
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+			url: '',
+			// 这些地方应该都用ID，用姓名不准确，暂时先这么写
+			subject: '',
+			volume: '',
+            selectExerciseList:[],
+            selectExerciseGroupList:{},
+            selectExerciseListMap:{},
+            exerciseNumLength:0,
+            exerciseNumScore:0,
+            userId:0,
+            courseId:0,
+            selectExerciseIdList:"",
+			kUrl:"/index.php/ApiInterface/Version1_3/TeacherHomework/getTaskKnowledgeName",
+			Url:"/index.php?m=Home&c=TeacherHomework&a=getOrderedExerciseList",
+			DanyuanUrl:"/index.php/ApiInterface/Version1_3/TeacherHomework/doHomeWorkKnowledgeName",
+            NameData:{},
+            exerciseListVocieData:{},
+            exerciseListVocieLength: 0,
+            exerciseListData:{},
+            DataInfo:[],
+            delexerciseId:0,
+            modelId:0,
+            topicType:0,
+            exerciseScore:0,
+            exerciseCollectUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/IWantToCollect',
+            iscancel: '',
+            exerciseId: '',
+            classUrl:"/index.php?m=Home&c=TeacherHomework&a=getMyClassList",
+            classData:[],
+            name:'',
+            release_time:'',
+            deadline:'',
+            jobsments:'',
+            grade_class_list:'',
+            create_user_name:create_user_name,
+            DanData:[],
+            classIno: '',
+            workData:{},
+		},
+		created: function () {
+
+		    if (setstartTime!="" && setendTime!=""){
+				this.workData.release_time = setstartTime;
+                this.workData.deadline = setendTime;
+			}
+
+		    this.userId = userId;
+            //初始化缓存
+            if(store.get(this.userId+"selectExerciseList")!= '' && store.get(this.userId+"selectExerciseList") != undefined) {
+                this.selectExerciseList = store.get(this.userId+"selectExerciseList");
+            }
+
+            if(store.get(this.userId+"selectExerciseGroupList")!= '' && store.get(this.userId+"selectExerciseGroupList") != undefined) {
+                this.selectExerciseGroupList = store.get(this.userId+"selectExerciseGroupList");
+            }
+
+
+            if(store.get(this.userId+"exerciseNumLength")!= '' && store.get(this.userId+"exerciseNumLength") != undefined) {
+                this.exerciseNumLength = store.get(this.userId+"exerciseNumLength");
+            }
+
+            if(store.get(this.userId+"exerciseNumScore")!= '' && store.get(this.userId+"exerciseNumScore") != undefined) {
+                this.exerciseNumScore = store.get(this.userId+"exerciseNumScore");
+            }
+
+            if(store.get(this.userId+"selectcourseId")!= '' && store.get(this.userId+"selectcourseId") != undefined) {
+                this.courseId = store.get(this.userId+"selectcourseId");
+            }
+
+            if(store.get(this.userId+"selectExerciseListMap")!= '' && store.get(this.userId+"selectExerciseListMap") != undefined) {
+                this.selectExerciseListMap = store.get(this.userId+"selectExerciseListMap");
+            }
+			console.log(this.selectExerciseListMap);
+
+            this.selectExerciseIdList = this.selectExerciseList.join(","); //初始化选中的试题
+            this.getHomeWorkName();
+            this.getOrderedExerciseList();
+            this.getClassList();
+            this.getHomeWorkDany();
+		},
+		methods: {
+		    //继续选题
+
+            ContinueSelectExercise: function(){
+				window.location.href = "/index.php?m=Home&c=TeacherHomework&a=publishHomework";
+			},
+
+		    //获取作业名称
+            getHomeWorkName: function(){
+                this.$http.post(this.kUrl, {
+                    courseId : this.courseId,
+					id:this.selectExerciseIdList
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.NameData = response.data.data;
+                        if(this.NameData.fname==undefined || this.NameData.fname=="") {
+                            this.NameData.fname = "";
+						}
+                        if(this.NameData.name==undefined || this.NameData.name=="") {
+                            this.NameData.name = "";
+                        }
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+			//获取作业单元 DanyuanUrl
+
+            getHomeWorkDany: function(){
+                this.$http.post(this.DanyuanUrl, {
+                    courseId : this.courseId,
+                    id:this.selectExerciseIdList
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.DanData = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            getOrderedExerciseList: function(){
+                this.$http.post(this.Url, {
+                    courseId : this.courseId,
+                    id:this.selectExerciseIdList,
+                    userId:this.userId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        try {
+                            this.DataInfo =  $.parseJSON(response.body).data;
+                            if (this.DataInfo[0]['name'] == "语音作业") {
+                                this.exerciseListVocieData = this.DataInfo[0];
+                                this.exerciseListVocieLength = this.DataInfo[0].data.length;
+
+                                if (this.DataInfo[1]!=undefined) {
+                                    this.exerciseListData = this.DataInfo[1];
+                                }
+
+                            } else {
+                                this.exerciseListVocieData=[];
+                                this.exerciseListData = this.DataInfo[0];
+                            }
+                        } catch (e) {
+                            this.exerciseListVocieData=[];
+                            this.exerciseListVocieLength=[];
+                            this.exerciseNumLength = 0;
+                            this.exerciseNumScore=0;
+                            this.exerciseListData=[];
+                        }
+
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+            deleteExerciseId: function(event){
+                this.delexerciseId = $(event.target).attr('exerciseId');
+                this.modelId = this.selectExerciseListMap[this.delexerciseId];
+                this.topicType = $(event.target).attr('topicType');
+                this.exerciseScore = $(event.target).attr('exerciseScore');
+			},
+
+            //收藏图片
+            favorExercise: function(event){
+                var that = $(event.target);
+                if(that.hasClass('active')) {
+                    that.removeClass('active').attr('src','__PUBLIC__/img/resource/2shoucang.png');
+                    this.iscancel = 1;
+                } else {
+                    that.addClass('active').attr('src','__PUBLIC__/img/resource/shoucang.png');
+                    this.iscancel = 2;
+                }
+                this.exerciseId = $(event.target).attr('exerciseId');
+                this.$http.post(this.exerciseCollectUrl, {
+                    iscancel : this.iscancel,
+                    exercise_id : this.exerciseId,
+                    userId:this.userId,
+                    role:2,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        console.log('成功')
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+			getClassList: function(event){
+                this.$http.post(this.classUrl, {
+                    userId:this.userId,
+                    role:2,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.classData = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+            // 播放音频
+            play: function(e){
+                var that = $(e.currentTarget);
+                var player = that.parent('.wordMain').siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if (player.paused){
+                    // 其余音频停止播放
+                    $('audio').trigger('pause');
+                    // 其余去掉背景颜色
+                    $('.wordMain').removeClass('active');
+                    // 所有音频图标重置
+                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                    that.parent('.wordMain').siblings('.audioHide').attr('src', newUrl);
+                    player.play();
+                    that.parent('.wordMain').addClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoYellow36×30.gif');
+                    player.loop = false;
+                    player.addEventListener('ended', function () {
+                        that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                    }, false);
+                } else {
+                    player.pause();//暂停
+                    that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                }
+            },
+            // 跳转到习题位置
+            goExercise: function(id_){
+                $("html,body").animate({ scrollTop: $('.exerciseInner[exerciseId='+id_+']').offset().top });
+            }
+		},
+        filters:{
+            filtersVoiceNumber:function (val) {
+                val = num(val+"");
+                return val
+            },
+            filtersNumber:function (val) {
+                val = val + homework.exerciseListVocieLength;
+                val = num(val+"");
+                return val
+            }
+        }
+	})
+</script>
+
+<script>
+    function num(n) {
+        if(!/(^[1-9]\d*$)/){
+            return '非法数字';
+        }
+        var uppercase = '千百亿千百十万千百十个';
+        var nLength = n.length;
+        var newStr = '';
+        if(uppercase.length-nLength<0){
+            return '数字过长';
+        }
+        uppercase=uppercase.substr(uppercase.length-nLength);
+        for(var i=0; i < nLength; i++){
+            newStr +='零一二三四五六七八九'.charAt(n[i])+uppercase.charAt(i);
+        };
+        newStr = newStr.substr(0,newStr.length-1);
+        return newStr;
+    }
+
+    $(function(){
+        var contentHeight = $('#contentWrapper').height();
+        $('.exerciseOutter').css('min-height', contentHeight);
+    })
+</script>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<!--布置 开始时间 结束时间-->
+<script>
+    Array.prototype.removeByValue = function(id) {
+        var id = parseInt( id );
+        for(var i=0; i<this.length; i++) {
+            if(this[i] == id) {
+                this.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+    !function(){
+        laydate.skin('huang');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var actstart = {
+        elem: '#startTime',
+        format: 'YYYY-MM-DD  hh:mm:ss',
+        min: laydate.now(), //设定最小日期为当前日期
+        // max: laydate.now(), //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            actend.min = datas; //开始日选好后，重置结束日的最小日期
+            actend.start = datas; //将结束日的初始值设定为开始日
+        }
+    };
+
+    var actend = {
+        elem: '#endTime',
+        format: 'YYYY-MM-DD hh:mm:ss',
+        min: laydate.now(),
+        // max: laydate.now(),
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            actstart.max = datas; //结束日选好后，充值开始日的最大日期
+        }
+    };
+    laydate(actstart);
+    laydate(actend);
+
+    var startMin = actstart.min;
+    var startMax = actstart.max;
+    var endMin = actend.min;
+    var endMax = actend.max;
+    function resetDate() {
+        actstart.min = startMin;
+        actstart.max = startMax;
+        actend.min = endMin;
+        actend.max = endMax;
+    }
+
+    $(document).on('click','#laydate_clear',function(){
+        if($('#startTime').val() == '' && $('#endTime').val() != '') {
+            actend.min = endMin;
+        } else if($('#startTime').val() != '' && $('#endTime').val() == '') {
+            actstart.max = startMax;
+        } else {
+            resetDate()
+        }
+    })  
+</script>
+

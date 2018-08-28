@@ -1,0 +1,29 @@
+<if condition="$platform eq 'pad'">
+    <script>
+        var file_path = '{$lessonPlanning.file_path}'.replace('docx', 'pdf');
+        file_path = file_path.replace("doc", 'pdf');
+        var file_path_arr = file_path.split('/');
+        file_path = file_path_arr[file_path_arr.length - 1];
+        var d = '{$lessonPlanning.oss_path}/lessonplanning/{$lessonPlanning.biz_lesson_planning_id}/{$lessonPlanning.id}/' + file_path;
+
+        window.setTimeout(function () {
+            var pdfReader = api.require('pdfReader');
+            pdfReader.open({
+                path: d
+            });
+        }, 300);
+    </script>
+    <else/>
+    <iframe width="100%" frameborder="0" id="lessonDetailsFrame">
+    </iframe>
+    <script>
+        $(function () {
+            var file_path = '{$lessonPlanning.file_path}'.replace('docx', 'pdf');
+            file_path = file_path.replace("doc", 'pdf');
+            var file_path_arr = file_path.split('/');
+            file_path = file_path_arr[file_path_arr.length - 1]
+            var d = '__PUBLIC__/pdfjs/viewer/viewer.html?f={$lessonPlanning.oss_path}/lessonplanning/{$lessonPlanning.biz_lesson_planning_id}/{$lessonPlanning.id}/' + file_path;
+            $('#lessonDetailsFrame').height($(window).height() - 100).attr('src', d);
+        });
+    </script>
+</if>

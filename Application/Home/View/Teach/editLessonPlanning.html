@@ -1,0 +1,331 @@
+<layout name="teacher_layout_2" />
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/uploadify/uploadify.css">
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+<style>
+    ul,
+    li {
+        list-style: none
+    }
+    
+    .form_section {
+        margin-bottom: 12px;
+    }
+    
+    .ppt_img_wrapper {
+        margin: 6px;
+        border: 1px solid #ccc;
+        display: inline-block;
+    }
+    
+    .ppt_img_wrapper img {
+        width: 100%;
+        border: 1px solid transparent;
+    }
+    
+    #preview_ppt {
+        width: 90%;
+        max-height: 95% !important;
+        max-width: 95% !important;
+    }
+    
+    .pptimg_nav.selected {
+        border: 1px solid green;
+    }
+    
+    .inupt-widths {
+        display: inline-block;
+        width: 70%;
+        margin-left: 1%
+    }
+    
+    .content_left {
+        width: 50%;
+        margin-left: 0;
+        float: left
+    }
+    
+    a {
+        color: #333;
+        display: block;
+        font-size: 14px;
+        margin: 20px 0
+    }
+    
+    .add_file a {
+        font-size: 14px;
+        padding-left: 3%;
+        display: inline-block;
+        margin: 0
+    }
+    
+    .add_file button {
+        color: #dd1010;
+        outline: none;
+        background: #FFF;
+        border: none
+    }
+    
+    .content_right {
+        width: 50%;
+        margin: 0;
+        float: left;
+        padding: 0 30px
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/myLessonPlannings')}" title="返回 教案列表" class="btn btnReturn2">返回</a>
+</div>
+<form id="mainForm" action="__URL__/editLessonPlanning" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="id" value="{$data.id}">
+    <input type="hidden" name="type" value="{$data.type}">
+
+    <div class="row content_left">
+        <div class="col-md-12">
+            <div class="form_section">
+                <label for="name">教案名称</label>
+
+                <div class="input-control text full-size inupt-widths">
+                    <input type="text" name="name" id="name" class="form-control" placeholder="必填，不超过50字" required maxlength="50" value="{$data.name}">
+                </div>
+            </div>
+        </div>
+        <!--
+        <div class="col-md-6">
+            <div class="form_section">
+                <label for="name">教案类型</label>
+
+                <div class="input-control text full-size">
+                    {$data.type}
+                </div>
+            </div>
+        </div>
+-->
+
+        <!--
+    </div>
+    <div class="row content_left">
+-->
+        <div class="col-md-12">
+            <div class="form_section">
+                <label for="course_id">关联学科</label>
+
+                <div class="input-control text full-size inupt-widths">
+                    <select id="course_id" name="course_id" class="form-control" onchange="getTextbooks()" required>
+                        <option value="">-请选择-</option>
+                        <volist name="courses" id="dataCourse" empty="">
+                            <option value="{$dataCourse.id}" {$data[ 'course_id']==$dataCourse[ 'id']? 'selected': ''}>{$dataCourse.code} : {$dataCourse.course_name}
+                            </option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form_section">
+                <label for="grade_id">关联年级</label>
+
+                <div class="input-control text full-size inupt-widths">
+                    <select id="grade_id" name="grade_id" class="form-control" onchange="getTextbooks()" required>
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                            <option value="{$dataGrade.id}" {$data[ 'grade_id']==$dataGrade[ 'id']? 'selected': ''}>{$dataGrade.grade}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form_section">
+                <label for="textbook_id">教材分册</label>
+
+                <div class="input-control text full-size inupt-widths">
+                    <select id="textbook_id" name="textbook_id" class="form-control">
+                        <option value="">-请选择-</option>
+                        <volist name="textbooks" id="dataTextbook">
+                            <option value="{$dataTextbook.id}" {$dataTextbook[ 'id']==$data[ 'textbook_id']? 'selected': ''}>{$dataTextbook.name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 down_file">
+            <a href="">添加文件</a>
+            <a href="">二氧化碳的溶解性.mp4</a>
+        </div>
+    </div>
+    <switch name="data.type">
+        <case value="PPT">
+            <div class="row content_right">
+                <div class="col-md-12">
+                    <div class="form_section">
+                        <label for="file">文件类型</label>
+
+                        <!--
+                        <div class="input-control text full-size">
+                            <input type="file" name="file" id="file" accept=".ppt,.pptx">
+                        </div>
+-->
+                        <div class="input-control text full-size inupt-widths ">
+                            <select name="type" id="type" class="form-control" required>
+                                <option value="">请选择</option>
+                                <option value="HTML">视频</option>
+                                <option value="">音频</option>
+                                <option value="">WORD</option>
+                                <option value="">PPT</option>
+                                <option value="">PDF</option>
+                                <option value="">SWF文件</option>
+                                <option value="">WORD</option>
+                                <option value="">图片</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <a target="_blank" href="__ROOT__/Resources/lessonplanning/{$data.filepath}">选择上传文件</a>
+                    </div>
+                    <div class="input-control text full-size">
+                        <input type="file" name="file" id="file" accept=".ppt,.pptx" style="display:none">
+                        <ul class="row add_file">
+                            <li>
+                                <a class="col-md-8">二氧化碳的溶解性-副本（2）.mp4{22MB}</a>
+                                <button class="col-md-3" title="删除">删除</button>
+                            </li>
+                            <li>
+                                <a class="col-md-8">二氧化碳的溶解性-副本（2）.mp4{22MB}</a>
+                                <button class="col-md-3" title="取消">取消</button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="row" style="margin-top: 15px;text-align:center">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary">开始上传</button>
+                            <button type="submit" class="btn btn-primary" style="margin-left:10%">确定</button>
+
+                        </div>
+
+                        <div class="col-md-8" style="display: none;">
+                            <label>已经上传过的教案预览</label>
+
+                            <div class="row">
+                                <div class="col-md-2" id="resource_pptnav">
+                                </div>
+                                <div class="col-md-10" id="preview_ppt_wrapper">
+                                    <img id="preview_ppt">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </case>
+        <case value="HTML">
+            <script type="text/plain" id="contentEditor" name="content" style="width:100%;height:340px;">
+                {$data.content}
+
+            </script>
+        </case>
+        <case value="VIDEO">
+            <div id='plv'></div>
+            <script>
+                var player = polyvObject('#plv').videoPlayer({
+                    'vid': '{$data.vid}'
+                });
+            </script>
+            <div id="videoContent" class="contentWrapper">
+                <div class="form_section">
+                    <div id="videoWrapper">
+                        <input type="file" id="uploadToBLWS">
+                        <input type="button" onclick="javascript:$('#uploadToBLWS').uploadify('upload','*')" value="上传视频" class="btn btnReturn2" style="margin-left: 0px;">
+                        <input type="hidden" value="" name="vid" id="vid">
+                        <input type="hidden" value="" name="playerwidth" id="playerwidth">
+                        <input type="hidden" value="" name="playerduration" id="playerduration">
+                    </div>
+                </div>
+            </div>
+        </case>
+        <default/>
+    </switch>
+</form>
+
+<script>
+    var um = null;
+    var type = '{$data.type}';
+    $(function () {
+        switch (type) {
+        case 'PPT':
+            break;
+        case 'HTML':
+            if (um == null) um = UM.getEditor('contentEditor');
+            break;
+        case 'VIDEO':
+            break;
+        }
+    });
+</script>
+<script>
+    var lessonPlanningId = '{$data.id}';
+    var pages = parseInt('{$data.ppt_pages}');
+    var ossPath = '{$data.oss_path}';
+
+    function loadPPT() {
+        var wrapper = '#resource_pptnav';
+        var html = [];
+        for (var i = 1; i <= pages; i++) {
+            var imgPath = "{0}/lessonplanning/{1}/{2}.jpg".format(ossPath, lessonPlanningId, i);
+            var imgEle = '<div class="ppt_img_wrapper"><img data-id="{1}" class="pptimg_nav" src="{0}"></div>'.format(imgPath, lessonPlanningId);
+            html.push(imgEle);
+            if (i == 1) {
+                $('#preview_ppt').attr('src', imgPath);
+            }
+        }
+        $(wrapper).html(html.join(''));
+
+        $('.pptimg_nav').click(function () {
+            $('.pptimg_nav').removeClass('selected');
+            $(this).addClass('selected');
+            $('#preview_ppt').attr('src', $(this).attr('src'));
+        });
+
+        //http://jingbanyun.oss-cn-beijing.aliyuncs.com/lessonplanning/9/1.jpg
+    }
+    $('#resource_pptnav,#preview_ppt_wrapper').height($(window).height() - 350);
+    //loadPPT();
+</script>
+<script type="text/javascript">
+    $(function () {
+        $.uploadToBLWS = $('#uploadToBLWS').uploadify({
+            'auto': false,
+            'formData': {
+                'fcharset': 'ISO-8859-1',
+                'writetoken': '9c538d85-340c-466c-9e35-bb301734eb0d',
+                'cataid': '1',
+                'JSONRPC': '{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'
+            },
+            'buttonText': '选择上传文件',
+            'fileSizeLimit': '3000MB',
+            'fileTypeDesc': '视频文件',
+            'fileTypeExts': '*.avi; *.wmv; *.mp4;*.mp3; *.mov; *.flv; *.mkv; *.rmvb', //文件类型过滤
+            'swf': '__PUBLIC__/uploadify/uploadify.swf',
+            'multi': false,
+            'successTimeout': 3600,
+            'queueSizeLimit': 100,
+            'removeTimeout': 999999,
+            'uploader': 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            //onUploadSuccess为上传完视频之后回调的方法，视频json数据data返回，
+            //下面的例子演示如何获取到vid
+            'onUploadSuccess': function (file, data, response) {
+                var jsonobj = eval('(' + data + ')');
+                //alert(jsonobj.data[0].vid + " - " + jsonobj.data[0].playerwidth + " - " + jsonobj.data[0].duration);
+                $('#vid').val(jsonobj.data[0].vid);
+                $('#playerwidth').val(jsonobj.data[0].playerwidth + '*' + jsonobj.data[0].playerheight);
+                $('#playerduration').val(jsonobj.data[0].duration);
+            }
+        });
+    });
+</script>

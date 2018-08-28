@@ -1,0 +1,166 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/adminDirectTrain.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+
+<!-- 回复审核 -->
+<div class="trainDetailsBox replyBox">
+	<div class="trainDetailsTitle">
+		<div class="authorInfo">
+			<img src="<?php echo !empty($details['avatar']) ?  $oss_path.$details['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="authorAvatar">
+			<div class="authorName"><?php echo $details['name']?>提问</div>
+		</div>
+		<div class="articleTitle"><?php echo $details['special_column_question_title']?></div>
+		<div class="authorElse"><?php echo $details['creat_time']?></div>
+		
+	</div>
+
+	<div class="articleBox">
+		<div class="articleMain"><?php echo  html_entity_decode($details['special_column_question_reply_description'])?></div>
+	<?php foreach($list as $itemList){?>
+		
+    	<!-- 评论区域 grayBack是背景灰色 commentLong是长的评论区域 commentShort是短的评论区域 -->
+			<?php if($itemList['delete_status'] == DELETE_FALSE){?>
+    			<div class="commentOutter">
+	    	<div class="commentBox grayBack commentLong">
+				<?php  if($itemList['status'] == 3 && $id == $itemList['id']){?>
+				<div class="toAudit" style="display: block"><span class="auditText">待审核</span></div>
+				<?php }?>
+				<div class="comment">
+					<div class="commentTitle">
+						<img src="<?php echo !empty($itemList['avatar']) ?  $oss_path.$itemList['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+						<span>编者<?php echo $itemList['name']?>回复 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemList['creat_time']?></span>
+					</div>
+					<div class="commentMain">
+						<?php echo $itemList['special_column_question_reply_description']?>
+					</div>
+				</div>
+				<?php if($id == $itemList['id'] && $itemList['status'] == 3){?>
+				<div class="auditButton" style="margin-top: -20px">
+					<button class="blueBtn passBtn yes" data-attr="1" >审核通过</button>
+					<button class="blueBtn refuseBtn no" data-attr="2">审核拒绝</button>
+				</div>
+				<?php }?>
+	    	</div>
+    	</div>
+			<?php }else{?>
+			<div class="commentOutter">
+				<div class="commentBox grayBack commentLong">
+					<div class="comment">
+						<div class="commentTitle">
+							<img src="<?php echo !empty($itemList['avatar']) ?  $oss_path.$itemList['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+							<span>编者<?php echo $itemList['name']?>回复 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemList['creat_time']?></span>
+						</div>
+						<div class="commentMain">
+							该内容已被删除
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php }?>
+	<?php foreach($itemList['child'] as $itemChild){?>
+			<?php if($itemChild['type'] == QUESTION){?>
+				<?php if($itemChild['delete_status'] == DELETE_FALSE){?>
+		<div class="commentOutter">
+	    	<div class="commentBox commentShort">
+	    		<?php  if($itemChild['status'] == 3 && $id == $itemChild['id']){?>
+				<div class="toAudit" style="display: block"><span class="auditText">待审核</span></div>
+				<?php }?>
+				<div class="comment">
+					<div class="commentTitle">
+						<img src="<?php echo !empty($itemChild['avatar']) ?  $oss_path.$itemChild['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+						<span><?php echo $itemChild['originatorname']?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemChild['creat_time']?></span>
+					</div>
+					<div class="commentMain">
+						<?php echo $itemChild['special_column_question_reply_description']?>
+					</div>
+				</div>
+				<?php if($id == $itemChild['id'] && $itemChild['status'] == 3){?>
+				<div class="auditButton" style="margin-top: -20px">
+					<button class="blueBtn passBtn yes" data-attr="1" >审核通过</button>
+					<button class="blueBtn refuseBtn no" data-attr="2">审核拒绝</button>
+				</div>
+				<?php }?>
+	    	</div>
+	    </div>
+			<?php }else{?>
+			<div class="commentOutter">
+				<div class="commentBox commentShort">
+					<div class="comment">
+						<div class="commentTitle">
+							<img src="<?php echo !empty($itemChild['avatar']) ?  $oss_path.$itemChild['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+							<span><?php echo $itemChild['originatorname']?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemChild['creat_time']?></span>
+						</div>
+						<div class="commentMain">
+							该内容已被删除
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php }?>
+		<?php }?>
+			<?php if($itemChild['type'] == REPLY){?>
+				<?php if($itemChild['delete_status'] == DELETE_FALSE){?>
+		<div class="commentOutter">
+	    	<div class="commentBox grayBack commentShort">
+				<?php  if($itemChild['status'] == 3 && $id == $itemChild['id']){?>
+				<div class="toAudit" style="display: block"><span class="auditText">待审核</span></div>
+				<?php }?>
+				<div class="comment">
+					<div class="commentTitle">
+						<img src="<?php echo !empty($itemChild['avatar']) ?  $oss_path.$itemChild['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+						<span>编者<?php echo $itemChild['originatorname']?>回复<?php echo $itemChild['passivename']?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemChild['creat_time']?></span>
+					</div>
+					<div class="commentMain">
+						<?php echo $itemChild['special_column_question_reply_description']?>
+					</div>
+				</div>
+				<?php if($id == $itemChild['id'] && $itemChild['status'] == 3){?>
+				<div class="auditButton" style="margin-top: -20px">
+					<button class="blueBtn passBtn yes" data-attr="1" >审核通过</button>
+					<button class="blueBtn refuseBtn no" data-attr="2">审核拒绝</button>
+				</div>
+				<?php }?>
+	    	</div>
+	    </div>
+			<?php }else{?>
+			<div class="commentOutter">
+				<div class="commentBox grayBack commentShort">
+					<div class="comment">
+						<div class="commentTitle">
+							<img src="<?php echo !empty($itemChild['avatar']) ?  $oss_path.$itemChild['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="commentAvatar">
+							<span>编者<?php echo $itemChild['originatorname']?>回复<?php echo $itemChild['passivename']?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $itemChild['creat_time']?></span>
+						</div>
+						<div class="commentMain">
+							该内容已被删除
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php }?>
+			<?php }?>
+		<?php }?>
+	
+	<?php }?>
+	</div>
+</div>
+<script>
+    //审核
+    $('.yes,.no').click(function () {
+        var id = "<?php echo $id?>";
+        var columnStatusNumber = $(this).attr('data-attr');
+        $.ajax({
+            data:{'id':id,'columnStatusNumber':columnStatusNumber},
+            url:'{:U("DirectTrain/updateColumnPutawayStatus")}',
+            type:'post',
+            dataType:'json',
+            success:function (data) {
+                if(data.status == '200'){
+                    window.location.href = 'index.php?m=&&m=Admin&c=DirectTrain&a=historyQuizMgmt';
+				}
+            }
+        })
+    });
+</script>

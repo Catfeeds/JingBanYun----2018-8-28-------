@@ -1,0 +1,1233 @@
+<!doctype html>
+<html>
+<head>
+    <title>数字课堂::京版云</title>
+    <meta charset="utf-8"/>
+    <!--<meta name="viewport"-->
+          <!--content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>-->
+    <meta name="viewport" content="width=device-width, initial-scale=0.9,  user-scalable=no" id="bzd"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no"/>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/DigitalClassroom/header.css?v=1">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/DigitalClassroom/ebook.css"/>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/DigitalClassroom/lessoninfo.css?v=2"/>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/DigitalClassroom/kalaokstyle.css"/>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/DigitalClassroom/table.css?v=1"/>
+    <script type="text/javascript" src="__PUBLIC__/apptextbook/api.js"></script>
+    <script type="text/javascript" src="http://libs.baidu.com/jquery/2.1.2/jquery.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/DigitalClassroom/textbook_kalaok.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/common.js?v=20160818"></script>
+    <script src="__PUBLIC__/jplayer/dist/jplayer/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/layer/layer.js"></script>
+    <script src="__PUBLIC__/js/exercise/sha1.js?" type="text/javascript"></script>
+    <!--习题渲染-->
+    <link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css"/>
+    <link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css"/>
+    <script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.js"></script>
+    <script src='https://player.polyv.net/script/polyvplayer.min.js'></script>
+    <!--<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/4.0/1/MicrosoftAjax.js"></script>-->
+    <script src="__PUBLIC__/js/exercise/sha1.js" type="text/javascript"></script>
+    <script src="__PUBLIC__/js/exercise/render.js?v=82" type="text/javascript"></script>
+    <script type="text/javascript" src="__PUBLIC__/DigitalClassroom/socket.action.js?v=109"></script>
+    <script src="__PUBLIC__/js/highcharts.js?v=3"></script>
+    <script src="__PUBLIC__/js/highcharts-exporting.js"></script>
+    <script src="__PUBLIC__/js/grid-light.js"></script>
+    <link href="__PUBLIC__/airView/airView.css?v=1" rel="stylesheet" type="text/css"/>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, blockquote, textarea, p, th, td ,table{
+            font-family: 'Lantinghei SC', 'Open Sans', Arial, 'Hiragino Sans GB', 'Microsoft YaHei', '\\5FAE软雅黑', STHeiti, 'WenQuanYi Micro Hei', SimSun, sans-serif;
+            font-size: 16px;
+        }
+
+        #lockPage {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            z-index: 999999999999;
+            text-align: center;
+            background-color: #000;
+            opacity: .9;
+            display: none;
+        }
+
+        .box {
+            display: none;
+        }
+
+        .sub_opr_wrapper {
+            padding: 8px 0;
+            border-bottom: 1px solid #EEEEEE;
+        }
+
+        .third_opr_wrapper {
+            margin: 8px 0;
+        }
+
+        .box_ctrl {
+            padding-left: 30px;
+        }
+
+        .table {
+            width: 100%;
+        }
+
+        .modal {
+            display: none;
+        }
+
+        #btn_tuya_textbook_wrapper, #btn_tuya_lesson_wrapper, #btn_tuya_homework_wrapper {
+            position: absolute;
+            z-index: 999999999;
+            right: 20px;
+            top: 60px;
+        }
+
+        #btn_tuya_textbook_wrapper img, #btn_tuya_lesson_wrapper img, #btn_tuya_homework_wrapper img {
+            display: block;
+            width: 50px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .whiteboard {
+            display: none;
+            position: absolute;
+            z-index: 999999998;
+            left: 0;
+            top: 50px;
+            width: 100%;
+            background-color: transparent;
+            text-align: center;
+        }
+
+        .colorPickerWrapper {
+            text-align: center;
+            border-top: 1px solid #ccc;
+            padding-top: 15px;
+        }
+
+        .colorPicker {
+            display: inline-block;
+            width: 26px;
+            height: 26px;
+            border: 3px solid #CCCCCC;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .colorPicker:hover {
+            border: 3px solid #F2CB2A;
+        }
+
+        .colorPicker.selected {
+            border: 3px solid #F2CB2A;
+        }
+
+        .colorPicker_red {
+            background: #ff0000;
+        }
+
+        .colorPicker_black {
+            background: #000;
+        }
+
+        .colorPicker_yellow {
+            background: #D8A209;
+        }
+
+        .colorPicker_green {
+            background: green;
+        }
+
+    </style>
+    <style>
+        .form_section {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: inline-block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            font-size: 14px;
+            padding: 8px 0;
+            color: #555555;
+            background-color: white;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+        }
+
+        .wrongformat_info {
+            color: #ff0000;
+            font-size: 12px;
+        }
+
+        .promptformat_info {
+            color: #EAC41B;
+            font-size: 12px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 20px;
+        }
+
+        ::-webkit-scrollbar-button {
+            background-color: #fff;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #fff;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #CCCCCC;
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: #fff;
+        }
+
+        ::-webkit-scrollbar-resizer {
+            background: #CCCCCC;
+        }
+    </style>
+    <script type="text/javascript">
+        var classId = '{$classId}';
+        var classroomId = '{$classroomId}';
+        var courseId = '{$classroom.course_id}';
+        var gradeId = '{$classroom.grade_id}';
+        var textbookId = '{$classroom.textbook_id}';
+        var isTeacher = '{$isTeacher}';
+        var studentId = '{$studentId}';
+        var studentName = '{$student.student_name}';
+        var teacherId = '{$classroom.teacher_id}';
+        var platform = '{$platform}';
+        var isLocked = false;
+
+        var currentClassroomState = {
+            tab: 'box_etextbook',
+            textbookPage: [1, 2],
+            is_showing_lesson_list: 'true',//当前状态是否显示的是备课资料的列表
+            the_opening_lesson: '',//当前状态显示的备课资料的编号
+            the_opening_lesson_type: 'ppt', //当前状态显示的备课资料的类型
+            the_opening_lesson_index: 1, //当前状态显示的备课资料的具体那一页面
+            is_showing_textbook_whiteboard: 'false', //白板的显示与否
+            is_showing_homework_whiteboard: 'false',
+            is_showing_lesson_whiteboard: 'false'
+        };
+    </script>
+    <script>
+        var h = $(window).height();
+        var meta = document.getElementById('bzd');
+        if(h<600){
+            meta.setAttribute('content',"width=device-width, initial-scale=0.75,  user-scalable=no");
+        }
+    </script>
+</head>
+<body>
+<include file="./Application/Home/View/DigitalClassroom/Tpl/header.html"/>
+<div style="margin-top: 50px;">
+    <div id="box_etextbook" class="box" style="display: block;">
+        <include file="./Application/Home/View/DigitalClassroom/Tpl/etextbook.html"/>
+    </div>
+    <div id="box_lesson_info" class="box">
+        <include file="./Application/Home/View/DigitalClassroom/Tpl/lesson_info.html"/>
+    </div>
+
+    <if condition="$isTeacher eq 'true'">
+        <div id="box_homework" class="box">
+            <include file="./Application/Home/View/DigitalClassroom/Tpl/homework.html"/>
+        </div>
+        <div id="box_auth_mgmt" class="box">
+            <include file="./Application/Home/View/DigitalClassroom/Tpl/auth_mgmt.html"/>
+        </div>
+        <else/>
+        <div id="box_homework" class="box">
+            <include file="./Application/Home/View/DigitalClassroom/Tpl/do_homework.html"/>
+        </div>
+    </if>
+    <div id="box_stugroup" class="box">
+    	<include file="./Application/Home/View/DigitalClassroom/Tpl/stu_group.html"/>
+    </div>
+</div>
+
+
+<div id="lockPage">
+    <div style="font-size: 40px;color: #7F0000;letter-spacing: 3px;">数字课堂锁定中...</div>
+</div>
+
+<!-- 右下角的返回 二维码 分享 -->
+<ul class="bottomRightUl">
+    <li class="bottomRightShare">
+        <div class="bottomRightShareOutter">
+            <div class="bdsharebuttonbox">
+                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/bottomRightCorner.png" alt="" class="bottomRightCorner">
+                <span class="bottomRightSpan">分享到</span>
+                <a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+                <a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                <a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+                <a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+            </div>
+        </div>
+    </li>
+    <li class="bottomRightQRcode">
+        <div class="bottomRightQRcodeOutter">
+            <div class="bottomRightQRcodeBox">
+                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/bottomRightCode.png" alt="" class="bottomRightCode">
+                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/bottomRightCorner.png" alt="" class="bottomRightCorner">
+            </div>
+        </div>
+    </li>
+    <li class="bottomRightTop"></li>
+</ul>
+
+<script src="__PUBLIC__/airView/airView.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/socket.io-1.1.0.js"></script>
+<script type="text/javascript">
+
+    function start(){
+        var uzmoduledemo = api.require('moduleDemo');
+        var param = {msg:"Hello APICloud!"};
+        uzmoduledemo.startScreenRecorder(param, function(ret, err){
+            if (ret.result == 'success') {
+                $('.startBtn').html('录制中');
+            } else {
+                $('.startBtn').html('开始录制');
+            }
+            //var msg1 = eval('(' + ret + ')');//json数据 序列化成js对象
+        });
+
+    }
+
+    function stop(){
+        var uzmoduledemo = api.require('moduleDemo');
+        var param = {msg:"Hello APICloud!"};
+        uzmoduledemo.stopScreenRecorder(param, function(ret, err){
+            alert(ret.result);
+            //var msg1 = eval('(' + ret + ')');//json数据 序列化成js对象
+            $('.startBtn').html('开始录制');
+        });
+    }
+
+    function showAlert(){
+        var uzmoduledemo = api.require('moduleDemo');
+        var param = {msg:"Hello APICloud!"};
+        uzmoduledemo.showAlert2(param, function(ret, err){
+            alert(JSON.stringify(ret));
+        });
+    }
+
+    var netAudio = '';
+    apiready = function () {
+        api.parseTapmode();
+        try {
+            netAudio = api.require('netAudio');
+        } catch (ex) {
+        }
+        $('#returnToDesktop').click(returnToDesktop);
+    };
+
+    function switchBox(boxId) {
+        if (isTeacher == 'false') {
+            return false;
+        }
+        currentClassroomState.tab = boxId;
+        socketAction.global.switchNav(boxId);
+        //if (boxId == 'box_auth_mgmt') return false;
+        sendSocket("global|switchNav|" + boxId);
+    }
+
+    function returnToDesktop() {
+        if (isLocked) return;
+        try {
+            api.closeWin();
+        } catch (err) {
+
+        }
+    }
+
+    //欢迎学生加入
+    function showWelcomeInfo() {
+        $('#welcomeInfo').html(studentName + '同学，你好！').fadeIn('middle');
+    }
+    if (isTeacher == 'false')showWelcomeInfo();
+
+</script>
+<script>
+    $(function () {
+        adjustWhiteboardLayout();
+        //$(window).resize(adjustWhiteboardLayout);
+        if (platform == 'pad') {
+            $('#returnToDesktop').show();
+        }
+    });
+    function adjustWhiteboardLayout() {
+        $('#etextbook_canvas,#lesson_canvas,#homework_canvas').attr({
+            width: $(window).width(),
+            height: $(window).height() - 50
+        });
+        $('#lockPage').height($(window).height()).css('line-height', $(window).height() + 'px');
+
+        if (isTeacher != 'false') {
+            $('#btn_tuya_textbook_ctrl_pen,#btn_tuya_lesson_ctrl_pen,#btn_tuya_homework_ctrl_pen').hover(function () {
+                $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_active.png');
+            }, function () {
+                $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_deactive.png');
+            });
+
+            $('#btn_tuya_textbook_ctrl_eraser,#btn_tuya_lesson_ctrl_eraser,#btn_tuya_homework_ctrl_eraser').hover(function () {
+                $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_active.png');
+            }, function () {
+                $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_deactive.png');
+            });
+
+            $('#btn_tuya_textbook_ctrl_opacity,#btn_tuya_lesson_ctrl_opacity,#btn_tuya_homework_ctrl_opacity').hover(function () {
+                $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_active.png');
+            }, function () {
+                $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_deactive.png');
+            });
+        }
+    }
+</script>
+<script>
+    var startDraw = false, startClear = false;
+    var isShowingTextbookWhiteboard = false, isShowingLessonWhiteboard = false, isShowingHomeworkWhiteboard = false;//白板是否打开
+    var isTextbookWhiteboardOpacity = true, isLessonWhiteboardOpacity = true, isHomeworkWhiteboardOpacity = true;//是否透明
+    var etextbookWhiteboardSocketData = '', lessonWhiteboardSocketData = '', homeworkWhiteboardSocketData = '';//画图数据
+    var textbookWhiteboardLineColor = '#ff0000', lessonWhiteboardLineColor = '#ff0000', homeworkWhiteboardLineColor = '#ff0000';
+    //电子课本的白板开关
+    function toggleTuYaForTextbook() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        if (isShowingTextbookWhiteboard) {
+            isShowingTextbookWhiteboard = false;
+            $('#btn_tuya_textbook_wrapper .btn_tuya_sub_ctrl').hide();
+            $('#whiteboard_etextbook').hide();
+            $('#btn_tuya_textbook_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png');
+            currentClassroomState.is_showing_textbook_whiteboard = 'false';
+            sendSocket("textbookwb|switch|false");
+        } else {
+            isShowingTextbookWhiteboard = true;
+            $('#btn_tuya_textbook_wrapper .btn_tuya_sub_ctrl').show();
+            $('#whiteboard_etextbook').show();
+            beginTuYaTextbook();
+            $('#btn_tuya_textbook_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1_opened.png');
+            currentClassroomState.is_showing_textbook_whiteboard = 'true';
+            sendSocket("textbookwb|switch|true");
+        }
+    }
+    //开始电子课本的涂鸦
+    function beginTuYaTextbook() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+        var ele = document.getElementById("etextbook_canvas");
+        var context = ele.getContext("2d");
+        var position = $('#etextbook_canvas').offset();
+
+        $("#etextbook_canvas").unbind('mousedown touchstart').bind('mousedown touchstart', function (e) {
+            e.preventDefault();
+            startDraw = true;
+            etextbookWhiteboardSocketData = 'textbookwb|draw|';
+            context.beginPath();
+        }).unbind('mousemove touchmove').bind('mousemove touchmove', function (e) {
+            if (startDraw) {
+                //debugger
+                context.strokeStyle = textbookWhiteboardLineColor;
+                context.lineWidth = 6;
+                var clientX = e.clientX ? e.clientX : e.originalEvent.targetTouches[0].pageX;
+                var clientY = e.clientY ? e.clientY : e.originalEvent.targetTouches[0].pageY;
+                context.lineTo((clientX - position.left), (clientY - position.top));
+                etextbookWhiteboardSocketData += "#" + (clientX - position.left) + "," + (clientY - position.top);
+                context.stroke();
+            }
+        }).unbind('mouseup touchend').bind('mouseup touchend', function () {
+            startDraw = false;
+            //var datas = getClientWidthHeight();
+            sendSocket(etextbookWhiteboardSocketData);
+        });
+    }
+    //清除电子课本的涂鸦
+    function clearTextbookTuYa() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        var canvas = document.getElementById("etextbook_canvas");
+        var c = canvas.getContext("2d");
+        var position = $('#etextbook_canvas').offset();
+
+        $("#etextbook_canvas").unbind('mousedown touchstart').bind('mousedown touchstart', function (e) {
+            e.preventDefault();
+            startClear = true;
+            etextbookWhiteboardSocketData = 'textbookwb|eraser|';
+        }).unbind('mousemove touchmove').bind('mousemove touchmove', function (e) {
+            if (startClear) {
+                var clientX = e.clientX ? e.clientX : e.originalEvent.targetTouches[0].pageX;
+                var clientY = e.clientY ? e.clientY : e.originalEvent.targetTouches[0].pageY;
+                c.clearRect(clientX - position.left - 20, clientY - position.top - 20, 40, 40);
+                etextbookWhiteboardSocketData += "#" + (clientX - position.left - 20) + "," + (clientY - position.top - 20);
+            }
+        }).unbind('mouseup touchend').bind('mouseup touchend', function () {
+            startClear = false;
+            sendSocket(etextbookWhiteboardSocketData);
+        });
+    }
+    //全清
+    function clearAllTextbookTuYa() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+        var canvas = document.getElementById("etextbook_canvas");
+        var c = canvas.getContext("2d");
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        sendSocket("textbookwb|clear|");
+    }
+    //电子课本白板透明度
+    function toggleTuYaForTextbookOpacity() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        if (isTextbookWhiteboardOpacity) {
+            isTextbookWhiteboardOpacity = false;
+            $('#whiteboard_etextbook').css('background-color', '#ffffff');
+            sendSocket("textbookwb|opacity|false");
+        } else {
+            isTextbookWhiteboardOpacity = true;
+            $('#whiteboard_etextbook').css('background-color', 'transparent');
+            sendSocket("textbookwb|opacity|true");
+        }
+    }
+    //改变涂鸦线条颜色
+    function changeTextbookTuyaLineColor(rgb) {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        $('#textbookColorPickerWrapper .colorPicker').each(function (i, n) {
+            var c = $(n).attr('data-color');
+            if (c == rgb) {
+                $(n).addClass('selected');
+            } else {
+                $(n).removeClass('selected');
+            }
+        });
+        textbookWhiteboardLineColor = rgb;
+        sendSocket("textbookwb|changeColor|" + rgb);
+    }
+</script>
+<script>
+    //备课资料的白板开关
+    function toggleTuYaForLesson() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        if (isShowingLessonWhiteboard) {
+            isShowingLessonWhiteboard = false;
+            $('#btn_tuya_lesson_wrapper .btn_tuya_sub_ctrl').hide();
+            $('#whiteboard_lesson').hide();
+            $('#btn_tuya_lesson_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png');
+            currentClassroomState.is_showing_lesson_whiteboard = 'false';
+            sendSocket("lessonwb|switch|false");
+        } else {
+            isShowingLessonWhiteboard = true;
+            $('#btn_tuya_lesson_wrapper .btn_tuya_sub_ctrl').show();
+            $('#whiteboard_lesson').show();
+            beginTuYaLesson();
+            $('#btn_tuya_lesson_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1_opened.png');
+            currentClassroomState.is_showing_lesson_whiteboard = 'true';
+            sendSocket("lessonwb|switch|true");
+        }
+    }
+    //开始备课资料的涂鸦
+    function beginTuYaLesson() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        var ele = document.getElementById("lesson_canvas");
+        var context = ele.getContext("2d");
+        var position = $('#lesson_canvas').offset();
+
+        $("#lesson_canvas").bind('mousedown touchstart', function (e) {
+            e.preventDefault();
+            startDraw = true;
+            lessonWhiteboardSocketData = 'lessonwb|draw|';
+            context.beginPath();
+        }).bind('mousemove touchmove', function (e) {
+            if (startDraw) {
+                context.strokeStyle = lessonWhiteboardLineColor;
+                context.lineWidth = 6;
+                var clientX = e.clientX ? e.clientX : e.originalEvent.targetTouches[0].pageX;
+                var clientY = e.clientY ? e.clientY : e.originalEvent.targetTouches[0].pageY;
+                context.lineTo((clientX - position.left), (clientY - position.top));
+                lessonWhiteboardSocketData += "#" + (clientX - position.left) + "," + (clientY - position.top);
+                context.stroke();
+            }
+        }).bind('mouseup touchend', function () {
+            startDraw = false;
+            sendSocket(lessonWhiteboardSocketData);
+        });
+    }
+    //清除备课资料的涂鸦
+    function clearLessonTuYa() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        var canvas = document.getElementById("lesson_canvas");
+        var c = canvas.getContext("2d");
+        var position = $('#lesson_canvas').offset();
+
+        $("#lesson_canvas").unbind('mousedown touchstart').bind('mousedown touchstart', function (e) {
+            e.preventDefault();
+            startClear = true;
+            lessonWhiteboardSocketData = 'lessonwb|eraser|';
+        }).unbind('mousemove touchmove').bind('mousemove touchmove', function (e) {
+            if (startClear) {
+                var clientX = e.clientX ? e.clientX : e.originalEvent.targetTouches[0].pageX;
+                var clientY = e.clientY ? e.clientY : e.originalEvent.targetTouches[0].pageY;
+                c.clearRect(clientX - position.left - 20, clientY - position.top - 20, 40, 40);
+                lessonWhiteboardSocketData += "#" + (clientX - position.left - 20) + "," + (clientY - position.top - 20);
+            }
+        }).unbind('mouseup touchend').bind('mouseup touchend', function () {
+            startClear = false;
+            sendSocket(lessonWhiteboardSocketData);
+        });
+    }
+    //全清
+    function clearAllLessonTuYa() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+        var canvas = document.getElementById("lesson_canvas");
+        var c = canvas.getContext("2d");
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        sendSocket("lessonwb|clear|");
+    }
+    //备课资料白板透明度
+    function toggleTuYaForLessonOpacity() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        if (isLessonWhiteboardOpacity) {
+            isLessonWhiteboardOpacity = false;
+            $('#whiteboard_lesson').css('background-color', '#ffffff');
+            sendSocket("lessonwb|opacity|false");
+        } else {
+            isLessonWhiteboardOpacity = true;
+            $('#whiteboard_lesson').css('background-color', 'transparent');
+            sendSocket("lessonwb|opacity|true");
+        }
+    }
+    //改变涂鸦线条颜色
+    function changeLessonTuyaLineColor(rgb) {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        $('#lessonColorPickerWrapper .colorPicker').each(function (i, n) {
+            var c = $(n).attr('data-color');
+            if (c == rgb) {
+                $(n).addClass('selected');
+            } else {
+                $(n).removeClass('selected');
+            }
+        });
+        lessonWhiteboardLineColor = rgb;
+        sendSocket("lessonwb|changeColor|" + rgb);
+    }
+</script>
+
+<script>
+    //作业系统的白板开关
+    function toggleTuYaForHomework() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        if (isShowingHomeworkWhiteboard) {
+            isShowingHomeworkWhiteboard = false;
+            $('#btn_tuya_homework_wrapper .btn_tuya_sub_ctrl').hide();
+            $('#whiteboard_homework').hide();
+            $('#btn_tuya_homework_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png');
+            currentClassroomState.is_showing_homework_whiteboard = 'false';
+            sendSocket("homeworkwb|switch|false");
+        } else {
+            isShowingHomeworkWhiteboard = true;
+            $('#btn_tuya_homework_wrapper .btn_tuya_sub_ctrl').show();
+            $('#whiteboard_homework').show();
+            beginTuYaHomework();
+            $('#btn_tuya_homework_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1_opened.png');
+            currentClassroomState.is_showing_homework_whiteboard = 'true';
+            sendSocket("homeworkwb|switch|true");
+        }
+    }
+    //开始作业系统的涂鸦
+    function beginTuYaHomework() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        var ele = document.getElementById("homework_canvas");
+        var context = ele.getContext("2d");
+        var position = $('#homework_canvas').offset();
+
+        $("#homework_canvas")
+                .bind('mousedown touchstart', function (e) {
+                    e.preventDefault();
+                    startDraw = true;
+                    homeworkWhiteboardSocketData = 'homeworkwb|draw|';
+                    context.beginPath();
+                })
+                .bind('mousemove touchmove', function (e) {
+                    if (startDraw) {
+                        context.strokeStyle = homeworkWhiteboardLineColor;
+                        context.lineWidth = 6;
+                        var clientX = e.clientX ? e.clientX : e.originalEvent.targetTouches[0].pageX;
+                        var clientY = e.clientY ? e.clientY : e.originalEvent.targetTouches[0].pageY;
+                        context.lineTo((clientX - position.left), (clientY - position.top));
+                        homeworkWhiteboardSocketData += "#" + (clientX - position.left) + "," + (clientY - position.top);
+                        context.stroke();
+                    }
+                })
+                .bind('mouseup touchend', function () {
+                    startDraw = false;
+                    sendSocket(homeworkWhiteboardSocketData);
+                });
+    }
+    //清除作业系统的涂鸦
+    function clearHomeworkTuYa() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        var canvas = document.getElementById("homework_canvas");
+        var c = canvas.getContext("2d");
+        var position = $('#homework_canvas').offset();
+
+        $("#homework_canvas").unbind('mousedown touchstart').bind('mousedown touchstart', function (e) {
+            e.preventDefault();
+            startClear = true;
+            homeworkWhiteboardSocketData = 'homeworkwb|eraser|';
+        }).unbind('mousemove touchmove').bind('mousemove touchmove', function (e) {
+            if (startClear) {
+                var clientX = e.clientX ? e.clientX : e.originalEvent.targetTouches[0].pageX;
+                var clientY = e.clientY ? e.clientY : e.originalEvent.targetTouches[0].pageY;
+                c.clearRect(clientX - position.left - 20, clientY - position.top - 20, 40, 40);
+                homeworkWhiteboardSocketData += "#" + (clientX - position.left - 20) + "," + (clientY - position.top - 20);
+            }
+        }).unbind('mouseup touchend').bind('mouseup touchend', function () {
+            startClear = false;
+            sendSocket(homeworkWhiteboardSocketData);
+        });
+    }
+    //全清
+    function clearAllHomeworkTuYa() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+        var canvas = document.getElementById("homework_canvas");
+        var c = canvas.getContext("2d");
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        sendSocket("homeworkwb|clear|");
+    }
+    //作业系统白板透明度
+    function toggleTuYaForHomeworkOpacity() {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        if (isHomeworkWhiteboardOpacity) {
+            isHomeworkWhiteboardOpacity = false;
+            $('#whiteboard_homework').css('background-color', '#ffffff');
+            sendSocket("homeworkwb|opacity|false");
+        } else {
+            isHomeworkWhiteboardOpacity = true;
+            $('#whiteboard_homework').css('background-color', 'transparent');
+            sendSocket("homeworkwb|opacity|true");
+        }
+    }
+    //改变涂鸦线条颜色
+    function changeHomeworkTuyaLineColor(rgb) {
+        if (isTeacher == 'false') {
+            return false;
+        }
+
+        $('#homeworkColorPickerWrapper .colorPicker').each(function (i, n) {
+            var c = $(n).attr('data-color');
+            if (c == rgb) {
+                $(n).addClass('selected');
+            } else {
+                $(n).removeClass('selected');
+            }
+        });
+        homeworkWhiteboardLineColor = rgb;
+        sendSocket("homeworkwb|changeColor|" + rgb);
+    }
+</script>
+<script>
+    function getClientWidthHeight()
+    {
+        var canvas = document.getElementById("etextbook_canvas");
+        return {
+            "height": $("#tab_class_3",parent.document).height()-65,
+            "width": $("#tab_class_3",parent.document).width()
+        };
+
+    }
+    function resizePath(strPath,remoteWidth,remoteHeight)
+    {
+        var obj = eval(strPath);
+        var objSeg = obj[1].segments;
+        if(undefined != objSeg)
+        {
+            var clientWidthHeight = getClientWidthHeight();
+            if(null == remoteWidth)
+            {
+                remoteWidth = 800;
+                remoteHeight = 600;
+            }
+            if(null == clientWidthHeight.width || 0 == clientWidthHeight.width)
+            {
+                clientWidthHeight.width = 800;
+                clientWidthHeight.height = 600;
+            }
+            var xCoefficient = clientWidthHeight.width / remoteWidth;
+            var yCoefficient = clientWidthHeight.height / remoteHeight;
+
+            var i;
+            for(i=0;i<objSeg.length;i++)
+            {
+                objSeg[i][0] *= xCoefficient;//x
+                objSeg[i][1] *= yCoefficient;//y
+            }
+            return JSON.stringify(obj);
+        }
+    }
+</script>
+<script>
+    //alert(my_room + '|' + isTeacher + '|' + studentId);
+    var curSessionId = guid();
+    var my_room = '{$classroomId}';
+    var socket = io("http://{$REMOTE_ADDR}:8091");
+    //var socket = io("http://121.42.42.203:8091");
+
+    var clickState = 0;
+    function sendSocket(str) {
+        var obj = {
+            "my_room": my_room,
+            "my_name": curSessionId,
+            "my_content": 'msg|' + str,
+            "current_state": JSON.stringify(currentClassroomState),
+            "user_data":my_room + '|' + isTeacher + '|' + studentId,
+        };
+        socket.emit('send_message', JSON.stringify(obj));
+    }
+</script>
+<script>
+    //请求当前已加入学生列表
+    function requestList() {
+        socket.emit('request_list', my_room);
+    }
+    //操作所有学生控制权限
+    //输入参数：status: 'true' -- 锁定 'false' --解锁
+    function operateAllLockInfo(status) {
+        socket.emit('operate_all', my_room + '|' + status);
+    }
+    //操作指定学生控制权限
+    //输入参数：    id: 指定学生ID
+    //          status: 'true' -- 锁定 'false' --解锁
+    function operateSpecLockInfo(id, status) {
+        socket.emit('operate_spec', my_room + '|' + id + '|' + status);
+    }
+    socket.on('connect', function () {
+        if ('false' == isTeacher)
+            socket.emit('room', my_room + '|' + isTeacher + '|' + studentId);
+        else
+            socket.emit('room', my_room + '|' + isTeacher);
+    });
+    function getOnlineStudentCount(msg) {
+        var count = 0;
+        for (var key in msg) {
+
+            if (key != 'roomnum') {
+                if (msg[key]['isonline'] == 'true') {
+
+                    count++;
+
+                    $('#student_' + key + ' .kezhuo').attr('src', '__PUBLIC__/DigitalClassroom/images/kezhuo.gif');
+
+                    $('.student_' + key + 'isclick').prev().find('img').eq(1).attr('src','__PUBLIC__/DigitalClassroom/images/kezhuo.gif');
+                    //$('.student_' + key + 'isclick').prev('li').find().eq(1).attr('src','__PUBLIC__/DigitalClassroom/images/kezhuo.gif');
+
+                } else {
+                    $('#student_' + key + ' .kezhuo').attr('src', '__PUBLIC__/DigitalClassroom/images/2kezhuo.gif');
+                    $('.student_' + key + 'isclick').prev().find('img').eq(1).attr('src','__PUBLIC__/DigitalClassroom/images/2kezhuo.gif');
+                }
+                //update ui
+            }
+        }
+        return count;
+    }
+    function refreshStudentCount(count) {
+        $('#online_people_count').html(count);
+    }
+
+    function teachertoggleLockStudent(studentId,istrue) {
+
+        if (istrue == 'true') {
+            $( '#student_' + studentId ).children('.kezhuo_lock').css('display', 'block');
+        } else {
+            $( '#student_' + studentId ).children('.kezhuo_lock').css('display', 'none');
+        }
+
+    }
+
+    function AllteachertoggleLockStudent( status ) {
+
+        if (status == 'true') {
+            $('#student_list .kezhuo_lock').show();
+        } else {
+            $('#student_list .kezhuo_lock').hide();
+        }
+
+    }
+
+    //请求当前已加入学生列表SOCKET回调
+    //msg:JSON格式当前课堂学生列表信息
+    socket.on('request_list_ans', function (msg) {
+
+        if(msg=="001") { //用户离开操作 离开之后就不会再次进行状态的同步了
+            var countget = $('#online_people_count').html();
+            countget = --countget;
+            if (countget < 0) {
+                countget = 0;
+            }
+            $('#online_people_count').html(countget);
+        } else {
+
+            var count = getOnlineStudentCount(msg);
+
+            if (countget < 0) {
+                countget = 0;
+            }
+            refreshStudentCount(count);
+            //发送当前状态的同步信息
+            window.setTimeout(function () {
+                sendSocket("global|refresh_state|");
+            }, 500);
+        }
+
+    });
+    //操作所有学生控制权限回调
+    //msg:'ok'操作正常完成
+    socket.on('operate_all_ans', function (msg) {
+        if (isTeacher == 'false') {
+            $('#lockPage').show();
+            isLocked = true;
+        }
+    });
+
+
+    //修改下线的学生的头像
+    socket.on('edit_head', function (msg) {
+        //$( '#student_' + msg ).children('.kezhuo').css('display', 'none');
+        $('#student_' + msg + ' .kezhuo').attr('src', '__PUBLIC__/DigitalClassroom/images/2kezhuo.gif');
+        $('.student_' + msg + 'isclick').prev().find('img').eq(1).attr('src','__PUBLIC__/DigitalClassroom/images/2kezhuo.gif');
+    });
+
+    //老师全部权限管理
+    socket.on('teacher_is_lock_all', function (msg) {
+        AllteachertoggleLockStudent(msg);
+    });
+
+    //老师接收全局的广播
+    socket.on('teacher_is_lock', function (msg) {
+        console.log(msg);
+        var content = msg.split('|');
+        var stuid = content[0];
+        var istrue = content[1];
+        teachertoggleLockStudent(stuid,istrue);
+    });
+
+    //点赞
+    socket.on('ishaszan', function (stuzancount) {
+        $('.zancountstudent').html(stuzancount);
+    });
+
+    //点赞
+    socket.on('delete_haszan', function (del) {
+        $('.stu_zan').attr('src','__PUBLIC__/img/icon/zan.png');
+        var num = 0;
+        if ( num ==  0 && del == 1) {
+            $.get("index.php?m=Home&c=DigitalClassroom&a=delHaszan",{'classroomId':classroomId},function(msg){
+
+            });
+            num++;
+        }
+    });
+
+    //是否进行点击点赞
+    socket.on('clickzan', function (msg) {
+        console.log(msg);
+        for (var key in msg) {
+            console.log('.student_' + msg[key] + 'isclick');
+            $('.student_' + msg[key] + 'isclick').attr('src','__PUBLIC__/img/icon/zaned.png');
+        }
+    });
+
+    //操作指定学生控制权限回调
+    //msg:'ok'操作正常完成
+    socket.on('operate_spec_ans', function (msg) {
+        //document.getElementById('layui-layer-iframe' + frameId).contentWindow.setSpecStudentLockInfoCallback(msg);
+    });
+    var screenLocked = 'true';
+    socket.on('send_lockInfo', function (msg) {
+        if (isTeacher == 'false') {
+            screenLocked = msg;
+            if (msg == 'true') {
+                $('#lockPage').show();
+                isLocked = true;
+            }
+            else {
+                $('#lockPage').hide();
+                isLocked = false;
+            }
+        }
+    });
+    socket.on('send_message', function (msg) {
+        var msg1 = eval('(' + msg + ')');//json数据 序列化成js对象
+        if (msg1.my_name == curSessionId) return;
+        var content = msg1.my_content.split('|');
+        var eventName = content[0];
+        var eventParm1 = content[1];
+        var eventParm2 = content[2];
+        var eventParm3 = content[3];
+        var sourceguid = msg1.my_name;
+        switch (eventName) {
+            case 'msg':
+                switch (eventParm1) {
+                    case 'global'://总体
+                        switch (eventParm2) {
+                            case 'switchNav':
+                                socketAction.global.switchNav(eventParm3);
+                                break;
+                            case 'refresh_state':
+                                if (isTeacher == 'false') {
+                                    socketAction.global.refreshState(msg1.current_state);
+                                }
+                                break;
+                        }
+                        break;
+                    case 'homework'://作业系统
+                        switch (eventParm2) {
+                            case 'createdHomework':
+                                //只针对学生有效
+                                socketAction.homework.createdHomework(eventParm3);
+                                break;
+                        }
+                        break;
+                    case 'textbookwb'://电子课本的白板操作
+                        switch (eventParm2) {
+                            case 'draw'://画
+                                socketAction.whiteboard.draw(eventParm3, getEle("etextbook_canvas"));
+                                break;
+                            case 'eraser'://擦除
+                                socketAction.whiteboard.erasure(eventParm3, getEle("etextbook_canvas"));
+                                break;
+                            case 'clear'://擦除
+                                socketAction.whiteboard.clear(getEle("etextbook_canvas"));
+                                break;
+                            case 'opacity'://透明控制
+                                socketAction.whiteboard.opacity(getEle("whiteboard_etextbook"), eventParm3);
+                                break;
+                            case 'switch'://开/关
+                                if (eventParm3 == 'false') {
+                                    $('#btn_tuya_textbook_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png');
+                                } else {
+                                    $('#btn_tuya_textbook_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1_opened.png');
+                                }
+                                socketAction.whiteboard.switchOn_Off(getEle("btn_tuya_textbook_wrapper"), getEle("whiteboard_etextbook"), eventParm3);
+                                break;
+                            case 'changeColor':
+                                socketAction.whiteboard.changeLineColor(eventParm3, 'textbook');
+                                break;
+                        }
+                        break;
+                    case 'lessonwb'://电子课本的白板操作
+                        switch (eventParm2) {
+                            case 'draw'://画
+                                socketAction.whiteboard.draw(eventParm3, getEle("lesson_canvas"));
+                                break;
+                            case 'eraser'://擦除
+                                socketAction.whiteboard.erasure(eventParm3, getEle("lesson_canvas"));
+                                break;
+                            case 'clear'://擦除
+                                socketAction.whiteboard.clear(getEle("lesson_canvas"));
+                                break;
+                            case 'opacity'://透明控制
+                                socketAction.whiteboard.opacity(getEle("whiteboard_lesson"), eventParm3);
+                                break;
+                            case 'switch'://开/关
+                                if (eventParm3 == 'false') {
+                                    $('#btn_tuya_lesson_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png');
+                                } else {
+                                    $('#btn_tuya_lesson_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1_opened.png');
+                                }
+                                socketAction.whiteboard.switchOn_Off(getEle("btn_tuya_lesson_wrapper"), getEle("whiteboard_lesson"), eventParm3);
+                                break;
+                            case 'changeColor':
+                                socketAction.whiteboard.changeLineColor(eventParm3, 'lesson');
+                                break;
+                        }
+                        break;
+                    case 'homeworkwb'://电子课本的白板操作
+                        switch (eventParm2) {
+                            case 'draw'://画
+                                socketAction.whiteboard.draw(eventParm3, getEle("homework_canvas"));
+                                break;
+                            case 'eraser'://擦除
+                                socketAction.whiteboard.erasure(eventParm3, getEle("homework_canvas"));
+                                break;
+                            case 'clear'://擦除
+                                socketAction.whiteboard.clear(getEle("homework_canvas"));
+                                break;
+                            case 'opacity'://透明控制
+                                socketAction.whiteboard.opacity(getEle("whiteboard_homework"), eventParm3);
+                                break;
+                            case 'switch'://开/关
+                                if (eventParm3 == 'false') {
+                                    $('#btn_tuya_homework_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png');
+                                } else {
+                                    $('#btn_tuya_homework_ctrl').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1_opened.png');
+                                }
+                                socketAction.whiteboard.switchOn_Off(getEle("btn_tuya_homework_wrapper"), getEle("whiteboard_homework"), eventParm3);
+                                break;
+                            case 'changeColor':
+                                socketAction.whiteboard.changeLineColor(eventParm3, 'homework');
+                                break;
+                        }
+                        break;
+                    case 'etextbook'://电子课本的操作
+                        switch (eventParm2) {
+                            case 'turnPage':
+                                var page1 = eventParm3.split(',')[0];
+                                var page2 = eventParm3.split(',')[1];
+                                socketAction.eTextbook.turnPage(page1, page2);
+                                break;
+                            case 'playMedia':
+                                var flashFilename = eventParm3.split(',')[0];
+                                var isLeftPage = eventParm3.split(',')[1] == "1" ? true : false;
+                                socketAction.eTextbook.playMedia(flashFilename, isLeftPage);
+                                break;
+                            case 'onClickRect':
+                                var fileName = eventParm3.split(',')[0];
+                                var isLeftPage = eventParm3.split(',')[1] == "1" ? true : false;
+                                socketAction.eTextbook.playSentence(fileName, isLeftPage);
+                                break;
+                            case 'onClickRectAudio':
+                                var fileName = eventParm3.split(',')[0];
+                                var isLeftPage = eventParm3.split(',')[1] == "1" ? true : false;
+                                socketAction.eTextbook.playAudio(fileName, isLeftPage);
+                                break;
+                            case 'onClickRectVideo':
+                                var fileName = eventParm3.split(',')[0];
+                                var isLeftPage = eventParm3.split(',')[1] == "1" ? true : false;
+                                socketAction.eTextbook.playVideo(fileName, isLeftPage);
+                                break;
+                            case 'cancelPlaySentence':
+                                socketAction.eTextbook.cancelPlaySentence();
+                                break;
+                            case 'switchSpeed':
+                                socketAction.eTextbook.switchSpeed();
+                                break;
+                        }
+                        break;
+                    case 'lesson': //备课资料
+                        switch (eventParm2) {
+                            case 'openLessonPlannings':
+                                var id = eventParm3.split(',')[0];
+                                var type = eventParm3.split(',')[1];
+                                socketAction.lesson.openLessonPlannings(id, type);
+                                break;
+                            case 'openLessonPlanningsV3':
+                                var id = eventParm3.split(',')[0];
+                                socketAction.lesson.openLessonPlanningsV3(id);
+                                break;
+                            case 'returnToLessonPlannings':
+                                socketAction.lesson.returnToLessonPlannings();
+                                break;
+                            case 'gotoPPTSlide':
+                                socketAction.lesson.gotoPPTSlide(eventParm3.split(',')[0], eventParm3.split(',')[1]);
+                                break;
+                            case 'turnPageV3':
+                                socketAction.lesson.turnPageV3(eventParm3.split(',')[0]);
+                                break;
+                            case 'customCmd':
+                                socketAction.lesson.customCmd(eventParm3);
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    });
+</script>
+<script>
+    if (isTeacher == 'false') {
+        $.get("index.php?m=Home&c=DigitalClassroom&a=getGroupStudent",{'studentId':studentId,'classroomId':classroomId},function(msg){
+            $('.htmltmp').html('');
+            $('.htmltmp').append(msg.info);
+            $('.zancountstudent').html(msg.stucount);
+        });
+    }
+    $('#btn_tuya_textbook_ctrl_pen,#btn_tuya_lesson_ctrl_pen,#btn_tuya_homework_ctrl_pen').click(function () {
+
+        $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_active.png');
+        $('#btn_tuya_textbook_ctrl_eraser,#btn_tuya_lesson_ctrl_eraser,#btn_tuya_homework_ctrl_eraser').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_deactive.png')
+
+    })
+
+    $('#btn_tuya_textbook_ctrl_eraser,#btn_tuya_lesson_ctrl_eraser,#btn_tuya_homework_ctrl_eraser').click(function () {
+        $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_active.png');
+        $('#btn_tuya_textbook_ctrl_pen,#btn_tuya_lesson_ctrl_pen,#btn_tuya_homework_ctrl_pen').attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_deactive.png');
+
+    })
+
+    $('#btn_tuya_textbook_ctrl_opacity,#btn_tuya_lesson_ctrl_opacity,#btn_tuya_homework_ctrl_opacity').click(function () {
+        if($(this).attr('src') =='/Public/DigitalClassroom/images/tuya/tuya_switch_deactive.png'){
+            $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_active.png');
+        }else{
+            $(this).attr('src', '__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_deactive.png');
+        }
+
+
+    })
+</script>
+</body>
+</html>

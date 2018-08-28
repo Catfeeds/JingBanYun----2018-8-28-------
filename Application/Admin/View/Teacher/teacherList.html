@@ -1,0 +1,666 @@
+<layout name="admin_layout_back"/>
+
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<style>
+	.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+		box-sizing: content-box;
+	}
+
+	#laydate_hms {
+		display: none !important;
+	}
+</style>
+
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		教师管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="javascript:;">教师管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php/Admin/Teacher/teacherList" method="get">
+	<p class="blueText fs16">教师查询</p>
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>教师姓名：</label>
+				<input type="text" class="input-control teacher_name" name="teacher_name" value="{$teacher_name}" placeholder="请输入教师姓名,模糊查询">
+			</div>
+			<div class="cell">
+				<label>所属学校：</label> 
+                                <input type="text" class="input-control school_name" name="school_name" value="{$school_name}" placeholder="请输入学校名称">
+			</div>
+			<div class="cell">
+				<label>所属学校代码：</label>
+				<input type="text" class="input-control school_code" name="school_code" value="{$school_code}" placeholder="请输入所属学校代码">
+			</div>
+			<div class="cell">
+				<label>教师手机号：</label>
+				<input type="text" class="input-control telephone" name="telephone" value="{$telephone}" placeholder="请输入教师手机号">
+			</div>
+			<div class="cell">
+				<label>任教学科：</label>
+				<select id="course_list" class="input-control" name="course">
+					<option value=''>-请选择-</option>
+				    <volist name="course_list" id="course_item">
+                                        <option value="{$course_item.id}"  <if condition="$course_item['id']==$course">selected="true"</if> >{$course_item.name}</option>
+                                    </volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>任教年级：</label>
+				<select id="grade_list" class="input-control" name="grade">
+					<option value="">-请选择-</option> 
+                                    <volist name="grade_list" id="grade_item">
+                                        <option value="{$grade_item.id}" <if condition="$grade_item['id']==$grade">selected="true"</if> >{$grade_item.name}</option>
+                                    </volist>
+				</select>
+			</div> 
+			<div class="cell">
+				<label>教师账号状态：</label>
+				<select id="status" class="input-control" name="status">
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$account_status==='1'">selected="true"</if> >正常</option>
+					<option value="0" <if condition="$account_status==='0'">selected="true"</if> >停用</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>教师审核状态：</label>
+				<select id="auth_status" class="input-control" name="auth_status">
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$auth_status==='1'">selected="true"</if> >已审核</option>
+					<option value="0" <if condition="$auth_status==='0'">selected="true"</if> >未审核</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>加入学校审核状态：</label>
+				<select id="apply_school_status" class="input-control" name="apply_school_status">
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$apply_school_status==='1'">selected="true"</if> >已审核</option>
+					<option value="0" <if condition="$apply_school_status==='0'">selected="true"</if> >待审核</option>
+                                        <option value="2" <if condition="$apply_school_status==='2'">selected="true"</if> >已拒绝</option>
+				</select>
+			</div>
+                        <input type='hidden' name='order' class="order_class" value='0'/>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+                -->
+                <input type='submit' value='查询' class='blueBtn'/>
+                <input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+
+<div class="grayBox">
+	<div class="left">
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt=""> 
+                        <a href="{:U('Teacher/createTeacherAccount')}">添加</a> 
+		</span>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-import.png" alt=""> 
+                        <a href="{:U('Teacher/importTeacherView')}">导入</a> 
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt=""> 
+                        <a href='javascript:;' class="export_btn">批量导出</a> 
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt=""> 
+                        <a href="{:U('Teacher/exportedTeacherAll')}&{$condition_str}">导出全部</a> 
+		</span>
+	</div>
+	<div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue--> 
+                        <if condition="$order=='asc'">
+                            <button class="upBtn upBtnBlue"></button>
+                            <button class="downBtn "></button>
+                        <else />
+                            <button class="upBtn "></button>
+                            <button class="downBtn downBtnBlue"></button>
+                        </if>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>
+</div>
+
+<p class="blueText fs16">教师列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+        <tr>
+            <th class="text-center"><input type="checkbox" class="check_all mr5">全选</th>
+            <th class="text-center">序号</th>
+            <th class="text-center">教师姓名</th>
+            <th class="text-center">教师电话</th>
+            <th class="text-center">所属学校</th>
+            <th class="text-center">所属学校类型</th>
+            <th class="text-center">任教学科</th> 
+            <th class="text-center">任教班级</th>
+            <th class="text-center">账号状态</th>
+            <th class="text-center">教师审核状态</th>
+            <th class="text-center">加入学校审核状态</th>
+			<th class="text-center">权限类型</th>
+            <th class="text-center">操作</th>
+        </tr>
+	</thead>
+	<tbody id="body">
+            <volist name="list" id="item" key="key">
+                <tr>
+                        <td class="text-center">
+				<input type="checkbox" attr="{$item.teacher_id}" class="check_child" name="checkbox">
+			</td>
+			<td class="text-center">
+				{$key}
+			</td>
+			<td class="text-center">
+				{$item.teacher_name}
+			</td>
+			<td class="text-center">
+				{$item.telephone}
+			</td>
+                        <td class="text-center">
+				{$item.school_name}
+			</td>
+			<td class="text-center"> 
+                            <volist name="school_category" id="category_item" >
+                                <if condition="$key==$item['school_category']">
+                                    {$category_item}
+                                </if>
+                            </volist>
+			</td>
+			<td class="text-center" title="{$item.course}">
+				{$item.course}
+			</td>
+			<td class="text-center" title="{$item.class_name}">
+				{$item.class_name}
+			</td>
+			<td class="text-center">
+                            <if condition="$item['flag'] eq 1">
+                                正常
+                            <else />
+                                停用
+                            </if>  
+			</td>
+			<td class="text-center">
+                            <if condition="$item['auth_status'] eq 1">
+                                已认证
+                            <elseif condition="$item['auth_status'] eq 2" />
+                                已拒绝
+                            <else />
+                                待认证
+                            </if>
+				
+			</td>
+			<td class="text-center"> 
+                            <if condition="$item['apply_school_status'] eq 1" >
+                                已同意加入 
+                            <elseif condition="$item['apply_school_status'] eq 2" />
+                                已拒绝
+                            <else />
+                                待审核
+                            </if> 
+				
+			</td>
+				<td class="text-center">
+					<if condition="$item['permissions_status'] eq 1">
+						vip权限
+						<else />
+						普通权限
+					</if>
+				</td>
+			<td>
+				<a href="{:U('Teacher/teacherDetail')}&id={$item.teacher_id}" class="operBtn" id="">查看</a>
+                                <a href="{:U('Teacher/updateTeacher')}&id={$item.teacher_id}" class="operBtn" id="">修改</a>
+                                <if condition="$item['flag'] eq 1">
+                                    <a href="javascript:;" class="operBtn account_status disabled_account_status">账户停用</a>
+                                <else />
+                                    <a href="javascript:;" class="operBtn account_status enable_account_status" id="">账户启用</a>
+                                </if>
+                        
+                                <if condition="$item['auth_status'] eq 0">
+                                    <a href="javascript:;" class="operBtn auth_status auth_status_allow">教师认证通过</a>
+                                    <a href="javascript:;" class="operBtn auth_status auth_status_deny">教师认证拒绝</a>
+                                </if>
+                        
+                                <if condition="$item['apply_school_status'] eq 0">
+                                    <if condition="$item['school_id'] neq $other_school_id">
+                                        <a href="javascript:;" class="operBtn apply_school apply_school_allow">同意加入学校</a>
+                                        <a href="javascript:;" class="operBtn apply_school apply_school_deny">拒绝加入学校</a>  
+                                    </if>
+                                </if> 
+				<a href="javascript:;" class="operBtn delete_button" id="">&nbsp;&nbsp;删除</a>
+                                <input type='hidden' value="{$item.teacher_id}"  class='teacher_id'/>
+
+							<if condition="$item['permissions_status'] eq 1">
+								<a href="javascript:;" class="operBtn vipButton" >修改VIP</a>
+								<a href="javascript:;" class="operBtn delvipButton"  parent_id="{$item.teacher_id}">取消VIP</a>
+								<else />
+
+								<?php if ( $item['auth_end_time']>time() ): ?>
+								<a href="javascript:;" class="operBtn vipButton" >修改VIP</a>
+								<a href="javascript:;" class="operBtn delvipButton"  parent_id="{$item.teacher_id}">取消VIP</a>
+								<?php else: ?>
+								<a href="javascript:;" class="operBtn vipButton">开通VIP</a>
+								<?php endif; ?>
+
+
+							</if>
+			</td>
+		</tr>
+            </volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<!--开通VIP权限-->
+<div class="fullscr1 fullLong" id="vipModify">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">开通VIP权限</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20">
+				<div class="selectBox">
+					<label for="">权限类型：</label>
+					<input type="text" class="input-control " placeholder="结束时间" value="个人vip" disabled>
+					&nbsp;&nbsp;
+					<input type="radio" name="vipRadio" value="1" checked="true" class="vipRadio" id="tryRadio">
+					<label for="tryRadio" class="vipLabel">试用VIP</label>
+					&nbsp;&nbsp;
+					<input type="radio" name="vipRadio" value="2" class="vipRadio" id="officialRadio">
+					<label for="officialRadio" class="vipLabel">正式VIP</label>
+				</div>
+				<div class="selectBox">
+					<label for="">有效时间：</label>
+					<input type="text" class="input-control" id="startTime" name="" value="" placeholder="开始时间">&nbsp;至&nbsp;
+					<input type="text" class="input-control" id="endTime" name="" value="" placeholder="结束时间">
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureVip">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelVip">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+<input type="hidden" class="select_teacher_id">
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+
+	$(".delvipButton").click(function(){
+		if(confirm('确认取消VIP')){
+			var id = $(this).attr('parent_id');
+			var data={'id':id,'role_id':2};
+			$.ajax({
+				type:"post",
+				url:"{:U('Parent/deleteParentVip')}",
+				dataType:"json",
+				data: data,
+				success: function(msg){
+					if(msg.status==200){
+						location.reload();
+					}else if(msg.status==400){
+						$.NotifyBox.NotifyNotLogin();
+					}else{
+						$.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+						return false;
+					}
+				}
+			})
+		}
+	});
+
+	$(".vipButton").click(function(){
+		var teacher_id = $(this).prev('.teacher_id').val();
+		$('.select_teacher_id').val(teacher_id);
+		$("#vipModify").show();
+		$('body').css('overflow-y','hidden')
+	});
+</script>
+
+<script type="text/javascript">
+	!function(){
+		laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var startTime = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 endTime.min = datas; //开始日选好后，重置结束日的最小日期
+			 endTime.start = datas; //将结束日的初始值设定为开始日
+//			 appstart.max = datas;
+//			 append.max = datas;
+		}
+	};
+
+	var endTime = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 startTime.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(startTime);
+	laydate(endTime);
+</script>
+
+
+<!--VIP权限修改-->
+<script>
+	function IsDate(mystring) {
+		var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+		var str = mystring;
+		if (!reg.test(str)  || RegExp.$2>12 || RegExp.$3>31){
+			return false;
+		}
+		return true;
+	}
+
+	$('#sureVip').click(function(){
+		$('#vipModify').hide();
+		$('body').css('overflow-y','auto')
+	})
+	$('#cancelVip').click(function(){
+		$('#vipModify').hide();
+		$('body').css('overflow-y','auto')
+	})
+
+	//点击开通vip
+	$("#sureVip").click(function(){
+		var use_type,startTime,endTime;
+		var teacher_id = $('.select_teacher_id').val();
+
+		startTime=$("#startTime").val();
+		endTime=$('#endTime').val();
+		use_type = $("input[name='vipRadio']:checked").val();
+
+		if (startTime == '') {
+			$.NotifyBox.NotifyOne('注意', '开始时间不能为空！', '确定');
+			return false;
+		} else {
+			if (IsDate(startTime) == false) {
+				$.NotifyBox.NotifyOne('注意', '开始时间格式不正确！', '确定');
+				return false;
+			}
+		}
+		if (endTime == '') {
+			$.NotifyBox.NotifyOne('注意', '结束时间不能为空！', '确定');
+			return false;
+		} else {
+			if (IsDate(endTime) == false) {
+				$.NotifyBox.NotifyOne('注意', '结束时间格式不正确！', '确定');
+				return false;
+			}
+		}
+
+		if(use_type=='' || use_type==false){
+			$.NotifyBox.NotifyOne('注意', '请选择使用类型！', '确定');
+			return false;
+		}
+
+		if (teacher_id=='' || teacher_id==undefined) {
+			$.NotifyBox.NotifyOne('注意', 'teacher_id传值错误', '确定');
+			return false;
+		}
+
+		var data={'id':teacher_id,'use_type':use_type,'start_time':startTime,'end_time':endTime,'vip_type':2};
+
+		$.ajax({
+			type:"post",
+			url:"{:U('Teacher/giveTeacherVip')}",
+			dataType:"json",
+			data: data,
+			success: function(msg){
+				if(msg.status==200){
+					location.reload();
+				}else if(msg.status==400){
+					$.NotifyBox.NotifyNotLogin();
+				}else{
+					$.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+					return false;
+				}
+			}
+		})
+	});
+</script>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"4%"},
+                {"width":"3%"},
+                {"width":"8%"},
+                {"width":"10%"},
+                {"width":"8%"},
+                {"width":"8%"},
+                {"width":"10%"},//5
+                {"width":"10%"},
+                {"width":"8%"},
+                {"width":"8%"},
+                {"width":"8%"}, 
+                {"width":"15%"}
+            ]
+        });
+    });
+    
+    //点击批量导出
+        $(".export_btn").click(function(){
+            var check_input=$('#body').find("[name='checkbox']:checked");
+            if(check_input.length<1){
+                $.Notify({
+                    caption: '提示',
+                    content: '请勾选您要导出的账号',
+                    type: 'warning'
+                });
+                return false;
+            }
+            var form="";
+            form = $("<form></form>");
+            form.attr('action',"{:U('Teacher/exportedTeacher')}");
+            form.attr('method','post');
+            
+            for(var i=0;i<check_input.length;i++){ 
+                var temp_val=$(check_input[i]).attr('attr'); 
+                var temp= $("<input type='hidden' name='hid[]'/>")
+                $(temp).attr('value',temp_val);
+                form.append(temp);
+            } 
+            form.appendTo("body");
+            form.css('display','none');
+            form.submit();
+        });
+</script>
+
+<script>
+    //启用或禁用教师账户
+    $('.account_status').click(function(){ 
+        var id=$(this).siblings('.teacher_id').val();   
+        var obj=this;
+        $.ajax({
+            type:"post",
+            url:"{:U('Teacher/updateTeacherStatus')}",
+            dataType:"json",
+            data:{'id':id},
+            success: function(msg){
+                if(msg.status==200){  
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    //教师自身状态(附加属性)的认证或拒绝
+    $('.auth_status').click(function(){
+        if($(this).hasClass('auth_status_allow')){
+            var status=1;
+        }else{
+            var status=2;
+        }
+        var id=$(this).siblings('.teacher_id').val();   
+        var obj=this;
+        $.ajax({
+            type:"post",
+            url:"{:U('Teacher/updateTeacherAuth')}",
+            dataType:"json",
+            data:{'id':id,'status':status},
+            success: function(msg){
+                if(msg.status==200){  
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    //加入学校或拒绝
+    $('.apply_school').click(function(){
+        if($(this).hasClass('apply_school_allow')){
+            var status=1;
+        }else{
+            var status=2;
+        }
+        var id=$(this).siblings('.teacher_id').val();   
+        var obj=this;
+        $.ajax({
+            type:"post",
+            url:"{:U('Teacher/updateApplyStatus')}",
+            dataType:"json",
+            data:{'id':id,'status':status},
+            success: function(msg){
+                if(msg.status==200){  
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    
+    //删除教师
+    $('.delete_button').click(function(){ 
+        if(!confirm('您确定删除吗?')){
+            return false;
+        }
+        var id=$(this).siblings('.teacher_id').val();   
+        var obj=this;
+        $.ajax({
+            type:"post",
+            url:"{:U('Teacher/deleteTeacher')}",
+            dataType:"json",
+            data:{'id':id},
+            success: function(msg){
+                if(msg.status==200){  
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    
+    //点击重置 
+    $('.resetButton').click(function(){
+        $('.teacher_name').val('');
+        $('.school_name').val(''); 
+        $('.school_code').val(''); 
+        $('.telephone').val('');  
+        $('#course_list').find('option:eq(0)').attr('selected',true); 
+        $('#grade_list').find('option:eq(0)').attr('selected',true);
+        $('#status').find('option:eq(0)').attr('selected',true);
+        $('#auth_status').find('option:eq(0)').attr('selected',true);
+        $('#apply_school_status').find('option:eq(0)').attr('selected',true);
+    });
+    //点击排序
+    $('.upBtn').click(function(){
+        if(!$(this).hasClass('upBtnBlue')){
+            $(this).addClass('upBtnBlue');
+        }
+        $('.downBtn').removeClass('downBtnBlue');
+        $('.order_class').val(1);
+        $('#form_submit').submit();
+    });
+
+    $('.downBtn').click(function(){
+        if(!$(this).hasClass('downBtnBlue')){
+            $(this).addClass('downBtnBlue');
+        }
+        $('.upBtn').removeClass('upBtnBlue');
+        $('.order_class').val(0);
+        $('#form_submit').submit();
+    });
+    
+    
+    //全选
+    $('.check_all').click(function(){
+        var childCheck=$('.check_child');
+        var temp_status=true;
+        if($(this)[0].checked==true){
+            //本次选中
+            temp_status=true;
+        }else{
+            //本次取消
+            temp_status=false;
+        }
+        for(var i=0;i<childCheck.length;i++){
+            childCheck[i].checked=temp_status
+        }
+    });
+	
+    //取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				 $('.check_all').removeAttr('checked','checked');
+				 $('.check_all').removeProp('checked','checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $("[name='checkbox']:checked").length) {
+					$('.check_all').attr('checked','checked');
+					$('.check_all').prop('checked','checked');
+				};
+			}
+		}
+	};
+
+</script>
+

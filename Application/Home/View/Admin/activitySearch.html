@@ -1,0 +1,233 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=3.0" type="text/css" rel="stylesheet">
+<style>
+    #listWrapper img{
+        height: 50px !important;
+    }
+    
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+    
+</style>
+
+<div style="text-align: right;">
+    <if condition="$flag eq 2"> 
+        <div class="input-control text" data-role="input" style="width: 320px;">
+            <input class="activity_name" type="text" placeholder="活动名称" value="{$search_val}" />
+            <button class="button search_button"><span class="mif-search"></span></button>
+        </div>
+<!--        <input type="text" value="{$search_val}" placeholder="请输入活动名称" class="activity_name"/>-->
+    <else />
+        <div class="input-control text" data-role="input" style="width: 320px;">
+            <input class="activity_name" type="text" placeholder="活动名称"/>
+            <button class="button search_button"><span class="mif-search"></span></button>
+        </div>
+<!--        <input type="text" placeholder="请输入活动名称" class="activity_name"/>-->
+    </if> 
+<!--    <a class="search_button">搜索</a>-->
+</div>
+
+<div style="margin-bottom: 12px;float:left;">
+    <a href="{:U('Admin/publishActivity')}" title="发布活动" class="button {:session('btntheme')}">发布活动</a>
+</div>
+
+<div style="margin-left:210px;float:left;">
+    <select id="class_name">
+        <option value="0">--所属板块--</option>
+        <if condition="$flag eq 1">  
+            <volist name="class_list" id="class_data" empty="">
+                <if condition="$search_val eq $class_data['id']">  
+                    <option selected="true" value={$class_data.id}>{$class_data.class}</option>
+                <else />
+                    <option value={$class_data.id}>{$class_data.class}</option>
+                </if>
+            </volist>  
+        <else /> 
+            <volist name="class_list" id="class_data" empty="">
+                <option value={$class_data.id}>{$class_data.class}</option>
+            </volist>
+        </if>
+    </select>
+</div>
+
+
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <th class="text-center">发布单位/人</th>
+        <th>标题</th>
+        <th class="text-center">面向</th>
+        <th class="text-center">发布时间</th>
+        <th class="text-center">所属版本</th>
+        <th class="text-center">获赞数</th>
+        <th class="text-center">观看数</th>
+        <th class="text-center">收藏数</th>
+        <th class="text-center">状态数</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="">
+        <tr id="l_{$data.id}">
+            <td class="text-center">
+                {$data.publisher}
+            </td>
+            <td>
+                <h3 class="list_title">
+                    <a href="{:U('Admin/activityDetails?id=')}{$data.id}">{$data.title}</a>
+                </h3>
+                <img src="__ROOT__/Resources/socialactivity/{$data.short_content}">
+            </td>
+            <td class="text-center">
+                {$data.stakeholder}
+            </td>
+            <td class="text-center">{$data.create_at|date="Y-m-d H:i",###}</td>
+            <td class="text-center">
+                {$data.class}
+            </td>
+            <td class="text-center">
+                {$data.zan_count}
+            </td>
+            <td class="text-center">
+                {$data.browse_count}
+            </td>
+            <td class="text-center">
+                {$data.favor_count}
+            </td>
+            <td class="text-center status">
+                <if condition="$data['status'] eq 1">
+                    未通过审核
+                <elseif condition="$data['status'] eq 2"/>
+                    审核通过
+                <elseif condition="$data['status'] eq 3"/>
+                    已拒绝
+                </if>
+            </td>
+            <td class="text-center">
+                <in name="Think.session.admin.role" value="1">
+                    <a href="{:U('Admin/modifyActivity?id=')}{$data.id}" class="button info">修改</a> 
+                    <button onclick="delete_data({$data.id},this)" class="button downR">删除</button>
+                </in> 
+                <if condition="$data['status'] eq 1">
+                        <in name="Think.session.admin.role" value="2">
+                            <button onclick="approve({$data.id},this)" class="button info">通过</button>
+                            <button onclick="deny({$data.id},this)" class="button danger">拒绝</button>
+                        </in>
+                    <elseif condition="$data['status'] eq 3"/>
+                        <in name="Think.session.admin.role" value="2">
+                            <button onclick="delete_data({$data.id},this)" class="button downR">删除</button>
+                        </in> 
+                    <elseif condition="$data['status'] eq 2"/>
+                        <button onclick="xiajia({$data.id},this)" class="button downR">下架</button> 
+                    <else/>  
+                    <!-- -->
+                </if>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+<script>
+    function approve(id,obj) {
+        $.get('index.php?m=Home&c=Admin&a=approveActivity', {id: id}, function (res) {
+            if (res == 'success') { 
+                var temp_downR="<button onclick=xiajia("+id+",this) class='button downR'>下架</button>"; 
+                $(obj).parent().siblings('.status').text('审核通过');
+                $(obj).siblings('.danger').remove();
+                $(obj).before(temp_downR);
+                $(obj).remove();
+            } else {
+                alert('通过失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    function deny(id,obj) {
+        $.get('index.php?m=Home&c=Admin&a=denyActivity', {id: id}, function (res) {
+            if (res == 'success') { 
+                $(obj).parent().siblings('.status').text('已拒绝');
+                $(obj).siblings('.info').remove();
+                $(obj).remove();
+            } else {
+                alert('拒绝失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+    function xiajia(id,obj) {
+        $.get('index.php?m=Home&c=Admin&a=downActivity', {id: id}, function (res) {
+            if (res == 'success') { 
+                var temp_info="<button onclick=approve("+id+",this) class='button info'>通过</button>&nbsp;";
+                var temp_danger="<button onclick=deny("+id+",this) class='button danger'>拒绝</button>"; 
+                $(obj).parent().siblings('.status').text('未通过审核');
+                $(obj).before(temp_info);
+                $(obj).before(temp_danger);
+                $(obj).remove();
+                
+            } else {
+                alert('下架失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    
+    //板块发生变化
+    $('#class_name').change(function(){
+        var class_id=$('#class_name').val();
+        if(class_id==0){
+            return false;
+        }
+        location.href="{:U('Admin/activitySearch')}&flag=1&val="+class_id;
+    });
+    
+    //点击搜索按钮,只能搜索中文不能含有空格等
+    $('.search_button').click(function(){
+        var str=$('.activity_name').val();
+        /*if(str.match(/[^\u4e00-\u9fa5]/g)) 
+           {
+               alert("只能输入中文");
+               return false;
+           }else{
+               location.href="{:U('Admin/activitySearch')}&flag=2&val="+str;
+           }*/
+            location.href="{:U('Admin/activitySearch')}&flag=2&val="+str;
+    });
+
+</script>
+<!--
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 305) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false
+        });
+    });
+</script>
+-->
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"7%"},
+                {"width":"17%"},
+                {"width":"10%"},
+                {"width":"13%"},
+                {"width":"10%"},
+                {"width":"5%"},
+                {"width":"5%"},
+                {"width":"5%"},
+                {"width":"8%"},
+                {"width":"20%"}
+            ]
+        });
+    });
+</script>

@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>教师云桌面 :: 京版云教育生态平台</title>
+    <link href="__PUBLIC_METRO__/css/metro.css" rel="stylesheet">
+    <link href="__PUBLIC__/css/layout.css" rel="stylesheet">
+    <link href="__PUBLIC_METRO__/css/metro-icons.css" rel="stylesheet">
+    <link href="__PUBLIC_METRO__/css/app/desktop1.css?v=2" rel="stylesheet">
+    <link rel="stylesheet" href="__PUBLIC__/css/index2.css?v=3" >
+    <link rel="stylesheet" href="__PUBLIC__/css/index1.css" media="screen and (max-width:1220px)">
+    <link href="__PUBLIC__/infoPerfect/infoPerfect.css?v=1" rel="stylesheet" type="text/css"/>
+    <!--<script src="__PUBLIC__/js/external/jquery.min.js"></script>-->
+    <script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+    <script src="__PUBLIC_METRO__/js/metro.js"></script>
+    <style>
+		body {
+			display: block;
+		}
+
+        .tile-area-controls {
+            position: fixed;
+            right: 40px;
+            top: 40px;
+            z-index: 10;
+        }
+
+        .tile-group {
+            left: 100px;
+        }
+
+        .tile,
+        .tile-small,
+        .tile-sqaure,
+        .tile-wide,
+        .tile-large,
+        .tile-big,
+        .tile-super {
+            opacity: 0;
+            -webkit-transform: scale(.8);
+            transform: scale(.8);
+        }
+
+        #charmSettings .button {
+            margin: 5px;
+        }
+
+        .schemeButtons {
+            /*width: 300px;*/
+        }
+
+        @media screen and (max-width: 640px) {
+            .tile-area {
+                overflow-y: scroll;
+            }
+            .tile-area-controls {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+            .tile-area {
+                overflow-y: scroll;
+            }
+            .tile-area-controls {
+                display: none;
+            }
+        }
+
+
+
+        #copyright p a {
+            color: #fff;
+            font-size: 18px;
+            position: relative
+        }
+
+        #copyright a span {
+            width: 2px;
+            height: 18px;
+            background: #fff;
+            display: inline-block;
+            position: absolute;
+            top: 4px
+        }
+        /*---------0909最新增加↓↓↓ 用户须知------------*/
+
+        .notice {
+            display: none;
+            width: 930px;
+            height: 510px;
+            background: url(__PUBLIC__/img/toolTip/notice_t.png) no-repeat center;
+            background-size: 100% 100%;
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            margin: auto auto;
+        }
+
+
+
+        .notice p {
+            padding: 0 70px;
+            text-align: justify;
+            font-size: 16px;
+            line-height: 28px;
+            padding-right: 30px
+        }
+        .notice  .helloUser{
+
+            margin-top:229px;
+            padding-left: 42px
+        }
+        .notice_close {
+            float: right;
+            cursor: pointer
+        }
+        /*---------0909最新增加↑↑↑ 用户须知------------*/
+        /*---------0909最新增加↓↓↓ 弹窗------------*/
+
+        #vip {
+            width: 30px;
+			margin-right: 10px;
+        }
+		#vip img{
+			margin-top: -5px;
+		}
+
+
+        #vipp {
+            margin: 0;
+            font-size: 1.125rem;
+            text-align: center;
+            font-weight: 300;
+        }
+        /*------知道弹窗-------*/
+
+        #points1 {
+            display: none;
+            background: url(__PUBLIC__/img/tishi1.png);
+            width: 450px;
+            height: 260px;
+            position: absolute;
+            top: 0;
+            background-size: 100% 100%;
+            text-align: center;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            z-index: 10;
+        }
+
+        #points1 a {
+            text-align: center;
+            margin-top: 200px;
+            color: #fff;
+            font-size: 14px;
+            background: #3BCEC2;
+            border-radius: 5px;
+            padding: 10px 20px;
+            display: inline-block;
+            cursor: pointer
+        }
+        /*------升级弹窗-------*/
+
+        #points2 {
+            display: none;
+            background: url(__PUBLIC__/img/tishi2.png);
+            width: 450px;
+            height: 260px;
+            position: absolute;
+            top: 0;
+            background-size: 100% 100%;
+            text-align: center;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            z-index: 10;
+        }
+
+        #points3 {
+            display: none;
+            background: url(__PUBLIC__/img/tishi3.png);
+            width: 450px;
+            height: 260px;
+            position: absolute;
+            top: 0;
+            background-size: 100% 100%;
+            text-align: center;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            z-index: 10;
+        }
+
+        #points2 a,
+        #points3 a {
+            text-align: center;
+            margin-top: 200px;
+            color: #fff;
+            font-size: 14px;
+            background: #3BCEC2;
+            border-radius: 5px;
+            padding: 10px 20px;
+            display: inline-block;
+        }
+
+        #points2 a:nth-child(1) {
+            background: #ccc;
+            margin-right: 5px;
+        }
+
+        #points2 a:nth-child(2),
+        #points3 a:nth-child(2) {
+            padding: 10px 27px;
+            margin-left: 5px;
+        }
+
+		#points3 .imgGray {
+			position: absolute;
+			right: 5px;
+			width: 30px;
+			top: 5px;
+			cursor: pointer;
+		}
+        #mask {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1100;
+        }
+        #nationalDay {
+             display: none;
+            width: 700px;
+            height: 484px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto auto;
+            z-index: 2016;
+            max-width: 98%;
+            max-height: 98%;
+        }
+        .imgClose {
+            float: right;
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+        }
+        /*---------0909最新增加↑↑↑ 弹窗------------*/
+        .tile-container a {
+            overflow: inherit
+        }
+    </style>
+    <script>
+        (function ($) {
+            $.StartScreen = function () {
+                var plugin = this;
+                var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+
+                plugin.init = function () {
+                    setTilesAreaSize();
+                    if (width > 640) addMouseWheel();
+                };
+
+                var setTilesAreaSize = function () {
+                    var groups = $(".tile-group");
+                    var tileAreaWidth = 80;
+                    $.each(groups, function (i, t) {
+                        if (width <= 640) {
+                            tileAreaWidth = width;
+                        } else {
+                            tileAreaWidth += $(t).outerWidth() + 80;
+                        }
+                    });
+                    $(".tile-area").css({
+                        width: tileAreaWidth
+                    });
+                };
+
+                var addMouseWheel = function () {
+                    $("body").mousewheel(function (event, delta, deltaX, deltaY) {
+                        var page = $(document);
+                        var scroll_value = delta * 50;
+                        page.scrollLeft(page.scrollLeft() - scroll_value);
+                        return false;
+                    });
+                };
+
+                plugin.init();
+            }
+        })(jQuery);
+
+        $(function () {
+            $.StartScreen();
+
+            var tiles = $(".tile, .tile-small, .tile-sqaure, .tile-wide, .tile-large, .tile-big, .tile-super");
+
+            $.each(tiles, function () {
+                var tile = $(this);
+                setTimeout(function () {
+                    tile.css({
+                        opacity: 1,
+                        "-webkit-transform": "scale(1)",
+                        "transform": "scale(1)",
+                        "-webkit-transition": ".3s",
+                        "transition": ".3s"
+                    });
+                }, Math.floor(Math.random() * 500));
+            });
+
+            $(".tile-group").animate({
+                left: 0
+            });
+        });
+
+        function showCharms(id) {
+            var charm = $(id).data("charm");
+            if (charm.element.data("opened") === true) {
+                charm.close();
+            } else {
+                charm.open();
+            }
+        }
+
+        function setSearchPlace(el) {
+            var a = $(el);
+            var text = a.text();
+            var toggle = a.parents('label').children('.dropdown-toggle');
+
+            toggle.text(text);
+        }
+
+        var weather_icons = {
+            'clear-day': 'mif-sun',
+            'clear-night': 'mif-moon2',
+            'rain': 'mif-rainy',
+            'snow': 'mif-snowy3',
+            'sleet': 'mif-weather4',
+            'wind': 'mif-wind',
+            'fog': 'mif-cloudy2',
+            'cloudy': 'mif-cloudy',
+            'partly-cloudy-day': 'mif-cloudy3',
+            'partly-cloudy-night': 'mif-cloud5'
+        };
+
+        var api_key = 'AIzaSyDPfgE0qhVmCcy-FNRLBjO27NbVrFM2abg';
+    </script>
+</head>
+<style>
+    #vip {
+        width: 30px;
+		cursor: pointer
+    }
+
+
+
+    #data_bg {
+        background: #fff;
+        height: 120px;
+        width: 100%;
+        position: absolute;
+        top: 34px;
+        right: 0;
+        z-index: 20160914;
+        padding: 10px 0 10px 10px;
+        color: #333 !important;
+        display: none;
+    }
+
+    .image-button #data_bg img {
+        display: inline-block;
+        margin-left: -20px;
+
+    }
+
+    #vipp {
+        margin: 0;
+        font-size: 0.875rem;
+        height: 30px;
+        font-weight: bold;
+    }
+
+    #data_bg span {
+        color: #f45734;
+        font-weight: bold;
+    }
+
+    #data_bg p {
+        text-align: left
+    }
+</style>
+
+<body style="overflow-y: hidden;">
+
+    <div id="mainWrapper" class="tile-area tile-area-scheme-darkCyan fg-white" style="height: 100%; max-height: 100% !important;">
+        <img class="logo" src="__PUBLIC__/img/desktoplogo.png">
+        <div class="tile-area-controls">
+            <?php if (session('teacher') == 'youke'): ?>
+                <a href="javascript:">
+                    <button class="image-button icon-right bg-transparent fg-white no-border bg-hover-cyan" style="margin-left:-16px">
+                        <span class="sub-header no-margin text-light">您好！</span>
+                    </button>
+                </a>
+                <a href="{:U('Index/index?logout=t')}" title="返回首页" class="square-button bg-transparent fg-white bg-hover-dark no-border"><span
+                    class="mif-switch"></span></a>
+            <?php else: ?>
+
+                <?php if (session('teacher_vip.is_vip') == 1): ?>
+
+                    <a class="mehome" id="locationme" href="javascript:">
+
+                        <span class="image-button icon-right bg-transparent fg-white no-border bg-hover-cyan" id="slide_title"><span class="sub-header no-margin text-light" style="line-height:34px;font-size:18px;"><span id="vip"><img src="__PUBLIC__/img/vip.png"></span>{:session('teacher.name')}老师，您好！</span>
+                            <div id="data_bg">
+                                <p id="vipp"><img src="__PUBLIC__/img/vip.png">尊敬的用户，您好!</p>
+<!--
+								           <p style="display:inline-block;line-height:24px">您的&nbsp;<span id="quanxian" style="color:#3B77C3;text-decoration: underline">
+                                               <?php if (session('teacher_vip.is_auth') == 4): ?>
+                                               个人VIP
+                                               <?php else: ?>
+                                               团体VIP
+                                               <?php endif ?>
+                                           </span>&nbsp;<?=session('teacher_vip.info')?>还剩  <span style="font-size:18px"><?=session('teacher_vip.vip_day')?></span>&nbsp;  天！</p>
+-->
+
+                                 <?php if (session('teacher_vip.is_vip')== 1): ?>
+                                    <?php if (session('teacher_vip.is_auth') == 3): ?>
+                                        <p style="line-height: 24px;">您的账号仍处于VIP团体<?=session('teacher_vip.info')?>，欢迎使用。</p>
+                                    <?php else: ?>
+                                        <p style="line-height: 24px;">您的账号仍处于个人VIP<?=session('teacher_vip.info')?>，欢迎使用。</p>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </span>
+                    </a>
+
+                    <button style="display: none;" class="square-button bg-transparent fg-white bg-hover-red no-border" onclick="showCharms('#charmSearch')"><span class="mif-search"></span></button>
+                    <a href="{:U('Teach/me')}">
+
+
+                        <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+                        <img class="character_avatar"  src="<?php echo C('oss_path').$data['avatar']?>">
+                        <?php else: ?>
+                        <?php if ( $data['sex']=='男' ): ?>
+                        <img class="character_avatar" src="__PUBLIC__/img/classManage/teacher_m.png">
+                        <?php else: ?>
+                        <img class="character_avatar"  src="__PUBLIC__/img/classManage/teacher_w.png">
+                        <?php endif; ?>
+
+                        <?php endif; ?>
+                    </a>
+                    <button style="display: none;" class="square-button bg-transparent fg-white bg-hover-red no-border" onclick="showCharms('#charmSettings')"><span class="mif-cog"></span></button>
+                    <a href="{:U('Index/index?logout=t')}" class="square-button bg-transparent fg-white bg-hover-dark no-border"><span
+                        class="mif-switch"></span></a>
+
+                <?php else: ?>
+                     <a  class="mehome" href="javascript:">
+                        <!-- <a id="vip"><img src="__PUBLIC__/img/vip.png"></a> -->
+                        <button class="image-button icon-right bg-transparent fg-white no-border bg-hover-cyan" id="slide_title"><span class="sub-header no-margin text-light">{:session('teacher.name')}老师，您好！</span>
+
+                           <!--  <div id="data_bg">
+                                <p id="vipp"><img src="__PUBLIC__/img/vip.png">尊敬的用户，您好!</p>
+                                <p>您的VIP使用权限还剩&nbsp;<span><?=session('teacher_vip.vip_day')?></span>&nbsp;天！</p>
+                                <p>您的VIP权限类型是团体VIP</p>
+                            </div>-->
+                        </button>
+                    </a>
+
+                    <button style="display: none;" class="square-button bg-transparent fg-white bg-hover-red no-border" onclick="showCharms('#charmSearch')"><span class="mif-search"></span></button>
+                    <a href="{:U('Teach/me')}">
+
+                        <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+                        <img class="character_avatar"  src="<?php echo C('oss_path').$data['avatar']?>">
+                        <?php else: ?>
+                        <?php if ( $data['sex']=='男' ): ?>
+                        <img class="character_avatar" src="__PUBLIC__/img/classManage/teacher_m.png">
+                        <?php else: ?>
+                        <img class="character_avatar"  src="__PUBLIC__/img/classManage/teacher_w.png">
+                        <?php endif; ?>
+
+                        <?php endif; ?>
+                    </a>
+                    <button style="display: none;" class="square-button bg-transparent fg-white bg-hover-red no-border" onclick="showCharms('#charmSettings')"><span class="mif-cog"></span></button>
+                    <a href="{:U('Index/index?logout=t')}" class="square-button bg-transparent fg-white bg-hover-dark no-border"><span
+                        class="mif-switch"></span></a>
+                <?php endif ?>
+            <?php endif ?>
+        </div>
+        <div style="width: 1200px;margin: 0 auto;">
+            <div class="tile-group double">
+                <span class="tile-group-title">励耘圈</span>
+
+                <div class="tile-container">
+                    <a href="{:U('Jboverview/jboverview?auth_id=4')}">
+                        <div class="tile-wide bg-jingtongquan fg-white">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_jingbangailan.png">
+                            </div>
+                        </div>
+                    </a>
+                    <a href="{:U('ExpertInformation/expertInformationList?auth_id=5')}">
+                        <div class="tile bg-jingtongquan fg-white">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_zhuanjiazixun.png">
+                            </div>
+                        </div>
+                    </a>
+                    <a href="javascript:;">
+                        <div class="tile bg-jingtongquan fg-white actAnswerOutter">
+                            <div class="tile-content iconic actBox">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_jingbanhuodong.png">
+                            </div>
+<!--                             <div class="actAnswerBox">
+                                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/liveIcon1.png" alt="" class="answerImg">
+                                <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/hand.png" alt="" class="handImg">
+                            </div> -->
+                        </div>
+                    </a>
+                    <a href="{:U('TeacherStyle/teacherStyle?auth_id=7')}">
+                        <div class="tile-wide bg-jingtongquan fg-white">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_jiaoshifengcai.png">
+                            </div>
+                        </div>
+                    </a>
+                    <!-- <a href="{:U('DirectTrain/directTrainIndexList?auth_id=7')}">
+                        <div class="tile-wide bg-jingtongquan fg-white">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_bianjiaozhitongche.png">
+                            </div>
+                        </div>
+                    </a> -->
+                </div>
+            </div>
+            <if condition="$team_vip eq 1">
+            <div class="tile-group double">
+                <p class="tile-group-title teaching m0">教学<span>+</span></p>
+
+                <div class="tile-container">
+                    <a href="{:U('BjResource/bjResourceIndex?auth_id=8')}" >
+                      <div class="tile-wide bg-jiaoxuejia fg-white">
+                          <div class="tile-content iconic">
+                              <img class="feature-img" src="__PUBLIC__/img/feature/n_jingbanziyuan.png">
+                          </div>
+                      </div>
+                    </a>
+                    <a href="{:U('TextBook/textbookList')}">
+                      <div  class="tile bg-jiaoxuejia fg-white">
+                        <div class="tile-content iconic">
+                            <img class="feature-img" src="__PUBLIC__/img/feature/n_jingbanshuzijiaocai.png ">
+                        </div>
+                      </div>
+                    </a>
+                    <a href="{$pep_redirect_url}" target="_blank">
+                      <div  class="tile bg-jiaoxuejia fg-white">
+                        <div class="tile-content iconic">
+                            <img class="feature-img" src="__PUBLIC__/img/feature/n_renjiaoshuzixiaoxue.png">
+                        </div>
+                      </div>
+                    </a>
+                    <a href="{:U('ResourceList/resourceIndex?auth_id=11')}" >
+                      <div class="tile bg-jiaoxuejia fg-white">
+                        <div class="tile-content iconic">
+                            <img class="feature-img" src="__PUBLIC__/img/feature/n_jiaoshifenxiang.png">
+                        </div>
+                      </div>
+                    </a>
+                    <a href="{:U('Teach/myLessonPlannings?auth_id=9')}">
+                        <div class="tile bg-jiaoxuejia fg-white">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_beikexitong.png">
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+            <else/>
+
+            <div class="tile-group double">
+                <p class="tile-group-title teaching m0">教学<span>+</span></p>
+
+                <div class="tile-container">
+                    <a href="{:U('BjResource/bjResourceIndex?auth_id=8')}" >
+                      <div class="tile-wide bg-jiaoxuejia fg-white">
+                          <div class="tile-content iconic">
+                              <img class="feature-img" src="__PUBLIC__/img/feature/n_jingbanziyuan.png">
+                          </div>
+                      </div>
+                    </a>
+                    <a href="{:U('TextBook/textbookList')}">
+                      <div  class="tile bg-jiaoxuejia fg-white">
+                        <div class="tile-content iconic">
+                            <img class="feature-img" src="__PUBLIC__/img/feature/n_shuzijiaocai.png">
+                        </div>
+                      </div>
+                    </a>
+                    <a href="{:U('Teach/myLessonPlannings?auth_id=9')}">
+                        <div class="tile bg-jiaoxuejia fg-white">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_beikexitong.png">
+                            </div>
+                        </div>
+                    </a>
+                    <a href="{:U('ResourceList/resourceIndex?auth_id=11')}" >
+                      <div class="tile-wide bg-jiaoxuejia fg-white">
+                        <div class="tile-content iconic">
+                            <img class="feature-img" src="__PUBLIC__/img/feature/n_b_jiaoshiziyuanfenxiang.png">
+                        </div>
+                      </div>
+                    </a>
+                </div>
+            </div>
+            </if>
+
+            <div class="tile-group double">
+                <span class="tile-group-title">班级行</span>
+
+                <div class="tile-container">
+                    <a href="{:U('Teach/classroomList?auth_id=12')}" >
+                      <div class="tile-wide bg-banjixing fg-white">
+                        <div class="tile-content iconic">
+                            <img class="feature-img" src="__PUBLIC__/img/feature/n_shuziketang.png">
+                        </div>
+                      </div>
+                    </a>
+                    <a href="{:U('TeacherHomework/homeworkList?auth_id=15')}">
+                        <div class="tile bg-teal bg-banjixing">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_zuoyexitong.png">
+                            </div>
+                        </div>
+                    </a>
+                    <a href="{:U('TeachLearnPath/classList')}">
+                        <div class="tile bg-teal bg-banjixing">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_xuexiguiji.png">
+                            </div>
+                        </div>
+                    </a>
+
+
+                    <a href="{:U('ClassList/classList?auth_id=16')}">
+                        <div class="tile bg-teal bg-banjixing">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_banjiguanli.png">
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{:U('Teachblackboard/blackboard?auth_id=13')}">
+                        <div class="tile bg-teal bg-banjixing">
+                            <div class="tile-content iconic">
+                                <img class="feature-img" src="__PUBLIC__/img/feature/n_xiaoheiban.png">
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="copyright" style="line-height:30px">
+        <p>京ICP备 10009247号-5
+            <br>北京出版集团版权所有 Copyright {$Think.const.NOW_TIME|date="Y",###}</p>
+    </div>
+
+
+    <div class="notice">
+        <img src="__PUBLIC__/img/notice_close.png" class="notice_close" alt="">
+        <p  class="helloUser">尊敬的教师用户，您好！</p>
+        <p>1、普通用户自注册成功之日起，可在免费的试用期内登录并使用平台提供的全部功能（包括免费功能和付费功能）。</p>
+        <p>2、免费试用期过后，普通用户可继续使用平台提供的免费功能，但付费功能将被停用。付费功能包括：</p>
+        <p style="text-indent: 48px;">（1）教学+模块：京版资源/备课系统</p>
+		<p style="text-indent: 48px;">（2）班级行模块：数字课堂/小黑板/学习轨迹/作业系统/班级信息管理</p>
+        <p>3、普通用户申请并通过审核升级为VIP用户后，可继续使用平台提供的付费功能，且试用期的该部分数据将被保留。</p>
+        <br>
+        <p style="padding-right:40px">注：目前VIP用户分为个人VIP与团体VIP两种，普通用户可以以个人为单位申请升级为个人VIP用户。若需升级为团体VIP用户，请与学校联系，以学校为单位办理VIP业务。VIP业务办理详情请咨询：400-655-3588</p>
+    </div>
+    <div id="mask"></div>
+    <div id="nationalDay">
+        <img src="{$oss_path}public/web_img/Festival/zhiboguanbi.png" alt="" class="imgClose right">
+        <a href="javascript:;">
+
+            <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Festival/zhibo.png" alt="" class="nationalImg">
+
+        </a>
+    </div>
+
+
+<!--
+    <div id="points1" <?php if ( session( 'teacher_vip.is_vip')==1 && $first==1 ): ?>
+        style='display:block;'
+        <?php endif ?>
+            >
+            <a href="index.php?m=Home&c=Teach&a=index1">知道了</a>
+    </div>
+-->
+    <!-- <div id="points2" <?php if (session( 'teacher') !='youke' && $auth_error==1 ): ?>
+        style='display:block;'
+        <?php endif ?>
+            >
+            <a href="index.php?m=Home&c=Teach&a=index1">暂不升级</a>
+            <a href="javascript:;">去升级</a>
+    </div> -->
+
+
+
+<!--     <div id="points3" <?php if (session( 'teacher')=='youke' && $auth_error==1 ): ?>
+        style='display:block;'
+        <?php endif ?>
+            >
+            <img src="__PUBLIC__/img/activity/resourceCloseGray.png" alt="" class="imgGray">
+            <a href="{:U('Index/index')}" style="padding:10px 34px;margin-right:10px">登录</a>
+            <a href="{:U('Index/register')}">去注册</a>
+    </div> -->
+
+
+    <script>
+    $('.imgClose').click(function(){
+        $('#mask').hide();
+        $('#nationalDay').hide();
+        $('body').css('overflow-y','auto')
+
+    })
+        $(function () {
+            $('.bg-banjixing>.tile-content').hover(function () {
+
+                var img = $(this).find('img');
+                img.attr('src', img.attr('src').replace('n_', 'i_'))
+            }, function () {
+
+                var img = $(this).find('img');
+                img.attr('src', img.attr('src').replace('i_', 'n_'))
+            });
+
+            $('.bg-jiaoxuejia>.tile-content').hover(function () {
+
+                var img = $(this).find('img');
+                img.attr('src', img.attr('src').replace('n_', 'i_'))
+            }, function () {
+
+                var img = $(this).find('img');
+                img.attr('src', img.attr('src').replace('i_', 'n_'))
+            });
+
+            $('.bg-jingtongquan>.tile-content').hover(function () {
+
+                var img = $(this).find('img');
+                img.attr('src', img.attr('src').replace('n_', 'i_'))
+            }, function () {
+
+                var img = $(this).find('img');
+                img.attr('src', img.attr('src').replace('i_', 'n_'))
+            });
+        })
+    </script>
+
+    <!----------0909最新增加↓↓↓  弹窗---------------->
+    <script>
+//        $('#points1>p').eq(0).click(function () {
+//            $('#points1').fadeOut()
+//        })
+        $('#points2>a').eq(0).click(function () {
+            $('#points2').fadeOut()
+        })
+        $('#points2>a').eq(1).click(function () {
+            $('#points2').fadeOut()
+            $('.notice').show()
+        })
+    </script>
+    <!---------0909最新增加↑↑↑ 弹窗------------>
+
+    <!----------0909最新增加↓↓↓  用户须知---------------->
+    <script>
+        $('.notice_close').on('click', function () {
+            $('.notice').hide();
+			// $('#locationme').attr('href','{:U("Teach/me")}')
+        })
+    </script>
+    <!---------0909最新增加↑↑↑ 用户须知------------>
+
+    <!----------0909最新增加↓↓↓  游客弹窗---------------->
+    <script>
+        $('#points3>a').eq(0).click(function () {
+            $('#points3').fadeOut()
+        })
+		$('.imgGray').click(function () {
+            $('#points3').fadeOut()
+        })
+        $('#points3>a').eq(1).click(function () {
+            //			location.href = ""
+        })
+    </script>
+    <!---------0909最新增加↑↑↑ 游客弹窗------------>
+
+    <script>
+        $('#slide_title').hover(function () {
+            $('#data_bg').stop(false,true).slideDown('100')
+        }, function () {
+            $('#data_bg').stop(false,true).slideUp()
+        })
+    </script>
+  	<!--    点击vip图片-->
+	<script>
+		$('#vip').click(function(){
+			$('.notice').show()
+		})
+		$('#quanxian').click(function(){
+			    // $('#locationme').removeAttr('href')
+				$('.notice').show()
+		})
+
+                prefect_role_='{$perfect_role}';
+                is_perfect_information_='{$is_perfect_information}';
+	</script>
+    <script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+    <script>
+        var tipObject = eval('(' + '<?php echo json_encode($tip); ?>' + ')');
+        if(null != tipObject) {
+            if ($(tipObject).length > 0) {
+                $.NotifyBox.NotifyPromptTwoCo("提示", "您有活动还没有上传资料，赶紧去上传吧！", "去上传", "取消", function () {
+                    window.location.href = 'index.php?m=Home&c=Activity&a=activityApplyDetails&id=' + tipObject['activity_id'];
+                })
+            }
+        }
+    </script>
+
+    <script>
+        //提示去登录注册
+        <?php if (session( 'teacher')=='youke' && $auth_error==1 ): ?>
+            $.NotifyBox.NotifyPromptTwoCt("提示","请先完成注册<br>登录后可查看更多信息哦!", "登录", "去注册", function() {
+                window.location.href = "{:U('Index/index')}";
+            }, function(){
+                window.location.href = "{:U('Index/register')}";
+            })
+        <?php endif ?>
+
+        //提示去升级
+        <?php if (session( 'teacher') !='youke' && $auth_error==1 ): ?>
+            $.NotifyBox.NotifyPromptTwoCo("提示","亲，免费赠送会员试用已经到期<br>请升级VIP后使用！", "去升级", "暂不升级", function() {
+                $('.notice').show();
+            })
+        <?php endif ?>
+    </script>
+
+
+    <script>
+        // var handTop = parseInt($('.handImg').css('top'));
+        // var cssTop = {top: handTop + 8};
+        // $('.handImg').stop().animate(cssTop,300,rowBack);
+        // function rowBack(){
+        //     if(cssTop.top == handTop + 8)
+        //         cssTop.top = handTop;
+        //     else if(cssTop.top == handTop)
+        //         cssTop.top =  handTop + 8;
+        //     $('.handImg').stop().animate(cssTop,300,rowBack);
+        // }
+
+        $('.actBox').click(function(){
+            window.location.href = '{:U('Activity/activities?auth_id=6')}'
+        })
+
+        // $('.actAnswerBox,#nationalDay>a>img').click(function(){
+        //     window.location.href = 'index.php?m=Home&c=Activity&a=activityApplyDetails&id=544'
+        // })
+
+        // $('.actAnswerBox').hover(function(){
+        //     $(this).children('.answerImg').attr('src','http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/liveIcon2.png')
+        // },function(){
+        //     $(this).children('.answerImg').attr('src','http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Icons/liveIcon1.png')
+        // })
+        // var isDisplayMask = '<?= ((time() <= strtotime('2018-04-20 23:59:59')) && (time() >= strtotime('2018-04-18 00:00:00')))?1:0; ?>'
+        // if(isDisplayMask == '1'){
+        //     $('#mask,#nationalDay').show()
+        // }else{
+        //         $('#mask,#nationalDay').hide()
+        // }
+    </script>
+
+    <script src="__PUBLIC__/js/errorcsv.js"></script>
+    <script src="__PUBLIC__/infoPerfect/infoPerfect.js"></script>
+
+</body>
+
+</html>

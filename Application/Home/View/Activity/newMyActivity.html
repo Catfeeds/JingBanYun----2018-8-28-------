@@ -1,0 +1,121 @@
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/newActivity.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<include file="./Application/Home/View/Common/myCollectionHeader.html" />
+<div class="newActivity_top of pdtnone">
+	<div class="search right me_search">
+		<form method="post" action="">
+		<button class="search_btn">搜索</button>
+		<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="关键字搜索" maxlength="28">
+		</form>
+		<!--<div class="searchText">共有<?php echo $count?>条结果</div>-->
+	</div>
+</div>
+
+<empty name="list">
+	<!-- 我收藏的活动 -->
+
+	<if condition="$mycatdata neq 1 ">
+
+		<div class="emptyDiv">
+			<if condition="$kw eq 1 ">
+				<img src="{$oss_path}public/web_img/Empty/sorry.png" alt="" class="sorry">
+				<p>抱歉，没有搜索到相关的活动！</p>
+			<else />
+				<img src="{$oss_path}public/web_img/Empty/myCollect.png" alt="">
+				<p>您还没有收藏过活动哦！</p>
+				<p>赶快去<a href="{:U('Activity/activities?auth_id=6')}">京版活动</a>收藏吧！</p>
+			</if>
+
+		</div>
+
+		<else />
+
+		<!-- 我参加的活动 -->
+		<div class="emptyDiv">
+
+			<if condition="$kw eq 1 ">
+				<img src="{$oss_path}public/web_img/Empty/sorry.png" alt="" class="sorry">
+				<p>抱歉，没有搜索到相关的活动！</p>
+			<else />
+				<img src="{$oss_path}public/web_img/Empty/myJoin.png" alt="">
+			</if>
+
+
+		</div>
+	</if>
+
+</empty>
+<notempty name="list">
+<div class="newActBoxGray me_div1" id="me_div1">
+	<?php if($list) {?>
+	<div class="newActBox_name" id="newActBox_name1">
+		<div class="newActBox_left activity_o">赛事</div>
+		<div class="right active_right" id="active_right1"><a href="<?php echo U('Activity/get_more_my').'&id=1';if($_GET['mycat'] == 1) echo '&mycat=1'; ?>" class="resource_a">更多&gt;&gt;</a></div>
+	</div>
+	<ul class="row match_ul" id="match_ul1">
+		<?php foreach($list as $value){?>
+		<li class="col-lg-3 col-md-4 col-sm-6 text-center p0 matchs_li">
+			<div class="match_li">
+				<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>">
+					<div class="actLi_top" style="background: url(Resources/socialactivity/<?php echo $value['short_content']?>) center; background-size: 100%">
+						<!--<img src="__PUBLIC__/img/activity/huorejinxing.png" alt="" class="smallCircle">-->
+					</div>
+					<div class="history_title" title="<?php echo $value['title']?>">
+						<?php echo $value['title']?>
+					</div>
+				</a>
+			</div>
+		</li>
+		<?php }?>
+	</ul>
+	<?php }?>
+
+</div>
+<div class="me_div2" id="me_div2">
+	<div class="newActBox_name" id="newActBox_name2">
+		<?php if($list2){?>
+		<div class="newActBox_left activity_t">培训</div>
+		<div class="right active_right" id="active_right2"><a href="<?php echo U('Activity/get_more_my').'&id=2'; if($_GET['mycat'] == 1) echo '&mycat=1'; ?>" class="resource_a">更多&gt;&gt;</a></div>
+	</div>
+	<ul class="row match_ul" id="match_ul2">
+		<?php foreach($list2 as $value){?>
+		<li class="col-lg-3 col-md-4 col-sm-6 text-center p0 matchs_li" >
+			<div class="match_li">
+				<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>">
+					<div class="actLi_top" style="background: url(Resources/socialactivity/<?php echo $value['short_content']?>) center; background-size: 100%">
+						<!--<img src="__PUBLIC__/img/activity/huorejinxing.png" alt="" class="smallCircle">-->
+					</div>
+					<div class="history_title" title="<?php echo $value['title']?>">
+						<?php echo $value['title']?>
+					</div>
+				</a>
+			</div>
+		</li>
+		<?php }?>
+	</ul>
+	<?php }?>
+</div>
+</div>
+</notempty>
+<script>
+
+	if($('.me_div1').children().length==0){
+		$('.me_div1').hide();
+	}
+	function hide(Uul, Lli, Nname, Ttop, Rright) {
+			var ul = document.getElementById(Uul);
+			var li_length = ul.getElementsByClassName(Lli).length;
+			var name = document.getElementById(Nname);
+			var top = document.getElementById(Ttop);
+			var right = document.getElementById(Rright);
+			if (li_length < 4 && li_length > 0) {
+					right.style.visibility = 'hidden';
+		name.style.background = 'none';
+			} else if (li_length == 0) {
+					top.style.display = 'none'
+			}
+	}
+	hide('match_ul1', 'matchs_li', 'newActBox_name1', 'me_div1', 'active_right1')
+	hide('match_ul2', 'matchs_li', 'newActBox_name2', 'me_div2', 'active_right2')
+</script>

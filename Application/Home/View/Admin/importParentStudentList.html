@@ -1,0 +1,334 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<style>
+    /*-------------导入框----------------*/
+    #import_outer{display:none;}
+    .import{width:800px;height:400px;position:fixed;left:50%;top:50%;margin-left:-400px;margin-top:-200px;background: url(__PUBLIC__/img/home/44.png) no-repeat left top;background-size:100% 100%;z-index:9999}
+    .close_btn{float:right;margin:10px 15px 0 0;cursor:pointer;}
+    .close_btn img { width:20px;}
+    .info .title_content{width: 115px;}
+    .item{width:28%;}
+    .download_form {width:100%;margin:80px 0 50px 55px;}
+    .browse{width:100%;margin-left:70px;}
+    .browse input{width:500px;}
+    .file{width:100%;margin:30px 0 0 70px;}
+    .outer{width:500px;height:17px;border:1px solid #ccc;float:left;margin-top:8px;}
+    .inner{width:2%;height:15px;background:#E9C232;}
+/*-----------------导入成功-------------------*/
+    .import_success,.import_fail,.export_success,.export_fail{display:none;width:500px;height:300px;position:fixed; top:50%;left:35%;z-index:9999;background:url(/Public/img/home/30.png) no-repeat center;background-size: 100% 100%;}
+    .success_top,.fail_top{overflow:hidden;padding:50px 0 0 80px;}
+    .success_top img,.fail_top img{width:30%;float:left;}
+    .success_top p,.fail_top p{float:left;font-size:40px;color:#666;padding-top:35px;}
+    .success_bottom,.fail_bottom{text-align: center;}
+    .success_bottom button,.fail_bottom button{width:120px;height: 50px;border:none;background: url(__PUBLIC__/img/home/15.png) no-repeat left top;background-size:100% 100%;color:#fff;font-size:20px;}
+</style>
+<style>
+    .check_child,.check_all {
+        width: 20px;
+        height: 20px;
+    }
+    
+    
+    .striped{
+        display: none;
+    }
+    
+    .notice_message{
+        display:none;
+    }
+</style>
+ 
+<in name="Think.session.admin.role" value="1,2,3">
+     
+    <div style="margin-bottom: 12px;margin-right: 50px;float:right;">
+        <a href="javascript:;" id="import_btn" class="button">批量导入</a> 
+    </div>
+</in>
+
+<div style="padding-top: 15px;width: 894px;">
+    <div style="margin-bottom: 6px;">注：多个孩子信息按照|分隔。手机号如果存在则该条数据不插入。</div> 
+</div>
+<div style="padding-top: 15px;width: 894px;" class="notice_message">
+    <div style="margin-bottom: 6px;">异常消息：你有5条数据导入失败,以下是导入失败的信息。</div> 
+</div>
+
+<table id="listWrapper" class="table striped hovered border" >
+    <thead>
+    <tr class="tr_head">  
+        <th class="text-center">家长姓名</th> 
+        <th class="text-center">家长手机号</th>
+        <th class="text-center">家长性别</th>
+        <th class="text-center">学生姓名</th>
+        <th class="text-center">学生性别</th>
+        <in name="Think.session.admin.role" value="1">
+            <th class="text-center">学生学校</th>
+        </in>
+        <th class="text-center">学生出生日期</th>
+        <th class="text-center">异常原因</th> 
+    </tr>
+    </thead>
+    <tbody id="body"> 
+        <tr style="line-height:30px;" class="tr_info">  
+            <td class="text-center">
+                123
+            </td>
+            <td class="text-center"> 
+                123
+            </td>
+            <td class="text-center">
+                123
+            </td> 
+            <td class="text-center">
+                123
+            </td>
+            <td class="text-center">
+                123
+            </td>   
+            <td class="text-center">
+                123
+            </td> 
+            <td class="text-center">
+                123
+            </td>   
+            <td class="text-center">
+                123
+            </td> 
+        </tr> 
+    </tbody>
+</table>
+<input type="hidden" value="{$role}" id="role_id" />
+<div class="Pagination">{$page}</div>
+<!--------------------批量导入----------------------------->
+<div id="import_outer" style="background:#fff;">
+    <div class="import">
+        <div class="close_btn">
+            <img src="__PUBLIC__/img/home/close.png" alt="">
+        </div>
+        <div class="download_form">
+            <a href="{:U('Admin/downloadParentStudent')}" target="_blank" title="下载" class="button">下载示例表格</a>
+        </div>
+        <div class="browse">
+            <input type="text" id="address" placeholder="链接地址" >
+            <a href="javascript:;" title="浏览" class="button browse_button">浏览</a>
+            <input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+            <a href="javascript:;" title="上传" class="button upload_file">上传</a>
+        </div>
+<!--
+        <div class="file">
+            <div class="outer">
+                <div class="inner">
+                
+                </div>
+            </div>
+            <a href="javascript:;" style="float:left;margin-left:5px;" title="请选择上传文件" class="button">请选择上传文件</a>
+        </div>
+-->
+    </div>
+</div>
+
+<!-------------------导入成功---------------------->
+<div class="import_success">
+    <div class="success_top">
+        <img src="__PUBLIC__/img/home/32.png" alt="">
+        <p>导入成功！</p>
+    </div>
+    <div class="success_bottom">
+        <button type="submit" class="im_success_sure">确定</button>
+    </div>
+</div>
+<!-------------------导入失败---------------------->
+<div class="import_fail">
+    <div class="fail_top">
+        <img src="__PUBLIC__/img/home/31.png" alt="">
+        <p>导入失败！</p>
+    </div>
+    <div class="fail_bottom">
+        <button type="submit" class="im_fail_sure">确定</button>
+    </div>
+</div>
+
+<!-------------------导出成功---------------------->
+<div class="export_success">
+    <div class="success_top">
+        <img src="__PUBLIC__/img/home/32.png" alt="">
+        <p>导出成功！</p>
+    </div>
+    <div class="success_bottom">
+        <button type="submit" class="ex_success_sure">确定</button>
+    </div>
+</div>
+<!-------------------导出失败---------------------->
+<div class="export_fail">
+    <div class="fail_top">
+        <img src="__PUBLIC__/img/home/31.png" alt="">
+        <p>导出失败！</p>
+    </div>
+    <div class="fail_bottom">
+        <button type="submit" class="ex_fail_sure">确定</button>
+    </div>
+</div>
+<script> 
+    var role="{$role}";
+    if(role==1){
+        var tbody="<tr style='line-height:30px;' class='tr_info'>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "</tr>";
+    }else{   
+        var tbody="<tr style='line-height:30px;' class='tr_info'>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+ 
+                    "<td class='text-center'>123</td>"+
+                    "<td class='text-center'>123</td>"+ 
+                    "<td class='text-center'>123</td>"+
+                    "</tr>";
+    }
+    
+    var number=0;
+        //点击文件上传
+        $('.upload_file').click(function(){
+            if($('#file_csv').val()=='' || !$('#file_csv').val()){
+                $.Notify({
+                    caption: '提示',
+                    content: '请选择需要上传的csv格式文件',
+                    type: 'warning'
+                });
+            }else{
+                $.ajaxFileUpload
+                (
+                    {
+                        url: 'index.php?m=Home&c=Admin&a=importParentStudent', //用于文件上传的服务器端请求地址
+                        secureuri: false, //是否需要安全协议，一般设置为false
+                        fileElementId: 'file_csv', //文件上传域的ID
+                        dataType: 'json', //返回值类型 一般设置为json
+                        success: function (data)  //服务器成功响应处理函数
+                        { 
+                            $('#address').val('');
+                            $('#import_outer').css('display','none');
+                             
+                            if(data.status==1001){
+                                $('.notice_message').children('div').text('异常消息：没有上传文件');
+                                $(".notice_message").show();
+                            }else if(data.status==1002){
+                                $('.notice_message').children('div').text('异常消息：上传文件没有信息');
+                                $(".notice_message").show();
+                            }else if(data.status==1003){
+                                $('.notice_message').children('div').text('异常消息：总共有'+data.all_number+'条数据,导入成功'+data.success_number+'条,导入失败'+data.notice_data.length+'条,以下是导入失败的信息。');
+                                //清空id为body下的所有tr
+                                $(".tr_info").remove();
+                                $(".odd").remove();
+                                 
+                                for(var i=0;i<data.notice_data.length;i++){
+                                    var temp_tbody=$(tbody).clone(true);
+                                    $(temp_tbody).find('.text-center').eq(0).text(data.notice_data[i][0]);
+                                    $(temp_tbody).find('.text-center').eq(1).text(data.notice_data[i][1]);
+                                    $(temp_tbody).find('.text-center').eq(2).text(data.notice_data[i][2]);
+                                    $(temp_tbody).find('.text-center').eq(3).text(data.notice_data[i][3]);
+                                    $(temp_tbody).find('.text-center').eq(4).text(data.notice_data[i][4]);
+                                    $(temp_tbody).find('.text-center').eq(5).text(data.notice_data[i][5]);
+                                    if(role==1){
+                                        $(temp_tbody).find('.text-center').eq(6).text(data.notice_data[i][6]);
+                                        $(temp_tbody).find('.text-center').eq(7).text(data.notice_data[i][7]);
+                                    }else{
+                                        $(temp_tbody).find('.text-center').eq(6).text(data.notice_data[i][6]);
+                                    } 
+                                    $("#body").append(temp_tbody);
+                                }  
+                                $(".notice_message").show();
+                                $(".striped").show();
+                                
+                            }else{
+                                $(".notice_message").hide();
+                                $(".striped").hide();
+                                
+                                $('.import_success').show(); 
+                            }
+                            
+                        },
+                        error: function (data, status, e)//服务器响应失败处理函数
+                        {
+                            alert('导入失败,请刷新页面后重试');
+                        }
+                    }
+                )
+            }
+        });
+    
+    //input file发生变化
+    $('.file_csv').live('change',function(){ 
+        var filepath = $('.file_csv').val();
+        var extStart = filepath.lastIndexOf(".");
+        var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+        if(ext=='.CSV'){
+            $('#address').val(filepath);
+        }else{
+            $.Notify({
+                caption: '提示',
+                content: '只支持csv文件上传',
+                type: 'warning'
+            });
+            $('.file_csv').val('');
+        }
+    });  
+      
+    
+    //点击浏览按钮
+        $('.browse_button').click(function(){
+            //清空input框
+            $("#address").val('');
+            $('.file_csv').trigger('click');
+        });
+
+ 
+</script>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[  
+                {"width":"25%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"15%"}
+            ]
+        });
+    });
+    
+    $('#import_btn').on('click',function(){
+        $('#import_outer').css('display','block');
+    });
+    $('.close_btn').on('click',function(){
+        $('#import_outer').css('display','none');
+    });
+    
+    $('.im_success_sure').on('click',function(){
+        $('.import_success').css('display','none'); 
+    });
+    
+    $('.im_fail_sure').on('click',function(){
+        $('.import_fail').css('display','none');
+    });
+    
+    $('.ex_success_sure').on('click',function(){
+        $('.export_success').css('display','none');
+    });
+    
+    $('.ex_fail_sure').on('click',function(){
+        $('.export_fail').css('display','none');
+    });
+</script>

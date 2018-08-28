@@ -1,0 +1,183 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		区县用户统计管理
+		<span class="blueSpan">
+			<a href="javascript:;">区县用户统计管理</a>>>
+			<a href="javascript:;">统计列表</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form id="form_submit" action="/index.php/Admin/Monitor/regionCount" method="get">
+	<p class="blueText fs16">统计查询</p>
+	<input type="hidden" class="order_class" name="order" />
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+
+			<div class="cell">
+				<label>省份：</label>
+				<select id="province_list" class="input-control" name="province">
+					<option value="0">-请选择-</option>
+					<volist name="province_list" id="province_item">
+						<option value="{$province_item.id}" <if condition="$province_item['id']==$province"> selected="true"</if> >{$province_item.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>城市：</label>
+				<select id="city_list" class="input-control" name="city">
+					<option value="0">-请选择-</option>
+					<volist name="city_list" id="city_item">
+						<option value="{$city_item.id}" <if condition="$city_item['id']==$city"> selected="true"</if> >{$city_item.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>区县：</label>
+				<select id="district_list" class="input-control" name="district">
+					<option value="0">-请选择-</option>
+					<volist name="district_list" id="district_item">
+						<option value="{$district_item.id}" <if condition="$district_item['id']==$district"> selected="true"</if> >{$district_item.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>所在学校：</label>
+				<select id="school_list" class="input-control" name="school">
+					<option value="0">-请选择-</option>
+					<volist name="school_list" id="school_item">
+						<option value="{$school_item.id}" <if condition="$school_item['id']==$school"> selected="true"</if> >{$school_item.name}</option>
+					</volist>
+				</select>
+			</div>
+
+			<div class="cell">
+				<label>任教学科：</label>
+				<select id="course_list" class="input-control" name="course">
+					<option value=''>-请选择-</option>
+					<volist name="course_list" id="course_item">
+						<option value="{$course_item.id}"  <if condition="$course_item['id']==$course">selected="true"</if> >{$course_item.name}</option>
+					</volist>
+				</select>
+			</div>
+
+			<input type="hidden" class="order_class" name="order">
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+                    <button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+                -->
+		<input type='submit' value='查询' class='blueBtn'/>
+		<input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+
+<p class="blueText fs16">统计列表</p>
+<p class="blueText fs16">当前学生总数：{$stucountall}</p>
+<p class="blueText fs16">当前教师总数：{$teachercountall}</p>
+<p class="blueText fs16">当前家长总数：{$parentcountall}</p>
+<br/>
+
+<p class="blueText fs16">搜索列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center">学生总数</th>
+			<th class="text-center">教师总数</th>
+			<th class="text-center">家长总数</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+			<tr>
+				<td class="text-center" title="{$item.school_name}">
+					{$stucount}
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$teachercount}
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$parentcount}
+				</td>
+			</tr>
+
+	</tbody>
+</table>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	$(document).ready(function () {
+
+		var temp_option="<option value='0'>-请选择-</option>";
+		//省份发生变化
+		$('#province_list').change(function(){
+			$("#city_list option:not(:eq(0))").remove();
+			$("#district_list option:not(:eq(0))").remove();
+			$("#school_list option:not(:eq(0))").remove();
+			var id=$("#province_list").val();
+			$.ajax({
+				type:"post",
+				url:"{:U('Common/getCityByProvince')}",
+				dataType:"json",
+				data:{'province_id':id},
+				success: function(msg){
+					for(var i=0;i<msg.data.length;i++){
+						var clone_option=$(temp_option).clone(true);
+						$(clone_option).val(msg['data'][i].id);
+						$(clone_option).text(msg['data'][i].name);
+						$("#city_list").append(clone_option);
+					}
+				}
+			})
+		});
+		//城市发生变化
+		$('#city_list').change(function(){
+			$("#district_list option:not(:eq(0))").remove();
+			$("#school_list option:not(:eq(0))").remove();
+			var id=$("#city_list").val();
+			$.ajax({
+				type:"post",
+				url:"{:U('Common/getDistrictByCity')}",
+				dataType:"json",
+				data:{'city_id':id},
+				success: function(msg){
+					for(var i=0;i<msg.data.length;i++){
+						var clone_option=$(temp_option).clone(true);
+						$(clone_option).val(msg['data'][i].id);
+						$(clone_option).text(msg['data'][i].name);
+						$("#district_list").append(clone_option);
+					}
+				}
+			})
+		});
+		//区县发生变化
+		$('#district_list').change(function(){
+			$("#school_list option:not(:eq(0))").remove();
+			var id=$("#district_list").val();
+			$.ajax({
+				type:"post",
+				url:"{:U('Common/getSchoolByDistrict')}",
+				dataType:"json",
+				data:{'district_id':id},
+				success: function(msg){
+					for(var i=0;i<msg.data.length;i++){
+						var clone_option=$(temp_option).clone(true);
+						$(clone_option).val(msg['data'][i].id);
+						$(clone_option).text(msg['data'][i].name);
+						$("#school_list").append(clone_option);
+					}
+				}
+			})
+		});
+
+		$('.resetButton').click(function(){
+			window.location.href="{:U('Monitor/regionCount')}";
+		});
+	});
+</script>
+

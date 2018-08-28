@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/css/external/easyui.css">
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/css/external/icon.css">
+	<script type="text/javascript" src="__PUBLIC__/js/external/jquery-1.6.1.min.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/js/external/jquery.easyui.min.js"></script>
+	<link href="__PUBLIC__/css/activity.css" rel="stylesheet" type="text/css" />
+
+	<style type="text/css">
+		.tbleft {
+			width: 80px;
+		}
+		
+		.workPublishClose {
+			width: 30px !important;
+		}
+		
+		body {
+			width: 790px;
+			position: relative;
+			font-family: "Lantinghei SC", "Open Sans", Arial, "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", "STHeiti", "WenQuanYi Micro Hei", SimSun, sans-serif;
+			font-size: 14px;
+			line-height: 1.428571429;
+			color: #333333;
+			
+		}
+		
+		.left td {
+			background: #eee;
+		}
+		
+		.right {
+			width: 630px;
+		}
+		
+		.right table {
+			background: #E0ECFF;
+			width: 630px;
+		}
+		
+		.right td {
+			background: #fafafa;
+			text-align: center;
+			height: 33px;
+		}
+		
+		.right td {
+			background: #fff;
+			padding: 4px;
+		}
+		
+		.right td.drop {
+			background: #fafafa;
+			width: 70px;
+		}
+		
+		.right td.over {
+			background: #FBEC88;
+		}
+		
+		.item {
+			text-align: center;
+			border: 1px solid #333;
+			background: #fff;
+			padding: 2px 0;
+			width: 70px;
+			font-size: 14px;
+		}
+		
+		.assigned {
+			border: 0px solid transparent;
+			background-color: transparent;
+		}
+		
+		.courseRemind {
+			width: 80px;
+			height: 80px;
+			margin-top: 8px;
+			cursor: pointer;
+			background: url({$oss_path}public/web_img/classTimeTable/courseRemind1.png) no-repeat center;
+			background-size: cover;
+			position: absolute;
+			top: 0;
+			right: 0;
+			margin: 0;
+		}
+		
+		.courseRemind:hover {
+			background: url({$oss_path}public/web_img/classTimeTable/courseRemind2.png) no-repeat center;
+			background-size: cover;
+		}
+		
+		.workPublish {
+			width: 900px;
+			min-height: 60%;
+		}
+		
+		.courseRemind {
+			background: url({$oss_path}public/web_img/classTimeTable/courseRemind1.png) no-repeat center;
+			background-size: cover;
+		}
+		
+		.courseRemind:hover {
+			background: url({$oss_path}public/web_img/classTimeTable/courseRemind2.png) no-repeat center;
+			background-size: cover;
+		}
+		
+		.bellTopP2 {
+			background: url({$oss_path}public/web_img/classTimeTable/plusBell.png) no-repeat center;
+			background-size: cover;
+		}
+	</style>
+	<style>
+		.form-control {
+			display: block;
+			width: 100%;
+			height: 60px;
+			padding: 6px 12px;
+			font-size: 14px;
+			line-height: 1.428571429;
+			color: #555555;
+			background-color: white;
+			background-image: none;
+			border: 1px solid #cccccc;
+			border-radius: 4px;
+			-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+			box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+			-webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+			-o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+			transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+		}
+		
+		label {
+			display: inline-block;
+			max-width: 100%;
+			margin-bottom: 5px;
+			font-weight: bold;
+		}
+		
+		.bellBox select {
+			height: auto !important;
+		}
+		
+		.bellTopSpan1 {
+			float: left !important;
+			/*			width: auto !important;*/
+		}
+		
+
+		
+		.btn {
+			padding: 6px 12px;
+		}
+		
+		.btn-primary {
+			color: white;
+			background-color: #eaca33;
+			border-color: #eaca33;
+		}
+		
+		.btn {
+			display: inline-block;
+			margin-bottom: 0;
+			font-weight: normal;
+			text-align: center;
+			vertical-align: middle;
+			cursor: pointer;
+			background-image: none;
+			border: 1px solid transparent;
+			white-space: nowrap;
+			padding: 10px 70px;
+			margin-left: -30px;
+			font-size: 14px;
+			line-height: 1.428571429;
+			border-radius: 4px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+	</style>
+	<script>
+		$(function () {
+			$('.tbleft .item').draggable({
+				revert: true,
+				proxy: 'clone'
+			});
+			$('.right td.drop').droppable({
+				onDragEnter: function () {
+					$(this).addClass('over');
+				},
+				onDragLeave: function () {
+					$(this).removeClass('over');
+				},
+				onDrop: function (e, source) {
+					$(this).removeClass('over');
+					if ($(source).hasClass('assigned')) {
+						$(this).append(source);
+					} else {
+						var c = $(source).clone().addClass('assigned');
+						$(this).empty().append(c);
+						c.draggable({
+							revert: true
+						});
+					}
+				}
+			});
+		});
+	</script>
+	<table style="width:630px;border: none;" cellpadding="0" cellspacing="0">
+		<tr>
+			<td align="center" valign="top" style="width:80px">
+				<div class="tbleft">
+					<table>
+						<tr>
+							<td>
+								<div class="item">语文</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">数学</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">英语</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">物理</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">化学</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">生物</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">历史</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">政治</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">地理</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">音乐</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">美术</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">体育</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">自然</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">写作</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">劳动技术</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">信息技术</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">体育与健康</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">研究性学习实践与评价</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="item">&nbsp;</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+			<td valign="top">
+				<div class="right" id="timetableWrapper">
+					<empty name="timetable">
+						<table>
+							<tr>
+								<td class="blank"></td>
+								<td class="title">星期一</td>
+								<td class="title">星期二</td>
+								<td class="title">星期三</td>
+								<td class="title">星期四</td>
+								<td class="title">星期五</td>
+								<td class="title">星期六</td>
+								<td class="title">星期日</td>
+							</tr>
+							<tr>
+								<td class="time">第一节</td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+							</tr>
+							<tr>
+								<td class="time">第二节</td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+							</tr>
+							<tr>
+
+								<td class="lunch" colspan="8">课间操</td>
+							</tr>
+							<tr>
+								<td class="time">第三节</td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+							</tr>
+							<tr>
+								<td class="time">第四节</td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+							</tr>
+							<tr>
+
+								<td class="lunch" colspan="8">午休</td>
+							</tr>
+							<tr>
+								<td class="time">第五节</td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+							</tr>
+							<tr>
+								<td class="time">第六节</td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+							</tr>
+							<tr>
+
+								<td class="lunch" colspan="8">课间活动</td>
+							</tr>
+							<tr>
+								<td class="time">第七节</td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+							</tr>
+							<tr>
+								<td class="time">第八节</td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+								<td class="drop"></td>
+							</tr>
+						</table>
+						<!--
+                    </empty>
+                    <notempty name="timetable">
+                        {$timetable.content}
+                    </notempty>
+-->
+				</div>
+			</td>
+		</tr>
+
+	</table>
+<!--	<p class="courseRemind"></p>-->
+	<div class="form-actions" style="text-align: center; padding-top: 20px;">
+		<button type="button" class="btn btn-primary" onclick="submitForm()">保存</button>
+	</div>
+
+	<div class="workPublish">
+		<div style="overflow:hidden;">
+			<img src="{$oss_path}public/web_img/classTimeTable/myRemind.png" alt="" class="left" style="width: 140px">
+			<span class="right workPublishClose"></span>
+		</div>
+		<div class="bellBox">
+			<div class="bellTop">
+				<div class="bellTopP1 left">
+					<div style="overflow:hidden">
+						<span class="left bellTopSpan1">
+						<select id="hour_id" name="hour_id" class="form-control">
+							<option value="00">00</option>
+							<option value="01">01</option>
+							<option value="02">02</option>
+							<option value="03">03</option>
+							<option value="04">04</option>
+							<option value="05">05</option>
+							<option value="06">06</option>
+							<option value="07">07</option>
+							<option value="08">08</option>
+							<option value="09">09</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="13">13</option>
+							<option value="14">14</option>
+							<option value="15">15</option>
+							<option value="16">16</option>
+							<option value="17">17</option>
+							<option value="18">18</option>
+							<option value="19">19</option>
+							<option value="20">20</option>
+							<option value="21">21</option>
+							<option value="22">22</option>
+							<option value="23">23</option>
+						</select>
+						<label for="hour_id">时</label>&nbsp;
+						<select id="minute_id" name="minute_id" class="form-control">
+							<option value="00">00</option>
+						<option value="01">01</option>
+						<option value="02">02</option>
+						<option value="03">03</option>
+						<option value="04">04</option>
+						<option value="05">05</option>
+						<option value="06">06</option>
+						<option value="07">07</option>
+						<option value="08">08</option>
+						<option value="09">09</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="22">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+						<option value="31">31</option>
+						<option value="32">32</option>
+						<option value="33">33</option>
+						<option value="34">34</option>
+						<option value="35">35</option>
+						<option value="36">36</option>
+						<option value="37">37</option>
+						<option value="38">38</option>
+						<option value="39">39</option>
+						<option value="40">40</option>
+						<option value="41">41</option>
+						<option value="42">42</option>
+						<option value="43">43</option>
+						<option value="44">44</option>
+						<option value="45">45</option>
+						<option value="46">46</option>
+						<option value="47">47</option>
+						<option value="48">48</option>
+						<option value="49">49</option>
+						<option value="50">50</option>
+						<option value="51">51</option>
+						<option value="52">52</option>
+						<option value="53">53</option>
+						<option value="54">54</option>
+						<option value="55">55</option>
+						<option value="56">56</option>
+						<option value="57">57</option>
+						<option value="58">58</option>
+						<option value="59">59</option>
+						</select>
+						<label for="minute_id">分</label>
+					</span>
+						<span class="left bellTopSpan2">
+						<span>每</span>
+						<select id="min_id" name="min_id" class="form-control">
+							<option value="03">03</option>
+							<option value="05">05</option>
+							<option value="10">10</option>
+						</select>
+						<span>分钟提醒一次</span>
+						</span>
+					</div>
+					<div>
+						<label for="">重复：</label>
+						<input type="checkbox" value="1" class="weekCheck"> 星期一
+						<input type="checkbox" value="2" class="weekCheck"> 星期二
+						<input type="checkbox" value="3" class="weekCheck"> 星期三
+						<input type="checkbox" value="4" class="weekCheck"> 星期四
+						<input type="checkbox" value="5" class="weekCheck"> 星期五
+						<input type="checkbox" value="6" class="weekCheck"> 星期六
+						<input type="checkbox" value="0" class="weekCheck"> 星期日
+					</div>
+				</div>
+				<div class="bellTopP2 right" title="增加提醒"></div>
+			</div>
+			<div class="bellBottom">
+				<!--<div class="emptyResult">暂时没有提醒哦</div>-->
+				<table>
+					<thead style='display:none;'>
+						<tr>
+							<th class="text-center">&nbsp;</th>
+							<th class="text-center">时间</th>
+							<th class="text-center">提醒频率</th>
+							<th class="text-center" style="width: 50%">重复</th>
+							<th class="text-center">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	</form>
+	<script>
+		var status = '{$status}'
+		if (status == 1) {
+			alert('保存成功,可继续编辑');
+		}
+
+		function submitForm() {
+			var html = $('#timetableWrapper').html();
+			html = html.replace(/\s+|\n/g, " ").replace(/>\s</g, "><");
+			$('#content').val(html);
+			$('#mainForm').submit();
+		}
+	</script>
+<!--	<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>-->
+	<script>
+		var template_empty_div = '<div class="emptyResult">暂时没有提醒哦</div>';
+		var template = '<tr><td class="text-center">' +
+			'<img src="{$oss_path}public/web_img/classTimeTable/bell.png" alt="" class="bell">' +
+			'</td>' +
+			'<td class="text-center">08:00</td>' +
+			'<td class="text-center">每3分钟</td>' +
+			'<td class="text-center">星期一 星期二 星期三 星期四 星期五 星期六 星期日</td>' +
+			'<td class="text-center">' +
+			'<img src="{$oss_path}public/web_img/classTimeTable/deleteBell.png" alt="" class="deleteBell" title="删除此提醒">' +
+			'</td>' +
+			'<td><input type="hidden" class="hidden_id"/></td>' +
+			'</tr>';
+
+
+		$('.courseRemind').click(function () {
+			request_data();
+
+			$('body').css('overflow-y', 'hidden');
+			$('.workPublish').show();
+		})
+
+		var empty_div = $(template_empty_div).clone(true);
+
+		function request_data() {
+			$(".bellBottom").find('tbody').empty();
+			$(".bellBottom").find('.emptyResult').remove();
+
+			$.getJSON('index.php?m=Home&c=ClockNotice&a=clockList&class_id={$classId}', function (msg) {
+				if (msg.status == 200) {
+					if (msg.data.length) {
+						for (var i = 0; i < msg.data.length; i++) {
+							var clone_template = $(template).clone(true);
+							$(clone_template).find('td').eq(1).text(msg.data[i].clock_time.substr(0, 2) + ':' + msg.data[i].clock_time.substr(2, 2));
+							$(clone_template).find('td').eq(2).text('每隔' + msg.data[i].clock_time_interval + '分钟');
+							$(clone_template).find('td').eq(3).text(getWeekString(msg.data[i].several_week));
+							$(clone_template).find('.hidden_id').val(msg.data[i].id);
+							$(".bellBottom").find('tbody').append(clone_template);
+						}
+						$('.bellBottom').find('thead').show();
+					} else {
+						$(".bellBottom").append(empty_div);
+						$('.bellBottom').find('thead').hide();
+					}
+				}
+			});
+		}
+
+		function getWeekString(week_number) {
+			var week_string;
+			switch (week_number) {
+			case '1':
+				week_string = '星期一';
+				break;
+			case '2':
+				week_string = '星期二';
+				break;
+			case '3':
+				week_string = '星期三';
+				break;
+			case '4':
+				week_string = '星期四';
+				break;
+			case '5':
+				week_string = '星期五';
+				break;
+			case '6':
+				week_string = '星期六';
+				break;
+			default:
+				week_string = '星期日';
+				break;
+			}
+			return week_string
+		}
+
+		var classId = "{$classId}";
+		$('.deleteBell').live('click', function () {
+			$(".bellBottom").find('.emptyResult').remove();
+			var clock_id, obj = this;
+			clock_id = $(obj).parent().parent().find('.hidden_id').val();
+			if (!clock_id) {
+				alert('操作失败,请刷新页面后重试!');
+				return false;
+			}
+			$.getJSON('index.php?m=Home&c=ClockNotice&a=deleteClock', {
+				class_id: classId,
+				clock_id: clock_id
+			}, function (msg) {
+				if (msg.status == 200) {
+					$(obj).parent().parent().remove();
+					if (!$(".bellBottom").find('tbody').find('tr').length) {
+						$(".bellBottom").find('thead').hide();
+						$(".bellBottom").append(empty_div);
+					}
+				} else {
+					$(".bellBottom").append(empty_div);
+					alert('操作失败,请刷新页面重试!');
+				}
+			});
+		});
+
+		$('.bellTopP2').click(function () {
+			var time, hour = $("#hour_id").val();
+			var minute = $("#minute_id").val();
+			var min_interval = $('#min_id').val();
+			if (hour == '' || minute == '') {
+				alert('请选择提醒时间!');
+				return false;
+			}
+			if (min_interval == 0) {
+				alert('请选择时间间隔!');
+				return false;
+			}
+			var week_arr = new Array();
+			for (var i = 0; i < $('.weekCheck').length; i++) {
+				if ($('.weekCheck')[i].checked == true) {
+					week_arr.push($('.weekCheck')[i].value);
+				}
+			}
+			if (!week_arr.length) {
+				alert('请选择一个星期的某一天');
+				return false;
+			}
+			$.getJSON('index.php?m=Home&c=ClockNotice&a=addClock', {
+				hour: hour,
+				minute: minute,
+				interval: min_interval,
+				week: week_arr,
+				classId: classId
+			}, function (msg) {
+				if (msg.status == 200) {
+					request_data();
+				} else if (msg.status == 501) {
+					alert('不可设置多个相同时间的时钟!');
+				} else {
+					alert('操作失败,请刷新页面重试!');
+				}
+			})
+		});
+
+		$('.workPublishClose').click(function () {
+			$('body').css('overflow-y', 'auto');
+			$('.workPublish').hide();
+		})
+	</script>
+</body>
+
+</html>

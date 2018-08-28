@@ -1,0 +1,406 @@
+<layout name="admin_layout_back_iframe"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+	.fullscr {
+		top: 50px;
+	}
+</style>
+
+<p class="blueText fs16">班级列表</p>
+<!--<form action="" method="post">
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>所属年级：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">一年级</option>
+					<option value="2">二年级</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>所属班级：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">一班</option>
+					<option value="2">二班</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>班级编号：</label>
+				<input type="text" name="" id="" class="input-control" placeholder="请输入班级编号">
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+	</div>
+</form>-->
+
+<div class="grayBox">
+	<div class="left">
+		<span class="btns" id="addBtn">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="">
+			添加关联班级
+		</span>
+	</div>
+	<!--<div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue-->
+	<!--		<button class="upBtn upBtnBlue"></button>
+			<button class="downBtn"></button>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>-->
+</div>
+
+<empty name="list">
+    <div class="emptyResult">没有相关信息</div>
+</empty>
+<notempty name="list">
+	<table id="listWrapperClass" class="table striped hovered border">
+		<thead>
+			<tr>
+				<th class="text-center" style="width:16%">序号</th>
+				<th class="text-center" style="width:21%">所属年级</th>
+				<th class="text-center" style="width:21%">所属班级</th>
+				<th class="text-center" style="width:21%">班级编号</th>
+				<th class="text-center" style="width:21%">操作</th>
+			</tr>
+		</thead>
+		<tbody id="body">
+					<volist name="list" id="item" key="key">
+						<tr>
+				<td class="text-center">
+					{$key}
+				</td>
+				<td class="text-center">
+					{$item.grade}
+				</td>			 
+				<td class="text-center">
+					{$item.class_name}
+				</td>
+				<td class="text-center">
+					{$item.class_code}
+				</td>
+				<td class="text-center">
+								<a href="javascript:;" class="operBtn browse_button" attr="{:U('Class/classDetail')}&id={$item.id}" id="">查看</a>
+								<a href="javascript:;" class="operBtn remove_class" id="">移除班级</a>
+				</td>
+							<input type="hidden" value="{$item.id}" class="class_id"/>
+						</tr>
+			</volist>
+		</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+</notempty>
+
+<!--添加班级-->
+<div class="fullscr1" style="display: none;">
+	<div class="addBox" style="height: 440px">
+		<div class="addTitle">添加班级</div>
+		<div class="addContent">
+			<div class="grid condensed cellBox">
+				<div class="row cells2">
+					<div class="cell">
+						<label>班级类型：</label>
+						<select id="class_type" class="input-control classType" name="" onchange="showHide()">
+							<option value="0">-请选择-</option>
+							<option value="1">校建班</option>
+							<option value="2">个人班</option>
+						</select>
+					</div>
+					<div class="cell" id="provinceCell">
+						<label>省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份：</label>
+						<select id="province_list" class="input-control" name="">
+							<option value="0">-请选择-</option>
+						    <volist name="province_list" id="province_item">
+                                                            <option value="{$province_item.id}" <if condition="$province_item['id']==$province"> selected="true"</if> >{$province_item.name}</option>    
+                                                    </volist>
+						</select>
+					</div>
+					<div class="cell" id="cityCell">
+						<label>市&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;区：</label>
+						<select id="city_list" class="input-control" name="">
+							<option value="0">-请选择-</option> 
+						</select>
+					</div>
+					<div class="cell" id="countyCell">
+						<label>区&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;县：</label>
+						<select id="district_list" class="input-control" name="">
+							<option value="0">-请选择-</option> 
+						</select>
+					</div>
+					<div class="cell" id="schoolCell">
+						<label>学校：</label>
+						<select id="school_list" class="input-control" name="">
+							<option value="0">-请选择-</option> 
+						</select>
+					</div>
+					<div class="cell" id="gradeCell">
+						<label>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</label>
+						<select id="grade_list" class="input-control" name="">
+							<option value="0">-请选择-</option> 
+                                                    <volist name="grade_list" id="grade_item">
+                                                            <option value="{$grade_item.id}" <if condition="$grade_item['id']==$grade">selected="true"</if> >{$grade_item.name}</option>
+                                                    </volist>
+						</select>
+					</div>
+					<div class="cell" id="classCell">
+						<label>班&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</label>
+						<select id="class_list" class="input-control" name="">
+							<option value="0">-请选择-</option> 
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+		<p class="adminNotifyButton">
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn">确定</a>
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn">取消</a>
+		</p>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<!--
+<script>
+    $(document).ready(function () {
+        $('.listWrapperCourse').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"16%"},
+                {"width":"28%"},
+                {"width":"28%"},
+                {"width":"28%"}
+            ]
+        });
+    });
+</script>
+-->
+
+<!--
+<script>
+	$(window.parent.document).find("#classFrame").load(function(){
+		var main = $(window.parent.document).find("#classFrame");
+		var mainheight = $(document).height()+30;
+		main.height(mainheight);
+		console.log(111);
+		console.log(mainheight)
+	});
+</script>
+-->
+
+<script>
+    $(".browse_button").click(function(){
+        var url=$(this).attr('attr');
+        parent.location.href=url;
+    });
+
+    var temp_class_span="<option value='0'>-请选择-</option>"; 
+    var common_class_schoool_id="{$student_data.school_id}";
+    //var personal_class_school_id='';
+
+    //年级发生改变
+    $("#grade_list").change(function(){
+        var grade_id=$("#grade_list").val();
+        var school_id='';
+        var class_type=$('#class_type').val(); 
+        if(class_type==0 || class_type==false){
+            return false;
+        }
+        if(grade_id==false){
+            return false;
+        }
+        if(class_type==1){
+            school_id=common_class_schoool_id; 
+        }else{
+            school_id=$('#school_list').val(); 
+        }   
+        $.ajax({
+            type:"post",
+            dataType:"json",
+            url:"{:U('Common/getClassByGrade')}",
+            data:{'grade_id':grade_id,'school_id':school_id,'class_type':class_type},
+            success: function(msg){
+                if(msg.status==200){ 
+                    $("#class_list option:not(:eq(0))").remove(); 
+                    for(var i=0;i<msg.data.length;i++){
+                        var temp_span=$(temp_class_span).clone(true);
+                        $(temp_span).val(msg['data'][i].class_id);
+                        if(class_type==2){
+                            $(temp_span).text(msg['data'][i].class_name+'_'+msg['data'][i].teacher_name);
+                        }else{
+                            $(temp_span).text(msg['data'][i].class_name);
+                        }
+                        $("#class_list").append(temp_span);
+                    }
+                } 
+            }
+        });
+    });
+    
+    
+    $("#sureBtn").click(function(){ 
+        var grade_value=$("#grade_list").val(); 
+        var class_value=$("#class_list").val(); 
+        var class_type=$("#class_type").val();
+        if(grade_value==false){
+            return false;
+        }
+        if(class_value==false){
+            return false;
+        }  
+        if(class_type==false){
+            return false;
+        }
+        var data={'class_id':class_value,'student_id':student_id,'class_type':class_type};
+        $.getJSON("{:U('Student/studentJoinClass')}",data,function(msg){
+            if(msg.status==200){
+                location.reload();
+            }else if(msg.status==300){
+                $.NotifyBox.NotifyNotLogin();
+                return false;
+            }else{
+                $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                return false;
+            }
+        });
+    });
+    
+        
+    var student_id="{$student_id}";
+	$('#addBtn').click(function(){
+		//$(this).parent().parent().siblings('#notifyClass').show();
+                $('.fullscr1').show();
+	})
+	
+	$('#cancelBtn').click(function(){
+		//$(this).parent().parent().parent().parent('#notifyClass').hide();
+                $('.fullscr1').hide();
+	})
+        
+        //班级移除某个学生
+        $(".remove_class").click(function(){
+            var class_val=$(this).parent().siblings('.class_id').val(); 
+            $.ajax({
+                url: "{:U('Common/classRemoveStudent')}",
+                type: "post",
+                dataType :"json",
+                data: {'class_id':class_val,'student_id':student_id},
+                success: function(msg){
+                    if(msg.status==200){  
+                        location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            });
+        });
+        
+        var temp_option="<option value='0'>-请选择-</option>";
+        //省份发生变化
+        $('#province_list').change(function(){ 
+            $("#city_list option:not(:eq(0))").remove();
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            $('#grade_list').find('option:eq(0)').attr('selected',true);
+            $("#class_list option:not(:eq(0))").remove();
+            var id=$("#province_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getCityByProvince')}",
+                dataType:"json",
+                data:{'province_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#city_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        //城市发生变化
+        $('#city_list').change(function(){ 
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            $('#grade_list').find('option:eq(0)').attr('selected',true);
+            $("#class_list option:not(:eq(0))").remove();
+            var id=$("#city_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getDistrictByCity')}",
+                dataType:"json",
+                data:{'city_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#district_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        //区县发生变化
+        $('#district_list').change(function(){ 
+            $("#school_list option:not(:eq(0))").remove();
+            $('#grade_list').find('option:eq(0)').attr('selected',true);
+            $("#class_list option:not(:eq(0))").remove();
+            var id=$("#district_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getSchoolByDistrict')}",
+                dataType:"json",
+                data:{'district_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#school_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        
+        //学校发生变化
+        $("#school_list").change(function(){
+            $('#grade_list').find('option:eq(0)').attr('selected',true);
+            $("#class_list option:not(:eq(0))").remove();
+        });
+</script>
+
+<script>
+	function showHide() {
+		if($('.classType').val() ==1) {
+                    $("#district_list").find('option:eq(0)').attr('selected',true);
+                    $("#district_list option:not(:eq(0))").remove();
+                    $("#school_list option:not(:eq(0))").remove();
+                    $('#grade_list').find('option:eq(0)').attr('selected',true);
+                    $("#class_list option:not(:eq(0))").remove();
+                    
+			$('#provinceCell,#cityCell,#countyCell,#schoolCell').hide();
+			$('#gradeCell,#classCell').show();
+                        $("#city_list option:not(:eq(0))").remove();
+            
+		} else if($('.classType').val() ==2) {
+			$('#provinceCell,#cityCell,#countyCell,#schoolCell,#gradeCell,#classCell').show();
+		} else {
+			$('#provinceCell,#cityCell,#countyCell,#schoolCell,#gradeCell,#classCell').show();
+		}
+	}
+</script>

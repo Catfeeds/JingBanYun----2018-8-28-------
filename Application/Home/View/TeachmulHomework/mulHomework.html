@@ -1,0 +1,347 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=3" type="text/css" rel="stylesheet">
+<style>
+    .main_head {
+        padding: 17px;
+    }
+
+    .button {
+        display: inline-block;
+    }
+
+    .not_layout {
+        display: none;
+    }
+
+    .layout_homework {
+        display: none;
+    }
+
+    .mb5 {
+        margin-bottom: 5px;
+    }
+
+    .home_claim {
+        width: 154px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+		margin: 0 auto
+    }
+
+	#contentWrapper {
+		overflow-x: auto;
+		padding-bottom: 40px;
+	}
+
+	.row .form-control {
+		margin-bottom: 10px;
+	}
+
+    .inputTime {
+        width: 250px;
+        text-indent: 5px;
+        margin-top: 15px;
+        font-size: 16px;
+    }
+
+    .laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+        box-sizing: content-box;
+    }
+
+    #laydate_hms {
+        display: none !important;
+    }
+
+    .fullBack {
+        z-index: 20160000
+    }
+
+    #arrangeTimeBox {
+        z-index: 20160001
+    }
+</style>
+<div class="main_opr">
+    <a href="{:U('TeachmulHomework/mulHomework')}" title="语音作业" class="btn btn-main-opr btn-main-opr-active">语音作业</a>
+    <a href="{:U('Teach/homework')}" title="习题作业" class="btn btn-main-opr">习题作业</a>
+    <a href="{:U('Teach/exercisesLibrary')}" title="习题库" class="btn btn-main-opr">习题库</a>
+    <a href="{:U('Teach/wrongHomeworkList')}" title="错题集" class="btn btn-main-opr">错题集</a>
+</div>
+
+<div class="main_head">
+    <a href="{:U('TeachmulHomework/mulAssignHomework')}" title="创建作业" class="btn btn-primary">创建作业</a>
+</div>
+
+
+
+<form action="{:U('TeachmulHomework/mulHomeworkCompleteDetails')}" method="post" onkeydown="if(event.keyCode==13)return false;">
+    <input type="hidden" name="homeworkId" value="{$homeworkId}">
+    <input type="hidden" name='mca' value="action">
+
+    <div class="row">
+        <div class="col-md-3">
+            <label>班级：</label>
+            <select name="classId" id="class" class="form-control">
+                <option value="0">-请选择-</option>
+                <volist name="class_list" id="class_item" empty="">
+                    <option value="{$class_item.id}" <if condition="$where['classId']==$class_item['id']">selected</if> >{$class_item.name}</option>
+                </volist>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>学科：</label>
+            <select name="courseId" id="course" class="form-control">
+                <option value="0">-请选择-</option>
+                <volist name="courseList" id="courseList" empty="">
+                    <option value="{$courseList.id}" <if condition="$where['courseId']==$courseList['id']">selected</if> >{$courseList.name}</option>
+                </volist>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>类型：</label>
+            <select name="homeworkType" id="homeworkType" class="form-control">
+                <option value="0">-请选择-</option>
+                <option value="1" <if condition="$where['homeworkType'] == 1">selected</if> >课堂作业</option>
+                <option value="2" <if condition="$where['homeworkType'] == 2">selected</if> >课后作业</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>作业名称：</label>
+            <input type="text" name="keyword" id="keyword" class="form-control homework_name" placeholder="请输入作业名称" value='{$where.keyword}' autocomplete="off">
+        </div>
+        <div class="col-md-3">
+            <label>状态：</label>
+            <select id="state" name="type" class="form-control">
+                <option value="0">-请选择-</option>
+                <option value="1" <if condition="$where['type']==1">selected</if>>待发布作业</option>
+                <option value="2" <if condition="$where['type']==2">selected</if>>已发布作业</option>
+                <option value="3" <if condition="$where['type']==3">selected</if>>已截止作业</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>布置时间:</label>
+            <input type="text" name="release_time" id="arrangeTime" placeholder="请选择布置时间" class="form-control" autocomplete="off" value="{$where['release_time']}">
+        </div>
+
+        <div class="col-md-3">
+            <label>&nbsp;</label>
+            <button type="button" class="btn btn-primary search_homework" style="display: block;">搜索</button>
+        </div>
+    </div>
+</form>
+
+<notempty name="list">
+    <table class="table striped hovered border">
+        <thead>
+            <tr>
+                <th class="text-center">序号</th>
+
+                <th class="text-center">班级</th>
+                <th class="text-center">学科</th>
+                <th style="width:200px;" class="text-center">作业名称</th>
+                <th class="text-center">作业类型</th>
+                <th class="text-center">布置时间</th>
+                <th class="text-center">截止时间</th>
+                <th class="text-center" style="padding:10px 18px">状态</th>
+                <th class="text-center">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <volist name="list" id="data" empty="" key='key'>
+                <tr id="l_{$data.id}">
+                    <td class="text-center">{$key}</td>
+                    <td class="text-center">
+                       {$data.class_name}
+                    </td>
+                    <td class="text-center">
+                        {$data.course_name}
+                    </td>
+                    <td title="{$data.homework_name}" class="text-center">
+                        <div class="home_claim"><a href="{:U('TeachmulHomework/mulHomeworkExercises')}&homeworkId={$data.homework_id}&classId={$data.class_id}">{$data.name}</a></div>
+                    </td>
+                    <td class="text-center">
+						<div style="width:120px;margin: 0 auto">
+                            <?php if ( $data['type'] ==1 ): ?>
+                            课堂作业
+                            <?php else: ?>
+                            课后作业
+                            <?php endif ?>
+                        </div>
+                    </td>
+                    <td class="text-center arrangeTime">{$data.release_time}</td>
+                    <td class="text-center stopTime">{$data.org_deadline}</td>
+                    <!----------状态------------>
+                    <td title="" class="text-center statusTd">
+                        {$data.status}
+                    </td>
+                    <td nowrap class="text-center">
+                        <a href="{:U('TeachmulHomework/mulHomeworkCompleteDetails')}&homeworkId={$data.homework_id}&classId={$data.class_id}" title="查看作业" class="button mb5 check_homework ">查看作业</a>
+                        <br/>
+                        <?php if ( $data['is_release'] ==1 ): ?>
+                            <a href="javascript:void(0)" title="布置作业" attr="{$data.homework_status}" homeWorkId="{$data.homework_id}" class="button mb5 homework_assign">布置作业</a>
+                        <?php endif ?>
+                        <a href="{:U('TeachmulHomework/mulHomeworkCopy')}&homeworkId={$data.homework_id}" title="复制习题" class="button">复制习题</a>
+                        <br/>
+                    </td>
+                </tr>
+
+            </volist>
+
+        </tbody>
+
+    </table>
+        <div class="Pagination">{$page}</div>
+</notempty>
+
+
+<empty name="list">
+    <div class="emptyDiv">
+        <if condition="$kw eq 1 ">
+            <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+            <p class="pl30">抱歉，没有搜索到相关的作业！</p>
+        <else />
+            <img src="{$oss_path}public/web_img/Empty/homework.png" alt="">
+            <p class="pl30">暂时还没有作业哦！</p>
+        </if>
+
+    </div>
+</empty>
+
+<!-- 布置时间 -->
+<div class="fullBack" style="display: none"></div>
+<div class="adminNotifyBox" id="arrangeTimeBox" style="display: none">
+    <div class="adminNotifyTitle">
+        <div class="adTitle">提示</div>
+        <img src="/Public/img/icon/adTitleImg1.png" class="adTitleImg">
+    </div>
+    <div class="adminNotifyContent">
+        <div class="adminNotifyMsg" style="padding: 40px 20px 0px;">
+            <div style="text-align: left; font-size: 16px">请选择作业截止时间：</div>
+            <input type="text" class="inputCommon inputTime" id="arrangeTime" placeholder="截止时间">
+            <label for="arrangeTime"><img src="{$oss_path}public/web_img/Icons/dateYellow.png" alt="" style="width: 30px; position: relative; top: -3px"></label>
+        </div>
+        <p class="adminNotifyButton">
+            <a href="javascript:;" class="adminNotifyBtn adminNotifyColor2" id="arrangeSure" style="width: 150px; padding: 0px 0px 0px 2px;">确定</a>
+            <a href="javascript:;" class="adminNotifyBtn adminNotifyColor2" id="arrangeCancel" style="width: 150px; padding: 0px 0px 0px 2px;">取消</a>
+        </p>
+    </div>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/notify/notifyBox.js"></script>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+    !function(){
+        laydate.skin('huang');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var actstart = {
+        elem: '#arrangeTime',
+        format: 'YYYY-MM-DD hh:mm',
+        // min: laydate.now(), //设定最小日期为当前日期
+        max: '2099-06-16', //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            // actend.min = datas; //开始日选好后，重置结束日的最小日期
+            // actend.start = datas; //将结束日的初始值设定为开始日
+        }
+    };
+    laydate(actstart);
+</script>
+
+<script>
+    //history.pushState({page: 11}, "title 1", "&page=111&aa=22");
+    //点击搜索按钮
+    $(".search_homework").click(function () {
+
+        var classId = $("#class").val();
+        var courseId = $("#course").val();
+        var homeworkType = $("#homeworkType").val();
+        var keyword = $("#keyword").val();
+        var type = $("#state").val();
+
+        var release_time = $('#arrangeTime').val();
+
+        var mca = 'action';
+        var condition_str = "";
+
+        if (classId != 0) {
+            condition_str += "&classId=" + classId;
+        }
+        if (courseId != 0) {
+            condition_str += "&courseId=" + courseId;
+        }
+        if (homeworkType != 0) {
+            condition_str += "&homeworkType=" + homeworkType;
+        }
+        if (keyword != 0) {
+            condition_str += "&keyword=" + keyword;
+        }
+        if (type != 0) {
+            condition_str += "&type=" + type;
+        }
+
+        if (release_time != '') {
+            condition_str += "&release_time=" + release_time;
+        }
+
+        condition_str = "index.php?m=Home&c=TeachmulHomework&a=mulHomework" + condition_str+'&mca='+mca;
+
+        location.href = condition_str;
+    });
+
+</script>
+
+<script>
+    var that;
+    //点击未布置,变成已布置
+    $('.homework_assign').click(function () {
+        if($(this).attr('attr')==1){
+            // alert('该作业已经布置');
+            $.NotifyBox.NotifyPromptOne('提示','该作业已经布置','确定');
+            return false;
+        }
+
+        $('.fullBack,#arrangeTimeBox').show();
+        $('body').css('overflow-y','hidden');
+        var homeId = $(this).attr('homeworkid');
+        $('#arrangeSure').attr('homeworkId',homeId);
+        that = $(this);
+    })
+
+    $('#arrangeSure').click(function(){
+        var self=this;
+        var homeWorkId = $(this).attr('homeworkid')
+        var obj = $(this).parent().siblings().children('.homework_status');
+        var arrangeTime = $('#arrangeTime').val();
+        $.get("index.php?m=Home&c=TeachmulHomework&a=updateHomework", {
+            'id': homeWorkId,'arrangeTime':arrangeTime
+        }, function (msg) {
+            if (msg.status == 200) {
+                // var temp_sapn = "<p class='already_layout'>已布置</p>";
+                $(self).attr('attr',1);
+                // $(obj).before(temp_sapn);
+                // $(obj).remove();
+                that.parent('td').siblings('.statusTd').text('已布置');
+                that.parent('td').siblings('.stopTime').text(msg.data.deadline);
+                that.parent('td').siblings('.arrangeTime').text(msg.data.release_time);
+                that.remove();
+                // $(obj).parent('td').prev('td').text('已布置');
+
+                $('.fullBack,#arrangeTimeBox').hide();
+                $('body').css('overflow-y','auto');
+            } else {
+                // alert('布置作业失败');
+                $.NotifyBox.NotifyPromptOne('提示','布置作业失败','确定');
+            }
+        },'json');
+    })
+
+    $('#arrangeCancel, #arrangeTimeBox .adTitleImg').click(function(){
+        $('.fullBack,#arrangeTimeBox').hide();
+        $('body').css('overflow-y','auto');
+    })
+</script>

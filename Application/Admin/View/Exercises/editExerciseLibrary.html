@@ -1,0 +1,398 @@
+<layout name="admin_layout_back"/> 
+<script type="text/javascript" src="__PUBLIC__/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" charset="utf-8"
+        src="__PUBLIC__/ueditor/kityformula-plugin/addKityFormulaDialog.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/ueditor/kityformula-plugin/getKfContent.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/ueditor/kityformula-plugin/defaultFilterFix.js"></script>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/uploadify/uploadify.css">
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+
+    .exerciseInfo {
+        margin-top: 10px;
+        color: #999999;
+        font-size: 12px;
+    }
+
+    #templateWrapper textarea {
+        width: 100%;
+    }
+
+    html, body, * {
+        box-sizing: inherit;
+    }
+	
+	.button.primary {
+		box-sizing: border-box !important;
+	}
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}">&lt; 返回</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form id="mainForm" name="mainForm" action="" method="post" data-role="validator"
+          data-on-error-input="notifyOnErrorInput" data-show-error-hint="true">
+        <input type="hidden" value="{$data.id}" name="id" id="id">
+
+        <div class="example" data-text="基本信息">
+            <div class="grid condensed">
+                <div class="row cells3">
+                    <div class="cell">
+                        <label for="course_id">关联学科</label>
+
+                        <div class="input-control text full-size">
+                            <select id="course_id" name="course_id" onchange="getTextbooks()"
+                                    data-validate-func="required"
+                                    data-validate-hint="关联学科不能为空">
+                                <option value="">-请选择-</option>
+                                <volist name="courses" id="dataCourse" empty="">
+                                    <option value="{$dataCourse.id}" {$chapter[
+                                    'course_id']==$dataCourse['id']?'selected':''}>{$dataCourse.code}
+                                    :{$dataCourse.course_name}</option>
+                                </volist>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <label for="grade_id">关联年级</label>
+
+                        <div class="input-control text full-size">
+                            <select id="grade_id" name="grade_id" onchange="getTextbooks()"
+                                    data-validate-func="required"
+                                    data-validate-hint="关联年级不能为空">
+                                <option value="">-请选择-</option>
+                                <volist name="grades" id="dataGrade" empty="">
+                                    <option value="{$dataGrade.id}" {$chapter[
+                                    'grade_id']==$dataGrade['id']?'selected':''}>{$dataGrade.grade}</option>
+                                </volist>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <label for="textbook_id">所属分册</label>
+
+                        <div class="input-control text full-size">
+                            <select id="textbook_id" name="textbook_id" data-validate-func="required"
+                                    data-validate-hint="教材分册不能为空">
+                                <volist name="textbooks" id="dataTextbook" empty="">
+                                    <option value="{$dataTextbook.id}" {$chapter[
+                                    'textbook_id']==$dataTextbook['id']?'selected':''}>{$dataTextbook.name}</option>
+                                </volist>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row cells3"> 
+                    <div class="cell">
+                        <label for="chapter">章</label>
+
+                        <div class="input-control text full-size">
+                            <input type="text" name="chapter" id="chapter" value="{$chapter.chapter}"
+                                   data-validate-func="required"
+                                   data-validate-hint="章" placeholder=""><!--需带章节号，如：第一章 第一节 名称-->
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <label for="festival">节</label>
+
+                        <div class="input-control text full-size">
+                            <input type="text" name="festival" id="festival" value="{$chapter.festival}"
+                                   data-validate-func="required"
+                                   data-validate-hint="节不能为空" placeholder="">
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <label for="title">名称</label>
+
+                        <div class="input-control text full-size">
+                            <input type="text" name="title" id="title" value="{$chapter.title}"
+                                   data-validate-func="required"
+                                   data-validate-hint="名称不能为空" placeholder="">
+                        </div>
+                    </div>
+                    
+                    <div class="cell">
+                        <label for="points">分值</label>
+
+                        <div class="input-control text full-size">
+                            <input type="number" name="points" id="points" data-validate-func="required"
+                                   data-validate-hint="分值" value="{$data.points}">
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <label for="type">题型</label>
+
+                        <div class="input-control text full-size">
+                            <select id="type" name="type" onchange="switchType()" data-validate-func="required"
+                                    data-validate-hint="题型不能为空">
+                                <volist name="templates" id="dataTemplate" empty="">
+                                    <option value="{$dataTemplate.id}" {$data[
+                                    'type']==$dataTemplate['id']?'selected':''}>{$dataTemplate.template_name}</option>
+                                </volist>
+                            </select>
+                        </div>
+                        <input type="hidden" id="body" name="body">
+                        <input type="hidden" id="answer" name="answer">
+                    </div>
+                </div>
+                <div class="row cells3">
+                    <div class="cell">
+                        <label for="knowledge_point">关联知识点</label>
+
+                        <div class="input-control text full-size">
+                            <input type="text" name="knowledge_point" id="knowledge_point" placeholder="多个知识点用,隔开"
+                                   value="{$data.knowledge_point}">
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <label for="difficulty">难度</label>
+
+                        <div class="input-control text full-size">
+                            <select id="difficulty" name="difficulty">
+                                <option value="">--请选择--</option>
+                                <option value="困难" {$data[
+                                'difficulty']=='困难'?'selected':''}>困难</option>
+                                <option value="中等" {$data[
+                                'difficulty']=='中等'?'selected':''}>中等</option>
+                                <option value="简单" {$data[
+                                'difficulty']=='简单'?'selected':''}>简单</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <label for="options_sort_order">题目排序方向(只对选择题有效)</label>
+
+                        <div class="input-control text full-size">
+                            <select id="options_sort_order" name="options_sort_order">
+                                <option value="">--请选择--</option>
+                                <option value="horizontal">横向</option>
+                                <option value="vertical">竖向</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="cell">
+                        <label for="options_sort_order">请选择教材版本</label>
+
+                        <div class="input-control text full-size">
+                            <select id="teachingsvn" name="teachingsvn">
+                                <option value="1" {$data['teachingsvn']=='1'?'selected':''} >人教版</option>
+                                <option value="2" {$data['teachingsvn']=='2'?'selected':''} >京版</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="cell">
+                        <label for="options_sort_order">是否上架</label>
+
+                        <div class="input-control text full-size">
+                            <select id="is_pay" name="is_pay">
+                                <option value="1" {$data['is_pay']=='1'?'selected':''} >是</option>
+                                <option value="2" {$data['is_pay']=='2'?'selected':''} >否</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form_section" style="height: 300px;">
+                <label for="questions">题目</label>
+
+                <div class="input-control text full-size">
+                    <input id="questionId" type="number" style="width: 110px;" value="{$data.question_id}"
+                           placeholder="题目序号">
+                    <script type="text/plain" id="questions" name="questions" style="width:100%;height:200px;">
+                        {$data.questions}
+                    </script>
+                </div>
+            </div>
+
+            <div id="templateWrapper" class="type_wrapper"></div>
+            <div style="margin: 30px 0 10px 0;">模板编辑</div>
+            <script type="text/plain" id="bodyEditor" name="bodyEditor" style="width:100%;height:400px;">{$data.body}
+            </script>
+            <div id="audioWrapper" style="margin:20px 0;border:1px solid #ccc;padding:20px;">
+                <div style="margin-bottom: 8px">如果改题含有音频部分（如英语听力），可在此上传语音文件(.mp3)：</div>
+                <input type="file" id="uploadToBLWS">
+                <input type="button" onclick="javascript:$('#uploadToBLWS').uploadify('upload','*')" value="执行上传">
+                <input type="hidden" value="{$data.mp3_vid}" name="vid" id="vid">
+                <input type="hidden" value="" name="playerwidth" id="playerwidth">
+                <input type="hidden" value="" name="playerduration" id="playerduration">
+            </div>
+            <div>
+                <div style="margin: 30px 0 10px 0;">习题详解</div>
+                <script type="text/plain" id="explainInDetail" name="explainInDetail" style="width:100%;height:180px;">
+                    {$data.explainindetail}
+                </script>
+            </div>
+        </div>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="button" onclick="save()" class="button primary {:session('btntheme')}">保存</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="__PUBLIC__/js/exercise/lib.js"></script>
+
+<script>
+    var umQuestions = UE.getEditor('questions');
+    var umBodyEditor = UE.getEditor('bodyEditor');
+    var umExplainInDetailEditor = UE.getEditor('explainInDetail');
+</script>
+<script>
+    function getTextbooks() {
+
+        var courseId = $('#course_id').val();
+        var gradeId = $('#grade_id').val();
+        if (courseId == '' || gradeId == '') {
+            $('#textbook_id').html('<option value="">-请选择-</option>');
+        }
+        $.get('index.php?m=Home&c=DictRest&a=get_textbooks_by_courseAndGrade', {
+            'course_id': courseId,
+            'grade_id': gradeId
+        }, function (res) {
+            var options = [];
+            $.each(res, function (index, item) {
+                options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+            });
+            if (options.length > 0) {
+                $('#textbook_id').html(options.join(''));
+            } else {
+                $('#textbook_id').html('<option value="">-请选择-</option>');
+            }
+        });
+
+        $.get('index.php?m=Home&c=DictRest&a=get_exercise_template_by_course', {
+            'course_id': courseId
+        }, function (res) {
+            var options = [];
+            options.push('<option value="">-请选择-</option>');
+            $.each(res, function (index, item) {
+                options.push('<option value="{0}">{1}</option>'.format(item.id, item.template_name));
+            });
+            if (options.length > 0) {
+                $('#type').html(options.join(''));
+            } else {
+                $('#type').html('<option value="">-请选择-</option>');
+            }
+        });
+    }
+
+    function switchType() {
+        var type = $('#type').val();
+        $.get('index.php?m=Home&c=DictRest&a=get_exercise_template_by_id', {
+            'id': type
+        }, function (res) {
+            $('#templateWrapper').html(res.template);
+        });
+    }
+</script>
+
+<script>
+    String.prototype.replaceAll = function (s1, s2) {
+        return this.replace(new RegExp(s1, "gm"), s2);
+    }
+    function save() {
+        var id = $('#id').val();
+        var grade_id = $('#grade_id').val();
+        var course_id = $('#course_id').val();
+        var textbook_id = $('#textbook_id').val();
+        var chapter = $('#chapter').val();
+        var festival=$("#festival").val();
+        var title=$("#title").val();
+        var teachingsvn = $('#teachingsvn').val();
+        var is_pay = $('#is_pay').val();
+        
+        var questions = umQuestions.getContent();
+        var questionId = $('#questionId').val();
+        var points = $('#points').val();
+        var type = $('#type').val();
+        var body = umBodyEditor.getContent();
+        var vid = $('#vid').val();
+        var explainInDetail = umExplainInDetailEditor.getContent();
+        var knowledge_point = $('#knowledge_point').val();
+        var difficulty = $('#difficulty').val();
+        var options_sort_order = $('#options_sort_order').val();
+
+        if (grade_id == '' || course_id == '' || textbook_id == '' || questions == '' || type == '') {
+            alert('信息不完整，请检查后再提交');
+            return false;
+        }
+
+        if (questionId == '') {
+            alert('题目序号不能为空');
+            return false;
+        }
+
+        //body = body.replaceAll('\n', '[/r/n]');
+
+        var parms = {
+            grade_id: grade_id,
+            course_id: course_id,
+            textbook_id: textbook_id,
+            chapter: chapter,
+            festival:festival,
+            title:title,
+            questions: questions,
+            question_id: questionId,
+            type: type,
+            body: body,
+            points: points,
+            answer: '',
+            mp3_vid: vid,
+            id: id,
+            difficulty: difficulty,
+            knowledge_point: knowledge_point,
+            explainInDetail: explainInDetail,
+            options_sort_order: options_sort_order,
+            teachingsvn:teachingsvn,
+            is_pay:is_pay,
+        };
+
+        $.post('/index.php?m=Admin&c=Exercises&a=editExerciseLibrary', parms, function (res) {
+            window.location.href = "{:U('Exercises/exerciseLibraryChapterDetails?id=')}{$chapter.id}";
+        });
+    }
+</script>
+<script type="text/javascript">
+    function initUploadify() {
+        $.uploadToBLWS = $('#uploadToBLWS').uploadify({
+            'auto': false,
+            'formData': {
+                'fcharset': 'ISO-8859-1',
+                'writetoken': '9c538d85-340c-466c-9e35-bb301734eb0d',
+                'cataid': '1',
+                'JSONRPC': '{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'
+            },
+            'buttonText': '请选择听力录音',
+            'fileSizeLimit': '30MB',
+            'fileTypeDesc': '音频文件',
+            'fileTypeExts': '*.mp3;',//文件类型过滤
+            'swf': '__PUBLIC__/uploadify/uploadify.swf',
+            'multi': false,
+            'successTimeout': 3600,
+            'queueSizeLimit': 100,
+            'removeTimeout': 999999,
+            'uploader': 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            //onUploadSuccess为上传完视频之后回调的方法，视频json数据data返回，
+            //下面的例子演示如何获取到vid
+            'onUploadSuccess': function (file, data, response) {
+                var jsonobj = eval('(' + data + ')');
+                //alert(jsonobj.data[0].vid + " - " + jsonobj.data[0].playerwidth + " - " + jsonobj.data[0].duration);
+                $('#vid').val(jsonobj.data[0].vid);
+                $('#playerwidth').val(jsonobj.data[0].playerwidth + '*' + jsonobj.data[0].playerheight);
+                $('#playerduration').val(jsonobj.data[0].duration);
+            }
+        });
+    }
+
+    $(function () {
+        initUploadify();
+    });
+
+
+</script>

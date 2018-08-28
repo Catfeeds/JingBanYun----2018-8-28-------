@@ -1,0 +1,113 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<style>
+    td {
+        line-height: 56px
+    }
+</style>
+<div style="text-align: right;">
+    <div>
+        <div style="float:left;display:inline-block"><a href="{:U('Api/addApi')}" class="button primary">添加Api接口</a></div>
+    </div>
+    <div class="input-control text" data-role="input" style="width: 320px;">
+        <input type="text" id="keyword" name="keyword" placeholder="搜索..." value="{$keyword|default=''}">
+        <button onclick="search()" class="button button-before"><span class="mif-search"></span></button>
+    </div>
+</div>
+<empty name="list">
+    <div class="emptyResult">暂时没有资源</div>
+</empty>
+
+<notempty name="list">
+
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+        <tr>
+            <th class="text-center">版本号</th>
+            <th class="text-center">接口请求URL</th>
+            <th class="text-center">接口说明</th>
+            <th class="text-center">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <volist name="list" id="vo" empty="暂时没有账户数据">
+            <tr>
+                <td class="text-center">{$vo.version}</td>
+                <td>{$vo.urlname}</td>
+                <td class="text-center">{$vo.describe}</td>
+                <td class="text-center">
+                    <a href="javascript:" attr="{$vo.id}" class="button danger authorize delete_button">删除</a>
+                </td>
+    </tr>
+    </volist>
+    </tbody>
+    </table>
+    </notempty>
+    <div class="Pagination">{$page}</div>
+            <script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 305) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns": [
+				{"width": "20%"},
+                {"width": "40%"},
+                {"width": "20%"},
+                {"width": "20%"}
+			]
+        });
+    });
+    //搜索
+    function search() {
+        var keyword = $('#keyword').val();
+
+        var url = 'index.php?m=Admin&c=Api&a=apiList&keyword=' + keyword;
+        window.location.href = url;
+    }
+
+    //点击恢复使用
+    function recovery(id,obj) {
+        
+        $.get('index.php?m=Admin&c=Account&a=recovery', {id: id}, function (res) {
+            if (res == 'success') { 
+                //$(obj).html('恢复使用');
+                //$(obj).prev('td').text('已停用');
+                window.location.reload();
+            } else {
+                alert('通过失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+
+    //点击停用
+    function approve(id,obj) {
+        
+        $.get('index.php?m=Admin&c=Account&a=approve', {id: id}, function (res) {
+            if (res == 'success') { 
+                //$(obj).html('恢复使用');
+                //$(obj).prev('td').text('已停用');
+    window.location.reload();
+    } else {
+        alert('通过失败，请刷新页面后重新尝试');
+    }
+    })
+    }
+
+    //点击删除
+    $('.delete_button').click(function(){
+        if(confirm('您确认删除么')){
+            var id=$(this).attr('attr'); 
+            var obj=this;
+            $.get("index.php?m=Admin&c=Api&a=deleteApi",{'id':id},function(msg){
+                if(msg=='success'){
+                    $(obj).parent().parent().remove();
+                }else{
+                    alert('删除时候,请刷新页面后重试');
+                }
+            });
+        }
+    });
+</script>

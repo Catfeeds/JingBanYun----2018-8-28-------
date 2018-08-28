@@ -1,0 +1,391 @@
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link href="__PUBLIC__/css/activity.css" rel="stylesheet" type="text/css"/>
+
+<style>
+	.activityConRight ul, .activityConRight ol, .activityConRight li {
+	    list-style: inherit;
+	}
+</style>
+
+<script>
+	if(window.history.length != 1)
+		document.write('<div><a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a></div>');
+</script>
+
+<div class="activityTitle">
+	<p class="title">{$data.title}</p>
+	<p class="publishBox">{$data.publisher}&nbsp;/&nbsp;{$data.approve_at|date="Y-m-d H:i",###}</p>
+	<p class="ctrl_box">
+		<if condition="$existedZan eq 'yes'">
+			<img id="zanIcon" src="__PUBLIC__/img/icon/zaned.png">
+			<else/>
+			<img id="zanIcon" src="__PUBLIC__/img/icon/zan.png">
+		</if>
+		<if condition="$existedFavor eq 'yes'">
+			<img id="favorIcon" src="__PUBLIC__/img/icon/favored.png">
+			<else/>
+			<img id="favorIcon" src="__PUBLIC__/img/icon/favor.png">
+		</if>
+	</p>
+</div>
+<div class="activityContent">
+	<div class="left activityConLeft">
+		<p>
+			活动时间：<br>
+			{$data.activitystart|date="Y-m-d H:i",###} 至 {$data.activityend|date="Y-m-d H:i",###}
+		</p>
+		<p>
+			报名时间：<br>
+			{$data.applystart|date="Y-m-d H:i",###} 至 {$data.applyend|date="Y-m-d H:i",###}
+		</p>
+		<p>限制人数：<?php if($data['apply_people_number'] == 0) echo '无限制'; else echo $data['apply_people_number'] . '人';?></p>
+		<p>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注：{$data.remark}</p>
+		<p>已&nbsp;&nbsp;报&nbsp;&nbsp;名：{$data.register_numbers}人</p>
+		<p>
+			面向人群：<br>
+			<span class="stakeholder padding10">
+				{$data.stakeholder}
+			</span>
+		</p>
+		<div class="activityData">
+			<span class="dataTitle">
+				<img src="__PUBLIC__/img/activity/dataTitle.png" alt="">
+				活动资料
+			</span>
+			<ul class="dataUl">
+				<volist name="activity_contact_file" id="contactData">
+					<li class="dataLi">
+						<a class="dataA" type="{$contactData.type}" src="{$oss_path}{$contactData.activity_file_path}" href="javascript:;">{$contactData.activity_file_name}</a>
+					</li>
+				</volist>
+
+			</ul>
+		</div>
+	</div>
+	<div class="activityConRight padding10">
+		{$data.content}
+	</div>
+</div>
+
+<if condition="($_SESSION['teacher'] eq 'youke') OR ($_SESSION['teacher']['id'] neq 0)">
+	<form id="info-list" action="__URL__/reportActivity" method="post">
+		<div class="applyTop">
+			<div class="left applyTopLeft">
+				<if condition="$registered eq 'no'">
+
+					<?php if((time() < $data['applystart']) || (time() > $data['applyend'] - 60)) :?>
+					<span class="applyAfter" style="line-height:20px;padding-top: 20px">
+						我要<br>报名
+					</span>
+					<?php else :?>
+					<span class="applyBefore">
+						我要<br>报名
+					</span>
+					<?php endif; ?>
+					<else/>
+					<span class="applyAfter">
+						已报名
+					</span>
+				</if>
+			</div>
+			<div class="applyTopRight">
+				<input type="hidden" class="file_path" name="file_path"/>
+				<input type="hidden" name="activity_id" value="{$data.id}">
+				<?php if ($registered == 'no') : ?>
+				<textarea name="register_info" rows="3" placeholder="请输入您的姓名、电话、邮箱" <?php if((time() < $data['applystart']) || (time() > $data['applyend'] - 60)) echo 'disabled'; ?> >{$register_info}</textarea>
+				<?php else :?>
+				<textarea name="register_info" rows="3" placeholder="请输入您的姓名、电话、邮箱" disabled>{$register_info}</textarea>
+				<?php endif; ?>
+			</div>
+		</div>
+
+		<div class="applyBottom">
+			<?php if ($registered == 'no') : ?>
+			   <?php if((time() < $data['applystart']) || (time() > $data['applyend'] - 60)) :?>
+			<button type="submit" class="btn btn-primary-red" disabled>我要报名</button>
+			   <?php else : ?>
+			<button type="submit" class="btn btn-primary-red">我要报名</button>
+			   <?php endif; ?>
+			<?php else :?>
+			<button type="submit" class="btn btn-primary-red" style="display: none">我要报名</button>
+			<?php endif; ?>
+		</div>
+	</form>
+</if>
+
+<!--资源展示弹窗-->
+<div class="fullBlack"></div>
+<div class="resourceOutter">
+	<span class="resourceClose"></span>
+	<div id="innerContent"></div>
+</div>
+
+<!--弹窗-->
+<!--<div class="fullscr"></div>-->
+<!--游客弹窗-->
+<!--
+<div class="toolTipBox toolTip1" id="toolTip1">
+	<span class="toolTipClose"></span>
+	<p class="toolTipButton">
+		<a href="{:U('Index/index')}" class="toolTipBtn toolTipBtnGreen2" id="">登录</a>
+		<a href="{:U('Index/index')}" class="toolTipBtn toolTipBtnGreen2" id="">去注册</a>
+	</p>
+</div>
+-->
+
+<script type="text/javascript" src="__PUBLIC__/js/queryLimit.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+
+<!--点赞收藏-->
+<script>
+	var zanCount=0;
+	var favorCount=0;
+
+	$(function () {
+		<?php if (session('teacher') == 'youke'): ?>
+		$('#zanIcon,#favorIcon').click(function(){
+//			$('.fullscr,#toolTip1').show();
+			$.NotifyBox.NotifyPromptTwoCt('提示','请先完成注册<br>登录后可查看更多信息哦！','登录','去注册',function(){
+				 location.href = "index.php?m=Home&c=Index&a=index";
+			},function(){
+				location.href = "index.php?m=Home&c=Index&a=index";
+			})
+		});
+
+		<?php else : ?>
+		$('#zanIcon').click(function () {
+			if(!canQuery()){
+				$.notify({
+					title: '提示',
+					message: '请求过于频繁'
+				}, {
+					type: 'success',
+					placement: {
+						from: "top",
+						align: "center"
+					}
+				});
+				return false;
+			}
+			zanCount++;
+			$.get('__URL__/zanActivity', {id: '{$data.id}'}, function (res) {
+				if (res.result == 'yes') {
+					$('#zanIcon').attr('src', '__PUBLIC__/img/icon/zaned.png');
+					$.notify({
+						title: '提示',
+						message: '点赞成功'
+					}, {
+						type: 'success',
+						placement: {
+							from: "top",
+							align: "center"
+						}
+					});
+				} else {
+					if (res.result == 'youke') {
+//						$('.fullscr,#toolTip1').show();
+						$.NotifyBox.NotifyPromptTwoCt('提示','请先完成注册<br>登录后可查看更多信息哦！','登录','去注册',function(){
+							 location.href = "index.php?m=Home&c=Index&a=index";
+						},function(){
+							location.href = "index.php?m=Home&c=Index&a=index";
+						})
+					} else if(res.result =='no'){
+						$('#zanIcon').attr('src', '__PUBLIC__/img/icon/zan.png');
+						$.notify({
+							title: '提示',
+							message: '已经取消点赞'
+						}, {
+							type: 'warning',
+							placement: {
+								from: "top",
+								align: "center"
+							}
+						});
+					}
+				}
+			});
+		});
+
+		$('#favorIcon').click(function () {
+			if(!canQuery()){
+				$.notify({
+					title: '提示',
+					message: '请求过于频繁'
+				}, {
+					type: 'success',
+					placement: {
+						from: "top",
+						align: "center"
+					}
+				});
+				return false;
+			}
+			favorCount++;
+
+			$.get('__URL__/favorActivity', {id: '{$data.id}'}, function (res) {
+				if (res.result == 'yes') {
+					$('#favorIcon').attr('src', '__PUBLIC__/img/icon/favored.png');
+					$.notify({
+						title: '提示',
+						message: '收藏成功'
+					}, {
+						type: 'success',
+						placement: {
+							from: "top",
+							align: "center"
+						}
+					});
+				} else {
+
+					if (res.result == 'youke') {
+//						$('.fullscr,#toolTip1').show();
+						$.NotifyBox.NotifyPromptTwoCt('提示','请先完成注册<br>登录后可查看更多信息哦！','登录','去注册',function(){
+							 location.href = "index.php?m=Home&c=Index&a=index";
+						},function(){
+							location.href = "index.php?m=Home&c=Index&a=index";
+						})
+					} else if(res.info =='success'){
+
+						$('#favorIcon').attr('src', '__PUBLIC__/img/icon/favor.png');
+						$.notify({
+							title: '提示',
+							message: '已经取消收藏'
+						}, {
+							type: 'warning',
+							placement: {
+								from: "top",
+								align: "center"
+							}
+						});
+					}
+				}
+			});
+		});
+		<?php endif; ?>
+	});
+</script>
+
+<script>
+	$(function(){
+		var options = {
+			success:    showResponse,  // post-submit callback
+			resetForm:  false,
+			dataType:  'json',
+            beforeSubmit: check
+		};
+
+		// bind to the form's submit event
+		$('#info-list').submit(function() {
+			$(this).ajaxSubmit(options);
+			return false;
+		});
+	});
+	function showResponse(responseText, statusText) {
+		switch(responseText.code)
+		{
+			case 0: //success
+				alert(responseText.msg);
+				window.location.href = window.location.href;
+
+				break;
+
+			default: alert(responseText.msg);
+				break;
+		}
+	}
+</script>
+
+<!--资源展示弹窗-->
+<script>
+//	$('.toolTipClose').click(function(){
+//		$('.fullscr,#toolTip1').hide();
+//	})
+</script>
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+<!--游客弹窗-->
+<script>
+	$('.dataA').click(function(){
+		$('.fullBlack,.resourceOutter').show();
+		var obj = $(this);
+		switch(obj.attr('type'))
+		{
+			case 'image':var template = '<img src="{0}">';
+				$('#innerContent').html(template.format(obj.attr('src')));
+				break;
+			case 'video':
+			case 'audio':var template = '<video controls src="{0}">';
+				$('#innerContent').html(template.format(obj.attr('src')));
+				break;
+			case 'ppt':
+			case 'word':
+			case 'pdf':
+				var template = '<iframe id="resourceFrame" frameborder="1" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={0}" width="100%" height="100%"></iframe>';
+				var pdfFilePath = '';
+				if(obj.attr('type') == 'pdf')
+					pdfFilePath = obj.attr('src');
+				else
+				{
+					var orgFilePath = obj.attr('src');
+					var orgFilePathSplitArray = orgFilePath.split('/');
+					orgFilePathSplitArray[orgFilePathSplitArray.length-1];
+					var fileNamePrefix = orgFilePathSplitArray[orgFilePathSplitArray.length-1].split('.')[0];
+					pdfFilePath = '{$oss_path}Activity/{$data.id}/'+fileNamePrefix + '.pdf';
+				}
+				$('#innerContent').html(template.format(pdfFilePath));
+				break;
+			case 'swf':
+				var template = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">' +
+						'<embed id="sfw_src" width="500" height="500" name="plugin"  src="{0}" type="application/x-shockwave-flash">' +
+						'<param name="loop" value="false"><param name="movie" value=""></object>';
+				$('#innerContent').html(template.format(obj.attr('src')));
+				break;
+			case 'condensed':break;
+		}
+	})
+
+	$('.resourceClose').click(function(){
+		$('.fullBlack,.resourceOutter').hide();
+		$('#innerContent').html('');
+	})
+	var isRegisterFull = '<?php if(($data['apply_people_number'] == $data['register_numbers']) && ($data['apply_people_number'] != 0)) echo "yes";else echo "no";?>';
+	function check()
+	{
+	<?php if ($_SESSION['teacher'] == 'youke'): ?>
+//    	$('.fullscr,#toolTip1').show();
+		$.NotifyBox.NotifyPromptTwoCt('提示','请先完成注册<br>登录后可查看更多信息哦！','登录','去注册',function(){
+			 location.href = "index.php?m=Home&c=Index&a=index";
+		},function(){
+			location.href = "index.php?m=Home&c=Index&a=index";
+		})
+		return;
+	<?php endif; ?>
+	<?php if( (time() < $data['applystart'])) :?>
+		$.NotifyBox.NotifyPromptOne("提示","报名还未开始", "确定");
+		return false;
+	<?php elseif (time() + 60 > $data['applyend'])  : ?>
+		$.NotifyBox.NotifyPromptOne("提示","报名已经截止", "确定");
+		return false;
+	<?php endif; ?>
+
+		if(isRegisterFull == 'yes')
+		{
+			$.NotifyBox.NotifyPromptOne("提示","报名人数已满", "确定");
+			return false;
+		}
+		return true;
+	}
+</script>
+
+<!--右边内容最短与左边相等-->
+<script>
+	$(function(){
+		var rightHeight = $('.activityConLeft').height();
+		$('.activityConRight').css('min-height',rightHeight)
+	})
+</script>
+
+
+
+

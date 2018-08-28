@@ -1,0 +1,74 @@
+<layout name="teacher_layout_3"/>
+<link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" href="__PUBLIC__/css/voice.css" >
+<script type="text/javascript" src="__PUBLIC__/js/voiceInput.js"></script>
+<style>
+    .main_head {
+        padding: 17px;
+    }
+    #scoreWrapper td {
+        padding: 8px;overflow: hidden;
+    }
+		.homework_bg {
+	background: #eee;
+		margin: 10px 0;
+		line-height: 30px;
+		font-size: 18px;
+		padding: 5px 10px
+}
+	.homework_bg p{
+		display: inline-block;
+		margin: 0;
+	}
+</style>
+<div class="main_opr">
+    <a href="{:U('TeachmulHomework/mulHomework')}" title="语音作业" class="btn btn-main-opr btn-main-opr-active">语音作业</a>
+    <a href="{:U('Teach/homework')}" title="习题作业" class="btn btn-main-opr">习题作业</a>
+	<a href="{:U('Teach/exercisesLibrary')}" title="习题库" class="btn btn-main-opr">习题库</a>
+    <a href="{:U('Teach/wrongHomeworkList')}" title="错题集" class="btn btn-main-opr">错题集</a>
+</div>
+
+<div>
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn3">返回</a>
+</div>
+  <div class="homework_bg">
+
+      <p>作业名称：<span class="homework_name">{$data.name}</span></p>
+      <p style="float:right">习题数量：<span > {$data.exercises_num}</span></p>
+  </div>
+  <div class="homework_bg">
+      作业要求：<span>{$data.jobsments}</span>
+  </div>
+  <div class="homework_bg">
+      作业涉及章节：
+      <span>{$newlist}</span>&nbsp;
+  </div>
+<div id="scoreWrapper" style="overflow: hidden;">
+    <table id="scoreDetails" cellspacing="0" cellpadding="0" style="table-layout: fixed; float: left; width: 160px;">
+        <tbody><tr id="scoreDetails_row1"><td>题号</td><td>总分</td></tr>
+        <tr id="scoreDetails_row2"><td>得分</td><td id="totalScore" style="font-weight: 600;padding: 0 10px;">{$score}</td></tr>
+        </tbody></table>
+</div>
+<div style="margin-top: 30px">
+    <div id="exerciseWrapper">
+    </div>
+</div>
+
+<script>
+    var student_id = "{$student_id}";
+    var homework_id = "{$homework_id}";
+    var classId = "{$classId}";
+    var homework_url = "/index.php?m=Home&c=TeachmulHomework&a=getStudentExList&student_id="+student_id+"&homework_id="+homework_id+"&classId="+classId;
+    $(function () {
+        $.ajax({
+            type:'GET',
+            url:homework_url,
+            dataType: 'json',
+            success:function(res){
+                var form_selected_exercise = $('#form_selected_exercise').text()
+                voice(res,'#exerciseWrapper','false', form_selected_exercise);
+
+            }
+        })
+    });
+</script>

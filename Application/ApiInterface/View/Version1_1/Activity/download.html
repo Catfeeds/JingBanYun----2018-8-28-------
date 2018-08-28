@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>下载/进入京版云</title>
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<script src="__PUBLIC__/js/rem.js"></script>
+	
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}	
+		
+		html, body {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+		
+		body {
+			background: url({$oss_path}public/web_img/App/download_back.png) no-repeat center bottom;
+			background-size: cover;
+		}
+		
+		.dLogo {
+			display: block;
+			width: 35%;
+			margin: 25% auto 0;
+		}
+		
+		.dBtn {
+			color: #fff;
+			font-size: 1.4rem;
+			margin: 0 auto;
+			text-align: center;
+			width: 60%;
+			line-height: 4.2rem;
+			background: url({$oss_path}public/web_img/App/download_btn.png) no-repeat center;
+			background-size: contain;
+		}
+		
+		.enterBtn {
+			margin-top: 15%;
+		}
+		
+		.downloadBtn {
+			margin-top: 2%;
+		}
+
+		#name {
+			color: #333;
+			font-size: 1.2rem;
+			display: block;
+			width: 50%;
+			float: left;
+			line-height: 2.5rem;
+		}
+
+		#date {
+			color: #999;
+			font-size: 1.2rem;
+			display: block;
+			width: 50%;
+			float: left;
+			text-align: right;
+			line-height: 2.5rem;
+		}
+
+		.section {
+			color: #666;
+			font-size: 1.2rem;
+		}
+
+		.section img {
+			width: 20px;
+		}
+
+
+		#content {
+			font-size: 1.2rem;
+			color: #666
+		}
+		#Mask {
+			position:fixed;
+			width: 100%;
+			height: 100%;
+			z-index: 20160929;
+			top: 0;
+			left: 0;text-align: center;
+			background: rgba(0,0,0,0.8);
+			display: none;
+		}
+		#enteredjby,#enteredjbytwo{width: 50%;float: left;text-align: center;margin: 5rem 0}
+		#enteredjby a,#enteredjbytwo a{	background: #46cfdd;
+			color: #fff;
+			margin: 3rem auto;
+			padding: 1rem 2rem;
+			border-radius: 10px;
+			text-decoration: none}
+	</style>
+</head>
+<body>
+	<div id="Mask">
+		<img src="{$oss_path}public/web_img/App/arrows.png" alt="" style="margin-top:2rem;width:100%">
+	</div>
+	<img src="{$oss_path}public/web_img/App/download_logo.png" alt="" class="dLogo">
+
+	<div id="enteredjby">
+		<a href="javascript:" id="openApp">下载京版云</a>
+
+	</div>
+
+	<div id="enteredjbytwo">
+		<a href="javascript:" id="openApptwo">进入京版云</a>
+
+	</div>
+
+	<script type="text/javascript">
+		function CheckIsAndroid() {
+			var browser = {
+				versions: function () {
+					var u = navigator.userAgent, app = navigator.appVersion;
+					return { //移动终端浏览器版本信息
+						ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+						android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+						iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+						iPad: u.indexOf('iPad') > -1, //是否iPad
+					};
+				}(),
+			}
+			//if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+			//    return false;
+			//}
+			if (browser.versions.android)
+				return true;
+			return false;
+		}
+
+
+		function CheckIsIOS() {
+			var browser = {
+				versions: function () {
+					var u = navigator.userAgent, app = navigator.appVersion;
+					return { //移动终端浏览器版本信息
+						ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+						android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+						iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+						iPad: u.indexOf('iPad') > -1, //是否iPad
+					};
+				}(),
+			}
+			if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+				return true;
+
+				return false;
+			}
+		}
+
+
+		function isWeiXin(){
+			var ua = window.navigator.userAgent.toLowerCase();
+			if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		function isQQ(){
+			var ua = window.navigator.userAgent.toLowerCase();
+
+			if (ua.match(/mobile mqqbrowser/i) == "mobile mqqbrowser" || ua.match(/qq/i) == "qq" ) {
+				return true;
+			} else {
+				return false;
+			}
+
+		}
+
+		document.getElementById('openApp').onclick = function(e){c
+			// 通过iframe的方式试图打开APP，如果能正常打开，会直接切换到APP，并自动阻止a标签的默认行为
+			// 否则打开a标签的href链接
+
+			/*if (isQQ()) {
+			 $('#enteredjby').click(function(){
+			 $('#Mask').show()
+			 $('#Mask').click(function(){
+			 $(this).hide()
+			 })
+			 })
+			 }*/
+
+			if (isWeiXin()) {
+				$('#enteredjby').click(function(){
+					$('#Mask').show()
+					$('#Mask').click(function(){
+						$(this).hide()
+					})
+				})
+			}
+
+			if (CheckIsIOS()) {
+
+				/* var el = document.getElementById('openApp');
+				 el.setAttribute('href','JingBanYun://');
+
+				 window.setTimeout(function(){
+				 window.location.href = "https://itunes.apple.com/us/app/jin-ri-ke-tang-bei-jing-chu/id1060492678?l=zh&ls=1&mt=8";
+				 },5000);*/
+
+				var appFailUrl = 'https://itunes.apple.com/us/app/jin-ri-ke-tang-bei-jing-chu/id1060492678?l=zh&ls=1&mt=8', appUrlScheme = 'JingBanYun://';
+				window.location = appFailUrl;
+				//Try launching the app using URL schemes
+			}
+
+			if (CheckIsAndroid()) {
+				window.location.href = "{$apkurl}";
+			}
+
+		};
+
+		var resource_title="{$title}";
+		document.getElementById('openApptwo').onclick = function(e){
+			// 通过iframe的方式试图打开APP，如果能正常打开，会直接切换到APP，并自动阻止a标签的默认行为
+			// 否则打开a标签的href链接
+
+			if (isQQ()) {
+				$('#enteredjby').click(function(){
+					$('#Mask').show()
+					$('#Mask').click(function(){
+						$(this).hide()
+					})
+				})
+
+				$('#enteredjbytwo').click(function () {
+					$('#Mask').show()
+					$('#Mask').click(function () {
+						$(this).hide()
+					})
+				})
+			}
+
+			if (isWeiXin()) {
+
+				$('#enteredjby').click(function(){
+					$('#Mask').show()
+					$('#Mask').click(function(){
+						$(this).hide()
+					})
+				})
+
+				$('#enteredjbytwo').click(function () {
+					$('#Mask').show()
+					$('#Mask').click(function () {
+						$(this).hide()
+					})
+				})
+			}
+
+
+			if (CheckIsIOS()) {
+
+				/* var el = document.getElementById('openApp');
+				 el.setAttribute('href','JingBanYun://');
+
+				 window.setTimeout(function(){
+				 window.location.href = "https://itunes.apple.com/us/app/jin-ri-ke-tang-bei-jing-chu/id1060492678?l=zh&ls=1&mt=8";
+				 },5000);*/
+
+				var appFailUrl = 'JingBanYun://'+"<?='id='.$id.'&type=BeijingActive' ?>"+'&title='+resource_title;
+
+				window.location = appFailUrl;
+				//Try launching the app using URL schemes
+			}
+
+			if (CheckIsAndroid()) {
+				window.location = "jingbanyun://jingbanyun.com?"+"<?='id='.$id.'&type=BeijingActive' ?>"+'&title='+resource_title;
+			}
+
+		};
+
+		(function (doc, win) {
+			var docEl = doc.documentElement,
+					resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+					recalc = function () {
+						var clientWidth = docEl.clientWidth;
+						if (!clientWidth) return;
+						docEl.style.fontSize = 10 * (clientWidth / 320) + 'px';
+					};
+
+			if (!doc.addEventListener) return;
+			win.addEventListener(resizeEvt, recalc, false);
+			doc.addEventListener('DOMContentLoaded', recalc, false);
+		})(document, window);
+
+
+	</script>
+</body>
+</html>

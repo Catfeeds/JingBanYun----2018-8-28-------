@@ -1,0 +1,245 @@
+﻿<layout name="teacher_layout_3"/>
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<style>
+    /*---------------查看答案与解析弹出框------------------*/
+    .checkBox {
+        width: 40%;
+        height: 50%;
+        position: fixed; 
+        left: 50%;
+        top: 50%;
+        margin-left: -20%;
+        margin-top: -5%;
+        background: #fff;
+        border-radius: 5px;
+        display: none;   
+        
+    }
+    .checkBoxTitle {
+	    width: 100%;
+        line-height: 30px;
+        font-size: 16px;
+        background: #E9C232;
+        text-indent: 10px;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        font-family: "黑体";
+    }
+    .answer{
+        padding: 0 10px;
+    }
+    .closeBtn {
+        background: #E9C232 !important;
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .order_btn {
+        display: block;
+        width: 100%;
+        height: 40%;
+        border: 0;
+        background: none;
+    }
+    #ascending {
+        background: url(/Public/img/home/ascending.png) no-repeat center;
+        background-size: contain;
+    }
+    #descending {
+        background: url(/Public/img/home/descending.png) no-repeat center;
+        background-size: contain;
+    }
+</style>
+
+<div class="main_opr">
+    <a href="{:U('Teach/homework')}" title="我的作业" target="_blank" class="btn btn-main-opr">作业详情</a>
+    <a href="{:U('Teach/wrongHomeworkList')}" title="错题集" target="_blank" class="btn btn-main-opr" style="background:#fff !important;">错题集</a>
+</div>
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/wrongHomeworkList')}" title="返回" class="btn btnReturn3">返回</a>
+</div>
+<form action="{:U('Teach/wrongHomework?id=')}{$id}" method="post">
+    <div class="row">
+        <div class="col-md-3">
+            <label>题目序号：</label>
+            <input type="text" name="question_number" id="question_number" placeholder="题目序号" class="form-control" value="{$number}">
+        </div>
+        <div class="col-md-3">
+            <label>错误率：</label>
+            <select id="errorRate" name="errorRate" class="form-control">
+                <option value="0">请选择</option>
+                <option value="10" <if condition="$default_sort==10">selected</if> >90%~100%</option>
+                <option value="9" <if condition="$default_sort==9">selected</if> >80%~90%</option>
+                <option value="8" <if condition="$default_sort==8">selected</if> >70%~80%</option>
+                <option value="7" <if condition="$default_sort==7">selected</if> >60%~70%</option>
+                <option value="6" <if condition="$default_sort==6">selected</if> >50%~60%</option>
+                <option value="5" <if condition="$default_sort==5">selected</if> >40%~50%</option>
+                <option value="4" <if condition="$default_sort==4">selected</if> >30%~40%</option>
+                <option value="3" <if condition="$default_sort==3">selected</if> >20%~30%</option>
+                <option value="2" <if condition="$default_sort==2">selected</if> >10%~20%</option>
+                <option value="1" <if condition="$default_sort==1">selected</if> >0~10%</option>
+            </select>
+        </div>
+        <!--
+        <div class="col-md-3">
+            <label>作业时间:</label>
+            <input type="text" name="datepicker" id="datepicker" placeholder="作业时间" class="form-control" autocomplete="off" required>
+        </div>
+        -->
+        <div class="col-md-3">
+            <label>&nbsp;</label>
+            <button type="button" class="btn btn-primary" style="display: block;">搜索</button>
+        </div>
+    </div>
+
+
+</form>
+<empty name="list">
+    <div class="emptyResult">暂时没有错题</div>
+</empty>
+<notempty name="list">
+    <table class="table striped hovered border" style="margin-top: 20px;">
+        <thead>
+        <tr>
+            <th class="text-center">题目序号</th>
+            <th class="text-center" style="width:50%;">错误题目</th>
+            <th class="text-center" style="padding:0;width:100px;">
+                <div style="float:left;width:80%;padding:8px;">
+                    错误率
+                </div>
+                <div  style="float:right;width:15%;font-size:13px;">
+                    <button class="order_btn" id="ascending" title="升序">&nbsp;</button>
+                    <button class="order_btn" id="descending" title="降序">&nbsp;</button>
+                </div>
+            </th>
+            <th class="text-center">作业时间</th>
+            <th class="text-center" style="width:15%;">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="" key="i">
+            <tr id="l_{$data.id}">
+<!--
+                <td title="{$data.homework}">
+                    <a href="{:U('Student/homeworkCompleteDetails?gotoback=false&homeworkId=')}{$data.homework_id}&studentId={$data.student_id}"
+                       target="_blank">{$data.homework}</a>
+                </td>
+-->
+                <!------------题目序号------------>
+                <input class="unique" type="hidden"  value="{$data.question_org_id}"/>
+                <td class="text-center" id="xun_{$i}" >
+                    {$i}
+                </td>
+                <!------------错误题目------------>
+                <td>
+                    {$data.questions}
+                </td>
+                <!------------错误率------------>
+                <td class="text-center">
+                    <if condition="$data.percent eq null">
+                        0%
+                    <else />
+                        {$data.percent}%
+                    </if>
+                </td>
+                <!------------作业时间------------>
+                <td class="text-center">
+                    {$data.create_at|date="Y-m-d H:i",###}
+                </td>
+                <!------------操作------------>
+                <td class="text-center">
+<!--                    <a href="####" title="查看答案与解析" class="button checkAnswer">查看答案与解析</a>-->
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</notempty>
+
+<!--------查看答案与解析弹出框------------>
+<div class="checkBox">
+    <p class="checkBoxTitle">
+        查看答案与解析
+    </p>
+    <div class="answer">
+        我是解析我是解析
+    </div>
+    <button class="btn btn-primary closeBtn">确定</button>
+</div>
+
+<script src="__PUBLIC__/js/external/jquery-1.10.2.min.js"></script>
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<!--------------日历----------------->
+<script>
+    var homework_id="{$homework_id}";
+    Date.prototype.Format = function (fmt) { //author: meizz 
+        var o = {
+            "M+": this.getMonth() + 1, //月份 
+            "d+": this.getDate(), //日 
+            "h+": this.getHours(), //小时 
+            "m+": this.getMinutes(), //分 
+            "s+": this.getSeconds(), //秒 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+            "S": this.getMilliseconds() //毫秒 
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    
+    $("#datepicker").change(function(){ 
+        var time1 = new Date().Format("yyyy-MM-dd");
+        var time2=$("#datepicker").val();
+        if(time2>time1){
+            $("#datepicker").val('');
+            return false;
+        }
+    });
+    
+    $(function() {
+        $( "#datepicker" ).datepicker({
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd" 
+        });
+    });
+    
+    //点击搜索
+    $(".btn-primary").click(function(){
+        var question_number=$("#question_number").val();
+        var errorRate=$("#errorRate").val();
+        var date=$("#datepicker").val();
+        var string='';
+        if ((/(^[1-9]\d*$)/.test(question_number))==true){
+            //这里去拿到那个对应的ID;
+            if($("#xun_"+question_number).length){
+                var temp=$("#xun_"+question_number).siblings('.unique').val();
+                string+="&qid="+temp+"&number="+question_number;
+                
+            }
+        }
+        if(errorRate!=0){
+            string+="&rate="+errorRate;
+        }
+        /*
+        if(date!=''){
+            string+="&date="+question_number;
+        }*/
+        string="index.php?m=Home&c=Teach&a=wrongHomeworkDetail&id="+homework_id+string; 
+        location.href=string; 
+    });
+     
+</script>
+<script>
+    $('.checkAnswer').on('click',function(){
+        $('.checkBox').css('display','block');
+    })
+    $('.closeBtn').on('click',function(){
+        $('.checkBox').css('display','none'); 
+    })
+</script>

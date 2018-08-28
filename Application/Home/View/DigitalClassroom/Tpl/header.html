@@ -1,0 +1,46 @@
+<div id="header">
+    <?php if ($platform=='pad'): ?>
+        <img id="returnToDesktop" id="returnToDesktop" tapmode
+         style="float: left;height: 36px;margin-top: 6px;margin-left: 6px;"
+         src="__PUBLIC__/DigitalClassroom/images/return.png">
+    <?php endif; ?>
+    <span id="welcomeInfo"
+          style="position: absolute; left: 54px;top: 0px; color: #000000;line-height: 50px;display: none;">XXX同学，你好!</span>
+    <button class="opr selected" onclick="switchBox('box_etextbook')" data-id="box_etextbook">数字教材</button>
+    <button class="opr" onclick="switchBox('box_lesson_info')" data-id="box_lesson_info">备课资料</button>
+    <if condition="$isTeacher eq 'true'">
+        <button class="opr" onclick="switchBox('box_homework')" data-id="box_homework">作业系统</button>
+        <?php if ($platform=='pad' || $isTeacher=='true'): ?>
+            <button class="opr" onclick="switchBox('box_auth_mgmt')" data-id="box_auth_mgmt">权限/考勤管理</button>
+        <?php endif; ?>
+
+        <button class="startBtn opr"  onclick="start()">开始录制</button>
+        <button class="endBtn opr"  onclick="stop()">结束录制</button>
+
+    <else/>
+        <button class="opr" onclick="switchBox('box_homework')" data-id="box_homework">做作业</button>
+    </if>
+    <if condition="$platform neq 'pc'">
+
+    </if>
+    <button class="opr" onclick="switchBox('box_stugroup')" data-id="box_stugroup">
+        互动分组
+    </button>
+
+    <div class="class_info">
+        <?php if ($isTeacher=='true'): ?>
+            <div class="class_info_item"><span class="t_title" style="letter-spacing: 1px;">总学生数</span>:&nbsp;<span
+                    id="total_people_count">{$studentCount}</span>人
+            </div>
+            <div class="class_info_item"><span class="t_title" style="letter-spacing: 1px;">在线学生</span>:&nbsp;<span
+                    id="online_people_count">0</span>人
+            </div>
+
+        <?php else: ?>
+            <div class="class_info_item"><span class="t_title" style="letter-spacing: 1px;margin-top: 10px;">在线状态</span>:&nbsp;在线
+            </div>
+        <?php endif; ?>
+
+
+    </div>
+</div>

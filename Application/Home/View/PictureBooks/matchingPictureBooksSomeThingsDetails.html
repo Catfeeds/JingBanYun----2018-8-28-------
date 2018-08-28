@@ -1,0 +1,169 @@
+<layout name="teacher_layout_2" />
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<style>
+    .list_avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+
+    h3 {
+        margin: 0;
+        padding: 0;
+    }
+
+    .ctrl_box {
+        margin-left: 90%;
+    }
+
+    .ctrl_box img {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        margin-bottom: 15px;
+        cursor: pointer;
+    }
+
+    .file-name a {
+        color: #333;
+        padding: 10px 20px;
+        display: inline-block;
+        background: #e8f5e1
+    }
+
+    .file-name a:hover {
+        background: #fff
+    }
+
+    ul,
+    li {
+        list-style: none
+    }
+
+    #xiazai button {
+        background: #fff;
+        outline: none;
+        border: none;
+    }
+
+    .file-name a:hover {
+        background: #fff;
+    }
+
+    #classname {
+        text-align: left;
+        border: 1px solid #dd1010;
+        border-radius: 4px;
+        padding: 20px;
+        background: #FDEDEE;
+    }
+
+    #data_load {
+        padding: 0;
+        margin-top: 50px;
+    }
+
+    #data_load a {
+        color: #333;
+    }
+
+    .row {
+        margin: 0
+    }
+
+
+    .browse_image img {
+        width: auto;
+        max-width: 100%;
+    }
+
+    #mediafile {
+        text-align: center;
+    }
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div class="example">
+    <div class="listview set-border">
+        <div class="padding10">
+            <h3 style="text-align:center">{$data.material_name}</h3>
+        </div>
+    </div>
+</div>
+<empty name="data">
+    <div class="row">
+        暂无数据
+    </div>
+</empty>
+
+<notempty name="data">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6" id="mediafile">
+            <div class="example" data-text="资源内容">
+                <div class="listview set-border">
+                    <div class='padding50'>
+                        <switch name="data.type">
+                            <case value="pdf|word|ppt">
+                                <!--<a style="float: right;margin-bottom: 4px;" target="_blank" href="__PUBLIC__/pdfjs/viewer/viewer.html?f={$data.file_path}" class="btn btn-default">在新窗口打开</a>-->
+                                <if condition="$data['flag']==2">
+                                    <iframe id="resourceFrame" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={$oss_path}<?php
+                                    $path = explode('.',basename($data['file_path']));
+                                    $path=$path[0].'.pdf';
+                                                        $path = 'material/' .$data['id'] .'/' .$path;
+                                    echo $path;
+                                    ?>"  width="100%" height="500">
+                                    </iframe>
+                                    <else />
+                                    <div>
+                                        该文件正在转换中,请稍后查看。给您带来的不便,请谅解!
+                                    </div>
+                                </if>
+                            </case>
+                            <case value="image">
+                                <div class="browse_image">
+                                    <img src="{$oss_path}{$data.file_path}" />
+                                </div>
+                            </case>
+                            <case value="swf">
+                                <div id="flash" class="browse_swf">
+                                    <object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">
+
+                                        <embed id="sfw_src" width="500" height="500" name="plugin"  src="{$oss_path}{$data.file_path}" type="application/x-shockwave-flash">
+
+                                        <param name="loop" value="false">
+                                        <param name="movie" value="">
+                                    </object>
+                                </div>
+                            </case>
+                            <case value="video">
+                                <div id='plv'></div>
+                                <script>
+                                    var player = polyvObject('#plv').videoPlayer({
+                                        'vid': '{$data.vid}'
+                                    });
+                                </script>
+                            </case>
+                            <case value="audio">
+                                <div id='plv'></div>
+                                <script>
+                                    var player = polyvObject('#plv').videoPlayer({
+                                        'vid': '{$data.vid}'
+                                    });
+                                </script>
+                            </case>
+                            <default/>
+                            <div>
+                            </div>
+                        </switch>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</notempty>

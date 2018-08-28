@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>征文参与</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="__PUBLIC__/js/rem.js"></script>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    body{
+        background: #f6fcfd
+    }
+    .header img{
+        width: 100%;
+        height: ;
+    }
+    .title_h1{
+        text-align: center;
+        font-size: 2rem;
+		line-height: 5rem;
+    }
+    .title_p{
+        font-size: 1.5rem;
+        line-height: 2rem;
+        padding: 0 2rem;
+        text-align: justify;
+        color: #666;
+		text-indent: 2em;
+    }
+    form{
+        margin-top: 1rem;
+    }
+    .content{
+        padding: 0 2rem
+    }
+    .red {
+        color: #ff3d3d
+    }
+    .content p{
+        line-height: 2.4rem ;
+        font-size: 1.4rem;
+		margin-top: 15px;
+    }
+    .content input{
+        width: 100%;
+        height: 3rem;
+        margin: 7px 0;
+        outline: none;
+    }
+    textarea{
+        width: 100%;
+    }
+    .content .btn{
+        width: 80%;
+        margin: 10px 10% 30px 10%;
+        background: #6bcbca;
+        color: #fff;
+        outline: none;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 0;
+        line-height: 2rem;
+		font-size: 2rem;
+
+    }
+</style>
+
+<body>
+<div class="header">
+    <img src="http://jby.oss-cn-shanghai.aliyuncs.com/public/web_img/Active/banner.png" alt="">
+</div>
+  <div>
+     	<h1 class="title_h1">我敬爱的老师</h1>
+     	<p class="title_p"> 巍巍教坛，茫茫学海。一支粉笔，书写人生答卷；三尺讲台，描绘千秋愿景。黑板白字，写不尽箴言哲语；春华秋实，道不完蕙质兰心。甘为人梯，乐为园丁。横穿西东，赞唐宋之文采；纵贯古今，尊孔孟之遗训。课上课下，解疑答难，评说岁月功过；校内校外，引经据典，传播今古文明。</p>
+   		<p class="title_p">  伟哉，教师！耿耿丹心，培养桃李满天下；腔腔热血，造就栋梁遍乾坤。国强需重教，明礼必尊师。一年一度属于光荣教师的节日又快来临了，在你心目中，你最敬爱的老师是谁？拿起笔，写出你对他（她）的尊敬和热爱！
+		</p>
+ </div>
+<form action="__URL__/insert" method="post">
+    <div class="content">
+        <p >学生姓名(或笔名)<span class="red">*</span>：</p>
+        <input type="text" placeholder="请输入姓名" name="student_name" required maxlength="20" id="student_name">
+        <p>学校<span class="red">*</span>：</p>
+        <input type="text" placeholder="请输入学校名称" name="school_name" required maxlength="20" id="school_name">
+        <p>年级<span class="red">*</span>：</p>
+        <input type="text" placeholder="请输入年级" name="class" required maxlength="20" id="class">
+        <p>指导老师(如有指导教师可写，没有可不填)</p>
+        <input type="text" placeholder="请输入指导老师姓名" name="teacher_name" maxlength="20" id="teacher_name">
+        <p>联系方式(用于通知获奖者)<span class="red">*</span>：</p>
+        <input type="text" placeholder="请输入联系方式" maxlength="11" name="telephone" required id="tel">
+        <p>投稿内容(300字以内) <span class="red">*</span>：</p>
+        <textarea name="content" id="text_are" cols="30" rows="10" placeholder="请输入内容" maxlength="300" required></textarea>
+        <button class="btn" onclick="check()">提交</button>
+    </div>
+</form>
+
+</body>
+<script src="__PUBLIC__/js/external/jquery.js" type="text/javascript"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="__PUBLIC__/js/share.js"></script>
+<script>
+    function check(){
+		var names = $('#student_name').val();
+        var tea_names = $('#teacher_name').val();
+        var tels = $('#tel').val();
+        var text_area = $('#text_are').val();
+        var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		if(names == ''||regName.test(names) == false){
+			alert('请输入学生姓名');
+			return false
+		}else if($('#school_name').val() == ''){
+			alert('请输入学校名称');
+			return false
+		}else if($('#class').val() == ''){
+			alert('请输入年级');
+			return false
+		}else if(tea_names != ''){
+            if(regName.test(tea_names) == false){
+                alert("请输入正确指导教师姓名");
+                return false
+            }
+        }else if(regTel.test(tels) == false || tels == ''){
+            alert('请输入正确手机号');
+            return false
+        }else if(text_area == ''){
+            alert("请输入内容");
+            return false
+        }
+    }
+    var share_content = "快把你写的优秀文段发给我们吧！写美文，赢大奖！";
+
+    var appId = '{$signPackage.appId}';
+    var timestamp = '{$signPackage.timestamp}';
+    var nonceStr = '{$signPackage.nonceStr}';
+    var signature = '{$signPackage.signature}';
+    var title = '稚笔生花征文';
+    var content = share_content;
+    var linkimgUrl = 'http://jbyoss.oss-cn-beijing.aliyuncs.com/wechat/wechatzw.png';
+    share_weixin(appId, timestamp, nonceStr, signature, title, content,linkimgUrl);
+</script>
+</html>

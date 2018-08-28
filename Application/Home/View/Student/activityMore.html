@@ -1,0 +1,183 @@
+<layout name="student_layout_1"/>
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+
+<div>
+    <a href="{:U('Student/activities')}" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div class="activities_top activities_top_my">
+	<div class="search">
+		<button class="search_btn"></button>
+		<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入活动名称">
+	</div>
+</div>
+<div class="activties_title">
+    <a class="title_a5" href="javascript:;"><img class="title_img5" src="" alt=""></a>
+    <a class="title_a1" href="javascript:;"><img class="title_img1" src="" alt=""></a>
+    <a class="title_a2" href="javascript:;"><img class="title_img2" src="" alt=""></a>
+    <a class="title_a3" href="javascript:;"><img class="title_img3" src="" alt=""></a>
+    <!--<a class="title_a4" href="javascript:;"><img class="title_img4" src="" alt=""></a>-->
+</div>
+<div class="actBottom">
+	<ul class="row activities_ul" id="activities_ul1">
+		<volist name="list" id="data" empty="暂时没有活动信息">
+		<li class="col-md-3 activities_li">
+			<div class="activities_box" style="border:5px solid #51a9cd;">
+                <a href="{:U('Student/activityDetails?id=')}{$data.id}">
+                    <img class="activities_img" src="/Resources/socialactivity/{$data.short_content}" alt="">
+                    <p class="activities_title">{$data.title}</p>
+                    <if condition="$data.is_new eq yes">
+                        <img class="newImg" src="__PUBLIC__/img/activity/new.png" alt=""> 
+                   </if>
+                </a>
+                <p class="activities_p">
+					<span class="left">
+						<img src="__PUBLIC__/img/resource/watch.png" alt="">
+						<span>{$data.browse_count}</span>
+					</span>
+					<span>
+						<img src="__PUBLIC__/img/resource/like.png" alt="">
+						<span>{$data.zan_count}</span>
+					</span>
+					<span class="right">
+						<img src="__PUBLIC__/img/resource/collect.png" alt="">
+						<span>{$data.favor_count}</span>
+					</span>
+                </p>
+                <p class="activities_p">
+                    <!--{$data.publisher}-->
+                    <span class="left">北京出版集团</span>
+                    <span class="right">{$data.create_at|date="Y-m-d H:i",###}</span>
+                </p>
+			</div>
+		</li>
+		</volist>
+	</ul>
+</div>
+<div class="Pagination">{$page}</div>	
+
+<script>
+    var kind;
+	function change(){
+		url = window.location.href;
+		var n=url.indexOf("?");
+		if(n>=0){
+		   var url_sub=url.substr(n);
+		   var sp_arr=url_sub.split("&");
+		   var kind_arr=sp_arr[3].split("=");
+		   kind=kind_arr[1];
+		   console.log(kind)
+		}
+		switch (kind){
+			case 'train':
+				$('.title_img1').attr("src","__PUBLIC__/img/activity/blue1.png").addClass('title_img');
+			    $('.title_img2').attr("src","__PUBLIC__/img/activity/red2.png");
+			    $('.title_img3').attr("src","__PUBLIC__/img/activity/green2.png");
+//			    $('.title_img4').attr("src","__PUBLIC__/img/activity/purple2.png");
+			    $('.title_img5').attr("src","__PUBLIC__/img/activity/orange2.png");
+				
+				$('.activities_box').css('border','5px solid #51a9cd');
+				console.log('blueblue')
+			    break;
+			case 'research':
+			    $('.title_img1').attr("src","__PUBLIC__/img/activity/blue2.png");
+			    $('.title_img2').attr("src","__PUBLIC__/img/activity/red1.png").addClass('title_img');
+			    $('.title_img3').attr("src","__PUBLIC__/img/activity/green2.png");
+//			    $('.title_img4').attr("src","__PUBLIC__/img/activity/purple2.png");
+			    $('.title_img5').attr("src","__PUBLIC__/img/activity/orange2.png");
+				
+				$('.activities_box').css('border','5px solid #f5716c');
+				console.log('redred')
+			    break;
+			case 'experience':
+				$('.title_img1').attr("src","__PUBLIC__/img/activity/blue2.png");
+			    $('.title_img2').attr("src","__PUBLIC__/img/activity/red2.png");
+			    $('.title_img3').attr("src","__PUBLIC__/img/activity/green1.png").addClass('title_img');
+//			    $('.title_img4').attr("src","__PUBLIC__/img/activity/purple2.png");
+			    $('.title_img5').attr("src","__PUBLIC__/img/activity/orange2.png");
+				
+				$('.activities_box').css('border','5px solid #90ba0e');
+			    console.log('greengreen');
+			    break;
+//			case 'abroad':
+//				$('.title_img1').attr("src","__PUBLIC__/img/activity/blue2.png");
+//			    $('.title_img2').attr("src","__PUBLIC__/img/activity/red2.png");
+//			    $('.title_img3').attr("src","__PUBLIC__/img/activity/green2.png");
+//			    $('.title_img4').attr("src","__PUBLIC__/img/activity/purple1.png").addClass('title_img');
+//			    $('.title_img5').attr("src","__PUBLIC__/img/activity/orange2.png");
+//				
+//				$('.activities_box').css('border','5px solid #7c50d9');
+//			    console.log('purplepurple');
+//			    break;
+			case 'work':
+				$('.title_img1').attr("src","__PUBLIC__/img/activity/blue2.png");
+			    $('.title_img2').attr("src","__PUBLIC__/img/activity/red2.png");
+			    $('.title_img3').attr("src","__PUBLIC__/img/activity/green2.png");
+			    $('.title_img4').attr("src","__PUBLIC__/img/activity/purple2.png");
+			    $('.title_img5').attr("src","__PUBLIC__/img/activity/orange1.png").addClass('title_img');
+				
+				$('.activities_box').css('border','5px solid #ffad4e');
+			    console.log('purplepurple');
+			    break;
+		}
+	}
+	change();
+	
+	$('.title_a1').click(function(){
+		var type = '&type=train';
+		location.href = "index.php?m=Home&c=Student&a=activityMore" + type;
+		change();
+	})
+	$('.title_a2').click(function(){
+		var type = '&type=research';
+		location.href = "index.php?m=Home&c=Student&a=activityMore" + type;
+		change();
+	})
+	$('.title_a3').click(function(){
+		var type = '&type=experience';
+		location.href = "index.php?m=Home&c=Student&a=activityMore" + type;
+		change();
+	})
+//	$('.title_a4').click(function(){
+//		var type = '&type=abroad';
+//		location.href = "index.php?m=Home&c=Student&a=activityMore" + type;
+//		change();
+//	})
+	$('.title_a5').click(function(){
+		var type = '&type=work';
+		location.href = "index.php?m=Home&c=Student&a=activityMore" + type;
+		change();
+	})
+	
+</script>
+
+<script>
+	//点击搜索框
+	$('.search_btn').click(function () {
+		var string = '';
+		var keyword = $(".search_text").val();
+		if (keyword != '') {
+			keyword = '&keyword=' + keyword;
+		}
+
+		string = keyword ;
+                url="index.php?m=Home&c=Student&a=activityMore&type="+kind+string;
+		location.href = url ;
+	});
+	//回车搜索
+	$(".search_text").keydown(function (evt) {
+		if (event.keyCode == "13") { //keyCode=13是回车键
+			var evt = (evt) ? evt : ((window.event) ? window.event : "")
+			var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+			var string = '';
+			var keyword = $(".search_text").val();
+			if (keyword != '') {
+				keyword = '&keyword=' + keyword;
+			}
+			string = keyword ;
+			url="index.php?m=Home&c=Student&a=activityMore&type="+kind+string;
+                        location.href = url ;
+
+		}
+	})
+</script>

@@ -1,0 +1,340 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<!--<link href="__PUBLIC__/dataTable/css/jquery.dataTables.min.css"/>-->
+<link href="__PUBLIC__/dataTable/css/dataTables.jqueryui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="__PUBLIC__/js/Base64.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+<script>
+	$(function(){
+		var boxHeight = $(window).height() - 180;
+		$('.boxOutter').css('min-height',boxHeight)
+	})
+</script>
+
+<div class="boxOutter">
+	<div id="form" >
+		<div class="filterOutter">
+			<div class="filterInner">
+				<div class="filterBox">
+					<label for="">平&nbsp;台&nbsp;ID</label>
+					<input type="number" name="platformId" class="inputCommon" id="" placeholder="请输入平台ID">
+				</div>
+
+				<div class="filterBox">
+					<label for="">平台名称</label>
+					<input type="text" name="keyword" class="inputCommon" id="" placeholder="请输入平台名称关键词">
+				</div>
+			</div>
+			<div class="filterBtn">
+				<button class="btn" id="" onclick="getQueryParameter('form');query();">查询</button>
+				<button class="btn" id="" onclick="$('#form input,select').val('')">重置</button>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="tableTop mb20">
+		<div class="tableTitle">平台列表</div>
+	</div>
+
+	<table class="tableCommon" id="table">
+		<thead>
+		<tr>
+			<th width=10%>序号</th>
+			<th width=15%>平台ID</th>
+			<th width=20%>平台名称</th>
+			<th width=15%>服务类型</th>
+			<th width=40%>操作</th>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+
+</div>
+<!-- 弹窗：查看配置 -->
+<div class="fullBack"></div>
+<div class="adminNotifyBox thirdPublishLong" id="thirdPublish">
+	<div class="adminNotifyTitle">
+		查看配置
+	</div>
+	<div class="adminNotifyContent">
+		<div class="thirdMain">
+			<div class="mb15">
+				<label for=""  style="width:64px">平台名称</label>
+				<input type="text" class="inputCommon" id="platformName" value="平台名称" disabled>
+			</div>
+			<div class="mb15">
+				<label for=""  style="width:64px">对接方式</label>
+				<input type="text" class="inputCommon" value="" disabled>
+			</div>
+			<div class="mb15">
+				<label for=""  style="width:64px">访&nbsp;问&nbsp;IP</label>
+				<input type="text" class="inputCommon" id="IPscope" value="" disabled>
+			</div>
+			<div class="mb15">
+				<label for=""  style="width:64px">输&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;出</label>
+				<input type="text" class="inputCommon" value="" disabled>
+			</div>
+			<div>
+				<label for=""  style="width:64px">输&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;入</label>
+				<input type="text" class="inputCommon" value="" disabled>
+			</div>
+		</div>
+	</div>
+	<p class="adminNotifyButton">
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue1" id="thirdPublishClose">关闭</a>
+	</p>
+</div>
+<script src="__PUBLIC__/dataTable/js/jquery.dataTables.min.js"></script>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+	function loading(name) {
+		$('body').loading({
+			loadingWidth:240,
+			title:'正在查询...',
+			name:name,
+			discription:'这是一个描述...',
+			direction:'row',
+			type:'origin',
+			originBg:'#71EA71',
+			originDivWidth:30,
+			originDivHeight:30,
+			originWidth:4,
+			originHeight:4,
+			smallLoading:false,
+			titleColor:'#388E7A',
+			loadingBg:'#312923',
+			loadingMaskBg:'rgba(22,22,22,0.2)'
+		});
+	}
+
+	function removeLoad(name) {
+		removeLoading(name);
+	}
+</script>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+
+
+	!function(){
+		laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actend.min = datas; //开始日选好后，重置结束日的最小日期
+			actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+</script>
+<script>
+	function getQueryParameter(divId)
+	{
+		parameters = {"bNeedKnowledge":true};
+		$('#'+divId+' select').each(function(i,n){
+			if($(n).val() != '' && $(n).val() != 0)
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		$('#'+divId+' input').each(function(i,n){
+			if($(n).val().trim() !== '')
+			{
+				parameters[$(n).attr('name')] = $(n).val().trim();
+			}
+		})
+		parameters.cat = $('#cat').val();
+	}
+	var parameters = {"bNeedKnowledge":true};
+	parameters.cat = $('#cat').val();
+
+	var ignoreQuery = false;
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		ignoreQuery = true;
+	}
+	var oTable = $("#table").dataTable({
+
+		"sErrMode" : "throw",
+		"sDom" : '<lf>rt<lpi><"clear">',
+		"sServerMethod" : "POST",
+		"bDeferRender" : true,
+		"sScrollXInner" : "100%",
+		"bScrollCollapse" : false,
+		"bPaginate" : true,
+		"bLengthChange" : false,
+		"bFilter": false,
+		"bSort" : false,
+		"bInfo" : true,
+		"bAutoWidth" : false,
+		"bStateSave" : true,
+		"sPaginationType" : "full_numbers",
+		"bProcessing" : false,
+		"bSearch":false,
+		"iDisplayLength" : 10,
+		"bServerSide": true,//这个用来指明是通过服务端来取数据
+		"sAjaxSource": "/index.php?m=Exercise&c=PublishPlatform&a=platformMgmtPage",//这个是请求的地址
+		"fnServerData": retrieveData ,
+		aoColumnDefs : [
+			{
+			  "aTargets":[1],
+			  "mRender" : function(data, type, full){
+
+				  return '<span attr_ip="' + full[5] + '">' +data +'</span>';
+			  }
+			},
+			{
+				"aTargets" :　[4],
+				"mRender" : function(data, type, full){
+
+					var buttonStr = '';
+					if(data.indexOf('viewResource') != -1)
+					{
+                    <?php if(in_array('PublishPlatform/resourceList',session('exercises_permissions'))){ ?>
+					    buttonStr += "<a class='tableABtn' onclick='viewResource("+full[1]+")' href='javascript:void(0)' >查看发布资源清单</a>";
+						<?php }?>
+					}
+					if(data.indexOf('viewConfig') != -1)
+					{
+                    <?php if(in_array('fa-bu-ping-tai-cha-kan-pei-zhi-an-niu',session('exercises_permissions'))){ ?>
+					    buttonStr += "<a class='tableABtn' onclick='viewConfig(this)' href='javascript:void(0)' >查看配置</a>";
+						<?php }?>
+					}
+					if(data.indexOf('publishResource') != -1)
+					{
+                    <?php if(in_array('PublishPlatform/platformMgmtPage',session('exercises_permissions'))){ ?>
+					    buttonStr += "<a class='tableABtn' onclick='publishResource("+full[1]+")' href='javascript:void(0)' >发布资源</a>";
+						<?php }?>
+					}
+					return buttonStr;
+				}
+			}],
+		"oLanguage" : {
+			"sLengthMenu" : "每页显示 _MENU_ 条记录",
+			"sZeroRecords" : "无数据",
+			"sInfo" : "第 _START_ - _END_ 条 / 共 _TOTAL_ 条数据",
+			"sInfoEmpty" : "",
+			"sInfoFiltered" : "(数据表中共 _MAX_ 条记录)",
+			"sProcessing" : "正在加载中...",
+			"sSearch" : "全文搜索：",
+			"oPaginate" : {
+				"sFirst" : "第一页",
+				"sPrevious" : " 上一页 ",
+				"sNext" : " 下一页 ",
+				"sLast" : " 最后一页 "
+			}
+		},
+
+	});
+	if(window.location.href.indexOf('#')!=-1)
+	{
+		parameters = JSON.parse(base64decode(window.location.href.split('#')[1]));
+		oTable.fnPageChange(parameters.startIndex/parameters.pageSize);
+		delete parameters['startIndex'];
+		delete parameters['pageSize'];
+		//oTable.api().draw(false);
+	}
+	function query()
+	{
+		//table reset;
+ 		oTable.fnUpdate()
+	}
+
+	function retrieveData( sSource,aoData, fnCallback) {
+		if(window.location.href.indexOf('#')!=-1)
+		{
+			if(ignoreQuery)
+			{
+				ignoreQuery =false;
+				return;
+			}
+		}
+		var queryData =  $.extend(true,{},parameters); //深度拷贝
+		var qq = {};$(aoData).each(function(i,n){qq[n.name]=n.value})
+		queryData.startIndex = (qq.iDisplayStart);
+		queryData.pageSize = qq.iDisplayLength;
+		// queryData.sEcho = qq.sEcho;
+		if(!isBrowser)
+			window.location.hash = lastHash =  base64encode(JSON.stringify(queryData));
+		loading('loadData');
+		$.ajax({
+			url : sSource,//这个就是请求地址对应sAjaxSource
+			data : queryData,//这个是把datatable的一些基本数据传给后台,比如起始位置,每页显示的行数
+			type : 'post',
+			dataType : 'json',
+			async : true,
+			success : function(result) {
+				if(typeof(result.aaData) == "undefined") $.NotifyBox.NotifyOne('提示',result.message || result.msg,'确定');if(result.aaData == null)
+					result.aaData = Array();
+				removeLoad('loadData');
+				fnCallback(result);//把返回的数据传给这个方法就可以了,datatable会自动绑定数据的
+			},
+			error : function(msg) { 				 			}
+		});
+	}
+
+
+</script>
+<script>
+	// 添加备注
+	$('#addRemarksCancel').click(function(){
+		$('.fullBack,#addRemarks').hide();
+	})
+
+	$('#thirdPublishCancel').click(function(){
+		$('.fullBack,#thirdPublish').hide();
+	})
+
+	function batchExport(id)
+	{
+		var exportParas;
+		exportParas =  $.extend(true,{},parameters); //深度拷贝
+		if(typeof(id) == "string")
+			exportParas =  $.extend(true,{questionId:id},exportParas); //深度拷贝
+		$('#formCondition').val(JSON.stringify(exportParas));
+		$('#exportForm').submit();
+	}
+
+	function viewResource(id)
+	{
+		// window.location.href = "{:U('PublishPlatform/resourceList')}" + "&id="+id+'#eyJwbGF0Zm9ybUlkIjoyLCJjYXQiOiIxIiwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==';
+		window.open("{:U('PublishPlatform/resourceList')}" + "&id="+id);
+	}
+	function viewConfig(obj)
+	{
+		$('#platformName').val($(obj).parent().parent().children().eq(2).text());
+		$('#IPscope').val($(obj).parent().parent().children().eq(1).children('span').attr('attr_ip'))
+		$('.fullBack,#thirdPublish').show();
+	}
+	function publishResource(id)
+	{
+		// window.location.href = "{:U('PublishPlatform/publishResource')}" + "&id="+id+'#eyJwbGF0Zm9ybUlkIjoyLCJjYXQiOiIxIiwic3RhcnRJbmRleCI6MCwicGFnZVNpemUiOjEwfQ==';
+		window.open("{:U('PublishPlatform/publishResource')}" + "&id="+id);
+	}
+	$('#thirdPublishClose').click(function(){
+		$('.fullBack,#thirdPublish').hide();
+	})
+</script>

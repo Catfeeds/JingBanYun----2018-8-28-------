@@ -1,0 +1,384 @@
+<layout name="teacher_layout_2"/>
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/resourceList.css" type="text/css" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+     
+    ul,li {
+        list-style: none;    
+    }
+    
+    .left {
+        float: left;
+    }
+    
+    .right {
+        float: right;
+    }
+    
+    .resource_top, .resource_middle {
+        width: 98%;
+        margin: 0 auto;
+        overflow: hidden;
+        font-size: 16px;
+        font-family: "微软雅黑";
+        color: #7f7f7f;
+    }
+    
+
+    
+    .experiment {
+        position: absolute;
+        right: 0;
+        bottom: 5px;
+    }
+    
+
+    
+    .row {
+        margin: 0;
+    }
+    
+    .resource_li {
+        margin: 25px 0;
+        text-align: center;
+		height: 200px;
+		
+    }
+    
+    .resource_li img {
+        display: inline-block;
+    }
+    
+    .resource_li a {
+        display: block;
+        font: 16px/30px "微软雅黑";
+        color: #666;
+    }
+    
+
+    
+ 
+    
+    .resource_masking{
+        display: none;
+       width: 100%;
+        height: 200px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: rgba(0,0,0,0.6);
+     
+		z-index: 200;
+    }
+    
+    .res_box:hover .resource_masking {
+        display: block;
+    }
+    
+ 
+    
+    .resource_title {
+        width: 188px;
+        line-height: 38px;
+        margin: 0 auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .masking_top, .masking_bottom{
+        width: 100%;
+        overflow:hidden;
+        text-align: center;
+    }
+    
+    .masking_span {
+        display: block;
+        margin: 60px auto 10px;
+        color: #fff;
+        font-size: 20px;
+        font-family: "微软雅黑";
+    }
+    
+    .masking_bottom .masking_a {
+        display: inline-block;
+        margin: 20px 5px;
+        color: #fff;
+        font-size: 16px;
+        font-family: "微软雅黑";
+    }
+    
+    .masking_bottom .masking_btn {
+        display: inline-block;
+        margin: 20px 5px;
+        color: #fff;
+        font-size: 16px;
+        font-family: "微软雅黑";
+        background: none;
+        border: none;
+    }
+	#ietanchuang{
+		    width: 473px;
+    height: 280px;
+    position: fixed;
+    top: 37%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 auto;
+    background: url(__PUBLIC__/img/toolTip/ietanchuang.png) no-repeat;
+    border-radius: 10px;
+    z-index: 20161002;
+    font-size: 16px;
+    color: #666;
+		display: none;
+	}
+	#ietanchuang span{  
+	    padding: 7px 50px;
+    background-color: #04c9a8;
+    position: absolute;
+    top: 200px;
+    left: 170px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;}
+   .res_abox {
+	border: 1px dashed #ccc;
+	border-bottom: none;   
+}
+</style>
+
+<!-- <div style="margin-bottom: 12px;">
+    <a href="{:U('ResourceList/resourceList')}" title="返回教师资源分享" class="btn btnReturn2">返回</a>
+</div> -->
+
+<div class="main_opr">
+   	<a href="{:U('ResourceList/resourceIndex')}" title="发布资源" class="btn btn-main-opr">教师分享</a> 
+    <a href="{:U('Teach/publishResource')}" title="发布资源" class="btn btn-main-opr">发布资源</a> &nbsp;
+    <a href="{:U('Teach/myPublishResource')}" title="我发布的资源" class="btn btn-main-opr btn-main-opr-active">我发布的资源</a> &nbsp;
+<!--    <a href="{:U('Teach/myFavorResource')}" title="我收藏的资源" class="btn btn-main-opr">我收藏的资源</a>-->
+</div>
+
+<empty name="list">
+    <div class="emptyDiv">
+        <img src="{$oss_path}public/web_img/Empty/myPublishResource.png" alt="">
+    </div>
+</empty>
+
+<div class="resource_box"> 
+    
+    <div class="resource_bottom">
+        <ul class="row resource_ul">
+            <volist name="list" id="data" empty="" key="i">
+                <li class="col-lg-3 col-md-4 col-sm-6 resource_li" id="l_{$data.id}" onclick="return clearPager;">
+                    
+                <switch name="data.type">
+                    <case value="video">
+                        <div class="res_box">
+                           <div class="res_abox">
+                            <a href="{:U('Student/resourceDetails?id=')}{$data.id}" 
+                               style="background:url('<if condition="strpos($data['vid_image_path'],'http')===false">{$oss_path}{$data.vid_image_path}<else />{$data.vid_image_path}</if>')no-repeat;background-size:100% 100%"></a>
+                                 
+                              
+							</div>
+                                <div class="res_bottom">
+                                 	 <p class="resource_title"><img src="__PUBLIC__/img/resource/shipin.png" alt="" class="type_img">{$data.name}</p>
+                            
+                           
+                    </case>    
+                    <case value="audio">
+                        <div class="res_box">
+                           <div class="res_abox">
+                            <a href="{:U('Student/resourceDetails?id=')}{$data.id}" style="background:url(__PUBLIC__/img/resource/i_yinpin.png)no-repeat;background-size:100% 100%">
+                             </a>
+                        
+                              </div>
+                             <div class="res_bottom">
+                                 	 <p class="resource_title">	<img src="__PUBLIC__/img/resource/yinyue.png" alt="" class="type_img">{$data.name}</p>
+
+                    </case>
+                    <case value="image">
+                        <div class="res_box">
+                          <div class="res_abox">
+                            <a href="{:U('Student/resourceDetails?id=')}{$data.id}" style="background:url({$oss_path}{$data.file_path})no-repeat;background-size:100% 100%">
+                               
+                            </a>
+
+                             </div>
+                            
+                              <div class="res_bottom">
+                             <p class="resource_title"><img src="__PUBLIC__/img/resource/tupian.png" alt="" class="type_img">{$data.name}</p>
+                    </case>
+                <case value="condensed">
+                        <div class="res_box">
+                           <div class="res_abox">
+                            <a href="{:U('Student/resourceDetails?id=')}{$data.id}" style="background:url(__PUBLIC__/img/resource/i_yasuobao.png)no-repeat;background-size:100% 100%">
+                             
+                               
+                            </a>
+                              
+                              </div> 
+                             
+                                <div class="res_bottom">
+                                <p class="resource_title"><img src="__PUBLIC__/img/resource/yasuo.png" alt="" class="type_img">{$data.name}</p>
+                </case>
+                    <case value="word">
+                        <div class="res_box">
+                           <div class="res_abox">
+                            <a href="{:U('Student/resourceDetails?id=')}{$data.id}"  style="background:url(__PUBLIC__/img/resource/i_word.png)no-repeat;background-size:100% 100%">
+                            </a>
+                             </div>
+                              <div class="res_bottom">
+                                <p class="resource_title"><img src="__PUBLIC__/img/resource/word.png" alt="" class="type_img">{$data.name}</p>
+                            
+                    </case>
+                    <case value="ppt">
+                        <div class="res_box">
+                           <div class="res_abox">
+                            <a href="{:U('Student/resourceDetails?id=')}{$data.id}" style="background:url(__PUBLIC__/img/resource/i_ppt.png)no-repeat;background-size:100% 100%">
+                            </a>
+                            </div>
+                             <div class="res_bottom">
+                                <p class="resource_title"><img src="__PUBLIC__/img/resource/ppt.png" alt="" class="type_img">{$data.name}</p>
+                    </case>
+                    <case value="pdf">
+                        <div class="res_box">
+                           <div class="res_abox">
+                            <a href="{:U('Student/resourceDetails?id=')}{$data.id}" style="background:url(__PUBLIC__/img/resource/i_pdf.png)no-repeat;background-size:100% 100%">
+                            </a>
+							</div>
+                             <div class="res_bottom">
+                                <p class="resource_title">	<img src="__PUBLIC__/img/resource/pdf.png" alt="" class="type_img">{$data.name}</p>
+                    </case>
+                    <case value="swf">
+                        <div class="res_box " ieSwf="ieSwf">
+                           <div class="res_abox">
+                            <a href="{:U('Student/resourceDetails?id=')}{$data.id}" style="background:url(__PUBLIC__/img/resource/i_swf.png)no-repeat;background-size:100% 100%">
+                            </a>
+                           
+							</div>
+                             <div class="res_bottom">
+                                <p class="resource_title"><img src="__PUBLIC__/img/resource/s_swf.png" alt="" class="type_img">{$data.name}</p>
+                    </case>
+                </switch> 
+                    
+<!--
+                        <p class="resource_p">
+                            <span class="left">{$data.textbook}</span>
+                            <span class="right">
+                                <img src="__PUBLIC__/img/resource/watch.png" alt="">
+                                <span>{$data.follow_count}</span>
+                                <img src="__PUBLIC__/img/resource/like.png" alt="">
+                                <span>{$data.zan_count}</span>
+                                <img src="__PUBLIC__/img/resource/collect.png" alt="">
+                                <span>{$data.favorite_count}</span>
+                            </span>
+                        </p>
+-->
+                        <p class="resource_p">
+                             <span class="left">{$data.textbook}</span>
+                        
+                            <span class="right">{$data.create_at|date="Y-m-d",###}</span>
+                        </p>
+						</div>
+                        <!-------------蒙版------------->
+                        <div class="resource_masking">
+                            <div class="masking_top">
+                                <if condition="$data['status'] eq 1">
+                                    <span class="masking_span">等待审核</span>
+                                    <elseif condition="$data['status'] eq 2"/>
+                                    <span class="masking_span">通过审核</span>
+                                    <else/>
+                                    <span class="masking_span">未通过审核</span>
+                                </if>
+                                <!--<if condition="$data['has_sensitive_words'] eq 1">
+                                    <div style="color: #ff0000;">
+                                        (含有敏感词汇,请检查后再提交!)
+                                    </div>
+                                </if>-->
+                            </div>
+                            <div class="masking_bottom">
+                               <a href="{:U('ResourceList/resourceDetails?f=my&id=')}{$data.id}" title="查看" class="masking_a ">查看</a>
+                               <if condition="($data['status'] eq 2) || ($data['status'] eq 3)">
+                                    <a href="{:U('Teach/modifyResource')}&id={$data.id}&from=my" title="修改" class="masking_a">修改</a>
+                               </if>
+                               <a href="javascript:;" onclick="showDeleteResourceDialog('{$data.id}')" title="删除" class="masking_btn">删除</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </volist>
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteDialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">删除前确认</h4>
+            </div>
+            <div class="modal-body">
+                <p>请再次确定您要将这项记录删除</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="deleteResource()">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+                <div id="ietanchuang">
+	<span>好的</span>
+</div>
+
+<script>
+    $('.classify_ul').children('li').on('click',function(){
+        $(this).css('color','red').siblings('li').css('color','#7f7f7f')
+    })
+    
+</script>
+
+<script>
+    var currentResourceId = 0;
+    function showDeleteResourceDialog(resourceId) {
+        $('#deleteDialog').modal('show')
+        currentResourceId = resourceId;
+    }
+    function deleteResource() {
+        $.get('index.php?m=Home&c=Teach&a=deleteResource', {id: currentResourceId}, function (res) {
+            if (res == 'success') {
+                hideDeleteDialog();
+                window.location.reload();
+            } else {
+                alert('删除失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+    function hideDeleteDialog() {
+        $('#deleteDialog').modal('hide')
+        currentResourceId = 0;
+    }
+    $('#ietanchuang').find('span').click(function(){
+		$(this).parent().hide()
+	})
+	$('.masking_a').click(function(){
+				var userAgent = navigator.userAgent; 
+			 	var isOpera = userAgent.indexOf("Opera") > -1;
+				var ie = $(this).parent().parent().parent().attr('ieSwf');
+				if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+				if(userAgent.indexOf("MSIE 9.0")>0||userAgent.indexOf("MSIE 10.0")){
+					if(ie == 'ieSwf'){
+						$('#ietanchuang').show();
+						 return false;	
+					}	 
+				    }
+				}
+		})
+</script>

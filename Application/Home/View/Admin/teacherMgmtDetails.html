@@ -1,0 +1,255 @@
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<table id="listWrapper" class="table striped hovered border">
+    <thead class="class_thead">
+    <tr class="tr_head_info" id="a">
+        <th><input type="checkbox" class="check_all">全选</th>
+        <th style="text-indent:15px;">教师姓名</th>
+        <th class="text-center">性别</th>
+        <th class="text-center">手机号</th>
+        <th class="text-center">注册时间</th>
+        <in name="Think.session.admin.role" value="1,2,3">
+            <th style="text-indent:15px;">所在学校</th>
+        </in>
+        <in name="Think.session.admin.role" value="3">
+            <th class="text-center">任教学科</th>
+            <th class="text-center">任教班级</th>
+        </in>
+        <th style="text-indent:15px;">简介</th>
+        <!--<th class="text-center">密码</th>-->
+        <th class="text-center">权限类型</th>
+        <th class="text-center">到期时间</th>
+        <th class="text-center">邮箱</th>
+        <th class="text-center">积分</th>
+        <th class="text-center">状态</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody id='body' style="overflow-x:auto !important">
+        
+    <volist name="list" id="data" empty="">
+        <tr id="l_{$data.id}" class="tr_body_info">
+            <td ><input type="checkbox" class="check_child" name='checkbox' attr="{$data.id}"></td>
+            <td class='aaa'>
+                <if condition="$data['avatar'] eq NULL">
+                    <div class="avatarDiv">{$data.name|mb_substr=0,1,"utf-8"}</div>
+                    <else/>
+                    
+                    <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+                        
+                        <img class="list_avatar" src=<?=C('oss_path').$data['avatar']?> />
+                    <?php else: ?>
+                       <img class="list_avatar" src='<?php if(is_file($_root."Uploads/Avatars/".$data['id']."_t.jpg"))
+                        {echo $_root."Uploads/Avatars/".$data['id']."_t.jpg";}
+                        else {echo "__DEFAULT_TEACHER_HEAD_IMAGE__";} ?>' />
+                    <?php endif; ?>
+                </if>
+
+                {$data.name}
+            </td>
+            <td class="text-center">
+                {$data.sex}
+            </td>
+            <td class="text-center" title="{$data.telephone}">
+                {$data.telephone}
+            </td>
+            <td class="text-center" title=" {$data.create_at|date='Y-m-d H:i',###}">
+                {$data.create_at|date="Y-m-d H:i",###}
+            </td>
+            
+            
+            <in name="Think.session.admin.role" value="1,2,3">
+                <td class="text-left" title="{$data.school_name}">
+                    {$data.school_name}
+                </td>
+            </in> 
+            <in name="Think.session.admin.role" value="3">
+                <td class="text-center" title="{$data.course_name}"> 
+                    {$data.course_name}
+                </td>
+                <td class="text-center" title="{$data.grade_name} ">
+                <!--<if condition="$data['grade'] neq  NULL and $data['class_name'] neq null"></if>-->
+                    {$data.grade_name} 
+                </td>
+            </in>
+
+            
+            <td class="ecc" title="{$data.brief_intro}">
+                {$data.brief_intro}
+            </td>
+            <!--<td class="text-center">1</td>-->
+            <td class="text-center">
+                <?php if ($data['vipinfo']['is_vip'] == 1): ?>
+                <?php if ($data['vipinfo']['is_auth'] == 4): ?>
+                个人VIP
+                <?php else: ?>
+                团体VIP
+                <?php endif ?>
+                <?php else: ?>
+                普通权限
+                <?php endif ?>
+            </td>
+            <td class="text-center">
+                <?php foreach ($data['vipinfo']['vip_data'] as $kt => $vt): ?>
+                    <?php if (!empty($vt['auth_end_time'])): ?>
+                        <?=date('Y-m-d',$vt['auth_end_time'])?>
+                    <?php endif ?>
+                <?php endforeach ?>
+            </td>
+            <td class="text-center" title="{$data.email}">
+                {$data.email}
+            </td>
+            <td class="text-center" title="{$data.points}">
+                {$data.points}
+            </td>
+            <td class="text-center fg_parent">
+                <!---->
+                <if condition="$data['lock'] eq 0">
+                    <span class="fg-red fg_class">未通过审核</span>
+                    
+                <elseif condition="$data['lock'] eq 1"/>
+                
+                    <span class="fg-red fg_class">锁定</span> 
+                    
+                    
+                <elseif condition="$data['lock'] eq 2"/>
+                    <span class="fg-green fg_class">通过审核</span>
+                <elseif condition="$data['lock'] eq 3"/>
+                    <span class="fg-red fg_class">已拒绝</span> 
+                </if>
+                
+            
+            </td>
+            <td  nowrap class="text-center">
+                <!---->
+                <in name="Think.session.admin.role" value="1,2,3">
+                    <input type="hidden" value="{$data.id}" class="hidden_id"/>
+                    <if condition="$data['lock'] eq 0">
+                        <button  class="button info">通过</button>
+                        <button  class="button danger">拒绝</button>
+                        
+                    <elseif condition="$data['lock'] eq 1"/>
+                    <in name="Think.session.admin.role" value="1,2"> 
+                        <button  class="button unlock">解锁</button>
+                    </in>
+                        
+                        
+                    <elseif condition="$data['lock'] eq 2"/>
+                    <in name="Think.session.admin.role" value="1,2"> 
+                        <button  class="button lock">锁定</button> 
+                    </in>
+                    </if>
+                    <a href="{:U('Admin/modifyTeacher?id=')}{$data.id}" class="button">修改</a>
+                    <a href="##" class="button delete_button" onclick="delete_teacher({$data.id},this)">删除</a>
+                    <!--<a href="##" attr="{$data.id}" class="button delete_button">删除</a>-->
+                </in>
+                
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+<script>
+        //删除教师
+        function delete_teacher(id,obj){
+            if(confirm('您确认删除吗?删除后不可找回!')){
+                $.get('index.php?m=Home&c=Admin&a=deleteTeacherAccount',{id:id},function(msg){
+                    if(msg=='success'){
+                        alert('删除成功');
+                        location.reload();
+                    }else{
+                        alert('删除失败,请刷新页面后重新尝试!');
+                    }
+                });
+            }
+        }
+    
+        //全选和反选中
+        $('.check_all').click(function(){
+            var all_checkbox=$('.check_child');
+            var length=all_checkbox.length;
+            var temp_status=true;
+            if($(this)[0].checked==true){
+                //本次选中
+                temp_status=true;
+            }else{
+                //本次取消
+                temp_status=false;
+            }
+            for(var i=0;i<length;i++){
+                all_checkbox[i].checked = temp_status;
+            }
+        });
+        //取消全选
+        var lis = document.getElementsByClassName('check_child');
+        for (var j = 0; j < lis.length - 1; j++) {
+            lis[j].index = j;
+            lis[j].onclick = function () {
+                if ($(this)[0].checked == false) {
+                     $('.check_all').removeAttr('checked','checked');
+                } else if ($(this)[0].checked == true) {
+                    if (lis.length == $("[name='checkbox']:checked").length) {
+                        $('.check_all').attr('checked','checked');
+                    };
+                }
+            }
+        };
+
+    </script>
+
+<script>
+    $(document).ready(function () {
+        var role="{$role}"; 
+        if(role==3){
+			console.log(0)
+            $('#listWrapper').DataTable({
+                "scrollY": ($('body').height() - 375) + "px",
+                "scrollCollapse": true,
+                "paging": false,
+                "bSort": false,
+                "aoColumns":[
+                    {"width":"5%"},
+                    {"width":"7%"},
+                    {"width":"3%"},
+                    {"width":"4%"},
+                    {"width":"10%"},
+                    {"width":"13%"},
+                    {"width":"5%"},
+                    {"width":"5%"},
+                    {"width":"4%"},
+                    {"width":"6%"},
+                    {"width":"6%"},
+                    {"width":"4%"},
+                    {"width":"3%"},
+                    {"width":"7%"},
+                    {"width":"18%"}
+                ]
+            });
+        }else{
+			console.log(2)
+            $('#listWrapper').DataTable({
+                "scrollY": ($('body').height() - 375) + "px",
+                "scrollCollapse": true,
+                "paging": false,
+                "bSort": false,
+                "aoColumns":[
+                    {"width":"5%"},
+                    {"width":"7%"},
+                    {"width":"3%"},
+                    {"width":"7%"},
+                    {"width":"7%"},
+                    {"width":"13%"},
+                    {"width":"9%"},
+                    {"width":"6%"},
+                    {"width":"6%"},
+                    {"width":"10%"},
+                    {"width":"5%"},
+                    {"width":"4%"},
+                    {"width":"18%"}
+                ]
+            });
+        }  
+            
+    });
+	
+</script>

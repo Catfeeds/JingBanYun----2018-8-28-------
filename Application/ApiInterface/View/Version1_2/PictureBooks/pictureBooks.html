@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title><?php echo $pictureName ;?></title>
+    <style media="screen">
+        * {
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            background: #f6f6f6
+        }
+
+        .header img, .headportrait {
+            width: 100%;
+            vertical-align: middle;
+        }
+
+        .me {
+            border: 2px solid #ffb52c;
+            background: #fff8ce;
+            overflow: hidden;
+            border-left: none;
+            border-right: none;
+            padding: 10px 0
+        }
+
+        .left {
+            float: left
+        }
+
+        .right {
+            float: right;
+        }
+
+        .rank {
+            color: #999;
+            font-size: 14px
+        }
+
+        .name {
+            font-size: 18px;
+            color: #333
+        }
+
+        .meheader {
+            border-radius: 50%;
+            border: 1px solid #ffdb90;
+            overflow: hidden;
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            line-height: 60px;
+            margin-left: 40px
+        }
+
+        .number {
+            line-height: 60px;
+            font-size: 20px;
+            color: #333;
+            margin-right: 20px
+        }
+
+        .name {
+            font-size: 18px;
+            margin-top: 10px;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .namediv {
+            margin-left: 10px;
+            width: 30%;
+            width: -moz-calc(100% - 230px); 
+            width: -webkit-calc(100% - 230px); 
+            width: calc(100% - 230px);
+        }
+
+        .rankDiv {
+            margin-top: 10px;
+            background: #fff;
+            overflow: hidden;
+            padding: 10px 0
+        }
+
+        .rankDiv .meheader {
+            margin-left: 0
+        }
+
+        .ranking {
+            margin: 10px 0;
+            margin-left: 10px;
+            margin-right: 10px;
+            min-width: 50px;
+            text-align: center;
+            line-height: 38px;
+            font-size: 20px;
+        }
+
+        .ranking img {
+            width: 50px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <img src="__PUBLIC__/img/pictureBooks/paihangbang.png" alt=""/>
+</div>
+<?php if(!empty($resultByUser)){?>
+<div class="me">
+    <div class="meheader left">
+        <img src="<?php if($resultByUser['role'] == ROLE_TEACHER){ echo $resultByUser['teacher_avatar'] ;}elseif($resultByUser['role'] == ROLE_PARENT){ echo $resultByUser['parent_avatar'] ;}elseif($resultByUser['role'] == ROLE_STUDENT){ echo $resultByUser['student_avatar'] ;}?>"
+             alt="" /class="headportrait">
+    </div>
+    <div class="namediv left">
+        <p class="name">
+            <?php if($resultByUser['role'] == ROLE_TEACHER){ echo $resultByUser['name'] ;}elseif($resultByUser['role'] == ROLE_PARENT){ echo $resultByUser['parent_name'] ;}elseif($resultByUser['role'] == ROLE_STUDENT){ echo $resultByUser['student_name'] ;}?>
+        </p>
+        <p class="rank">
+            第<?php echo $ranking ;?>名
+        </p>
+    </div>
+    <div class="number right">
+        <?php echo $resultByUser['total_score']?>分
+    </div>
+</div>
+<?php }?>
+<?php for($i = 0;$i < count($rankingList);$i++){?>
+<?php if($i == 0){?>
+<div class="rankDiv">
+    <div class="ranking left">
+
+    </div>
+    <div class="meheader left">
+        <img src="<?php if($rankingList[$i]['role'] == ROLE_TEACHER){ echo $rankingList[$i]['teacher_avatar'] ;}elseif($rankingList[$i]['role'] == ROLE_PARENT){ echo $rankingList[$i]['parent_avatar'] ;}elseif($rankingList[$i]['role'] == ROLE_STUDENT){ echo $rankingList[$i]['student_avatar'] ;}?>"
+             alt="" /class="headportrait">
+    </div>
+    <div class="namediv left">
+        <p class="name">
+            <?php if($rankingList[$i]['role'] == ROLE_TEACHER){ echo $rankingList[$i]['name'] ;}elseif($rankingList[$i]['role'] == ROLE_PARENT){ echo $rankingList[$i]['parent_name'] ;}elseif($rankingList[$i]['role'] == ROLE_STUDENT){ echo $rankingList[$i]['student_name'] ;}?>
+        </p>
+        <p class="rank">
+            第<?php echo $i+1 ;?>名
+        </p>
+    </div>
+    <div class="number right">
+        <?php echo $rankingList[$i]['total_score']?>分
+    </div>
+</div>
+
+<?php }elseif($i == 1){?>
+<div class="rankDiv">
+    <div class="ranking left">
+
+    </div>
+    <div class="meheader left">
+        <img src="<?php if($rankingList[$i]['role'] == ROLE_TEACHER){ echo $rankingList[$i]['teacher_avatar'] ;}elseif($rankingList[$i]['role'] == ROLE_PARENT){ echo $rankingList[$i]['parent_avatar'] ;}elseif($rankingList[$i]['role'] == ROLE_STUDENT){ echo $rankingList[$i]['student_avatar'] ;}?>"
+             alt="" /class="headportrait">
+    </div>
+    <div class="namediv left">
+        <p class="name">
+            <?php if($rankingList[$i]['role'] == ROLE_TEACHER){ echo $rankingList[$i]['name'] ;}elseif($rankingList[$i]['role'] == ROLE_PARENT){ echo $rankingList[$i]['parent_name'] ;}elseif($rankingList[$i]['role'] == ROLE_STUDENT){ echo $rankingList[$i]['student_name'] ;}?>
+        </p>
+        <p class="rank">
+            第<?php echo $i+1 ;?>名
+        </p>
+    </div>
+    <div class="number right">
+        <?php echo $rankingList[$i]['total_score']?>分
+    </div>
+</div>
+
+<?php }elseif($i == 2){?>
+<div class="rankDiv">
+    <div class="ranking left">
+
+    </div>
+    <div class="meheader left">
+        <img src="<?php if($rankingList[$i]['role'] == ROLE_TEACHER){ echo $rankingList[$i]['teacher_avatar'] ;}elseif($rankingList[$i]['role'] == ROLE_PARENT){ echo $rankingList[$i]['parent_avatar'] ;}elseif($rankingList[$i]['role'] == ROLE_STUDENT){ echo $rankingList[$i]['student_avatar'] ;}?>"
+             alt="" /class="headportrait">
+    </div>
+    <div class="namediv left">
+        <p class="name">
+            <?php if($rankingList[$i]['role'] == ROLE_TEACHER){ echo $rankingList[$i]['name'] ;}elseif($rankingList[$i]['role'] == ROLE_PARENT){ echo $rankingList[$i]['parent_name'] ;}elseif($rankingList[$i]['role'] == ROLE_STUDENT){ echo $rankingList[$i]['student_name'] ;}?>
+        </p>
+        <p class="rank">
+            第<?php echo $i+1 ;?>名
+        </p>
+    </div>
+    <div class="number right">
+        <?php echo $rankingList[$i]['total_score']?>分
+    </div>
+</div>
+<?php }else{?>
+<div class="rankDiv">
+    <div class="ranking left">
+        <?php echo $i+1 ;?>
+    </div>
+    <div class="meheader left">
+        <img src="<?php if($rankingList[$i]['role'] == ROLE_TEACHER){ echo $rankingList[$i]['teacher_avatar'] ;}elseif($rankingList[$i]['role'] == ROLE_PARENT){ echo $rankingList[$i]['parent_avatar'] ;}elseif($rankingList[$i]['role'] == ROLE_STUDENT){ echo $rankingList[$i]['student_avatar'] ;}?>"
+             alt="" /class="headportrait">
+    </div>
+    <div class="namediv left">
+        <p class="name">
+            <?php if($rankingList[$i]['role'] == ROLE_TEACHER){ echo $rankingList[$i]['name'] ;}elseif($rankingList[$i]['role'] == ROLE_PARENT){ echo $rankingList[$i]['parent_name'] ;}elseif($rankingList[$i]['role'] == ROLE_STUDENT){ echo $rankingList[$i]['student_name'] ;}?>
+        </p>
+        <p class="rank">
+            第<?php echo $i+1 ;?>名
+        </p>
+    </div>
+    <div class="number right">
+        <?php echo $rankingList[$i]['total_score']?>分
+    </div>
+</div>
+<?php }}?>
+<script type="text/javascript" src="__PUBLIC__/js/zepto.js"></script>
+<script type="text/javascript">
+    $(function () {
+        rank('0', 'guanjun')
+        rank('1', 'yajun')
+        rank('2', 'jijun')
+    })
+
+    function rank(i, imgname) {
+        $('.ranking').eq(i).html('').append('<img src="__PUBLIC__/img/pictureBooks/' + imgname + '.png" alt="" />')
+    }
+</script>
+</body>
+</html>

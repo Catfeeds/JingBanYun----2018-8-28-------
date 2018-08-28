@@ -1,0 +1,275 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+<style>
+    .pager td {
+        padding: 4px;
+    }
+	
+    a:link {  
+        font-size: 0.875rem;
+        color: #000000; 
+        text-decoration: none; 
+	} 
+	
+	a:visited { 
+		font-size: 0.875rem;
+		color: #000000; 
+		text-decoration: none; 
+	} 
+	
+	a:hover { 
+		font-size: 0.875rem; 
+		color: #999999; 
+		text-decoration: underline; 
+	} 
+	
+	/*进度条*/
+	.pmgressbar {
+		display: none;
+		width: 500px;
+		height: 300px;
+		background: #fff;
+		border: 1px solid #000;
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		margin: auto;
+		padding: 0 50px;
+		color: #333;
+	}
+	
+	.pmgressbar p {
+		margin: 0;
+	}
+	
+	.pmgressbarTitle {
+		line-height: 100px;
+		text-align: center;
+		font-size: 20px;
+		font-weight: 600;
+	}
+	
+	.pmgressbarNum {
+		margin-bottom: 20px !important;
+	}
+	
+	.pmgressbarOuter {
+		width: 330px;
+		height: 20px;
+		border: 1px solid #000;
+		float: left;
+	}
+	
+	.pmgressbarInner {
+		width: 2%;
+		height: 100%;
+		background: #59cde2;
+	}
+	
+	.percentage {
+		float: left;
+		margin-left: 20px
+	}
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="" title="创建消息" class="button {:session('btntheme')}">创建消息</a>
+</div>
+<form action="{:U('Admin/informationMgmt')}" method="post">
+    <div style="margin: 20px 0;">
+        <div class="grid condensed searchbar">
+            <div class="row cells5">
+                <div class="cell">
+                    <label>接收角色：</label>
+                    <select id="role_id" class="input-control" name="role_id">
+                        <option value="1">教师</option>
+                        <option value="2">学生</option>
+                        <option value="3">家长</option>
+                        <option value="4">教师/学生</option>
+                        <option value="5">教师/家长</option>
+                        <option value="6">学生/家长</option>
+                        <option value="7">教师/学生/家长</option>
+                    </select>	
+                </div>
+                <div class="cell">
+                    <label>发送状态：</label>
+                    <select id="sendState_id" class="input-control" name="sendState_id">
+                        <option value="1">未发送</option>
+                        <option value="2">发送成功</option>
+                        <option value="3">发送失败</option>
+                        <option value="4">已撤回</option>
+                        <option value="5">撤回失败</option>
+                    </select>
+                </div>
+                <div class="cell">
+                    <label>发送时间：</label>
+                    <input type="text" name="sendTime_id" class="input-control sendTime_id" id="datepicker" placeholder="发送时间" autocomplete="off">
+                </div>
+                <div class="cell">
+                    <label>接收方式：</label>
+                    <select id="receiveType_id" class="input-control" name="receiveType_id">
+                        <option value="1">APP推送</option>
+                        <option value="2">个人中心</option>
+                        <option value="3">APP推送/个人中心</option>
+                    </select>
+                </div>
+                <div class="cell">
+                    <button type="submit" class="button" onclick="" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th>接收角色</th>
+			<th>消息内容</th>
+			<th class="text-center">接收人数</th>
+			<th class="text-center">接收方式</th>
+			<th class="text-center">发送时间</th>
+			<th class="text-center">状态</th>
+			<th class="text-center">操作</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+	<volist name="list" id="data" empty="">
+		<tr id="l_{$data.id}"> 
+			<td>
+				接收角色
+			</td>
+			<td>
+				<a style="text-decoration: none" href="">消息内容</a> 
+			</td>
+			<td class="text-center">
+				<a style="text-decoration: none" href="">接收人数</a>
+			</td>
+			<td class="text-center"> 
+				接收方式
+			</td>
+			<td class="text-center">
+				发送时间
+			</td>
+			<td class="text-center reviewJ"> 
+				<if condition="$data.status eq 1">
+					未发送
+				<elseif condition="$data.status eq 2"/>    
+					发送成功
+				<elseif condition="$data.status eq 3"/>
+					发送失败
+				<elseif condition="$data.status eq 4"/>
+					已撤回
+				<elseif condition="$data.status eq 5"/>
+					撤回失败
+				</if>
+			</td>
+
+			<td class="text-center">
+				<input type="hidden"  value="{$data.id}" class="hidden_val"/>
+				<in name="Think.session.admin.role" value="2">
+					<if condition="$data.status eq 1">
+						<span class="button">开始发送</span>
+					<elseif condition="$data.status eq 2"/> 
+						<span class="button">撤回消息</span> 
+					<elseif condition="$data.status eq 3"/> 
+						<span class="button">重新发送</span> 
+					</if> 
+				</in>
+				<a href="" class="button info">修改</a>
+				<a class="button delete_click danger" attr="{$data.id}">删除</a>
+			</td>
+		</tr>
+	</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<!--进度条-->
+<div class="pmgressbar">
+	<!--发送成功/发送失败/撤回成功/撤回失败-->
+	<p class="pmgressbarTitle">发送成功</p>
+	<!--发送成功/发送失败 有此弹窗-->
+	<p class="pmgressbarNum">已发送 <span>100</span> 人</p>
+	<div class="pmgressbarBottom">
+		<div class="pmgressbarOuter">
+			<div class="pmgressbarInner"></div>
+		</div>
+		<span class="percentage">2%</span>
+	</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 475) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"20%"},
+                {"width":"10%"},
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"10%"},
+                {"width":"20%"}
+            ]
+        });
+    });
+</script>
+
+<!--------------日历----------------->
+<script>
+	$(function () {
+		$("#datepicker").datepicker({
+			showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "yy-mm-dd",
+			maxDate: '0',
+			yearRange: "1950:2050"
+		});
+	});
+</script>
+<script>
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+</script>

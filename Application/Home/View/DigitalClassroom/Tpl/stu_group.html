@@ -1,0 +1,185 @@
+<?php if ($platform!='pc'): ?>
+<style>
+	#myClassmate {
+		font-size: 20px;
+		width: 90%;
+		margin: 20px auto;
+		line-height: 50px;
+		border-bottom: 2px solid #ccc;
+		color: #666;
+	}
+	
+	#Classmate {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		overflow: hidden;
+		width: 915px;
+		margin: 30px auto 0px;
+		border: 4px solid rgb(235, 193, 33);
+		border-radius: 10px;
+		overflow-y: auto;
+		height: 653px
+	}
+	#Classmate_ul{
+		overflow: hidden;
+		padding: 0;
+	}
+	#Classmate li {
+		list-style: none;
+		padding: 0;
+		float: left;
+		margin: 15px;
+		position: relative;
+		text-align: center;
+		width: 120px;
+		height: 119px;
+		cursor: pointer
+	}
+	
+	.stu_div {
+		display: inline-block;
+		float: left;
+		text-align: center;
+		width: 150px;
+	}
+	
+	.stu_div button {
+		outline: none;
+		border: none;
+		text-align: center;
+		background-color: #efca33;
+		display: inline-block;
+		margin: 0;
+		padding: 6px 13px;
+		color: #fff;
+		border-radius: 5px;
+	}
+	
+	#addcomment {
+		padding: 0 25px;
+		background-color: #efca33;
+/*		opacity: 0.8;*/
+		position: absolute;
+		width: 450px;
+		height: 294px;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto auto;
+		text-align: center;
+		display: none;
+		z-index: 420;
+		padding-bottom: 40px;	
+	}
+	
+	#addcomment p {
+		text-align: left;
+	}
+	
+	#addcomment textarea {
+		width: 100%;
+		background: #fff
+	}
+	
+	#addcomment button {
+		margin: 10px;
+		outline: none;
+		background-color: inherit;
+		border: none;
+		border: 1px solid #fff;
+		padding: 5px 12px;
+		border-radius: 4px;
+		color: #333
+	}
+	
+	.student_avatar {
+		width: 80px;
+		z-index: 100;
+		position: absolute;
+		top: 0;
+		left: 20px;
+	}
+	
+	.kezhuo {
+		display: block;
+		width: 120px;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		z-index: 10;
+	}
+	.student_kezhuo_name {
+    position: absolute;
+    bottom: 4px;
+    left: 17px;
+    z-index: 20;
+    display: inline-block;
+    width: 64px;
+    text-align: center;
+}
+	.kezhuo_lock {
+    position: absolute;
+    width: 13px;
+    bottom: 5px;
+    right: 21px;
+    z-index: 20;
+}
+</style>
+<div id="myClassmate">
+	<?php if ($isTeacher=='false'): ?>
+	同组成员 <span style="float:right">本节课你已获得<span class="zancountstudent">0</span>个<img src="__PUBLIC__/DigitalClassroom/images/zan.png" alt="" style="position:relative;top:1px"></span>
+	<?php endif; ?>
+</div>
+<div id="Classmate">
+	<div class="htmltmp"></div>
+	<?php if ($isTeacher=='true' && $platform!='pc'): ?>
+		<div id="teach_img" style="width:100%;overflow:hidden">
+			<img src="__PUBLIC__/DigitalClassroom/images/jiaoshitupian.png" alt="" style="width:100%;height:100%">
+		</div>
+	<?php endif; ?>
+</div>
+<script>
+	$(document).on('click','.addCommentBtn',function(){
+//	$('.addCommentBtn').click(function () {
+		$('#addcomment').show()
+	})
+
+	$(document).on('click','.commentNone',function(){
+	//$('.commentNone').click(function () {
+		$('#addcomment').find('textarea').val('');
+		$('#addcomment').hide()
+	})
+
+	$(document).on('click','.addCommentBtn',function(){
+	//$('.addCommentBtn').click(function(){
+		$('.queadd').attr('id','');
+		var id = $(this).attr('id');
+		$('.queadd').attr('id',id);
+	})
+
+	$(document).on('click','.queadd',function(){
+
+
+	//$('.queadd').click(function(){
+		var id = $(this).attr('id');
+		//alert(studentName);
+		//alert(classroomId);
+		var con = $('.pinglun').val();
+
+		$.get("__URL__/addGroupComment",{'id':id,'studentName':studentName,'classroomId':classroomId,'content':con},function(msg){
+			if(msg=='success'){
+				//$(obj).parent().parent().remove();
+				$('.pinglun').val('');
+				$('#addcomment').css('display','none');
+			}else{
+				alert('评论失败,请刷新页面后重试');
+			}
+		});
+
+	})
+
+</script>
+
+<?php endif; ?>

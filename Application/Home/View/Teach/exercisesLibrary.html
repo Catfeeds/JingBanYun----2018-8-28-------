@@ -1,0 +1,1149 @@
+<layout name="teacher_layout_3" />
+<!--<script type="text/javascript" src="http://cdn.bootcss.com/jquery-validate/1.15.0/jquery.validate.min.js"></script>-->
+<script src="__PUBLIC__/js/exercise/sha1.js?" type="text/javascript"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<script src="__PUBLIC__/js/exercise/render_2.js?" type="text/javascript"></script>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css" />
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.js"></script>
+<link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css" />
+<script src='https://player.polyv.net/script/polyvplayer.min.js'></script> 
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=2.0" type="text/css" rel="stylesheet">
+<script src='__PUBLIC__/js/common.js'></script>
+
+<style>
+	ul,li {
+		list-style: none;
+	}
+	
+	.form_section {
+		margin-bottom: 12px;
+	}
+	
+	.exerciseChapterWrapper {
+		margin: 20px 0;
+		padding: 8px;
+		cursor: pointer;
+		border: 1px solid #ccc;
+	}
+	
+	.exerciseChapterWrapper.selected {
+		background: green;
+		color: #fff
+	}
+	
+	.main_head {
+		padding: 17px;
+	}
+	
+	.btn_copy {
+		color: #595757;
+		background-color: #fff;
+		border: 1px solid #E9C232;
+		font-weight: 600;
+	}
+	
+	.checkbox_choice {
+		width: 20px;
+		height: 20px;
+	}
+	
+	.a-control {
+		display: block;
+		width: 50%;
+		height: 34px;
+		padding: 6px 12px;
+		font-size: 14px;
+		line-height: 1.428571429;
+		color: #555555;
+		background-color: white;
+		background-image: none;
+		border: 1px solid #cccccc;
+		border-radius: 4px;
+		-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+		box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+		-webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+		-o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+		transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+		text-decoration: none;
+		margin-bottom: 10px;
+	}
+        
+        /*.current_gray, .current_gray:hover{  
+            background: #ccc !important;
+            border: 2px solid #ccc;
+            color: #333;
+            cursor: initial;
+        }*/
+	
+	#navThumImg1,
+	#navThumImg3,
+	#navThumImg5 {
+		-moz-transform: rotate(20deg);
+		-webkit-transform: rotate(20deg);
+		transform: rotate(20deg);
+	}
+	
+	#navThumImg2,
+	#navThumImg4 {
+		-moz-transform: rotate(-20deg);
+		-webkit-transform: rotate(-20deg);
+		transform: rotate(-20deg);
+	}
+	
+	#navThumImg1:hover,
+	#navThumImg3:hover,
+	#navThumImg5:hover {
+		-moz-animation: rotate_z 0.8s infinite ease;
+		-webkit-animation: rotate_z 0.8s infinite ease;
+		animation: rotate_z 0.8s infinite ease;
+	}
+	
+	#navThumImg2:hover,
+	#navThumImg4:hover {
+		-moz-animation: rotate_f 0.8s infinite ease;
+		-webkit-animation: rotate_f 0.8s infinite ease;
+		animation: rotate_f 0.8s infinite ease;
+	}
+	
+	@-moz-keyframes rotate_z {
+		0% {
+			-moz-transform: rotate(20deg);
+		}
+		100% {
+			-moz-transform: rotate(360deg);
+		}
+	}
+	
+	@-webkit-keyframes rotate_z {
+		0% {
+			-webkit-transform: rotate(20deg);
+		}
+		100% {
+			-webkit-transform: rotate(360deg);
+		}
+	}
+	
+	@keyframes rotate_z {
+		0% {
+			transform: rotate(20deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+	
+	@-moz-keyframes rotate_f {
+		0% {
+			-moz-transform: rotate(20deg);
+		}
+		100% {
+			-moz-transform: rotate(360deg);
+		}
+	}
+	
+	@-webkit-keyframes rotate_f {
+		0% {
+			-webkit-transform: rotate(20deg);
+		}
+		100% {
+			-webkit-transform: rotate(360deg);
+		}
+	}
+	
+	@keyframes rotate_f {
+		0% {
+			transform: rotate(20deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+	
+	#selectSingleExercises,
+	#selectAllExercises {
+		width: 20px;
+		height: 20px;
+	}
+	
+
+	
+	.questionWrapper {
+		margin-top: 110px;
+		border: none
+	}
+	
+	.copy_right {
+		padding: 15px;
+	}
+	
+	.collectImg {
+		margin-left: 100px;
+		cursor: pointer;
+	}
+	
+	.collectSuccess {
+		width: 464px;
+		height: 272px;
+		background: url(__PUBLIC__/img/material/collectSuccess.png) no-repeat center;
+		background-size: 100% 100%;
+		position: fixed;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		margin: auto;
+		z-index: 20161003;
+		color: #666;
+		font-size: 16px;
+		display: none;
+	}
+
+	.btnBottom {
+		margin-top: 190px;
+		text-align: center;
+	}
+		
+	.yesBtn {
+		background-color: #28D0C1;
+		border: 1px solid transparent;
+		border-radius: 6px;
+		color: white;
+		font-size: 22px;
+		padding: 6px 33px 6px 38px;
+		letter-spacing: 5px;
+	}
+
+	.yesBtn:hover {
+		background-color: #209994;
+	}
+	
+	.assignHomework {
+		display: none;
+		width: 30%;
+		height: 60%;
+		position: fixed;
+		left: 0;
+		right: 0;
+		top: 30%;
+		bottom: 0;
+		margin: auto;
+		z-index: 20161004;
+		background: #fff;
+		padding: 10px;
+		-webkit-box-shadow: 0 0 40px #ccc;
+        -moz-box-shadow: 0 0 40px #ccc;
+        box-shadow: 0 0 40px #ccc;
+		font-size: 16px;
+	}
+	
+	.closeImg {
+		float: right;
+		width: 20px;
+		cursor: pointer;
+	}
+	
+	.assignHomework input{
+	 	margin-right: 2px;
+	}
+	
+	.assignHomework label{
+	 	font-size: 14px
+	}
+	
+	.sureBtn {
+		position: absolute;
+		bottom: 10px;
+		left: 40%;
+		background: #E9C232 !important;
+		padding: 4px 14px 4px 18px !important;
+	}
+	
+	#Myform .col-md-2 {
+		width: 18%;
+		padding: 5px;
+	}
+	
+	#Myform .col-md-1 {
+		padding: 5px;
+		padding-right: 0;
+	}
+</style>
+
+<div class="main_opr">
+	<a href="{:U('TeachmulHomework/mulHomework')}" title="语音作业" class="btn btn-main-opr">语音作业</a>
+	<a href="{:U('Teach/homework')}" title="习题作业" class="btn btn-main-opr">习题作业</a>
+	<a href="{:U('Teach/exercisesLibrary')}" title="习题库" class="btn btn-main-opr btn-main-opr-active" >习题库</a>
+	<a href="{:U('Teach/wrongHomeworkList')}" title="错题集" class="btn btn-main-opr">错题集</a>
+</div>
+<div id="main">
+<form action="__URL__/assignHomework" method="post" data-on-error-input="notifyOnErrorInput" data-show-error-hint="true" name="Myform" id="Myform" onsubmit="return check()">
+	<!--<input type="hidden" name="exerciseChapterId" id="exerciseChapterId">-->
+	<input type="hidden" name="exercise_ids" id="exerciseList">
+	<div class="row">
+		<div class="form_section col-md-2">
+			<label for="grade_id">年级</label>
+			<div class="input-control text full-size">
+				<select id="grade_id" name="grade_id" class="form-control" required="">
+					<option value="">-请选择-</option>
+					<volist name="grade_list" id="grade_item" empty="">
+						<option value="{$grade_item.id}" <if condition="$grade_item['id']==$grade_id">selected</if>>{$grade_item.grade}</option>
+					</volist>
+				</select>
+			</div>
+		</div>
+
+		<div class="form_section col-md-2">
+			<label for="course_id">学科</label>
+			<div class="input-control text full-size">
+				<select id="course_id" name="course_id" class="form-control" required>
+					<option value="">-请选择-</option>
+					<volist name="courses" id="dataCourse" empty="">
+						<option value="{$dataCourse.id}" <if condition="$dataCourse['id']==$course_id">selected</if> >{$dataCourse.code} : {$dataCourse.course_name}
+						</option>
+					</volist>
+				</select>
+			</div>
+		</div>
+
+		<div class="form_section col-md-2">
+			<label for="textbook_id">教材分册</label>
+			<div class="input-control text full-size">
+				<select id="textbook_id" name="textbook_id" required="" class="form-control">
+                                    <option value="">-请先选择学科和年级-</option>
+                                    <volist name="textbook_list" id="textbook_item" empty="">
+					<option value="{$textbook_item.id}" <if condition="$textbook_item['id']==$textbook_id">selected</if> >{$textbook_item.name}</option>
+                                    </volist>
+				</select>
+			</div>
+		</div>
+		
+		<div class="col-md-2">
+			<label for="chapter">章</label>
+			<div class="input-control text full-size">
+				<select name="" id="chapter" class="form-control">
+                                    <option value="0">请选择章</option>
+                                    <volist name="chapter_list" id="chapter_item" empty="">
+					<option value="{$chapter_item.id}" <if condition="$chapter_item['id']==$chapter">selected</if> >{$chapter_item.chapter}</option>
+                                    </volist>
+				</select>
+			</div>
+		</div>
+		
+		<div class="col-md-2">
+			<label for="section">节</label>
+			<div class="input-control text full-size">
+				<select name="" id="section" class="form-control">
+                                    <option value="0">请选择节</option>
+                                    <volist name="festival_list" id="festival_item" empty="">
+					<option value="{$festival_item.id}" <if condition="$festival_item['id']==$festival">selected</if> >{$festival_item.festival}</option>
+                                    </volist>
+				</select>
+			</div>
+		</div>
+		
+		<div class="col-md-1">
+            <label style="width: 100%;">&nbsp;</label>
+            <button type="button" class="btn btn-primary search_homework" style="display: block;float:right;">搜索</button>
+        </div>
+	</div>
+</form>
+
+<!-----------------添加习题-------------------->
+<div class="copy_right" id="add_homework">
+	<div class="row" style="margin:0;margin-bottom: 10px;width: 100%;">
+		<div class="col-md-10 rowChoice" style="word-break: break-all;display:none;">已选择习题：<span id="form_selected_exercise"></span></div>
+		<div class="col-md-2" style="text-align: right;float:right;padding:0 0.5%">
+			<!--<a href="javascript:;" title="创建作业" class="btn btn-primary assignBtn" style="background:#E9C232 !important;">创建作业</a>-->
+			<a href="javascript:;" title="打印" id="printBtn" class="btn btn-primary printBtn" style="background:#E9C232 !important;">打印</a>
+		</div>
+
+	</div>
+	<!--------------------章节部分---------------------------->
+	<div class="from_after">
+<!---->
+<notempty name="list" >
+            <volist name="list" id="data">
+                <a href="javascript:void(0)" attr_id="{$data.id}" onclick="actionClick(this)" class="a-control">{$data.chapter} {$data.festival} {$data.title}</a> 
+            </volist>
+</notempty>
+ 
+	</div> 
+</div>
+<div id="form_exercise_chooser" style="display: none;"></div>
+<!--收藏成功-->
+<div class="collectSuccess"> 
+	<div class="btnBottom">
+		<button class="yesBtn" id="">确定</button>
+	</div>
+</div>
+
+<!--创建作业-->
+<div class="assignHomework">
+	<img class="closeImg" src="/Public/img/home/close_before.png" alt="" >
+	<p style='margin-left:30px;margin-top: 15px;'>请选择您任教的一个学科/年级/分册的习题!</p>
+        <p ><font style="color:gray;margin-left:30px;">如果您选择的习题不在您的任教范围,请刷新页面后重新选择!</font></p>
+	<div class="row notice_info">
+		<p class="col-md-4">
+                    <label for="grade"><input type="radio" name="grade" class="grade_more"><span>一年级英语</span></label>
+		</p>
+		<p class="col-md-4">
+			<label for="grade"><input type="radio" name="grade" class="grade_more"><span>二年级英语</span></label>
+		</p>
+		<p class="col-md-4">
+			<label for="grade"><input type="radio" name="grade" class="grade_more"><span>三年级英语</span></label>
+		</p>
+		<p class="col-md-4">
+			<label for="grade"><input type="radio" name="grade" class="grade_more"><span>四年级英语</span></label>
+		</p>
+	</div>
+	<p style="position: absolute;bottom: 30px;left: 0;right: 0;">
+		<button class="btn btnReturn3 sureBtn" style='margin-bottom: 15px;height:30px'>确定</button>
+	</p>
+	
+</div>
+
+<notempty name="list">
+    <div class="Pagination">{$page}</div>
+</notempty>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/layer/layer.js"></script>
+<script> 
+        //点击搜索框
+        $('.search_homework').click(function (e) {
+            //var string = ''; 
+            //string =  join_string();
+            //location.href = "index.php?m=Home&c=Teach&a=exercisesLibrary" + string; 
+            operationPage('',1);
+
+        });
+		$('#printBtn').click(function(){
+			if(myBrowser() == "IE9")
+			{
+				alert("打印功能暂不支持IE9,请在更高版本浏览器上操作");
+				return;
+			}
+			if(selectedExercise.length == 0)
+			{
+				alert("未选择习题");
+				return;
+			}
+			var form=$("<form></form>");
+			form.attr('action',"index.php?m=Home&c=Teach&a=exerciseList");
+			form.attr('method','post');
+            form.attr('target','_blank');
+			var ids = [];
+			for(var i=0;i<selectedExercise.length;i++){
+				ids.push(selectedExercise[i]['exercise_id']);
+			}
+			var temp= $("<input type='hidden' name='exerciseId'/>")
+			$(temp).attr('value',ids.join(','));
+			form.append(temp);
+			form.appendTo("body");
+			form.css('display','none');
+			form.submit().remove();
+		});
+
+		//拼接语句
+        function join_string(){
+            var string = "";
+            var grade_id = $("#grade_id").val();grade_id
+            var course_id = $("#course_id").val();
+            var textbook_id = $("#textbook_id").val();
+            var chapter = $("#chapter").val();
+            var festival = $("#section").val();
+            
+            if (grade_id != '') {
+                string = '&grade=' + grade_id;
+            }
+            if (course_id != '') {
+                string += '&course=' + course_id;
+            }
+            if (textbook_id != '') {
+                string += '&textbook=' + textbook_id;
+            }
+            if (chapter !=0) {
+                string += '&chapter=' + chapter;
+            }
+            if (festival != 0) {
+                string += '&festival=' + festival;
+            }  
+            return string;
+        } 
+    
+</script>
+
+<script>
+	var exercises = [];
+
+	var startTime = 1;
+	var isShowCorrectAnswer = false;
+
+	//年级发生改变
+	var option = "<option value='0'>-请选择-</option>  ";
+	$("#grade_id").change(function () {
+		var course_val = $("#course_id").val();
+		var grade_val = $("#grade_id").val();
+		$("#class_id option:not(:eq(0))").remove();
+		clear_style();
+		hide_style(); 
+		//清除所有  
+		$("#textbook_id option:not(:eq(0))").remove();  
+                if(grade_val==0){
+                    return false;
+                }else{
+                    $.getJSON("index.php?m=Home&c=Teach&a=getCourseTextbook", {
+			'course_id': course_val,
+			'grade_id': grade_val
+                        }, function (msg) {
+                                var length = msg.length;
+                                for (var i = 0; i < length; i++) {
+                                        var temp = $(option).clone(true);
+                                        $(temp).text(msg[i].name);
+                                        $(temp).val(msg[i].id);
+                                        $("#textbook_id").append(temp);
+                                }
+                        });
+                }
+	});
+
+	//清除添加之后的样式
+	function clear_style() {
+		$("#chapter option:not(:eq(0))").remove();
+		$("#section option:not(:eq(0))").remove(); 
+	}
+
+	function hide_style() {
+		$("#add_homework").show();
+		$("#copy_homework").hide();
+	}
+
+	//学科发生改变
+	$("#course_id").change(function () {
+		var course_val = $("#course_id").val();
+		var grade_val = $("#grade_id").val();
+		$("#textbook_id option:not(:eq(0))").remove();
+		clear_style();
+		hide_style();
+		if (course_val == 0) {
+			return false;
+		}
+		$.getJSON("index.php?m=Home&c=Teach&a=getCourseTextbook", {
+			'course_id': course_val,
+			'grade_id': grade_val
+		}, function (msg) {
+			var length = msg.length;
+			for (var i = 0; i < length; i++) {
+				var temp = $(option).clone(true);
+				$(temp).text(msg[i].name);
+				$(temp).val(msg[i].id);
+				$("#textbook_id").append(temp);
+			}
+		});
+	});
+
+
+	//教材发生改变
+	$("#textbook_id").change(function () {
+		var val = $("#textbook_id").val();
+		clear_style();
+		hide_style();
+		if (val == 0) {
+			return false;
+		}
+		$.getJSON("index.php?m=Home&c=Teach&a=getTextbookChapter", {
+			'id': val
+		}, function (msg) {
+			var length = msg.length;
+			for (var i = 0; i < length; i++) {
+				var temp = $(option).clone(true);
+				$(temp).text(msg[i].chapter);
+				$(temp).val(msg[i].id);
+				$("#chapter").append(temp);
+			}
+		});
+	});
+
+	//章发生改变
+	$("#chapter").change(function () { //section
+		var val = $("#chapter").val();
+		var text = $("#chapter").find("option:selected").text();
+		var textbook_id = $("#textbook_id").val();
+
+		$("#section option:not(:eq(0))").remove();
+		$.getJSON("index.php?m=Home&c=Teach&a=getExerciseChapter", {
+			'chapter': text,
+			'textbook_id': textbook_id
+		}, function (msg) {
+			var length = msg.length;
+			for (var i = 0; i < length; i++) {
+				var temp = $(option).clone(true);
+				$(temp).text(msg[i].festival);
+				$(temp).val(msg[i].id);
+				$("#section").append(temp);
+			}
+		});
+	});
+
+	var temp_a = "<a href='javascript:void(0)' attr_id='0' onclick=\"actionClick(this)\" class='a-control'>第二章 第五节 （双击预览习题）</a>";
+	//节发生改变
+	/*$("#section").change(function () {
+		var textbook_id = $("#textbook_id").val();
+		var chapter = $("#chapter").find("option:selected").text();
+		var festival = $("#section").find("option:selected").text();
+		$(".from_after").find("a").remove();
+		hide_style();
+		$.getJSON("index.php?m=Home&c=Teach&a=getExerciseChapterTitle", {
+			'textbook_id': textbook_id,
+			'chapter': chapter,
+			'festival': festival
+		}, function (msg) {
+			global_I = 0;
+			var length = msg.length;
+			for (var i = 0; i < length; i++) {
+				var temp = $(temp_a).clone(true);
+				$(temp).text(msg[i].chapter + ' ' + msg[i].festival + ' ' + msg[i].title);
+				$(temp).attr("attr_id", msg[i].id); //
+				$(".from_after").append(temp);
+			}
+		});
+	});*/
+
+	//点击跳转
+	function actionClick(obj) {
+		//var val=$("#section").val();
+		/*
+		var val=$(this).attr('attr_id'); 
+
+		$("#add_homework").hide();
+		$("#copy_homework").show();*/
+		$('#create_outclass_homework .exerciseChapterWrapper').removeClass('selected');
+		$(obj).addClass('selected');
+		choosedExerciseLibraryChapter = $(obj).attr('attr_id');
+		//习题渲染
+		//
+		var tpl = '<div style="font-size: 18px;position: fixed;z-index:9999;left: 0;top:23px;width: 98%;margin-top:-3px;background:#fff"><div><button class="sub_opr btnReturn3 layer-open layui-layer-close" style="margin: 30px;border-radius:8px;font-size:16px;position: initial;">返回</button></div><div  class="exerciseChoose"> 选择习题@ ' + $(obj).html() + '</div><div class="allChoose" style="width: 150px;float:left;background:#fff"><label><input id="selectAllExercises" onclick="onClick_SelectAllTheExerciseInALibrary(this)" type="checkbox">全选</label>&nbsp;&nbsp;已选择：</div><div style="width:60%;float:left;background:#fff"><span id="form_exercise_chooser_selected" style="font-size: 18px;color: #EAC41B;word-break: break-all;line-height:36px"></span></div>&nbsp;&nbsp;<div style="width:70px;float:right;" class="querenBtn "><button class="sub_opr btn3before" style="float: right;margin: 0 15px 0 0;width:72px;border-radius:8px;font-size:16px;letter-spacing:0;" onclick="onClick_ConfirmTheSelectedExerciseInALibrary();">确&nbsp;认</button></div></div><div id="exerciseWrapper" style="margin-top: 170px"></div>';
+		$('#form_exercise_chooser').html(tpl);
+		//createExerciseLibraryChapter_copy(choosedExerciseLibraryChapter,exercises,null);
+
+		layer.open({
+			type: 1,
+		    title:1,
+			//			 '选择习题@' + $(obj).html(),
+			shade: 0,
+			zIndex: 20160922,
+			content: $('#form_exercise_chooser').html(),
+			area: ['100%', '100%'],
+			closeBtn: 0,
+			move: false,
+			scrollbar: false
+		});
+		$('#form_exercise_chooser').html('');
+		setTimeout("renderExerciseInALibrary(choosedExerciseLibraryChapter)", 500);
+	}
+</script>
+<script>
+	function notifyOnErrorInput(input) {
+		var message = input.data('validateHint');
+		$.Notify({
+			caption: '提示',
+			content: message,
+			type: 'warning'
+		});
+	}
+
+	var choosedHomeworkId = 0;
+
+	function check() {
+
+		if ($("#homework_name").val() == '') {
+			return false;
+		}
+		if ($("#claim").val() == '') {
+
+			return false;
+		}
+		if ($("#type_id").val() == '') {
+
+			return false;
+		}
+		if ($("#grade_id").val() == '') {
+			return false;
+		}
+		if ($("#class_id").val() == '') {
+			return false;
+		}
+		if ($("#course_id").val() == '') {
+			return false;
+		}
+		if ($("#textbook_id").val() == '') {
+			return false;
+		}
+
+		var string = $('#form_selected_exercise').text();
+		if (string == '') {
+			alert('请选择题目');
+			return false;
+		}
+		$('#exerciseList').val(string);
+
+		//$("#Myform").attr('action',"{:U('Teach/assignHomework')}"+string);
+		return true;
+	}
+</script>
+
+<script>
+    function in_array(search_value,array){
+        for(var i in array){
+            if(search_value==array[i]){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    //根据所选习题来进行分割和拼接
+    function join_exercise(){
+        var all_exercise='',exercise_id=0,exercise=[];
+        var all_exercise_str=$("#form_selected_exercise").text();    
+        if(all_exercise_str==''){
+            return all_exercise_str;
+        }
+        all_exercise_str=all_exercise_str.split(';');   
+        $.each(all_exercise_str,function(i,item){
+            exercise=item.split('.');
+            all_exercise=all_exercise+exercise[1]+',';  
+        })   
+        all_exercise=all_exercise.substr(0,all_exercise.length-1);  
+        return all_exercise;
+    }
+    
+    var aa=[];
+    var bb=[];
+     aa['1_3_5']='1,2,3,4';
+    for(var ii in aa){
+        aa['333']='33';
+        bb.push(aa[ii]); 
+    }  
+    
+    if(typeof(aa['3333'])=='undefined'){
+        
+    }  
+	var selectedExercise = []; 
+        var collect_exercise=[];
+        var grade_course_array={};
+        var is_click=1;
+        var exercise_number=0;
+        var count_exercise=0;
+        
+	//渲染习题库里的每个习题
+	function renderExerciseInALibrary(chapterId) {
+                /*$.getJSON('index.php?m=Home&c=Teach&a=ExerciseLibraryCollect',{id:chapterId},function(collect_res){
+                    collect_exercise=collect_res;
+                    exercise_number=collect_res.length;
+                }) */ 
+                
+                is_click=0;
+                count_exercise=0;
+		//ajax 获取章节内的小题
+		renderExerciseLibraryChapter(chapterId, '', function (res) {
+                        exercise_number=exercises.length;
+			$('#exerciseWrapper input,#exerciseWrapper textarea').remove(); //去掉了习题里的操作框（单选框、复选框、输入框），以免与习题的作答功能混在一起干扰教师选择小题
+			//$('#exerciseWrapper .exerciseQuestion').prepend('<input type="checkbox" name="choose_exercise" onclick="onClick_SelectOneExerciseInALibrary(this)">');
+			var choosed_ids = '';
+			$('#exerciseWrapper .exerciseQuestion').each(function (i, n) {  console.log('请求习题');
+				var checked = '';
+				var exercise_id = $(n).attr('data-originalid');  
+				$.each(selectedExercise, function (j, m) { 
+					if (m.chapter_id == chapterId && m.exercise_id == exercise_id) {
+						checked = 'checked';
+						choosed_ids = choosed_ids + exercise_id + ','; 
+                                                
+					}
+				});
+				//$(n).prepend('<input type="checkbox" id="selectSingleExercises" class="selectSingleExercises" name="choose_exercise" onclick="onClick_SelectOneExerciseInALibrary(this)" {0}>'.format(checked));
+				//点赞图片  
+                                $.getJSON('index.php?m=Home&c=Teach&a=ExerciseCollect',{id:exercise_id},function(msg){ 
+                                    $(n).prepend('<input type="checkbox" id="selectSingleExercises" class="selectSingleExercises" name="choose_exercise" onclick="onClick_SelectOneExerciseInALibrary(this)" {0}>'.format(checked));
+                                    $(n).find('.selectSingleExercises').attr('info',msg.grade_id+'_'+msg.course_id+'_'+msg.textbook_id)
+                                    count_exercise++; 
+                                    if(count_exercise==exercise_number){
+                                        is_click=1;
+                                    }
+                                    if(msg.is_collect=='no'){
+                                        $(n).append('<img class="collectImg" onclick="collectExercise(this)" src="/Public/img/icon/collect1.png">');
+                                    }else{
+                                        $(n).append('<img class="collectImg" onclick="collectExercise(this)" src="/Public/img/icon/collect2.png">');
+                                    }
+									
+									var audioType= typeof($('.mp3_player'));
+//									if(audioType == 'object'){
+//										$('.mp3_player').parent().css({
+//											position:'relative'
+//										})
+//										$('.mp3_player').siblings('.collectImg').css({
+//											position:'absolute',
+//											left: '40%',
+//											top: '0'
+//										})
+//									}
+                                    
+                                })
+                                
+                                /*$.each(collect_exercise,function(k,v){ 
+                                    if(v.id==exercise_id){  
+                                        $(n).find('.selectSingleExercises').attr('info',v.grade_id+'_'+v.course_id+'_'+v.textbook_id)
+                                        count_exercise++;
+                                        if(count_exercise==exercise_number){
+                                            is_click=1;
+                                        }
+                                        if(v.is_collect=='no'){
+                                            $(n).append('<img class="collectImg" onclick="collectExercise(this)" src="/Public/img/icon/collect1.png">');
+                                        }else{
+                                            $(n).append('<img class="collectImg" onclick="collectExercise(this)" src="/Public/img/icon/collect2.png">');
+                                        }
+                                    }
+                                }) */ 
+			});  
+			
+			$('#form_exercise_chooser_selected').html(choosed_ids);
+		}); 
+	}
+        
+        function collectExercise(obj){ 
+            var exercise_pri_id=0;
+            exercise_pri_id=$(obj).parents('.exerciseQuestion').attr('data-originalid'); 
+            $.get("index.php?m=Home&c=Teach&a=collectExercise",{id:exercise_pri_id},function(data){ 
+                if(data==0){
+                    alert('操作失败');
+                }else if(data==1){
+                    //添加收藏
+                    $(obj).attr('src',"/Public/img/icon/collect2.png");
+                }else{
+                    //删除收藏
+                    $(obj).attr('src',"/Public/img/icon/collect1.png");
+                }
+            });
+        }  
+        
+         
+         
+        var click_flag=0;
+        var grade_more_str='';
+        var grade_more="<p class='col-md-4' style='margin-left:30px;'><label for='grade'><input type='radio' name='grade' class='grade_more'><span>一年级英语上册</span></label></p>";
+        //点击创建作业
+        $('.assignBtn').click(function(){ 
+            var request_data="";
+            //拼接请求数据 
+            for(var i in grade_course_array){
+                if(typeof(grade_course_array[i])=='string' && typeof(grade_course_array[i])!='undefined'){
+                    request_data=request_data+i+',';
+                }
+            } 
+            if(request_data==''){
+                alert('请选择习题');
+                return false;
+            }
+            
+            $.getJSON("index.php?m=Home&c=Teach&a=getGradeMoreData&str="+request_data,function(msg){
+                $('.notice_info').find('p').remove();   
+                if(msg.length==1){
+                    var item=msg[0];
+                    if(item.second_id=='no'){
+                        var notice_info=$(grade_more).clone(true); 
+                        $(notice_info).find('input').attr('attr_more',item.grade_id+'_'+item.course_id+'_'+item.textbook_id); 
+                        $(notice_info).find('input').attr("disabled",true);
+                         
+                        //$(notice_info).find('span').text(item.grade+item.course_name+item.name);
+                        if(item.name.indexOf('级')){
+                            $(notice_info).find('span').text(item.name);
+                        }else{
+                            $(notice_info).find('span').text(item.grade+item.course_name+item.name);
+                        }
+                        
+                        $(".notice_info").append(notice_info);
+                        $('.assignHomework').show();
+                    }else{
+                        click_flag=1;
+                        grade_more_str=item.grade_id+'_'+item.course_id+'_'+item.textbook_id;
+                        $('.sureBtn').trigger('click');
+                    } 
+                        
+                }else{
+                    $.each(msg,function(i,item){
+                        var notice_info=$(grade_more).clone(true);
+                        $(notice_info).find('input').attr('attr_more',item.grade_id+'_'+item.course_id+'_'+item.textbook_id);
+                        //判断该教师是否有发布作业的能力
+                        if(item.second_id=='no'){
+                            $(notice_info).find('input').attr("disabled",true);
+                        } 
+                        //$(notice_info).find('span').text(item.grade+item.course_name+item.name);
+                        if(item.name.indexOf('级')){
+                            $(notice_info).find('span').text(item.name);
+                        }else{
+                            $(notice_info).find('span').text(item.grade+item.course_name+item.name);
+                        }
+                        
+                        $(".notice_info").append(notice_info);  
+                    });
+                    $('.assignHomework').show();
+                }
+            }); 
+	})
+        
+        $('.sureBtn').click(function(){ 
+            //取得选中的radio的值 
+            if(click_flag==0){
+                var grade_more_string=$('.notice_info input:radio:checked').attr('attr_more');
+            }else{
+                var grade_more_string=grade_more_str;
+            }
+            if(typeof(grade_course_array[grade_more_string])=='undefined'){
+                $('.assignHomework').hide()
+                return false;
+            }else{
+                var ids=grade_course_array[grade_more_string];
+                var condition='&grade='+grade_more_string+'&ids='+ids.substr(ids,ids.length-1);   
+                location.href="index.php?m=Home&c=Teach&a=assignHomework"+condition;
+                //$('.assignHomework').hide()
+            }  
+            
+	})
+        //var network_error=1;
+        
+	//选择小题的触发事件
+	function onClick_SelectOneExerciseInALibrary(obj) {   
+                if(is_click==0){
+                    alert('网络繁忙请稍后重试');
+                    return false;
+                }
+		var ids = $('#form_exercise_chooser_selected').html();
+		var currentId = $(obj).parent().attr('data-originalid');
+                var exercise_info=$(obj).attr('info'); 
+                /*if(typeof($(obj).attr('info'))=='undefined'){
+                    debugger;   
+                    return false; 
+                }*/
+		if (obj.checked) {
+			if (ids.indexOf(currentId + ',') == -1) {       
+				ids = ids + currentId + ',';
+			}
+                        //追加
+                        if(typeof(grade_course_array[exercise_info])=='undefined'){
+                            grade_course_array[exercise_info]=currentId+',';
+                        }else{
+                            grade_course_array[exercise_info]=grade_course_array[exercise_info]+currentId+',';
+                        }
+                        
+                         
+		} else {
+			ids = ids.replace(currentId + ',', '');
+			$('#selectAllExercises').attr('checked',false);
+                        //删除;
+                        if(typeof(grade_course_array[exercise_info])!='undefined'){ 
+                            var del_str=currentId+',';
+                            grade_course_array[exercise_info]=grade_course_array[exercise_info].replace(del_str,''); 
+                        }
+		}
+
+		if (ids != '' && ids[ids.length - 1] != ',') ids = ids + ',';
+		$('#form_exercise_chooser_selected').html(ids);
+	}
+	//确定选择小题的事件
+	function onClick_ConfirmTheSelectedExerciseInALibrary() {   
+		var newResult = []; 
+		$.each(selectedExercise, function (i, n) {
+			if (n.chapter_id != choosedExerciseLibraryChapter) {
+				newResult.push(n);
+			}
+		});
+		var currentSelectedIds = $('#form_exercise_chooser_selected').text().split(','); 
+		$.each(currentSelectedIds, function (i, n) {
+			if (n == '') return true;
+			newResult.push({
+				chapter_id: choosedExerciseLibraryChapter,
+				exercise_id: n,
+			});
+		});
+
+		selectedExercise = newResult;
+		renderSelectedExerciseInCreateHomework();
+		$('.layui-layer-page').each(function (i, n) {
+			var id = $(n).attr('id').replace('layui-layer', '');
+			layer.close(id);
+		});
+                if(currentSelectedIds.length>1 || selectedExercise.length){
+                    $("#add_homework").find('.rowChoice').css('display','block');
+                }else{
+                    $("#add_homework").find('.rowChoice').css('display','none');
+                }
+	}
+	//选择所有小题
+	function onClick_SelectAllTheExerciseInALibrary(obj) {
+                if(is_click==0){
+                    alert('网络繁忙请稍后重试');
+                    return false;
+                }
+		if (obj.checked) { 
+			$('#exerciseWrapper input').removeAttr('checked');
+			$('#exerciseWrapper input').click();
+                        $('#selectAllExercises').attr('checked',true);
+
+		} else { 
+			$('#exerciseWrapper input').removeAttr('checked');
+			$('#form_exercise_chooser_selected').html('');
+                        
+		} 
+	}
+
+	//渲染已经选择的习题列表
+	function renderSelectedExerciseInCreateHomework() {
+		var html = [];
+		$.each(selectedExercise, function (i, n) {
+			html.push(n.chapter_id + '.' + n.exercise_id);
+		});
+		$('#form_selected_exercise').html(html.join('; '));
+	}
+</script>
+
+<!--<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>-->
+<script> 
+        var first="<a class='first' href='##' onclick='operationPage(this,0)'>1</a>";
+        var prev="<a class='prev' href='##' onclick='operationPage(this,0)'><<</a>";
+        var page_span="<span class='current'>7</span>";
+        var span_a="<a class='num' href='##' onclick='operationPage(this,0)'>6</a>";
+        var next="<a class='next' href='##' onclick='operationPage(this,0)'>>></a>";
+        var end="<a class='end' href='##' onclick='operationPage(this,0)'>41</a>";
+	$('.yesBtn').click(function(){
+		$('.collectSuccess').hide();
+	}) 
+        $(".Pagination").find('a').click(function(e){
+            e.preventDefault();
+            operationPage(this,0);
+        });
+        
+        function operationPage(obj,page){
+            
+            var condition_string=""; 
+            condition_string=join_string();
+            
+            var chapter_festival='';
+            
+            //判断当前是否是上一页或者下一页
+            if(page==0){   
+                if($(obj).hasClass('prev')){
+
+                    var page=parseInt($('.Pagination').find('.current').text())-1;
+                }else if($(obj).hasClass('next')){
+
+                    var page=parseInt($('.Pagination').find('.current').text())+1;
+                }else{
+                    var page=parseInt($(obj).text());
+                }
+            }else{
+                page=1;
+            }
+            
+            condition_string=condition_string+'&p='+page;
+            
+             $.getJSON("index.php?m=Home&c=Teach&a=exercisesAjax"+condition_string,function(msg){   
+                 $(".from_after").find('a').remove();
+                 $(".from_after").find('div').remove();
+                 
+                 $('.Pagination').children('div').find('a').remove();
+                    $('.Pagination').children('div').find('span').remove();
+                    
+                 if(msg.count>0){
+                     
+                     $(msg.data).each(function(i,v){
+                         chapter_festival=$(temp_a).clone(true);
+                         $(chapter_festival).attr('attr_id',v.id);
+                         $(chapter_festival).text(v.chapter+' '+v.festival+' '+v.title);
+                         $(".from_after").append(chapter_festival);
+                     }); 
+                     if(msg.count==1){
+                         return false;
+                     }
+                     
+                     
+                     //计算分页
+                     var first_element='';
+                     var prev_element='';
+                     var page_span_element='';
+                     var span_a_element='';
+                     var next_element='';
+                     var end_element='';
+                     
+                     if(msg.count>=page){ 
+                        var current_page=page;
+                                first_element=$(first).clone(true);
+                                prev_element=$(prev).clone(true);
+                                
+                                
+                                for(var i=page;i>0;i--){
+                                    if(i==page){ 
+                                        page_span_element=$(page_span).clone(true);
+                                        $(page_span_element).text(page);
+                                        $('.Pagination').children('div').append(page_span_element); 
+                                    }else if(page-i==6 || i==1){
+                                        
+                                        if(page>6){
+                                        $('.Pagination').children('div').prepend(prev_element); 
+                                        }
+                                        $('.Pagination').children('div').prepend(first_element); 
+                                        break;
+                                    }else{
+                                        span_a_element=$(span_a).clone(true);
+                                        $(span_a_element).text(i);
+                                        $('.Pagination').children('div').prepend(span_a_element);
+                                    } 
+                                } 
+                                for(var i=++page;i<=msg.count;i++){
+                                    if(i-page==6 ){
+                                        next_element=$(next).clone(true);  
+                                        $('.Pagination').children('div').append(next_element);  
+                                        if(msg.count>page){
+                                            end_element=$(end).clone(true);
+                                            $(end_element).text(msg.count);
+                                            $('.Pagination').children('div').append(end_element); 
+                                        }
+                                        break;
+                                    }else{
+                                        span_a_element=$(span_a).clone(true);
+                                        $(span_a_element).text(i);
+                                        $('.Pagination').children('div').append(span_a_element);
+                                    }
+                                }
+                                
+                                //判断是否存在类名
+                                if($('.Pagination').children('div').find('.prev').length==0){ 
+                                    if(current_page>1 && current_page<=msg.count){
+                                        var temp_prev_emelent=$(prev).clone(true);
+                                        $('.Pagination').children('div').prepend(temp_prev_emelent); 
+                                    }
+                                } 
+                                if($('.Pagination').children('div').find('.next').length==0){  
+                                    if(current_page>=1 && current_page<msg.count){
+                                        var temp_next_emelent=$(next).clone(true);
+                                        $('.Pagination').children('div').append(temp_next_emelent); 
+                                    }
+                                }
+                                
+                     } 
+                 }else{
+                 	var emptyDiv = '<div class="emptyDiv"><img src="{$oss_path}public/web_img/Empty/sorry.png" alt=""><p>正在整理制作中，敬请期待！</p></div>';
+                     $(".from_after").append(emptyDiv);
+                 }
+             }) 
+        };
+</script>
+
+
+<script>
+	
+	$('.closeImg').click(function(){
+		$('.assignHomework').hide()
+	}) 
+	
+</script>

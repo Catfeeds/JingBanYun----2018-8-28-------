@@ -1,0 +1,267 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=3.0" type="text/css" rel="stylesheet"> 
+<link href="__PUBLIC__/css/adminActivity.css" type="text/css" rel="stylesheet"> 
+
+<style>
+    #listWrapper img{
+        width: 50px !important;
+        height: 50px !important;
+		margin-right: 10px;
+		margin-top: 5px;
+    }
+    
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+	
+	.list_title {
+		width: 120px;
+		line-height: 50px;
+	}
+	
+	.list_title a {
+		color: #2086bf !important;
+	}
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button {:session('btntheme')}" style="box-sizing:border-box;">&lt; 返回</a>
+</div>
+
+<div class="example">
+    <span class="exampl">活动名称</span>
+    {$titles}
+</div>
+
+<div class="example">
+	<div style="text-align: left; float: left;">
+		<label>是否使用：</label>
+		<select  id="level" name="level" onchange="" class="input-control" style="margin-right: 50px">
+			<option value="">-请选择-</option>
+			<option value="2" {$is_generate==2?'selected':''}>是</option>
+			<option value="1" {$is_generate==1?'selected':''}>否</option>
+		</select>
+		<!--<label>状态：</label>
+		<select id="lock_status" class="input-control" style="margin-right: 50px">
+			<option value='0'>-请选择-</option> 
+			<option value="1">正常</option>
+			<option value="2">作废</option>
+		</select>-->
+		<button class="button" onclick="search()" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+	</div>
+	
+	<div style="float: right;text-align: right">
+        <a href="{:U('InvitationCode/exportAllCode?id=')}{$tid}" class="button" style="">全部导出</a>
+        <br />
+        <a href="javascript:;" id="addCode" class="button">添加邀请码</a>
+        <div class="keyBox">
+        	<h4>添加邀请码</h4>
+			<input type="text" class="numBox" name="" placeholder="请输入个数">&nbsp;人
+			<button type="button" class="button info sureButton" >确定</button>
+		</div>
+    </div>
+
+	<input type="hidden" class="tid" value="{$tid}">
+
+	<table id="listWrapper" class="table striped hovered border">
+		<thead>
+			<tr>
+				<th class="text-center">序号</th>
+				<th class="text-center">邀请码</th>
+				<th class="text-center">是否使用</th>
+				<th class="text-center">状态</th>
+				<th class="text-center">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<volist name="list" id="data" key="i">
+				<tr id="l_{$data.id}">
+					<td class="text-center">
+						{$i}
+					</td>
+					<td class="text-center">
+						{$data.invitation_code}
+					</td>
+					<td class="text-center">
+						<if condition="$data.status eq 1 "> 未使用
+							<else /> 已使用
+						</if>
+					</td>
+					<td class="text-center">
+						<if condition="$data.status eq 1 "> 正常
+							<else /> 作废
+						</if>
+					</td>
+					<td class="text-center">
+						<a href="javascript:void(0);" attr="{$data.id}" class="button danger delete_button">删除</a>
+					</td>
+				</tr>
+			</volist>
+		</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+</div>
+
+<!--提示框 【邀请码生成中】-->
+<div class="remindBox" id="codeCreate">
+	<h4>提示</h4>
+	<p>邀请码生成中...</p>
+	<div class="buttonBox">
+		<a href="javascript:;" class="m0 remindBtn">确定</a>
+	</div>
+</div>
+
+<!--弹窗出现时背景-->
+<div class="fs"></div>
+<!--提示框 【邀请码生成完成】-->
+<div class="remindBox" id="codeSuccess">
+	<h4>提示</h4>
+	<p>邀请码生成完成</p>
+	<div class="buttonBox">
+		<a href="javascript:;" class="m0 remindBtn successBtn">确定</a>
+	</div>
+</div>
+
+<!--提示框 【邀请码生成失败，请稍后再试！】-->
+<div class="remindBox" id="codeFail">
+	<h4>提示</h4>
+	<p>邀请码生成失败，请稍后再试！</p>
+	<div class="buttonBox">
+		<a href="javascript:;" class="m0 remindBtn">确定</a>
+	</div>
+</div>
+
+<!--提示框 【该邀请码已经被使用，不可删除！】-->
+<div class="remindBox" id="codeDelete">
+	<h4>提示</h4>
+	<p>该邀请码已经被使用，不可删除！</p>
+	<div class="buttonBox">
+		<a href="javascript:;" class="m0 remindBtn">好的</a>
+	</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"30%"},
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"}
+            ]
+        });
+    });
+</script>
+
+<script>
+    //搜索
+    function search() {
+        var string = "";
+        var tid = $('.tid').val();
+        var is_generate = $('#level').val();
+        if (tid != '') {
+            string += '&id=' + tid;
+        }
+        if (level != '') {
+            string += '&is_generate=' + is_generate;
+        }
+        var url = 'index.php?m=Home&c=InvitationCode&a=lookCodeDetails'+string;
+        window.location.href = url;
+    }
+	
+    //点击恢复使用
+    function recovery(id,obj) {
+        
+        $.get('index.php?m=Home&c=Account&a=recovery', {id: id}, function (res) {
+            if (res == 'success') { 
+                //$(obj).html('恢复使用');
+                //$(obj).prev('td').text('已停用');
+                window.location.reload();
+            } else {
+                alert('通过失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+
+    //点击停用
+    function approve(id,obj) {
+        
+        $.get('index.php?m=Home&c=Account&a=approve', {id: id}, function (res) {
+            if (res == 'success') { 
+                //$(obj).html('恢复使用');
+                //$(obj).prev('td').text('已停用');
+                window.location.reload();
+            } else {
+                alert('通过失败，请刷新页面后重新尝试');
+            }
+        })
+    }
+
+    //点击删除
+    $('.delete_button').click(function(){
+        if(confirm('您确认删除么')){
+            var id=$(this).attr('attr'); 
+            var obj=this;
+            $.get("index.php?m=Home&c=InvitationCode&a=deleteCode",{'id':id},function(msg){
+                if(msg=='success'){
+                    $(obj).parent().parent().remove();
+                }else if( msg=='back'){
+					$('#codeDelete').css('display','block');
+                } else {
+					alert('删除失败,请刷新页面后重试');
+				}
+            });
+        }
+    });
+</script>
+
+<script>
+	//点击‘添加邀请码’
+	$('#addCode').click(function(){
+		$('.keyBox').toggle('slow')
+	})
+	
+	//点击‘确定’
+	$('.sureButton').click(function(){
+
+		var id = $('.tid').val();
+		var num = $('.numBox').val();
+		if (num <=0 ||num == '' || num=='NaN' ||num==NaN ) {
+			alert('请填写邀请码个数');
+			return false;
+		}
+		num = parseInt(num);
+		$('#codeCreate').show();
+		$('.fs').show();
+		$('.keyBox').hide('slow');
+
+		$.get('index.php?m=Home&c=InvitationCode&a=addCode', {"activity_id": id,"codenum":num}, function (res) {
+			if (res == 'success') {
+				$('#codeCreate').hide();
+				$('#codeSuccess').show();
+
+			} else {
+				$('#codeFail').show();
+			}
+		})
+	})
+	
+	$('.remindBtn').click(function(){
+		$(this).parent().parent('.remindBox').hide();
+		$('.fs').hide();
+	})
+
+	$('.successBtn').click(function(){
+		window.location.reload();
+	});
+	//
+</script>

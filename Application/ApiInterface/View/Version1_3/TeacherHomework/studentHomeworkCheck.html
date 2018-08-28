@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>学生作业批改</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/appCommon.css?v=1">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/teacherHomework.css">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+		<style>
+			[v-cloak] {
+				display: none;
+			}
+
+			#app {
+				padding-top: 48px;
+			}
+
+			#app .appTop {
+				border-bottom: 4px solid #eee;
+			}
+
+			#app .mainOutter {
+				display: none;
+			}
+			.yuanti{
+				padding: 10px;
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<img src="{$oss_path}public/web_img/App/loading_yun.gif" alt="" class="loadingImg">
+
+		<!-- 学生作业批改 -->
+		<div id="app" v-cloak>
+			<!-- app公共头部 -->
+			<div class="appTop">
+				<div class="returnBox" @click="returnApp"></div>
+				<div class="appTopTitle">
+					<p class="title">学生作业批改</p>
+				</div>
+				<div class="appTopRight" @click="yt">原题</div>
+			</div>
+
+			<div class="mainOutter">
+				<!-- 已批改区域 -->
+				<div class="checkOutter" v-if='correct_list.length != 0'>
+					<div class="checkTitle">
+						<span class="title">已批改</span>
+					</div>
+					<div class="avatarOutter">
+						<div class="avatarInner" v-for="(correctList, index) in correct_list">
+							<a href="javascript:;" class="avatarBox">
+								<img :src="correctList.avatar" class="avatarImg">
+								<div class="avatarNum">{{ correctList.exercises_score }}</div>
+								<div class="avatarName textHidden">{{ correctList.student_name }}</div>
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- 未批改区域 -->
+				<div class="checkOutter" v-if='to_correct_list.length != 0'>
+					<div class="checkTitle">
+						<span class="title">待批改</span>
+					</div>
+					<div class="avatarOutter">
+						<div class="avatarInner" v-for="(toCorrectList, index) in to_correct_list">
+							<a href="javascript:;" class="avatarBox">
+								<img :src="toCorrectList.avatar" class="avatarImg">
+								<div class="avatarName textHidden">{{ toCorrectList.student_name }}</div>
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- 未提交区域 -->
+				<div class="checkOutter" v-if='no_submit_list.length != 0'>
+					<div class="checkTitle">
+						<span class="title">未提交</span>
+					</div>
+					<div class="avatarOutter">
+						<div class="avatarInner" v-for="(noSubmitList, index) in no_submit_list">
+							<a href="javascript:;" class="avatarBox">
+								<img :src="noSubmitList.avatar" class="avatarImg">
+								<div class="avatarName textHidden">{{ noSubmitList.student_name }}</div>
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- 下一题 -->
+				<div class="bottomBtn" v-if="xiati!=null" @click="xiayiti">下一题</div>
+				<div class="bottomBtn" v-else @click="wancheng">完成</div>
+				<!-- <div class="bottomBtn" v-if='to_correct_list.length == 0'>下一题</div> -->
+				<!-- 如果有待批改 -->
+				<!-- <div class="bottomBtn" v-else>继续批改</div> -->
+
+			</div>
+			<div class="yuanti" >
+				<p v-html="yuantiArr.subject_name" class="existence">
+
+				</p>
+				<p v-html="'答案：'+yuantiArr.answer">
+
+				</p>
+				<p v-html="'解析:'+yuantiArr.analysis">
+
+				</p>
+			</div>
+		</div>
+	</body>
+
+	<script type="text/javascript" src="__PUBLIC__/js/notify/notifyApp.js"></script>
+	<script>
+		var homeworkId = "{$homeworkId}";
+		var classId = "{$classId}";
+		var exerciseId = "{$exerciseId}";
+		var userId = getQueryString('userId');
+		var i = 100;
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				homeworkId: homeworkId,
+				classId: classId,
+				exerciseId: exerciseId,
+				url: '/index.php/ApiInterface/Version1_3/TeacherHomework/studentCorrectHomeWorkSituation',
+				correct_list: '',
+				no_submit_list: '',
+				to_correct_list: '',
+				yuanti:'/index.php/ApiInterface/Version1_3/TeacherHomework/getExerciseIdAllDetails',
+				yuantiArr:[],
+				userId:userId,
+				xiati:'',
+				zhuangtai:'/index.php/ApiInterface/Version1_3/TeacherHomework/getHomeWorkStatus',
+				statue:''
+			},
+			created: function () { //应用初始化完毕加载
+				// 学生批改情况
+				this.getCheckList();
+			},
+			methods: {
+				// 学生批改情况
+				getCheckList: function(){
+					this.$http.post(this.url, {
+						homeworkId: this.homeworkId,
+						classId: this.classId,
+						exercises_id : this.exerciseId
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.correct_list = response.data.data.correct_list;
+	    					this.no_submit_list = response.data.data.no_submit_list;
+	    					this.to_correct_list = response.data.data.to_correct_list;
+							this.xiati = response.data.data.next_exerciseId;
+	    					i++;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+					this.$http.post(this.yuanti,{
+						exercise_id_list: this.exerciseId,
+						role: 2,
+						userId: this.userId
+					},{
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function(response){
+						if(response.data.status == '200'){
+							this.yuantiArr = response.data.data;
+						} else {
+							console.log('错误1')
+						}
+					}, function (response) {
+						console.log('错误2')
+					})
+					this.$http.post(this.zhuangtai,{
+						homeworkId:this.homeworkId,
+						userId: this.userId
+					},{
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function(response){
+						console.log(response);
+						if(response.data.status == '200'){
+							this.statue = response.data.data
+
+						} else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				yt:function($event){
+					if($($event.target).text()=='原题'){
+						$('.yuanti').show();
+						$('.mainOutter').hide();
+						$($event.target).text('隐藏原题')
+					}else {
+						$('.yuanti').hide();
+						$('.mainOutter').show();
+						$($event.target).text('原题')
+					}
+
+				},
+
+				xiayiti:function(){
+					window.location.href = '/index.php/ApiInterface/Version1_3/TeacherHomework/swiperExerciseDetails?role=2&userId='+this.userId+'&homeworkId='+
+					homeworkId+'&status=待批改&classId='+classId+'&exerciseId='+this.xiati.exercises_id+'&workId='+this.homeworkId+'&flag=0'
+				},
+				returnApp:function(){
+						this.wancheng()
+				},
+				wancheng:function(){
+window.location.href='/index.php/ApiInterface/Version1_3/TeacherHomework/homeworkDetails?role=2&userId='+this.userId+'&homeworkId='+homeworkId+'&status='+this.statue+'&classId='+this.classId
+				}
+			}
+		})
+	</script>
+
+	<script>
+	  	function myFunction() {
+		    if(i >= 101) {
+		    	clearTimeout(timer);
+		    	$('.loadingImg').hide();
+		    	$('#app .mainOutter').show();
+		    }
+		}
+		function fanhui(){
+			if($('.bottomBtn').text() =='完成'){
+				app.wancheng()
+			}else{
+				 window.history.go(-1)
+			}
+
+		}
+		var timer = setInterval("myFunction()",1000);
+				function showWebNav(){}//显示web导航
+	</script>
+</html>

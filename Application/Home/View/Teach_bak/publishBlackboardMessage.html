@@ -1,0 +1,64 @@
+<layout name="teacher_layout"/>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回">&lt; 返回</a>
+</div>
+<div>
+    <form action="__URL__/publishBlackboardMessage" method="post">
+        <div data-text="消息">
+            <div class="form_section">
+                <label for="class_id">班级</label>
+                <div class="input-control text full-size">
+                    <select id="class_id" name="class_id" class="form-control" onchange="getTextbooks()" data-validate-hint="班级不能为空">
+                        <option value="">-请选择-</option>
+                        <volist name="classes" id="dataClass" empty="暂时没有信息">
+                            <option value="{$dataClass.id}">{$dataClass.name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form_section">
+                <label for="message_title">消息标题</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="message_title" class="form-control"  id="message_title" data-validate-hint="消息标题不能为空">
+                </div>
+            </div>
+
+            <div class="form_section" style="height: 126px">
+                <label for="message">消息内容</label>
+
+                <div class="input-control text full-size">
+                    <textarea id="message" name="message" rows="5" class="form-control" ></textarea>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+    </form>
+</div>
+<script>
+
+</script>
+<script>
+    function notifyOnErrorInput(input){
+        var message = input.data('validateHint');
+        $.notify({
+            title: '提示',
+            message: message
+        },{
+            type: 'warning',
+            placement: {
+                from: "top",
+                align: "center"
+            }
+        });
+    }
+</script>

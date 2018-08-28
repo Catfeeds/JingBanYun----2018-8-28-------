@@ -1,0 +1,396 @@
+<layout name="parent_layout_withouticon"/>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<style>
+	.row {
+		margin:0;
+	}
+	
+    .list_avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+    
+    .list_avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+    
+    h3 {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .ctrl_box {
+        margin-left: 90%;
+    }
+    
+    .ctrl_box img {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        margin-bottom: 15px;
+        cursor: pointer;
+    }
+    
+    .file-name a {
+        text-decoration: none;
+        color: #333;
+        padding: 10px 20px;
+        display: inline-block;
+        background: #e8f5e1
+    }
+    
+    ul,
+    li {
+        list-style: none
+    }
+    
+    .file-name a:hover {
+        background: #fff;
+    }
+    
+    #classname {
+        text-align: left;
+        border: 1px solid #dd1010;
+        border-radius: 4px;
+        padding: 20px;
+        background: #FDEDEE;
+    }
+    
+    #data_load {
+        padding: 0;
+        margin-top: 50px;
+    }
+    
+    #data_load a {
+        color: #333;
+    }
+	
+	.browse_image img, .rarImg {
+		margin: auto;
+		max-width: 100%;
+	}
+	
+	#mediafile {
+		text-align: center;
+	}
+</style>
+
+<if condition="$showGoBackbutton neq 'false' ">
+    <div style="margin-bottom: 12px;">
+            <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+    </div>
+</if>
+<div class="example" data-text="资源类别">
+    <div class="listview set-border padding10">
+        <div class="padding10">
+            <h3 class="text-center">{$data.name}</h3>
+        </div>
+    </div>
+</div>
+<div class="ctrl_box">
+    <if condition="$existedZan eq 'yes'">
+        <img id="btnZan" src="__PUBLIC__/img/icon/zaned.png">
+        <else/>
+        <img id="btnZan" src="__PUBLIC__/img/icon/zan.png">
+    </if>
+    <if condition="$existedFavor eq 'yes'">
+        <img id="btnFavor" src="__PUBLIC__/img/icon/favored.png">
+        <else/>
+        <img id="btnFavor" src="__PUBLIC__/img/icon/favor.png">
+    </if>
+</div>
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-4">
+        <div id="classname">
+            学 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：
+            <if condition="$data['course_id']==-1">
+                全学科
+                <else /> {$data.course_name}
+            </if>
+            <br>年 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：
+            <if condition="$data['grade_id']==-1">
+                小学全年级
+                <elseif condition="$data['grade_id']==-2" /> 初中全年级
+                <elseif condition="$data['grade_id']==-3" /> 高中全年级
+                <else /> {$data.grade}
+            </if>
+
+            <br>教材分册：{$data.textbook}
+            <br>类 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型：<span class="dataType">{$data.type}</span>
+            <div>
+                资源描述：{$data.description}
+            </div>
+        </div>
+        <ul id="data_load">
+            <li>资源名称：</li>
+            <volist name="contact_data" id="contact_data_item" empty="" key="i">
+                <li><a href="javascript:;" class="browse_resource col-md-8" attr_id="{$contact_data_item.vid}" attr_path="{$oss_path}<?php
+                        if($data['type'] == 'word' ||$data['type'] == 'ppt')
+                        {
+                        $path = explode('.',basename($contact_data_item['resource_path']));
+                        $path=$path[0].'.pdf'; 
+						$path = 'teacher/' .$data['id'].'/'.$contact_data_item['id'] .'/' .$path;
+                        echo $path;
+                        }
+                        else
+                        echo $contact_data_item['resource_path'];
+                        ?>
+                    ">查看第{$i}个资源</a>
+                    <a href="{:U('Teach/downloadResource')}&url={$oss_path}{$contact_data_item.resource_path}" class="col-md-2"><img src="__PUBLIC__/img/xiazai.png" alt="">下载</a>
+                    </li>
+            </volist>
+        </ul>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-5" id='mediafile'>
+        <div class="example" data-text="资源内容">
+            <div class="listview set-border">
+                <div class='padding50'>
+                    <switch name="data.type">
+                        <case value="pdf|word|ppt"> 
+                            <iframe id="resourceFrame" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={$oss_path}<?php
+                                    if($data['type'] == 'word' ||$data['type'] == 'ppt')
+                                    {
+                                    $path = explode('.',basename($contact_data[0]['resource_path']));
+                                    $path=$path[0].'.pdf'; 
+                                                            $path = 'teacher/' .$data['id'].'/'.$contact_data[0]['id'] .'/' .$path;
+                                    echo $path;
+                                    }
+                                    else
+                                    echo $contact_data[0]['resource_path'];
+                                    ?>" width="100%" height="500">
+                            </iframe>
+                        </case>
+                        <case value="image">
+                            <div class="browse_image"> 
+                                    <img src="{$oss_path}{$data.file_path}" />
+                            </div>
+                        </case>
+                        <case value="swf">
+                            <div id="flash" class="browse_swf">
+                                <object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">
+                                    <if condition="$data['flag']==1">
+                                        <embed id="sfw_src" width="500" height="500" name="plugin"  src="{$oss_path}{$data.file_path}" type="application/x-shockwave-flash">
+                                    <else />  
+                                        <embed id="sfw_src" width="500" height="500" name="plugin"  src="{$data.file_path}" type="application/x-shockwave-flash">
+                                    </if>
+                                    <param name="loop" value="false">
+                                    <param name="movie" value="">
+                                </object>
+                            </div>
+                        </case>
+                        <!--<case value="html">
+                            {$data.content}
+                        </case>-->
+                        <case value="video">
+                            <div id='plv'></div>
+                            <script>
+                                var player = polyvObject('#plv').videoPlayer({
+                                    'vid': '{$data.vid}'
+                                });
+                            </script>
+                        </case>
+                        <case value="audio">
+                            <div id='plv'></div>
+                            <script>
+                                var player = polyvObject('#plv').videoPlayer({
+                                    'vid': '{$data.vid}'
+                                });
+                            </script>
+                        </case>
+                        <default/>
+                        <div>
+                        </div>
+                    </switch>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>    
+    var zanCount = 0;
+    var favorCount = 0;
+    var swfVideoPlay = '<button id="fullScreen">全屏</button><object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">\n\
+                        <embed id="ebd" width="{1}" height="{2}" name="plugin" src="{0}" type="application/x-shockwave-flash"><param name="loop" value="false"><param name="movie" value="images/zf03320.swf"></object>';
+	 
+	
+    $(function () {
+        var type = "{$data.type}";
+        $(".browse_resource").click(function () {
+            switch (type) {
+            case 'video':
+            case 'audio':
+                var vid = $(this).attr('attr_id');
+                var player = polyvObject('#plv').videoPlayer({
+                    'vid': vid
+                });
+                break;
+            case 'image':
+                var file_path = $(this).attr('attr_path');
+                $(".browse_image").children('img').attr('src',  file_path);
+                break;
+            case 'swf':
+                var file_path = $(this).attr('attr_path');  
+                var videoEle = swfVideoPlay.format(file_path, 500, 500);
+                $('.padding50').html(videoEle);
+				$('#fullScreen').click(function(){
+				 if($('#fullScreen').text() == '全屏')
+				  {
+                    $('#ebd').attr('width',document.body.clientWidth);
+                    $('#ebd').attr('height',$(window).height());
+				    $('#mediafile').attr('style','position:fixed;left:0px;top:0px;z-index=9999');
+				    $('#fullScreen').attr('style','z-index:10000');
+				    $('.header,.cloud1,.cloud_left,.cloud_right,.topbar').hide();
+					$('#fullScreen').text('返回');
+				  }
+				  else
+				  {
+				    $('#ebd').attr('width',500);
+                    $('#ebd').attr('height',500);
+				    $('#mediafile').attr('style','');
+					$('.header,.cloud1,.cloud_left,.cloud_right,.topbar').show();
+					$('#fullScreen').text('全屏');
+				  }
+                });
+                break;
+            case 'pdf':
+            case 'word':
+            case 'ppt':
+                var file_path = $(this).attr('attr_path');
+                $("#resourceFrame").attr('src', "__PUBLIC__/pdfjs/viewer/viewer.html?" + file_path);
+                break;
+            }
+        });
+        
+var o_status="{$operation_status}";
+        $('#btnZan').click(function () {
+            if(o_status==1){
+                $.notify({
+                    title: '提示',
+                    message: '不能对自己发布的资源进行操作'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            if (zanCount == 3) {
+                $.notify({
+                    title: '提示',
+                    message: '请求过于频繁'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            zanCount++;
+
+            $.get("{:U('Parent/zanResource')}", {
+                id: '{$data.id}'
+            }, function (res) {
+                if (res == 'success') {
+                    $('#btnZan').attr('src', '__PUBLIC__/img/icon/zaned.png');
+                    $.notify({
+                        title: '提示',
+                        message: '点赞成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+                    $('#btnZan').attr('src', '__PUBLIC__/img/icon/zan.png');
+                    $.notify({
+                        title: '提示',
+                        message: res
+                    }, {
+                        type: 'warning',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#btnFavor').click(function () {
+            if(o_status==1){
+                $.notify({
+                    title: '提示',
+                    message: '不能对自己发布的资源进行操作'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            if (favorCount == 3) {
+                $.notify({
+                    title: '提示',
+                    message: '请求过于频繁'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            favorCount++;
+
+            $.get("{:U('Parent/favorResource')}", {
+                id: '{$data.id}'
+            }, function (res) {
+                if (res == 'success') {
+                    $('#btnFavor').attr('src', '__PUBLIC__/img/icon/favored.png');
+                    $.notify({
+                        title: '提示',
+                        message: '收藏成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+                    $('#btnFavor').attr('src', '__PUBLIC__/img/icon/favor.png');
+                    $.notify({
+                        title: '提示',
+                        message: res
+                    }, {
+                        type: 'warning',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                }
+            });
+        });
+//        $(".browse_resource")[0].click();
+		try{
+		$('.browse_resource')[0].click();
+		}catch(e){;}  
+    }); 
+</script>

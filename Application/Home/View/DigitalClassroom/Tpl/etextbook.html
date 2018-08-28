@@ -1,0 +1,186 @@
+<if condition="$book.has_ebook eq 1">
+    <div id="etextbook_coverLayer"></div>
+    <div id="etextbook_wrapper">
+        <table id="etextbook_PageTable" cellpadding="0" cellspacing="0">
+            <tr>
+                <td align="right">
+                    <div class="etextbook_pageWrapper" id="etextbook_page1Wrapper" style="text-align: right">
+                        <img class="etextbook_page" onerror="imageError(this)" id="etextbook_page1">
+                    </div>
+                </td>
+                <td align="left">
+                    <div class="etextbook_pageWrapper" id="etextbook_page2Wrapper" style="text-align: left;">
+                        <img class="etextbook_page" onerror="imageError(this)" id="etextbook_page2">
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div id="etextbook_rectClickImgWrapper" style="margin: 0 auto;">
+            <table cellpadding="0" cellspacing="0" style="width: 100%">
+                <tr>
+                    <td id="etextbook_rectClickImgCell" valign="middle" align="center">
+                        <img id="etextbook_rectClickImg">
+                        <audio id="etextbook_rectClickAudio" src=""></audio>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table id="etextbook_actionWrapper" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="etextbook_actionCell" valign="middle" align="center">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="etextbook_footer" style="margin: 0 auto;display: none;">
+        <table cellspacing="0" cellpadding="0">
+            <tr>
+                <td id="etextbook_footerTableCell" width="200" align="left">
+                    <span id="etextbook_speedCtrl" tapmode onclick="onSwitchSpeed()">正常语速</span>
+                </td>
+
+                <if condition="$isTeacher eq 'true'">
+                    <td align="center" valign="middle">
+                        <img class="f-content" tapmode src="__PUBLIC__/DigitalClassroom/images/etextbook_content.png"
+                             onclick="turnToContentPage()">
+                        <img class="f-pre" tapmode src="__PUBLIC__/DigitalClassroom/images/etextbook_prev.png"
+                             onclick="turnToPreviousPage()">
+                        <img class="f-nex" tapmode src="__PUBLIC__/DigitalClassroom/images/etextbook_next.png"
+                             onclick="turnToNextPage()">
+                    </td>
+                </if>
+            </tr>
+        </table>
+    </div>
+    <div id="etextbook_kalaok">
+        <div class="text" id="etextbook_text">
+        </div>
+    </div>
+    <div id="etextbook_jplayer"></div>
+
+    <div id="btn_tuya_textbook_wrapper">
+        <img onclick="toggleTuYaForTextbook()" id="btn_tuya_textbook_ctrl" width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png" title="启用/禁用白板">
+        <img onclick="beginTuYaTextbook()" id="btn_tuya_textbook_ctrl_pen" class="btn_tuya_sub_ctrl" width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_deactive.png" style="display: none;" title="绘制">
+        <img onclick="clearTextbookTuYa()" id="btn_tuya_textbook_ctrl_eraser" class="btn_tuya_sub_ctrl" width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_deactive.png" style="display: none;"
+             title="擦除">
+        <img onclick="clearAllTextbookTuYa()" id="btn_tuya_textbook_ctrl_clear" class="btn_tuya_sub_ctrl" width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_blank_deactive.png" style="display: none;"
+             title="清空">
+        <img onclick="toggleTuYaForTextbookOpacity()" id="btn_tuya_textbook_ctrl_opacity" class="btn_tuya_sub_ctrl"
+             width="50"
+             src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_deactive.png" style="display: none;"
+             title="透明控制">
+
+        <div id="textbookColorPickerWrapper" class="colorPickerWrapper btn_tuya_sub_ctrl" style="display: none;">
+            <span onclick="changeTextbookTuyaLineColor('#ff0000')" class="colorPicker colorPicker_red selected" data-color="#ff0000"></span>
+            <br>
+            <span onclick="changeTextbookTuyaLineColor('#D8A209')" class="colorPicker colorPicker_yellow" data-color="#D8A209"></span>
+            <br>
+            <span onclick="changeTextbookTuyaLineColor('green')" class="colorPicker colorPicker_green" data-color="green"></span>
+            <br>
+            <span onclick="changeTextbookTuyaLineColor('#000000')" class="colorPicker colorPicker_black" data-color="#000000"></span>
+            <br>
+        </div>
+    </div>
+    <div id="whiteboard_etextbook" class="whiteboard">
+        <canvas id="etextbook_canvas">
+            您的浏览器不支持白板功能
+        </canvas>
+    </div>
+
+    <script type="text/javascript">
+        var bookId = '{$book.id}';
+        var bookName = '{$book.name}';
+        var has_ebook = '{$book.has_ebook}';
+        var currentPageId = [1, 2];
+        var contentPage1Id = 0;
+        var contentPage2Id = 0;
+        var serverPath = '{$book.server_path}';
+        var speed = 'normal';//语速 normal 正常 slow 缓慢
+        var book = null;
+        var pageWidth = 512;//每一页的宽度
+
+        var PUBLIC_METRO = '__PUBLIC_METRO__';
+        var PUBLIC_PATH = '__PUBLIC__';
+
+        var bookInfo = {
+            width: 512,
+            height: 713,
+            pages: []
+        };
+
+        var currentPage1Info = null;
+        var currentPage2Info = null;
+
+        var currentPage1KalaOKInfo = [];
+        var currentPage2KalaOKInfo = [];
+
+
+        var pagePos = {
+            paddingTop: 0,
+            paddingBottom: 0
+        };
+
+        var audio = null;
+        var video = null;
+
+        $(function () {
+            adjustPage();
+            loadBookInfo();
+        })
+
+        var flashSwf = ['<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="800" height="600"',
+            '                        codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=20,0,0,0" id="swf">',
+            '                    <param name="movie" value="{0}">',
+            '                    <param name="quality" value="high">',
+            '                    <param name="bgcolor" value="#F0F0F0">',
+            '                    <param name="menu" value="false">',
+            '                    <param name="wmode" value="opaque">',
+            '                    <param name="FlashVars" value="">',
+            '                    <param name="allowScriptAccess" value="always">',
+            '                    <param name="allowNetworking" value="all">',
+            '                    <param name="loop" value="false">',
+            '                    <param name="play" value="true">',
+            '                    <embed name="swf" src="{0}"',
+            '                           width="800" height="600"',
+            '                           align="middle"',
+            '                           quality="high"',
+            '                           menu="false"',
+            '                           play="true"',
+            '                           loop="false"',
+            '                           FlashVars=""',
+            '                           allowScriptAccess="always"',
+            '                           type="application/x-shockwave-flash"',
+            '                           pluginspage="http://www.adobe.com/go/getflashplayer">',
+            '                    </embed>',
+            '                </object>'].join("");
+
+        var flvPlay = '<div style="color:red;">系统识别出该视频格flv格式,因大部分浏览器都不支持该格式，如果播放有问题，请联系管理员将其转换为mp4格式</div><video src="{0}" style="width: 500px;height: 500px;" controls="controls"></video>';
+        //var swfVideoPlay = '<embed width="800" height="600" name="plugin" src="{0}" type="application/x-shockwave-flash">';
+        var swfVideoPlay = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="800" height="600" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf"><embed width="800" height="600" name="plugin" src="{0}" type="application/x-shockwave-flash"><param name="loop" value="true"><param name="movie" value="{0}"></object>';
+        var mp4VideoPlay = '<video src="{0}" controls></video>';
+        var flvVideoPlay = '<div id="flvPlayer"></div>';
+        var mp3AudioPlay = '<audio src="{0}" controls></audio>';
+
+        var jPlayer = $("#etextbook_jplayer");
+        jPlayer.jPlayer({
+            swfPath: "__PUBLIC__/jplayer/dist/jplayer",
+            supplied: "mp3",
+            wmode: "window"
+        });
+    </script>
+    <script src="__PUBLIC__/flvPlayer/swfobject.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/DigitalClassroom/bookhelper.js?v=110"></script>
+    <script>
+        $(function () {
+            $(window).resize(function () {
+                adjustPage();
+            });
+        })
+    </script>
+    <else/>
+    <div class="emptyResult">该教材（{$book.name}）暂时没有数字教材</div>
+</if>

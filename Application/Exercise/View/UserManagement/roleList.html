@@ -1,0 +1,80 @@
+<layout name="admin_layout_exercise"/>
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<script>
+  $(function(){
+    var boxHeight = $(window).height() - 180;
+    $('.boxOutter').css('min-height',boxHeight)
+  })
+</script>
+<div class="boxOutter">
+    <div class="borderBottom  mb30  of">
+    	<?php if(in_array('UserManagement/userManagement',session('exercises_permissions'))){ ?>
+    	<a href="{:U('UserManagement/userManagement')}" class="tabBtn  left text-center">用户管理</a>
+    	<?php }?>
+    	<?php if(in_array('UserManagement/roleList',session('exercises_permissions'))){ ?>
+      <button type="button" name="button" class="tabBtn active left">角色管理</button>
+    	<?php }?>
+    	<?php if(in_array('UserManagement/userBehaviorManagement',session('exercises_permissions'))){ ?>
+    	<a href="{:U('UserManagement/userBehaviorManagement')}" class="tabBtn left text-center">用户行为管理</a>
+    	<?php }?>
+    </div>
+  <div class="tableTop">
+          <?php if(in_array('UserManagement/userManagement',session('exercises_permissions'))){ ?>
+        <a href="{:U('UserManagement/addRoles')}"><button class="btn" id="">添加角色</button></a>
+          <?php }?>
+  </div>
+  <table class="tableCommon">
+    <thead>
+      <tr >
+        <th width=20%>角色名称</th>
+        <th width=20%>角色描述</th>
+        <th width=40%>角色权限</th>
+        <th width=20%>角色操作</th>
+		</tr>
+    </thead>
+    <tbody>
+    <?php foreach($list as $item){?>
+      <tr >
+        <td title="<?php echo $item['name']?>"><?php echo $item['name']?></td>
+        <td title="<?php echo $item['description']?>"><?php echo $item['description']?></td>
+        <td title="<?php echo $item['module_name']?>"><?php echo $item['module_name']?></td>
+        <td>
+            <!-- <a href="" class="tableABtn">查看</a> -->
+          <?php if(in_array('UserManagement/saveRoles',session('exercises_permissions'))){ ?>
+            <a href="<?php echo U('UserManagement/saveRoles').'&id='.$item['id']?>" class="tableABtn addRemarksBtn">修改</a>
+          <?php }?>
+         <!-- <?php if(in_array('UserManagement/deletes',session('exercises_permissions'))){ ?>
+            <a href="javascript:;" attr-data="<?php echo $item['id']?>" class="tableABtn" onclick='deletes($(this))'>删除</a>
+          <?php }?>-->
+        </td>
+      </tr>
+    <?php }?>
+    </tbody>
+  </table>
+  <div class="Pagination">{$page}</div>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	function deletes(obj){
+	    var id = obj.attr('attr-data');
+        $.NotifyBox.NotifyTwoCallOneGray('提示','你确定要删除吗？','确定','取消',deleteOperation);
+        function deleteOperation() {
+            $.ajax({
+                url:"{:U('UserManagement/deletes')}",
+                data:{'id':id,'delete_status':1},
+                type:"post",
+                dataType:'json',
+                success:function (data) {
+                    if(data.status == 200){
+                        location.reload();
+                    }else{
+                        $.NotifyBox.NotifyOne('提示',data.msg,'确定');
+                    }
+
+                }
+            })
+        }
+	}
+</script>

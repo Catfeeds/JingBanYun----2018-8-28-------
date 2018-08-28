@@ -1,0 +1,191 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<style>
+    #listWrapper img{
+        width: 50px !important;
+        height: 50px !important;
+        margin-right: 10px;
+        margin-top: 5px;
+    }
+
+    select {
+        border: 1px #d9d9d9 solid;
+        width: 140px;
+        height: 100%;
+        padding: .3125rem;
+    }
+
+    .list_title {
+        width: 120px;
+        line-height: 50px;
+    }
+
+    .list_title a {
+        color: #2086bf !important;
+    }
+
+    .codeLabel {
+        width: 120px;
+        position: relative;
+        top: 2px;
+    }
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary " style="box-sizing:border-box;">&lt; 返回</a>
+</div>
+<div class="titleBox">
+    <p class="blueText fs18 underline1">
+        活动宣传管理
+        <span class="blueSpan">
+            <a href="{:U('PullPeopleActivity/pullPeopleActivityList')}">活动宣传管理</a>>>
+            <a href="javascript:;">活动宣传详情</a>
+        </span>
+    </p>
+    <div class="underline2"></div>
+</div>
+
+<div>
+    <div class="grid condensed searchbar">
+        <form action="" method="post" enctype="multipart/form-data">
+        <div class="row cells2 cellBox">
+            <div class="cell">
+                <label>活动名称：</label>
+                <input type="text" class="input-control input-control-before" id="name" name="activity_name"value="{$info['activity_name']}">
+                <span id="error_name" style="color: #e61410; font-size: 14px"></span>
+            </div>
+
+            <!--<div class="cell">
+                <label>活动URL：</label>
+                <input type="text" name="activity_url"value="{$info['activity_url']}">
+            </div>-->
+
+            <div class="cell">
+                <label>上下架操作：</label>
+                <select class="input-control input-control-before" name="status">
+                     <option value="2" <?php if($info['activity_status'] == 2){echo 'selected';}?>>上架</option>
+                     <option value="1" <?php if($info['activity_status'] == 1){echo 'selected';}?>>下架</option>
+                </select>
+            </div>
+
+            <div class="blueDashed upload" display="block">
+                <div class="blueTitle">
+                    二维码上传
+                </div>
+
+                <div class="sectionMain">
+                    <div class="newSection">
+                        <span class="redStar">*</span>
+                        <label for="" class="codeLabel">QQ二维码上传</label>
+                        <span id="error_qq" style="color: #e61410; font-size: 14px; position: relative; top: 2px;"></span>
+                        <input type="file" accept="image/png,image/jpeg" id="qq" attr-data="<?php echo $info['qq_code']?>" class="input-control input-control-before" name="qq_code" placeholder="请上传QQ二维码">
+                        <?php if($info['qq_code']){ ?>
+                        <img src="<?php echo $oss_path.$info['qq_code']?>" id="qq_code" style="width:300px;">
+                        <?php }else{?>
+                        <img src="" id="qq_code" style="width:300px;">
+                        <?php }?>
+                    </div>
+
+                    <div class="newSection">
+                        <span class="redStar">*</span>
+                        <label for="" class="codeLabel">微信二维码上传</label>
+                        <span id="error_wx" style="color: #e61410; font-size: 14px; position: relative; top: 2px;"></span>
+                        <input type="file" id="wx" accept="image/png,image/jpeg" attr-data="<?php echo $info['wx_code']?>"  class="input-control input-control-before" name="wx_code" placeholder="请上传微信二维码">
+                        <?php if($info['wx_code']){?>
+                        <img src="<?php echo $oss_path.$info['wx_code']?>" id="wx_code" style="width:300px;">
+                        <?php }else{?>
+                        <img src="" id="wx_code" style="width:300px;">
+                        <?php }?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions text-center">
+            <button type="submit" class="button info" onclick="return check()">提交</button>
+        </div>
+        </form>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 375) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"10%"},
+                {"width":"30%"},
+                {"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"}
+            ]
+        });
+    });
+
+    function check() {
+        if($('#name').val() == ''){
+            $('#error_name').text('不能为空');
+            return false;
+        }else{
+            $('#error_name').hide()
+        }
+        if($('#qq').val() == '' && $('#qq').attr('attr-data') == ''){
+            $('#error_qq').text('不能为空');
+            return false;
+        }else {
+            $('#error_qq').hide()
+        }
+        if($('#wx').val() == '' && $('#wx').attr('attr-data') == ''){
+            $('#error_wx').text('不能为空');
+            return false;
+        }else{
+            $('#error_wx').hide();
+        }
+    }
+</script>
+<script type="text/javascript">
+    /********************************************实时更换图片*********************************************************/
+    document
+        .querySelector('#qq')
+        .addEventListener('change', function(){
+            //当没选中图片时，清除预览
+            if(this.files.length === 0){
+                document.querySelector('#qq_code').src = "<?php echo $oss_path.$info['qq_code']?>";
+                return;
+            }
+
+            //实例化一个FileReader
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                //当reader加载时，把图片的内容赋值给
+                document.querySelector('#qq_code').src = e.target.result;
+            };
+
+            //读取选中的图片，并转换成dataURL格式
+            reader.readAsDataURL(this.files[0]);
+        }, false);
+
+    document
+        .querySelector('#wx')
+        .addEventListener('change', function(){
+            //当没选中图片时，清除预览
+            if(this.files.length === 0){
+                document.querySelector('#wx_code').src = "<?php echo $oss_path.$info['wx_code']?>";
+                return;
+            }
+
+            //实例化一个FileReader
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                //当reader加载时，把图片的内容赋值给
+                document.querySelector('#wx_code').src = e.target.result;
+            };
+
+            //读取选中的图片，并转换成dataURL格式
+            reader.readAsDataURL(this.files[0]);
+        }, false);
+</script>

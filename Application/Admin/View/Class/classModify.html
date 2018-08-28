@@ -1,0 +1,85 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		班级管理
+		<span class="blueSpan">
+			<a href="javascript:;">班级行管理</a>>>
+			<a href="{:U('Class/classList')}">班级管理</a>>>
+			<a href="javascript:;">修改班级信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form action="{:U('Class/updateClass')}" method="post">
+	<div class="blueBox">
+		<span class="blueText left fs18">班级详情</span>
+		<a href="javascript:;" class="blackText right submitA" id="" onclick="checkInfo()">
+			<img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="mr10">
+			<input type='submit' value='保存修改' class='submitInput'/>
+		</a>
+	</div>
+        <input type='hidden' value='{$data.class_id}' name='id'/>
+	<hr class="thin bg-grayLighter">
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>年级：</label> 
+                                <input type="text" class="input-control grade_name" name="grade" value="{$data.grade}" placeholder="请输入年级" disabled="true">
+			</div>
+			<div class="cell">
+				<label>班级：</label>
+				<input type="text" class="input-control class_name" name="class" value="{$data.class_name}" placeholder="请输入班级名称" maxlength="7">
+			</div>
+			<div class="cell">
+				<label>班级代码：</label>
+				<input type="text" class="input-control class_code" name="class_code" value="{$data.class_code}" placeholder="请输入班级代码" disabled="true">
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="tabBox">
+	<ul class="left tabUl" id="tabUl">
+		<li class="tabLi tabActive">课程表</li>
+		<li class="tabLi">学生信息</li>
+		<li class="tabLi">教师信息</li>
+		<li class="tabLi">家长信息</li>
+	</ul>
+	<div class="tabCon" id="tabCon">
+		<iframe class="tabConActive" id="classFrame" src="{:U('Class/class_iframe_classTimetable')}&id={$data.class_id}" frameborder="0" width="850" height="900" border=0 style="margin: 0 auto"></iframe>
+		<iframe style="width: 100%;" frameborder="0" src="{:U('Class/class_iframe_student')}&id={$data.class_id}"></iframe>
+		<iframe style="width: 100%;" frameborder="0" src="{:U('Class/class_iframe_teacher')}&id={$data.class_id}"></iframe>
+		<iframe style="width: 100%;" frameborder="0" src="{:U('Class/class_iframe_parent')}&id={$data.class_id}"></iframe>
+	</div>
+</div>
+
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByTagName("iframe");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].onclick=function(){
+				change(this);
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="";
+				}
+			}
+		} 
+	}
+	
+</script>
+
+

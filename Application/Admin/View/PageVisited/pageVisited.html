@@ -1,0 +1,726 @@
+<layout name="admin_layout_back"/> 
+<link href="__PUBLIC__/userAnalysis/page_report_blue.css" rel="stylesheet" type="text/css">
+<script src="https://www.amcharts.com/lib/3/amcharts.js" type="text/javascript"></script>
+<script src="https://www.amcharts.com/lib/3/serial.js" type="text/javascript"></script>
+<script src="https://www.amcharts.com/lib/3/pie.js" type="text/javascript"></script>
+<script src="https://www.amcharts.com/lib/3/funnel.js" type="text/javascript"></script>
+<script src="https://www.amcharts.com/lib/3/xy.js" type="text/javascript"></script>
+<script language="javascript" src="__PUBLIC__/userAnalysis/func.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $(document).on('click',".editmark",function(){
+            var thismark = $(this);
+            var markid = thismark.attr("data");
+            $("input[name='markid']").val(markid);
+            $("#inputmarkname").val(thismark.next().text());
+            $("#editmark").show();
+            $("#addmark").hide();
+        });
+
+        $(document).on('click',"#editmark",function(){
+            var thismark = $(this);
+            var markid = $("input[name='markid']").val();
+            var markname = $("#inputmarkname").val();
+            $.get("bookmark.php?website=10000006&server=d1&fname=hotpage&reportname=受访页面&RefererUrl=%2Fcommon_demo%2Fpage.php%3Fwebsite%3D10000006%26server%3Ds1%26menutag%3Dtopmenu_page&action=edit", {
+                        "markname": markname,
+                        "markid": markid
+                    },
+                    function(data){
+                        layer.msg(data.msg);
+                        $("#editmark").hide();
+                        $("#addmark").show();
+                        if(data.status=="success"){
+                            $("li[dataid="+markid+"]").find("a").eq(2).text(markname);
+                        }
+                    }, "json"
+            );
+        });
+
+        //帮助
+        $("#tophelp").click(function(){
+            var menutag = $(this).attr('data');
+            var filename = "";
+            if(menutag=="topmenu_online"){
+                filename = "7_1_2.html";
+            }
+            else if(menutag=="topmenu_flow"){
+                filename = "7_1_3.html";
+            }
+            else if(menutag=="topmenu_referer"){
+                filename = "7_1_4.html";
+            }
+            else if(menutag=="topmenu_medium"){
+                filename = "7_1_5.html";
+            }
+            else if(menutag=="topmenu_page"){
+                filename = "7_1_6.html";
+            }
+            else if(menutag=="topmenu_visitor"){
+                filename = "7_1_7.html";
+            }
+            else if(menutag=="topmenu_target"){
+                filename = "7_1_8.html";
+            }
+            else if(menutag=="topmenu_ebuy" || menutag=="topmenu_finance"){
+                filename = "7_1_9.html";
+            }
+            else if(menutag=="topmenu_app"){
+                filename = "7_1_10.html";
+            }
+            else{
+                filename = "7_1_1.html";
+            }
+            layer.open({
+                type: 2,
+                title: '帮助',
+                shadeClose: true,
+                shade: 0.2,
+                area: ['60%', '80%'],
+                content: 'http://www.phpstat.net/help/doc/html/'+filename //iframe的url
+            });
+        });
+
+    });
+</script>
+<form method="POST" action="" name="exportform">
+    <input type="hidden" name="website" value="10000006">
+    <input type="hidden" name="server" value="d1">
+    <input type="hidden" name="fname" value="hotpage">
+    <input type="hidden" name="nowview" value="受访页面">
+    <input type="hidden" name="showfield" value="">
+    <input type="hidden" name="starttime" value="2016-08-27">
+    <input type="hidden" name="endtime" value="2016-10-25">
+    <input type="hidden" name="where" value="">
+    <input type="hidden" name="setsql" value="">
+    <input type="hidden" name="flashimg" value="GRAPH_PIE_DATA|GRAPH_MSLINE_QUALITY_DATA">
+    <input type="hidden" name="flashimgkey" value="">
+    <input type="hidden" name="inputkey" value="">
+    <input type="hidden" name="setappstr" value="">
+</form>
+<!-- exportformend -->
+<!--主体-->
+<div class="toolbar">
+    <div class="toolbar_left"><span>受访页面</span>
+        <!--<a href="javascript:;" class="tophelp" id="tophelp" data="topmenu_page"></a>-->
+    </div>
+    <!--<div class="toolbar_right">-->
+		<!--<span class="bookmark common_bg">-->
+		<!--<a href="javascript:;" id="clickbookmark" title="书签" alt="书签">书签</a>-->
+
+	<!--&nbsp;&nbsp;|</span>-->
+        <!--<span class="sendmail common_bg"><a href="#" onclick="sendemail('hotpage','受访页面','','','10000006','d1','2016-08-27','2016-10-25','%2Fcommon_demo%2Fpage.php%3Fwebsite%3D10000006%26server%3Ds1%26menutag%3Dtopmenu_page');" title="邮件" alt="邮件">邮件</a>&nbsp;&nbsp;|</span>-->
+        <!--&lt;!&ndash;导出&ndash;&gt;-->
+        <!--<span class="export common_bg"><a href="#" onclick="csvexport()">导出</a>&nbsp;&nbsp;|</span>-->
+
+        <!--<span class="refresh common_bg"><a href="#" onclick="sendapi('hotpage','受访页面','10000006','d1','2016-08-27','2016-10-25');" title="刷新" alt="刷新">API</a>&nbsp;&nbsp;|</span>-->
+        <!--<span class="refresh common_bg"><a href="#" onclick="self.location.reload();" title="刷新" alt="刷新">刷新</a></span><a href="#" onclick="showsql()">+</a>-->
+        <!--&lt;!&ndash;class="toolbar_right"&ndash;&gt;</div>-->
+    <!--&lt;!&ndash;class="toolbar"&ndash;&gt;-->
+</div>
+<div class="mainbox p5">
+    <script language="Javascript">
+        function dojump(seltype)
+        {
+            var _arr = seltype.split('|_|');
+            if( seltype )
+            {
+                if( _arr[0] == 'pagecontent' )
+                {
+                    window.open("?website=10000006&server=d1&sourcetypes=all&pagetypes=page&pagesite="+_arr[1]+"&pageurl="+_arr[2]+"&action=pagecontent&starttime=2016-08-27&endtime=2016-10-25&pagegroup=");
+                }
+                if( _arr[0] == 'clickhot' )
+                {
+                    openclickhot(_arr[1]+"&pagegroup=",_arr[2],'0,23','0');
+                }
+                if( _arr[0] == 'clickhrefmap' )
+                {
+                    openclickarea(_arr[1]+"&pagegroup=",_arr[2]);
+                }
+                if( _arr[0] == 'clickareamap' )
+                {
+                    openclickarea(_arr[1]+"&pagegroup=",_arr[2]);
+                }
+                if( _arr[0] == 'clickviewmap' )
+                {
+                    openclickview(_arr[1]+"&pagegroup=",_arr[2]);
+                }
+                if( _arr[0] == 'page' )
+                {
+                    window.open("options_history.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&options1=page&options2="+_arr[2]+"&options3="+_arr[1]+"&regexp="+_arr[3]+"&regpos="+_arr[4]+"");
+                }
+                if( _arr[0] == 'pagedaydata' )
+                {
+                    window.open("options_history.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&options1=pagedaydata&options2="+_arr[2]+"&options3="+_arr[1]+"&regexp="+_arr[3]+"&regpos="+_arr[4]+"");
+                }
+                if( _arr[0] == 'tracklastpage' )
+                {
+                    window.open("show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue="+_arr[1]+_arr[2]+"&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2&pagegroup=");
+                }
+                if( _arr[0] == 'tracktagidclick' )
+                {
+                    window.open("tagid_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&orderpage="+_arr[1]+_arr[2]+"&pagegroup=");
+                }
+            }
+        }
+    </script>
+    <script language="javascript" src="__PUBLIC__/userAnalysis/templates/blue/imagefiles/cal.js"></script>
+
+    <div class="selectdate mt15">
+        <div class="selectdate_right">
+            <form id="form1" name="form1" method="get" action="/index.php?m=Admin&c=PageVisited&a=pageVisited">
+                <input name="m" value="Admin" type="text" style="display:none">
+                <input name="c" value="PageVisited" type="text" style="display:none">
+                <input name="a" value="pageVisited" type="text" style="display:none">
+                <input type="hidden"		name="pagegroup"	value=""/>
+                <input type="hidden" name="server" value="d1"><input type="hidden" name="searchkey"  value=""/><input type="hidden" name="searchtype" value=""><input type="hidden" name="sourcetypes" value="all"><input type="hidden" name="pagetypes" value="page">
+
+                 开始&nbsp;<input name="starttime" type="text" id="starttime" value="<?php if (isset($queryParas['starttime'])) echo $queryParas['starttime'];else echo $constQueryParasInfo['currentDateM60'];?>" onclick="new Calendar('lang_zh').show(this);" class="inp01">&nbsp;结束&nbsp;
+                <input name="endtime" type="text" id="endtime" value="<?php if (isset($queryParas['endtime'])) echo $queryParas['endtime'];else echo $constQueryParasInfo['currentDateM1'];?>" onclick="new Calendar('lang_zh').show(this);" class="inp01"> <input type="submit" name="Submit" value="分析" onclick="javascript:form1.submit()" class="but_search"/>
+            </form>
+            <!--class="selectdate_right"--></div>
+        <div class="selectdate_left common_bg">
+            <span></span>
+            <a href="?m=Admin&c=PageVisited&a=pageVisited&starttime={$constQueryParasInfo['currentDate']}&endtime={$constQueryParasInfo['currentDate']}"class='<?php if($queryParas['starttime'] == $constQueryParasInfo['currentDate'] && $queryParas['endtime'] == $constQueryParasInfo['currentDate'])  echo 'selected';?>'>今天统计</a>
+            <span>|</span><a href="?m=Admin&c=PageVisited&a=pageVisited&starttime={$constQueryParasInfo['currentDateM1']}&endtime={$constQueryParasInfo['currentDateM1']}"class='<?php if($queryParas['starttime'] == $constQueryParasInfo['currentDateM1'] && $queryParas['endtime'] == $constQueryParasInfo['currentDateM1'])  echo 'selected';?>'>昨天统计</a>
+            <span>|</span><a href="?m=Admin&c=PageVisited&a=pageVisited&starttime={$constQueryParasInfo['currentDateM7']}&endtime={$constQueryParasInfo['currentDateM1']}"class='<?php if($queryParas['starttime'] == $constQueryParasInfo['currentDateM7'] && $queryParas['endtime'] == $constQueryParasInfo['currentDateM1'])  echo 'selected';?>'>过去7天</a>
+            <span>|</span><a href="?m=Admin&c=PageVisited&a=pageVisited&starttime={$constQueryParasInfo['currentDateM30']}&endtime={$constQueryParasInfo['currentDateM1']}"class='<?php if($queryParas['starttime'] == $constQueryParasInfo['currentDateM30'] && $queryParas['endtime'] == $constQueryParasInfo['currentDateM1'])  echo 'selected';?>'>过去30天</a>
+            <span>|</span><a href="?m=Admin&c=PageVisited&a=pageVisited&starttime={$constQueryParasInfo['currentDateM60']}&endtime={$constQueryParasInfo['currentDateM1']}"class='<?php if($queryParas['starttime'] == $constQueryParasInfo['currentDateM60'] && $queryParas['endtime'] == $constQueryParasInfo['currentDateM1'])  echo 'selected';?>'>过去60天</a>
+        </div>
+        <!--class="selectdate"--></div>
+    <script type="text/javascript">
+        var click_menu_report = new Array();
+//        click_menu_report['page'] = {name:'受访页面',page:'page.php',url:'&pagetypes=page'};
+//        click_menu_report['pagegroup'] = {name:'页面分组',page:'page.php',url:'&pagetypes=pagegroup'};
+//        click_menu_report['bypagegroup'] = {name:'页面分组构成',page:'page.php',url:'&pagetypes=bypagegroup'};
+//        click_menu_report['entry_page'] = {name:'进入页面',page:'entry_page.php',url:''};
+//        click_menu_report['exit_page'] = {name:'离开页面',page:'exit_page.php',url:''};
+//        //click_menu_report['clicktopage'] = {name:'外链页面',page:'rank_clickto_page.php',url:''};
+//        //click_menu_report['pagetrend'] = {name:'页面上下游',page:'page_trend.php',url:''};
+//        click_menu_report['clickdownpage'] = {name:'下载文件',page:'rank_clickdown_page.php',url:''};
+//        click_menu_report['hotmaparea'] = {name:'页面热点图快照',page:'clickhot.php',url:''};
+
+        var click_menu_page_group = new Array();
+        click_menu_page_group['pageall'] = {name:'带参数页面',url:'&pagegroup=pageall'};
+        click_menu_page_group['pagepath'] = {name:'去参数页面',url:'&pagegroup=pagepath'};
+
+        var click_menu_page_types = new Array();
+        click_menu_page_types['3'] = {name:'普通页面',url:'&pagetypes=page'};
+        click_menu_page_types['4'] = {name:'分组页面',url:'&pagetypes=pagegroup'};
+
+        var click_menu_pageview = new Array();
+        click_menu_pageview['1'] = {name:'全部数据',url:'&viewcounts=1'};
+        click_menu_pageview['10'] = {name:'大于10',url:'&viewcounts=10'};
+        click_menu_pageview['50'] = {name:'大于50',url:'&viewcounts=50'};
+        click_menu_pageview['100'] = {name:'大于100',url:'&viewcounts=100'};
+        click_menu_pageview['500'] = {name:'大于500',url:'&viewcounts=500'};
+        click_menu_pageview['1000'] = {name:'大于1000',url:'&viewcounts=1000'};
+        //新老用户
+        var user_menu_pageview = new Array();
+        user_menu_pageview['all'] = {name:'全部',url:'&group_new='};
+        user_menu_pageview['new_user'] = {name:'新访客',url:'&group_new=new_user'};
+        user_menu_pageview['old_user'] = {name:'老访客',url:'&group_new=old_user'};
+        //是否注册
+        var user_menu_pageview2 = new Array();
+        user_menu_pageview2['all'] = {name:'全部',url:'&group_regist='};
+        user_menu_pageview2['regis_user'] = {name:'注册访客',url:'&group_regist=regis_user'};
+        user_menu_pageview2['visit_user'] = {name:'未注册访客',url:'&group_regist=visit_user'};
+        //分类
+        var click_menu_types_html = new Array();
+        click_menu_types_html['all'] = {name:'全部数据',url:'&sourcetypes=all'};
+        click_menu_types_html['web'] = {name:'Web',url:'&sourcetypes=web'};
+//        click_menu_types_html['wap'] = {name:'Wap',url:'&sourcetypes=wap'};
+        click_menu_types_html['android'] = {name:'Android',url:'&sourcetypes=android'};
+        click_menu_types_html['ios'] = {name:'Ios',url:'&sourcetypes=ios'};
+
+        var click_menu_role_html = new Array();
+        click_menu_role_html['0'] = {name:'全部数据',url:'&role=-1'};
+        click_menu_role_html['1'] = {name:'教师',url:'&role=0'};
+        click_menu_role_html['2'] = {name:'学生',url:'&role=1'};
+        click_menu_role_html['3'] = {name:'家长',url:'&role=2'};
+        click_menu_role_html['4'] = {name:'游客',url:'&role=3'};
+    </script>
+    <div class="clearfix mt15">
+        <script language="javascript">create_ul_li_no_html_report(click_menu_report,'page','img');</script>
+    </div>
+    <div class="stat_graph mt15">
+        <h3>
+            <script language="javascript">
+                var click_menu = new Array();
+                click_menu[0] = '受访页面';
+//                click_menu[1] = '受访页面访问质量';
+
+                var click_menu_html_target = new Array();
+                click_menu_html_target['target_all'] = {name:'全部数据',url:'&targetkey='};
+            </script>
+            <div class="graph_tab mt15">
+                <ul>
+                    <script language="JavaScript">create_ul_li_js(click_menu,'0');</script>
+                </ul>
+            </div>
+        </h3>
+        <div class="box">
+            <div id="show_report_1">
+                <div id="GRAPH_PIE_DATA_div_id" style="width: 100%; height: 360px;"></div>
+                <script type="text/javascript">
+                    var chartGRAPH_PIE_DATA;
+                    var chartDataGRAPH_PIE_DATA ={$pieData};
+//                        'name':'订单Demo演示 第1步','value':16685},{ 'name':'订单Demo演示 第2步','value':15934},{ 'name':'APP启动页','value':16670},{ 'name':'enterpage','value':45582},{ 'name':'Demo演示','value':4658},{ 'name':'订单Demo演示 第1步','value':4183},{ 'name':'订单Demo演示 第3步','value':3211},{ 'name':'易分析 - 国内领先的基于交互行为的用户...','value':5331},{ 'name':'订单Demo演示 第1步','value':2427},{ 'name':'订单Demo演示 第1步','value':2406}
+//                    ];
+                    //AmCharts.ready(function () {
+                    chartGRAPH_PIE_DATA = new AmCharts.AmPieChart();
+                    chartGRAPH_PIE_DATA.dataProvider = chartDataGRAPH_PIE_DATA;
+                    chartGRAPH_PIE_DATA.titleField = "name";
+                    chartGRAPH_PIE_DATA.valueField = "value";
+                    chartGRAPH_PIE_DATA.outlineColor = "#FFFFFF";
+                    chartGRAPH_PIE_DATA.outlineAlpha = 0.8;
+                    chartGRAPH_PIE_DATA.radius = 60;
+                    chartGRAPH_PIE_DATA.outlineThickness = 2;
+                    chartGRAPH_PIE_DATA .color = '#666666';
+                    chartGRAPH_PIE_DATA .fontSize = 12;
+                    chartGRAPH_PIE_DATA.write("GRAPH_PIE_DATA_div_id");
+                    //});
+                </script>
+            </div>
+            <!--<div id="show_report_2" style="height:0;overflow:hidden;">-->
+                <!--<div id="GRAPH_MSLINE_QUALITY_DATA_div_id" style="width: 100%; height: 360px;"></div>-->
+                <!--<script type="text/javascript">-->
+                    <!--var chartGRAPH_MSLINE_QUALITY_DATA ;-->
+                    <!--var chartDataGRAPH_MSLINE_QUALITY_DATA=[{ 'subscript' : '','value0':16604,'value1':16685},{ 'subscript' : '','value0':15709,'value1':15934},{ 'subscript' : '','value0':6843,'value1':16670},{ 'subscript' : '','value0':5369,'value1':45582},{ 'subscript' : '','value0':4647,'value1':4658},{ 'subscript' : '','value0':4166,'value1':4183},{ 'subscript' : '','value0':3191,'value1':3211},{ 'subscript' : '','value0':2848,'value1':5331},{ 'subscript' : '','value0':2426,'value1':2427},{ 'subscript' : '','value0':2406,'value1':2406}];-->
+                    <!--// SERIAL CHART-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA  = new AmCharts.AmSerialChart();-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA .dataProvider = chartDataGRAPH_MSLINE_QUALITY_DATA;-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA .color = '#666666';-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA .fontSize = 12;-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA .categoryField = "subscript";// category-->
+                    <!--var categoryAxisGRAPH_MSLINE_QUALITY_DATA = chartGRAPH_MSLINE_QUALITY_DATA.categoryAxis;-->
+                    <!--categoryAxisGRAPH_MSLINE_QUALITY_DATA.gridAlpha = 0.1;-->
+                    <!--categoryAxisGRAPH_MSLINE_QUALITY_DATA.axisAlpha = 0;-->
+                    <!--categoryAxisGRAPH_MSLINE_QUALITY_DATA.gridPosition = "start";var valueAxisGRAPH_MSLINE_QUALITY_DATA = new AmCharts.ValueAxis();-->
+                    <!--valueAxisGRAPH_MSLINE_QUALITY_DATA.stackType = "regular";-->
+                    <!--valueAxisGRAPH_MSLINE_QUALITY_DATA.gridAlpha = 0.1;-->
+                    <!--valueAxisGRAPH_MSLINE_QUALITY_DATA.axisAlpha = 0;-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA .addValueAxis(valueAxisGRAPH_MSLINE_QUALITY_DATA);-->
+                    <!--var graphGRAPH_MSLINE_QUALITY_DATA = new AmCharts.AmGraph();-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.title = "访客数 64209";-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.valueField = "value0";-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.type = "column";-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.lineAlpha = 0;-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.fillAlphas = 1;-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.lineColor = "#da742c";-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.balloonText = "<span style='color:#555555;'>[[category]]</span><br><span style='font-size:12px'>[[title]]:<b>[[value0]]</b></span>";-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA .addGraph(graphGRAPH_MSLINE_QUALITY_DATA);-->
+                    <!--var graphGRAPH_MSLINE_QUALITY_DATA = new AmCharts.AmGraph();-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.title = "浏览量 117087";-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.valueField = "value1";-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.type = "column";-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.lineAlpha = 0;-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.fillAlphas = 1;-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.lineColor = "#e6b54f";-->
+                    <!--graphGRAPH_MSLINE_QUALITY_DATA.balloonText = "<span style='color:#555555;'>[[category]]</span><br><span style='font-size:12px'>[[title]]:<b>[[value1]]</b></span>";-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA .addGraph(graphGRAPH_MSLINE_QUALITY_DATA);-->
+                    <!--var legendGRAPH_MSLINE_QUALITY_DATA = new AmCharts.AmLegend();-->
+                    <!--legendGRAPH_MSLINE_QUALITY_DATA.useGraphSettings = true;-->
+                    <!--legendGRAPH_MSLINE_QUALITY_DATA.borderAlpha = 0;-->
+                    <!--legendGRAPH_MSLINE_QUALITY_DATA.horizontalGap = 10;-->
+                    <!--legendGRAPH_MSLINE_QUALITY_DATA.color = '#666666';-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA .addLegend(legendGRAPH_MSLINE_QUALITY_DATA);-->
+                    <!--// WRITE-->
+                    <!--chartGRAPH_MSLINE_QUALITY_DATA.write("GRAPH_MSLINE_QUALITY_DATA_div_id");</script></div>-->
+        <!--</div>-->
+        <!--class="stat_graph"--></div>
+
+    <script language="JavaScript">
+        $(function(){
+            $(".showsearch").showSeach("展开","关闭","page");
+        })
+    </script>
+
+    <div class="search_list mt15">
+        <span class="showsearch">展开</span>
+        <div class="clearfix">
+            <b>选择：</b>
+            <script language="javascript">create_ul_li_no_html(click_menu_types_html,'{$queryParas['sourcetypes']?$queryParas['sourcetypes']:'all'}');</script>
+        </div>
+        <!-- <div class="clearfix">
+                <b>选择：</b>
+                <script language="javascript">create_ul_li_no_html(click_menu_page_types,'page','img');</script>
+        </div>	 -->
+        <!--<div class="clearfix">-->
+            <!--<b>选择：</b>-->
+            <!--<script language="javascript">create_ul_li_no_html(click_menu_page_group,'pageall','img');</script>-->
+        <!--</div>-->
+        <!--<div class="clearfix">-->
+            <!--<b>选择：</b>-->
+            <!--<script language="javascript">create_ul_li_no_html(user_menu_pageview,'all','img');</script>-->
+        <!--</div>-->
+        <!--<div class="clearfix">-->
+            <!--<b>选择：</b>-->
+            <!--<script language="javascript">create_ul_li_no_html(user_menu_pageview2,'all','img');</script>-->
+        <!--</div>-->
+        <div class="clearfix">
+            <b>浏览量：</b>
+            <script language="javascript">create_ul_li_no_html(click_menu_pageview,'{$queryParas['viewcounts']?$queryParas['viewcounts']:1}','img');</script>
+        </div>
+        <div class="clearfix">
+            <b>角色：</b>
+            <script language="javascript">create_ul_li_no_html(click_menu_role_html,'<?php if(isset($queryParas['role'])) echo $queryParas['role']+1;else echo 0 ; ?>' ,'img');</script>
+        </div>
+    </div>
+    <!-- <div class="common_tab clearfix mt15">
+        <ul><script language="javascript">create_ul_li_html(click_menu_html_target,'target_all');</script>
+        </ul>
+    </div> -->
+
+    <table  cellspacing="0" cellpadding="0" class="listtable-all mt10" align="center">
+        <tr>
+            <td width="25%" onmouseout="hideTooltip()" class="helpimg_top_nav" onmouseover="showTooltip(event,'complex_visitor')">
+                <p class="siteandpart">访客数</p>
+                <p class="siteandpartcount">{$dataAll.currentvisitors}</p>
+            </td>
+            <td width="25%" onmouseout="hideTooltip()" class="helpimg_top_nav" onmouseover="showTooltip(event,'complex_visited')">
+                <p class="siteandpart">浏览量</p>
+                <p class="siteandpartcount">{$dataAll.currentbrowse}</p>
+            </td>
+            <td width="25%">
+                <p class="siteandpart">平均浏览<p>
+                <p class="siteandpartcount"><?php echo number_format($dataAll['currentbrowse'] / $dataAll['currentvisitors'],2);?></p>
+            </td>
+            <td width="25%">
+                <p class="siteandpart">停留时间</p>
+                <p class="siteandpartcount">--</p>
+                <p class="siteandpartavg">网站平均数：<span> -- (--%)</span></p>
+            </td>
+        </tr>
+    </table>
+    <!--数据table-->
+    <table cellspacing="0" cellpadding="0" class="listtable01" id="tb_1">
+        <thead>
+        <tr>
+            <th style="cursor:pointer;" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'page')">受访页面</th>
+            <th width="100" onclick="sortTable('tb_1', 1, 'int')" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'complex_visitor')" style="cursor:pointer;">访客数</th>
+            <th width="100" onclick="sortTable('tb_1', 2, 'int')" style="cursor:pointer;" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'complex_visitor_ip')">IP数</th>
+            <th width="100" onclick="sortTable('tb_1', 3, 'int')" style="cursor:pointer;" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'complex_visited')">浏览量</th>
+            <th width="100" onclick="sortTable('tb_1', 4, 'int')" style="cursor:pointer;" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'mouseclick')">鼠标点击</th>
+            <th width="80" onclick="sortTable('tb_1', 5, 'float')" style="cursor:pointer;" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'average_pageviews')">平均浏览</th>
+            <th width="80" onclick="sortTable('tb_1', 6)" style="cursor:pointer;" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'average_time')">停留时间</th>
+            <th width="80" onclick="sortTable('tb_1', 7, 'float')" style="cursor:pointer;" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'new_rate')">新访客率</th>
+            <th width="80" onclick="sortTable('tb_1', 8, 'float')" style="cursor:pointer;" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'jump_rate_page')">跳出率</th>
+            <th width="80" onclick="sortTable('tb_1', 9, 'float')" style="cursor:pointer;" onmouseout="hideTooltip()" class="helpimg_top" onmouseover="showTooltip(event,'jump_out')">退出率</th>
+            <!-- <th width="5%" onclick="sortTable('tb_1', 10, 'float')" style="cursor:pointer;">PV%</th> -->
+            <!-- <th width="7%" id="delelementid">访客行为</th> -->
+            <!--<th width="100" id="delelementid">选择细分</th>-->
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="data" id="data" key="i">
+        <tr class="bgcolor{$key%2 ? 4:3}" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor{$key%2 ? 4:3}';">
+            <td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> {$data.cname}</span>
+                <!--<a target="_blank" href="{$data.url}" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a>-->
+                <!--<a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=www.phpstat.net%2Ftest_order.php%3Findex%3Dstart&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="{$data.url}" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p>-->
+                <span href="javascript:void(0)" title="{$data.url}" class="colorlink"><p style="height:20px;">{$data.url}</p></span></td>
+            <td class="tdright">{$data.visitors}</td>
+            <td class="tdright">{$data.ips}</td>
+            <td class="tdright">{$data.browsecount}</td>
+            <td class="tdright">--</td>
+            <td class="tdright"><?php echo number_format($data['avgbrowse'],4);?></td>
+            <td class="tdright">{$data.holdtime}</td>
+            <td class="tdright"><?php echo number_format($data['newvisitorrate'],4);?></td>
+            <td class="tdright">{$data.jumprate}</td>
+            <td class="tdright">{$data.exitrate}</td>
+            <!-- <td class="tdright">7.01%</td> -->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo0" name="selectinfo0" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo0.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2Ftest_order.php%3Findex%3Dstart','www.phpstat.net','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        </tr>
+        </volist>
+
+        <!--<tr class="bgcolor4" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor4';">-->
+            <!--<td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> 订单Demo演示 第2步</span><a target="_blank" href="http://www.phpstat.net/test_order.php?index=order&step=1" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a> <a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=www.phpstat.net%2Ftest_order.php%3Findex%3Dorder%26step%3D1&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="http://www.phpstat.net/test_order.php?index=order&step=1#onlinevisitor|" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p><a href="visitor_behavior.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&starttime=2016-08-27&endtime=2016-10-25&pageurl=www.phpstat.net%2Ftest_order.php%3Findex%3Dorder%26step%3D1&condition=1" title="www.phpstat.net/test_order.php?index=order&step=1" class="colorlink"><p style="height:20px;overflow:hidden;">www.phpstat.net/test_order.php?index=order&step=1</p></a></td>-->
+            <!--<td class="tdright">15,709</td>-->
+            <!--<td class="tdright">15,470</td>-->
+            <!--<td class="tdright">15,934</td>-->
+            <!--<td class="tdright">1,636</td>-->
+            <!--<td class="tdright">1.01</td>-->
+            <!--<td class="tdright">00:00:03</td>-->
+            <!--<td class="tdright">97.96%</td>-->
+            <!--<td class="tdright">6.23%</td>-->
+            <!--<td class="tdright">71.09%</td>-->
+            <!--&lt;!&ndash; <td class="tdright">6.69%</td> &ndash;&gt;-->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo1" name="selectinfo1" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo1.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2Ftest_order.php%3Findex%3Dorder%26step%3D1','www.phpstat.net','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr class="bgcolor3" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor3';">-->
+            <!--<td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> APP启动页</span><a target="_blank" href="http://s1.topstat.cn/app_pic.php?website=10000006&server=d1&sourcetypes=all&pageurl=app_host_name/APP启动" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a> <a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=app_host_name%2FAPP%E5%90%AF%E5%8A%A8&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="http://app_host_name/APP启动#onlinevisitor|" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p><a href="visitor_behavior.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&starttime=2016-08-27&endtime=2016-10-25&pageurl=app_host_name%2FAPP%E5%90%AF%E5%8A%A8&condition=1" title="app_host_name/APP启动" class="colorlink"><p style="height:20px;overflow:hidden;">app_host_name/APP启动</p></a></td>-->
+            <!--<td class="tdright">6,843</td>-->
+            <!--<td class="tdright">6,838</td>-->
+            <!--<td class="tdright">16,670</td>-->
+            <!--<td class="tdright">0</td>-->
+            <!--<td class="tdright">2.44</td>-->
+            <!--<td class="tdright">00:00:02</td>-->
+            <!--<td class="tdright">21.47%</td>-->
+            <!--<td class="tdright">1.21%</td>-->
+            <!--<td class="tdright">21.23%</td>-->
+            <!--&lt;!&ndash; <td class="tdright">7.00%</td> &ndash;&gt;-->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo2" name="selectinfo2" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo2.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2FAPP%E5%90%AF%E5%8A%A8','app_host_name','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr class="bgcolor4" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor4';">-->
+            <!--<td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> enterpage</span><a target="_blank" href="http://s1.topstat.cn/app_pic.php?website=10000006&server=d1&sourcetypes=all&pageurl=app_host_name/enterpage" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a> <a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=app_host_name%2Fenterpage&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="http://app_host_name/enterpage#onlinevisitor|" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p><a href="visitor_behavior.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&starttime=2016-08-27&endtime=2016-10-25&pageurl=app_host_name%2Fenterpage&condition=1" title="app_host_name/enterpage" class="colorlink"><p style="height:20px;overflow:hidden;">app_host_name/enterpage</p></a></td>-->
+            <!--<td class="tdright">5,369</td>-->
+            <!--<td class="tdright">5,365</td>-->
+            <!--<td class="tdright">45,582</td>-->
+            <!--<td class="tdright">378</td>-->
+            <!--<td class="tdright">8.49</td>-->
+            <!--<td class="tdright">00:00:01</td>-->
+            <!--<td class="tdright">99.87%</td>-->
+            <!--<td class="tdright">0.00%</td>-->
+            <!--<td class="tdright">0.15%</td>-->
+            <!--&lt;!&ndash; <td class="tdright">19.14%</td> &ndash;&gt;-->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo3" name="selectinfo3" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo3.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2Fenterpage','app_host_name','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr class="bgcolor3" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor3';">-->
+            <!--<td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> Demo演示</span><a target="_blank" href="http://www.phpstat.net/test_app.php?pmf_group=liuliangbao&pmf_medium=market_type_adv&pmf_source=W00006C0041371R667" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a> <a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=www.phpstat.net%2Ftest_app.php%3Fpmf_group%3Dliuliangbao%26pmf_medium%3Dmarket_type_adv%26pmf_source%3DW00006C0041371R667&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="http://www.phpstat.net/test_app.php?pmf_group=liuliangbao&pmf_medium=market_type_adv&pmf_source=W00006C0041371R667#onlinevisitor|" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p><a href="visitor_behavior.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&starttime=2016-08-27&endtime=2016-10-25&pageurl=www.phpstat.net%2Ftest_app.php%3Fpmf_group%3Dliuliangbao%26pmf_medium%3Dmarket_type_adv%26pmf_source%3DW00006C0041371R667&condition=1" title="www.phpstat.net/test_app.php?pmf_group=liuliangbao&pmf_medium=market_type_adv&pmf_source=W00006C0041371R667" class="colorlink"><p style="height:20px;overflow:hidden;">www.phpstat.net/test_app.php?pmf_group=liuliangbao&pmf_medium=market_type_adv&pmf_source=W00006C0041371R667</p></a></td>-->
+            <!--<td class="tdright">4,647</td>-->
+            <!--<td class="tdright">4,647</td>-->
+            <!--<td class="tdright">4,658</td>-->
+            <!--<td class="tdright">2,434</td>-->
+            <!--<td class="tdright">1.00</td>-->
+            <!--<td class="tdright">00:00:10</td>-->
+            <!--<td class="tdright">98.67%</td>-->
+            <!--<td class="tdright">7.90%</td>-->
+            <!--<td class="tdright">24.90%</td>-->
+            <!--&lt;!&ndash; <td class="tdright">1.96%</td> &ndash;&gt;-->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo4" name="selectinfo4" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo4.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2Ftest_app.php%3Fpmf_group%3Dliuliangbao%26pmf_medium%3Dmarket_type_adv%26pmf_source%3DW00006C0041371R667','www.phpstat.net','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr class="bgcolor4" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor4';">-->
+            <!--<td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> 订单Demo演示 第1步</span><a target="_blank" href="http://www.phpstat.net/test_order.php?pmf_group=liuliangbao&pmf_medium=market_type_adv&pmf_source=W00006C0041370R964" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a> <a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=www.phpstat.net%2Ftest_order.php%3Fpmf_group%3Dliuliangbao%26pmf_medium%3Dmarket_type_adv%26pmf_source%3DW00006C0041370R964&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="http://www.phpstat.net/test_order.php?pmf_group=liuliangbao&pmf_medium=market_type_adv&pmf_source=W00006C0041370R964#onlinevisitor|" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p><a href="visitor_behavior.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&starttime=2016-08-27&endtime=2016-10-25&pageurl=www.phpstat.net%2Ftest_order.php%3Fpmf_group%3Dliuliangbao%26pmf_medium%3Dmarket_type_adv%26pmf_source%3DW00006C0041370R964&condition=1" title="www.phpstat.net/test_order.php?pmf_group=liuliangbao&pmf_medium=market_type_adv&pmf_source=W00006C0041370R964" class="colorlink"><p style="height:20px;overflow:hidden;">www.phpstat.net/test_order.php?pmf_group=liuliangbao&pmf_medium=market_type_adv&pmf_source=W00006C0041370R964</p></a></td>-->
+            <!--<td class="tdright">4,166</td>-->
+            <!--<td class="tdright">4,166</td>-->
+            <!--<td class="tdright">4,183</td>-->
+            <!--<td class="tdright">2,134</td>-->
+            <!--<td class="tdright">1.00</td>-->
+            <!--<td class="tdright">00:00:11</td>-->
+            <!--<td class="tdright">98.01%</td>-->
+            <!--<td class="tdright">8.45%</td>-->
+            <!--<td class="tdright">27.39%</td>-->
+            <!--&lt;!&ndash; <td class="tdright">1.76%</td> &ndash;&gt;-->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo5" name="selectinfo5" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo5.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2Ftest_order.php%3Fpmf_group%3Dliuliangbao%26pmf_medium%3Dmarket_type_adv%26pmf_source%3DW00006C0041370R964','www.phpstat.net','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr class="bgcolor3" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor3';">-->
+            <!--<td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> 订单Demo演示 第3步</span><a target="_blank" href="http://www.phpstat.net/test_order.php?index=order&step=2" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a> <a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=www.phpstat.net%2Ftest_order.php%3Findex%3Dorder%26step%3D2&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="http://www.phpstat.net/test_order.php?index=order&step=2#onlinevisitor|" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p><a href="visitor_behavior.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&starttime=2016-08-27&endtime=2016-10-25&pageurl=www.phpstat.net%2Ftest_order.php%3Findex%3Dorder%26step%3D2&condition=1" title="www.phpstat.net/test_order.php?index=order&step=2" class="colorlink"><p style="height:20px;overflow:hidden;">www.phpstat.net/test_order.php?index=order&step=2</p></a></td>-->
+            <!--<td class="tdright">3,191</td>-->
+            <!--<td class="tdright">3,190</td>-->
+            <!--<td class="tdright">3,211</td>-->
+            <!--<td class="tdright">798</td>-->
+            <!--<td class="tdright">1.01</td>-->
+            <!--<td class="tdright">00:00:04</td>-->
+            <!--<td class="tdright">98.15%</td>-->
+            <!--<td class="tdright">4.83%</td>-->
+            <!--<td class="tdright">34.97%</td>-->
+            <!--&lt;!&ndash; <td class="tdright">1.35%</td> &ndash;&gt;-->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo6" name="selectinfo6" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo6.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2Ftest_order.php%3Findex%3Dorder%26step%3D2','www.phpstat.net','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr class="bgcolor4" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor4';">-->
+            <!--<td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> 易分析 - 国内领先的基于交互行为的用户画像大数据分析...</span><a target="_blank" href="http://www.phpstat.net/" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a> <a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=www.phpstat.net%2F&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="http://www.phpstat.net/#onlinevisitor|" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p><a href="visitor_behavior.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&starttime=2016-08-27&endtime=2016-10-25&pageurl=www.phpstat.net%2F&condition=1" title="www.phpstat.net/" class="colorlink"><p style="height:20px;overflow:hidden;">www.phpstat.net/</p></a></td>-->
+            <!--<td class="tdright">2,848</td>-->
+            <!--<td class="tdright">2,619</td>-->
+            <!--<td class="tdright">5,331</td>-->
+            <!--<td class="tdright">5,147</td>-->
+            <!--<td class="tdright">1.87</td>-->
+            <!--<td class="tdright">00:01:43</td>-->
+            <!--<td class="tdright">77.07%</td>-->
+            <!--<td class="tdright">36.52%</td>-->
+            <!--<td class="tdright">53.93%</td>-->
+            <!--&lt;!&ndash; <td class="tdright">2.24%</td> &ndash;&gt;-->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo7" name="selectinfo7" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo7.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2F','www.phpstat.net','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr class="bgcolor3" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor3';">-->
+            <!--<td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> 订单Demo演示 第1步</span><a target="_blank" href="http://www.phpstat.net/test_order.php?pmf_group=baidu&pmf_medium=sem&pmf_source=W00006C0000001R955&pmf_id=26571897955" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a> <a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=www.phpstat.net%2Ftest_order.php%3Fpmf_group%3Dbaidu%26pmf_medium%3Dsem%26pmf_source%3DW00006C0000001R955%26pmf_id%3D26571897955&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="http://www.phpstat.net/test_order.php?pmf_group=baidu&pmf_medium=sem&pmf_source=W00006C0000001R955&pmf_id=26571897955#onlinevisitor|" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p><a href="visitor_behavior.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&starttime=2016-08-27&endtime=2016-10-25&pageurl=www.phpstat.net%2Ftest_order.php%3Fpmf_group%3Dbaidu%26pmf_medium%3Dsem%26pmf_source%3DW00006C0000001R955%26pmf_id%3D26571897955&condition=1" title="www.phpstat.net/test_order.php?pmf_group=baidu&pmf_medium=sem&pmf_source=W00006C0000001R955&pmf_id=26571897955" class="colorlink"><p style="height:20px;overflow:hidden;">www.phpstat.net/test_order.php?pmf_group=baidu&pmf_medium=sem&pmf_source=W00006C0000001R955&pmf_id=26571897955</p></a></td>-->
+            <!--<td class="tdright">2,426</td>-->
+            <!--<td class="tdright">2,426</td>-->
+            <!--<td class="tdright">2,427</td>-->
+            <!--<td class="tdright">1,307</td>-->
+            <!--<td class="tdright">1.00</td>-->
+            <!--<td class="tdright">00:00:10</td>-->
+            <!--<td class="tdright">98.19%</td>-->
+            <!--<td class="tdright">12.24%</td>-->
+            <!--<td class="tdright">12.32%</td>-->
+            <!--&lt;!&ndash; <td class="tdright">1.02%</td> &ndash;&gt;-->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo8" name="selectinfo8" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo8.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2Ftest_order.php%3Fpmf_group%3Dbaidu%26pmf_medium%3Dsem%26pmf_source%3DW00006C0000001R955%26pmf_id%3D26571897955','www.phpstat.net','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--<tr class="bgcolor4" onmouseover="this.className='onhover';" onmouseout="this.className='bgcolor4';">-->
+            <!--<td><p style="height:20px;overflow:hidden;"><span class="gray01 mr10"> 订单Demo演示 第1步</span><a target="_blank" href="http://www.phpstat.net/test_order.php?pmf_group=baidu&pmf_medium=sem&pmf_source=W00006C0000001R659&pmf_id=49968441659" title="新窗口打开" class="l_icon_gray_medium"><i class="iconfont">&#xe636;</i></a> <a target="_blank" href="show_online.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&action=list&trackaction=tracklastpage&trackkey=lastpage&trackvalue=www.phpstat.net%2Ftest_order.php%3Fpmf_group%3Dbaidu%26pmf_medium%3Dsem%26pmf_source%3DW00006C0000001R659%26pmf_id%3D49968441659&trackname=%E5%8F%97%E8%AE%BF%E9%A1%B5%E9%9D%A2" title="实时分析" class="l_icon_gray_medium ml5"><i class="iconfont">&#xe62f;</i></a>&nbsp;<a target="_blank" href="http://www.phpstat.net/test_order.php?pmf_group=baidu&pmf_medium=sem&pmf_source=W00006C0000001R659&pmf_id=49968441659#onlinevisitor|" title="实时访客" class="l_icon_gray_medium"><i class="iconfont">&#xe606;</i></a></p><a href="visitor_behavior.php?website=10000006&server=d1&sourcetypes=all&pagetypes=page&starttime=2016-08-27&endtime=2016-10-25&pageurl=www.phpstat.net%2Ftest_order.php%3Fpmf_group%3Dbaidu%26pmf_medium%3Dsem%26pmf_source%3DW00006C0000001R659%26pmf_id%3D49968441659&condition=1" title="www.phpstat.net/test_order.php?pmf_group=baidu&pmf_medium=sem&pmf_source=W00006C0000001R659&pmf_id=49968441659" class="colorlink"><p style="height:20px;overflow:hidden;">www.phpstat.net/test_order.php?pmf_group=baidu&pmf_medium=sem&pmf_source=W00006C0000001R659&pmf_id=49968441659</p></a></td>-->
+            <!--<td class="tdright">2,406</td>-->
+            <!--<td class="tdright">2,406</td>-->
+            <!--<td class="tdright">2,406</td>-->
+            <!--<td class="tdright">1,316</td>-->
+            <!--<td class="tdright">1.00</td>-->
+            <!--<td class="tdright">00:00:10</td>-->
+            <!--<td class="tdright">97.80%</td>-->
+            <!--<td class="tdright">10.10%</td>-->
+            <!--<td class="tdright">10.10%</td>-->
+            <!--&lt;!&ndash; <td class="tdright">1.01%</td> &ndash;&gt;-->
+            <!--<td class="tdcenter" id="delelementid">-->
+                <!--<form id="selectinfo9" name="selectinfo9" method="get" action="selectinfohits.php" target="_blank">-->
+                    <!--<select name="selectinfotype" id="selectinfotype" onchange="document.selectinfo9.submit()" >-->
+                        <!--<script language="javascript">-->
+                            <!--selectinfohits('convertip|showip');-->
+                        <!--</script>-->
+                    <!--</select>-->
+                    <!--<script language="javascript">-->
+                        <!--selectinfofield('%2Ftest_order.php%3Fpmf_group%3Dbaidu%26pmf_medium%3Dsem%26pmf_source%3DW00006C0000001R659%26pmf_id%3D49968441659','www.phpstat.net','pageurl','pagesite','受访页面','2016-08-27','2016-10-25','10000006','d1','','all');-->
+                    <!--</script>-->
+                <!--</form>-->
+            <!--</td>-->
+        <!--</tr>-->
+        </tbody>
+        <thead>
+        <tr class="title2 bgcolor3">
+            <td class="tdcenter">合计</td>
+            <td class="tdright">{$sumData.visitors}</td>
+            <td class="tdright">{$sumData.ips}</td>
+            <td class="tdright">{$sumData.browsecount}</td>
+            <td class="tdright">--</td>
+            <td class="tdright"><?php echo number_format($sumData['avgbrowse'],4);?></td>
+            <td class="tdright">--</td>
+            <td class="tdright"><?php echo number_format($sumData['newvisitorrate'],4);?></td>
+            <!-- <td class="tdcenter" id="delelementid">-----</td> -->
+            <td class="tdright" id="delelementid">--</td>
+            <!-- <td class="tdright">49.18%</td> -->
+            <td class="tdright" id="delelementid">--</td>
+        </tr>
+        <tr class="select1" id="delelementid">
+            <td colspan="14" valign="middle" class="pagetd">
+                <form id="searchform" name="searchform" method="get" action="">
+                    <input name="m" value="Admin" type="text" style="display:none">
+                    <input name="c" value="PageVisited" type="text" style="display:none">
+                    <input name="a" value="pageVisited" type="text" style="display:none">
+                    <input name="role" value="{$queryParas['role']==''?-1:$queryParas['role']}" type="text" style="display:none">
+			<span style="float:right;margin:3px 0 0 0"><strong>每页显示</strong> <label>
+                <select name="pagesize" id="pagesize"  onchange="document.searchform.submit();" value="{$queryParas['pagesize']}">
+                    <option value="10" {$queryParas['pagesize'] == 10?'selected':''}>10</option>
+                    <option value="25" {$queryParas['pagesize'] == 25?'selected':''}>25</option>
+                    <option value="50" {$queryParas['pagesize'] == 50?'selected':''}>50</option>
+                    <option value="100" {$queryParas['pagesize'] == 100?'selected':''}>100</option>
+                    <option value="150" {$queryParas['pagesize'] == 150?'selected':''}>150</option>
+                    <option value="200" {$queryParas['pagesize'] == 200?'selected':''}>200</option>
+                </select>
+            </label></span>
+                    <strong>快速查询</strong>&nbsp;&nbsp;
+                    <select name="searchtype" id="searchtype" >
+                        <option value="include" >包含</option>
+                        <!--<option value="notinclude" >排除</option>-->
+                    </select>
+
+                    <input name="searchkey"	type="text"			class="input_default"	id="searchkey" value="{$queryParas['searchkey']}"  placeholder="仅输入受访页面"/>
+                    <input type="hidden"		name="sourcetypes"	value="{$queryParas['sourcetypes']}"/>
+                    <input type="hidden"		name="viewcounts"	value="{$queryParas['viewcounts']}"/>
+                    <input type="hidden"		name="starttime"	value="{$queryParas['starttime']}"/>
+                    <input type="hidden"		name="endtime"		value="{$queryParas['endtime']}"/>
+                    <input type="submit" name="searchsubmit" value="分析" class="but_search"/>
+                </form>
+            </td>
+        </tr>
+        </thead>
+    </table>
+
+    <div class="page">
+        <div>{$page}</div>
+    </div>
+        </div>
+    </div>

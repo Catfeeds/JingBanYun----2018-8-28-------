@@ -1,0 +1,135 @@
+<layout name="admin_layout_exercise"/>
+<div class="boxOutter">
+	<div class="borderBottom of">
+		<?php if(in_array('KnowledgeBaseManagement/subjectManagement',session('exercises_permissions'))){ ?>
+		<a href="{:U('KnowledgeBaseManagement/subjectManagement')}" class="tabBtn left text-center">学科管理</a>
+		<?php }?>
+		<?php if(in_array('KnowledgeBaseManagement/fasciculeManagement',session('exercises_permissions'))){ ?>
+		<a href="{:U('KnowledgeBaseManagement/fasciculeManagement')}" class="tabBtn left text-center">分册管理</a>
+		<?php }?>
+		<?php if(in_array('KnowledgeBaseManagement/versionManagement',session('exercises_permissions'))){ ?>
+		<a href="#" class="tabBtn left active text-center">版本管理</a>
+		<?php }?>
+	</div>
+	<div class="mt20">
+		<?php if(in_array('KnowledgeBaseManagement/addVersionAjax',session('exercises_permissions'))){ ?>
+		<button type="button" class="btn" name="button">添加版本</button>
+		<?php }?>
+	</div>
+	<table class="tableCommon mt20">
+				<thead>
+					<tr>
+						<th width="25%">版本</th>
+						<th width="25%">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach($list as $item){?>
+					<tr>
+						<td><?php echo $item['version_name']?></td>
+						<td>
+							<?php if(in_array('KnowledgeBaseManagement/saveVersionAjax',session('exercises_permissions'))){ ?>
+							<a href="javascript:;" attr-data="<?php echo $item['id']?>" class="tableABtn">修改</a>
+							<?php }?>
+						</td>
+					</tr>
+				<?php }?>
+				</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+	<div class="fullBack"></div>
+	<div class="adminNotifyBox" id="teacherAssign">
+		<div class="adminNotifyTitle">
+			添加版本
+		</div>
+		<div class="adminNotifyContent">
+			<div class="teacherChoose">
+				<label for="" style="width:auto">版本名称：</label>
+				<input class="inputCommon" id="name" type="text">
+			</div>
+		</div>
+		<p class="adminNotifyButton">
+			<input type="hidden" id="hidden" value="">
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="teacherAssignSure">完成</a>
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="teacherAssignCancel">取消</a>
+		</p>
+	</div>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script type="text/javascript">
+    $('.tableABtn').click(function(){
+        $('.fullBack,#teacherAssign').show()
+        var id = $(this).attr('attr-data');
+        $.ajax({
+            url:"{:U('KnowledgeBaseManagement/getVersionInfoAjax')}",
+            data:{'id':id},
+            type:'post',
+            dataType:'json',
+            success:function(data){
+                //console.log(data);return false;
+                if(data.status == '200'){
+                    $('#name').val(data.data[0]['version_name']);
+                    $('#hidden').val(id);
+                }
+            }
+        })
+
+    });
+    $('.btn').click(function () {
+        $('.fullBack,#teacherAssign').show()
+    });
+    $('#teacherAssignSure').click(function(){
+        var name = $('#name').val();
+        if($('#hidden').val() == ''){
+            $.ajax({
+                url:"{:U('KnowledgeBaseManagement/addVersionAjax')}",
+                data:{'name':name},
+                type:'post',
+                dataType:'json',
+                success:function(data){
+                    //console.log(data);return false;
+                    if(data.status == '200'){
+                        location.reload();
+                    }else if(data.status == '403'){
+                        $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+                    }else if(data.status == '400'){
+                        $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+                    }
+                    else{
+                        $.NotifyBox.NotifyOne('提示',data.message,'确定')
+                    }
+                }
+            });
+        }else{
+            var id = $('#hidden').val();
+            $.ajax({
+                url:"{:U('KnowledgeBaseManagement/saveVersionAjax')}",
+                data:{'name':name,'id':id},
+                type:'post',
+                dataType:'json',
+                success:function(data){
+                    //console.log(data);return false;
+                    if(data.status == '200'){
+                        location.reload();
+                    }else if(data.status == '403'){
+                        $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+                    }
+                    else if(data.status == '400'){
+                        $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+                    }
+                    else{
+                        $.NotifyBox.NotifyOne('提示',data.message,'确定')
+					}
+                }
+            });
+        }
+
+        //$('.fullBack,#teacherAssign').hide()
+    });
+    $('#teacherAssignCancel').click(function(){
+        $('#hidden').val('');
+        $('#name').val('');
+        $('.fullBack,#teacherAssign').hide()
+    });
+</script>

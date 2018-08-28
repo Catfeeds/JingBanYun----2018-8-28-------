@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>错题本</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/app/homeworkDetails.css?v=1">
+		<script type="text/javascript" src="__PUBLIC__/js/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/common.js"></script>
+		<style media="screen">
+			#app{
+				display: block;
+				position:relative;
+			}
+			li{
+				list-style: none
+			}
+			.bottomBtn{
+				position: fixed;
+				bottom: 0;
+				width: 100%;
+				height: 50px;
+				border-top: 1px solid #eee;
+				background: #fff
+			}
+			.exerciseTemplate p img{
+				max-width: 100%
+			}
+			.bottomBtn p{
+				width: 95%;
+				margin: 5px auto;
+				background: #ff683e;
+				line-height: 40px;
+				color: #fff;
+				text-align: center;
+				border-radius: 5px;
+
+			}
+			.exercontent{
+				margin-top: 45px;
+			    background: #fff;
+			    padding: 10px;
+			    border-top: 5px solid #eee;
+				margin-bottom: 50px
+			}
+
+			.exerciseAnswer, .exerciseJx, .exerciseMinor, .claimScore, .box1000{
+				display: block;
+			}
+			.exerciseAnswer .solution span{
+				color: red
+			}
+			.exerciseAnswer, .exerciseJx{
+				background: #f7f7f7;
+				border: 1px solid #eee
+			}
+			.exerciseAnswer{
+				border-bottom: none
+			}
+			.exerciseJx{
+				border-top: none
+			}
+			.analysisSpan p{
+				background: none !important
+			}
+			.xuanze .exerciseContent li, .duoxuan .exerciseContent li{
+				background: none;
+				border: none;
+				margin: 0
+			}
+			.xuanze .exerciseContent li .choiceAnswer, .duoxuan .exerciseContent li .choiceAnswer{
+				background: none
+			}
+			.tishi{
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				margin: auto;
+				width: 250px;
+				height: 100px;
+				background: #fff;
+				display: none;
+				z-index: 301;
+				border-radius: 10px;
+			}
+			.queding,.quxiao{
+				outline: none;
+				border: none;
+				line-height: 39px;
+				border-top: 1px solid #ccc;
+				background: none;
+				display: inline-block;
+				width: 50%;
+				float: left;
+				color: #2cc7fa
+
+			}
+			.mask{
+				height: 100%;
+				width: 100%;
+				background: #000;
+				opacity: 0.6;
+				z-index: 300;
+				position: fixed;
+				left: 0;
+				top:0;
+				display: none
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="appTop">
+				<div class="returnBox"  onclick="window.history.go(-1)"></div>
+				<div class="appTopTitle">
+					{{workName}}错题本
+				</div>
+
+			</div>
+			<div class="">
+
+			</div>
+
+			<div class="exercontent " style="padding-bottom:60px">
+				<div class="xiti" v-for="(list,index) in subjectNumData" style="overflow:hidden;border-bottom:1px solid #333;margin:5px 0" :id="list.id">
+					<div class="" v-if="index === 0"  >
+						{{list.title_name}}
+					</div>
+					<div class="" v-else-if="list.title_name != subjectNumData[index-1].title_name"  :class="{xuanze:list.topic_type =='1',duoxuan:list.topic_type =='3'}">
+						{{list.title_name}}
+					</div>
+					<div class="" v-html="list.json_html"  :class="{xuanze:list.topic_type =='1',duoxuan:list.topic_type =='3'}">
+
+					</div>
+					<div class="right" @click="shanchu">
+						<img src="__PUBLIC__/img/Apphomework/quchu.png" alt="" style="width:20px;margin:10px" />
+					</div>
+				</div>
+			</div>
+			<div class="bottomBtn">
+				<p @click="cuti">
+					错题练习
+				</p>
+			</div>
+			<div class="tishi" >
+				<p class="text-center" style="line-height:60px">
+					确定要删除此错题？
+				</p>
+				<p style="text-align:center">
+					<button type="button" name="button" class="queding" @click="queding" style="border-right:1px solid #ccc">确定</button>
+					<button type="button" name="button" class="quxiao ">取消</button>
+				</p>
+			</div>
+			<div class="mask">
+
+			</div>
+		</div>
+
+
+
+
+		<script type="text/javascript">
+		var userId = getQueryString('userId');
+		var role = getQueryString('role');
+		var courseId = getQueryString('courseId');
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId: userId,
+				role: role,
+				subjectNumUrl: '/index.php/ApiInterface/Version1_3/HomeworkStudent/getMyWrongExerciseList',
+				subjectNumData: '',
+				subjectNumId: '',
+				courseId:courseId,
+				workName:'',
+				cuotiUrl:'/index.php/ApiInterface/Version1_3/HomeworkStudent/deleteWrongExercise',
+				index1:0,
+				eid:0,
+			},
+			created: function () { //应用初始化完毕加载
+				// 获取学科列表
+				this.getSubjectNumList();
+			},
+			methods: {
+				// 获取学科列表
+				getSubjectNumList: function(){
+					this.$http.post(this.subjectNumUrl, {
+						userId : this.userId,
+						role: this.role,
+						courseId:this.courseId,
+						pageIndex:1,
+						pageSize:''
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.subjectNumData = response.data.data;
+							this.workName = response.data.message;
+							this.$nextTick(function(){
+								var subjectNumListHeight = $(window).height();
+								$('.subjectNumList').css('min-height', subjectNumListHeight)
+							})
+						} else {
+							console.log('错误1')
+						}
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				//跳转到我的错题库列表
+				goHref: function($event){
+					var courseId = $($event.target).parents('.subjectNumBox').attr('id');
+					window.location.href ='/index.php/ApiInterface/Version1_3/HomeworkStudent/myWrongList?userId='+this.userId+'&role='+this.role+'&courseId='+courseId;
+				},
+
+				cuti:function(){
+					window.location.href ='/index.php/ApiInterface/Version1_3/HomeworkStudent/wrongExercises?userId='+this.userId+'&role='+this.role+'&courseId='+courseId;
+				},
+				queding:function(){
+					this.$http.post(this.cuotiUrl, {
+						userId : this.userId,
+						role: this.role,
+						exerciseId:this.eid,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.subjectNumData.splice(this.index1,1)
+							if(this.subjectNumData.length == '0'){
+								$('.bottomBtn').hide()
+							}
+							$('.tishi,.mask').hide()
+						} else {
+							console.log('错误1')
+						}
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				shanchu:function($event){
+					$('.tishi,.mask').show();
+					this.index1 = $($event.target).parents('.xiti').index();
+					this.eid = $($event.target).parents('.xiti').attr('id')
+
+					$('.quxiao').click(function(){
+						$('.tishi,.mask').hide()
+					})
+
+
+
+
+				}
+			}
+		})
+			function showWebNav(){}//显示web导航
+			$('.mask').bind('touchmove', function(e) {
+			e.preventDefault();
+			});
+		</script>
+	</body>
+</html>

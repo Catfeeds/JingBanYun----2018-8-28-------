@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/apptextbook/ebook.css?v=1"/>
+</head>
+<body>
+<div id="coverLayer"></div>
+<div id="pageWrapper">
+    <img class="page" id="page">
+    <table id="rectClickImgWrapper" cellpadding="0" cellspacing="0">
+        <tr>
+            <td id="rectClickImgCell" valign="middle" align="center">
+                <img id="rectClickImg">
+                <audio id="rectClickAudio" src=""></audio>
+            </td>
+        </tr>
+    </table>
+    <table id="actionWrapper" cellpadding="0" cellspacing="0">
+        <tr>
+            <td id="actionCell" valign="middle" align="center">
+                <video id="actionVideo"></video>
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="footer">
+    <table cellspacing="0" cellpadding="0">
+        <tr>
+            <td id="footerTableCell" width="100" align="center">
+                <span id="speedCtrl" tapmode onclick="switchSpeed()">正常语速</span>
+            </td>
+            <td align="center" valign="middle">
+                <img class="f-content" tapmode src="__PUBLIC__/apptextbook/icon_content.png"
+                     onclick="turnToContentPage()">
+                <img class="f-pre" tapmode src="__PUBLIC__/apptextbook/icon_pre.png" onclick="turnToPreviousPage()">
+                <img class="f-nex" tapmode src="__PUBLIC__/apptextbook/icon_next.png" onclick="turnToNextPage()">
+            </td>
+        </tr>
+    </table>
+</div>
+<div id="kalaok">
+    <div class="text" id="text">
+    </div>
+</div>
+<div id="loading" class="loading">
+    <img src="__PUBLIC__/apptextbook/ajax-loader.gif">
+</div>
+</body>
+<script src="__PUBLIC__/js/common.js?v=2"></script>
+<script type="text/javascript" src="__PUBLIC__/apptextbook/textbook_kalaok.js?v=4"></script>
+<script type="text/javascript">
+    var bookId = '{$book.id}';
+    var currentPageId = 2;
+    var contentPageId = 0;
+    var serverPath = '{$book.server_path}';
+    var speed = 'normal';//语速 normal 正常 slow 缓慢
+    var book = null;
+
+    var bookInfo = {
+        width: 512,
+        height: 713,
+        pages: []
+    };
+
+    var currentPageInfo = null;
+
+    var currentPageKalaOKInfo = [];
+
+    var pagePos = {
+        paddingTop: 0,
+        paddingBottom: 0
+    };
+
+    var PUBLIC_METRO = '__PUBLIC_METRO__';
+
+</script>
+<script type="text/javascript" src="__PUBLIC__/apptextbook/common.js?v=23"></script>
+<script>
+    var audio = null;
+    var video = null;
+    var isPlaying = false;
+    var currentAudioName = '';
+    $(function () {
+        adjustPage();
+        loadBookInfo();
+    });
+
+    apiready = function () {
+        audio = api.require('audio');
+        if (api.systemType == 'android') {
+            video = api.require('videoPlayer');
+        }
+    };
+</script>
+<script>
+
+</script>
+</html>

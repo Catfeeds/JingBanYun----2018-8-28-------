@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>已选试题</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/appCommon.css?v=1">
+		<link rel="stylesheet" href="__PUBLIC__/css/app/teacherHomework.css">
+		<link href="__PUBLIC__/swiper/swiper-3.4.2.min.css" type="text/css" rel="stylesheet">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+			<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<style>
+		*{
+				-webkit-tap-highlight-color:rgba(0,0,0,0);
+		}
+			[v-cloak] {
+				display: none;
+			}
+
+			#app {
+				padding-top: 45px;
+			}
+			.text-center{
+				text-align: center;
+			}
+			#app .mainOutter, .loadingImg {
+				display: none;
+			}
+			.wordDiv p,.wordDiv1 p{
+					border: 1px solid #eaa800;
+					border-radius: 5px;
+					line-height: 27px;
+					display: inline-block;
+					position: relative;
+			}
+			.wordDiv p .xuanzhong,.wordDiv1 p .xuanzhong{
+				width: 10px;
+				position: absolute;
+				top:-4px;
+				right: -4px;
+				/*display: none*/
+			}
+			.wordDiv span{
+				display: inline-block;
+			}
+			.audioBox{
+				float: left;
+				height: 27px
+			}
+			.audioBox img{
+					width: 30px;
+					display: inline-block;
+					border-radius: 5px;
+					margin-top: -3px
+			}
+			.audioBox.active{
+					display: inline-block;
+			}
+			.wordDiv{
+				margin: 10px 0;
+
+				float: left;
+				min-width: 33%;
+					display: inline-block;
+				text-align: center;
+				/*white-space :nowrap*/
+			}
+			.wordDiv1{
+				margin: 10px 0;
+				line-height: 28px;
+
+			}
+			.content{
+				padding: 10px
+			}
+			.Corrections {
+			    position: fixed;
+			    width: 100%;
+			    line-height: 40px;
+			    color: #333;
+			    text-align: center;
+			    background: #f2b81a;
+			    bottom: 0;
+				left:0
+			}
+			.htmltext{
+				padding: 0 10px;
+				display: inline-block;
+				/*width: calc(100% - 50px);
+				word-wrap: break-word;
+	word-break: normal;*/
+			}
+			.preview{
+				border-right: 1px solid #eee
+			}
+			.p20{
+				padding: 0 20px
+			}
+			.sp{
+				border: 1px solid #eaa800;
+				border-radius: 5px;
+				position: relative;
+				margin: 5px 0
+			}
+			.spxuanzhong{
+				width: 10px;
+				position: absolute;
+				top:-4px;
+				right: -4px;
+
+			}
+			.shuDiv{
+				position: relative;
+			}
+			.shuDiv .kebenxz{
+				position: absolute;
+				right: 0;
+				top:0
+			}
+		</style>
+	</head>
+	<body>
+		<img src="{$oss_path}public/web_img/App/loading_yun.gif" alt="" class="loadingImg">
+
+		<div id="app" v-cloak>
+			<!-- app公共头部 -->
+			<div class="appTop">
+				<div class="returnBox"  @click="returnApp"></div>
+				<div class="appTopTitle">
+					已选试题
+				</div>
+			</div>
+
+			<div class="mainOutter">
+				<div class="numberScore">
+					本次已选<span class="yellowText yixuan"></span>道题
+					<!-- 共<span class="yellowText allsorce">{{ exerciseScore }}</span>分 -->
+				</div>
+				<div class="exerciseOutter pt0" >
+					<!-- 如果没有信息 -->
+					<img src="__PUBLIC__/img/Apphomework/res_empty_bg.png" alt="" class="emptyImg centerEmpty" v-if="noData == ''">
+					<!--  单词-->
+					<div class="p20"  v-if="danciArr.length>0">
+						<div class="">
+							跟读-词汇
+						</div>
+							<div class=" wordDiv exerciseBox" v-for="list in danciArr" :id="list.id">
+								<p>
+									<span class="audioBox " @click="play">
+										<img src="__PUBLIC__/img/Apphomework/weibo.png" alt="" />
+									</span>
+									<span v-html="list.name" class="htmltext" @click="checkWork">
+									</span>
+									<audio :src="list.url" >
+									</audio>
+									<img src="__PUBLIC__/img/Apphomework/xuanzhong.png" alt="" / class="xuanzhong">
+								</p>
+							</div>
+						<div class="" style="clear:both">
+						</div>
+					</div>
+					<!-- 句子 -->
+					<div class="p20" v-if="juziArr.length>0">
+						<div class="">
+							跟读-课文
+						</div>
+							<div class=" wordDiv1 exerciseBox"  v-for="list in juziArr" :id="list.id">
+								<p>
+									<span class="audioBox active"  @click="play">
+										<img src="__PUBLIC__/img/Apphomework/weibo.png" alt="" />
+									</span>
+									<span v-html="list.name" class="htmltext"  @click="checkWork">
+									</span>
+									<audio :src="list.url" >
+									</audio>
+									<img src="__PUBLIC__/img/Apphomework/xuanzhong.png" alt="" / class="xuanzhong">
+								</p>
+							</div>
+					</div>
+					<!-- 视频 -->
+					<div class="p20"  v-if="shipingArr.length>0">
+						<div class="">
+							观看-视频
+						</div>
+						<div class="text-center sp" v-for="list in shipingArr" :id="list.id" >
+							<div @click="spxuanzhong">
+								<div class="left" style="width:50%;border-right: 1px solid #eaa800">
+									<video :src="list.url" autoplay controls="" style="width:80%;margin:5px 0">
+									</video>
+								</div>
+								<div class="left text-center" style="width:50%;margin-top:10px">
+									<p>
+										{{list.name}}
+									</p>
+								</div>
+								<img src="__PUBLIC__/img/Apphomework/xuanzhong.png" alt="" /class="spxuanzhong" >
+								<div style="clear:both">
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<!-- 课本 -->
+					<div class="p20"  v-if="kebenArr.length>0">
+						<div class="">
+							观看-课文
+						</div>
+						<div class="text-center shuDiv" v-for="list in kebenArr"   :id="list.id">
+							<div class="" @click="xuankeben">
+								<img :src="list.url" alt=""  / style="width:50%;">
+								<img src="__PUBLIC__/img/Apphomework/xuanzhong.png" alt="" / class="kebenxz">
+							</div>
+						</div>
+
+					</div>
+					<div class="exerciseInner" v-for="(exerciseList, index) in exerciseData" :id="exerciseList.id">
+						<a href="javascript:;" class="exerciseBox" v-on:click="goSingleExercise($event)">
+							<div class="exerciseTitle" style="font-size:16px">
+								{{ index+1 }}-{{ exerciseList.topic_type }}
+								(<span class="score">{{ exerciseList.count_score }}</span>分)
+							</div>
+							<div class="exerciseMain" v-html="exerciseList.subject_name"></div>
+							<div class="exerciseDifficult">难度：<span class="grayText">{{ exerciseList.difficulty }}</span></div>
+						</a>
+						<div class="addImgBox">
+							<img src="__PUBLIC__/img/Apphomework/weishoucang.png" alt="" class="collectImg" v-if="exerciseList.eid == null" v-on:click="collectExercise($event)">
+							<img src="__PUBLIC__/img/Apphomework/yishoucang.png" alt="" class="collectImg active" v-else v-on:click="collectExercise($event)">
+
+							<img src="__PUBLIC__/img/Apphomework/shanchu.png" alt="" class="addImg" v-on:click="addExercise($event)">
+						</div>
+					</div>
+				</div>
+
+				<div class="bottomBtn">
+					<!-- <div class="bottomBtn2" @click="goApp('publishTestVC')">组卷(<span class="chooseNum">{{exerNum}}</span>)</div> -->
+					<div class="bottomBtn2 yellowBtn" @click="goApp('publishVC')">布置作业(<span class="chooseNum">{{exerNum}}</span>)</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+	<script>
+		$(function(){
+			if (CheckIsIOS()){
+	    		$('.loadingImg').show();
+	    	}
+		})
+
+		function myFunction() {
+		    if(i >= 101) {
+		    	clearTimeout(timer);
+		    	$('.loadingImg').hide();
+		    	$('#app .mainOutter').show();
+		    }
+		}
+
+		var timer = setInterval("myFunction()",1000);
+	</script>
+
+	<script>
+		var role = "{$role}";
+		var userId = "{$userId}";
+        var versionId = "{$versionId}";
+        var courseId = "{$courseId}";
+        var gradeId = "{$gradeId}";
+		var schoolTerm = "{$schoolTerm}";
+		var classId  = "{$classId }";
+		var chapterId  = "{$chapterId }";
+		var festivalId = "{$festivalId}";
+		var parentId = "{$parentId}";
+		var knowledgeId = "{$knowledgeId}";
+		var sectionId = "{$sectionId}"
+		var i = 100;
+		var filterIndex;
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				role: role,
+				userId: userId,
+				versionId: versionId,
+				courseId: courseId,
+				gradeId: gradeId,
+				schoolTerm: schoolTerm,
+				classId: classId,
+				chapterId: chapterId,
+				festivalId: festivalId,
+				parentId: parentId,
+				knowledgeId: knowledgeId,
+				home_topic_type: '',
+				difficultyId: '',
+				status: '',
+				exerciseId: '',
+				sectionId:sectionId ,
+				exerciseIdArr: '',
+				exerciseLength: '',
+				// exerciseUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/accordingExerciseIdShowList',
+				 exerciseUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/getAllExerciseInfo',
+				exerciseData: '',
+
+				exerciseCollectUrl: '/index.php/ApiInterface/Version1_3/TeacherHomework/IWantToCollect',
+				iscancel: '',
+				exerNum:'',
+
+				danciArr:[],
+				juziArr:[],
+				shipingArr:[],
+				kebenArr:[],
+				noData:[],
+
+			},
+			computed: {
+		        // 计算总分
+		        exerciseScore: function() {
+		            // var exerciseScore = 0;
+		            // $.each(this.exerciseData,function(i, n){
+		            // 	exerciseScore+=Number(n.count_score)
+		            // });
+		            // return exerciseScore;
+		        }
+		    },
+			created: function () { //应用初始化完毕加载
+				// 获取习题库列表
+				var data7 = {
+					"page":"SQgetAllID",
+					'func':'SQngetAllDataID'
+				}
+				postApp(data7)
+				// this.getExerciseList();
+			},
+			methods: {
+				// 获取习题库列表
+				getExerciseList: function(res){
+					res = res.toString();
+					this.exerNum = res.split(',')
+					this.$http.post(this.exerciseUrl, {
+						userId: this.userId,
+								// exercise_id_list:'18293,18313,18337,18338,18343,18344,18345'
+						exercise_id_list:res
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.noData =response.data.data
+							$('.chooseNum,.yixuan').html(this.exerNum.length)
+							if($('.chooseNum').text() == '0'){
+								$('.bottomBtn2').css('background','#ccc')
+							}
+							for(var w=0;w<response.data.data.length;w++){
+								if(response.data.data[w].name == '语音作业'){
+									for(var c=0;c<response.data.data[w].data.length;c++){
+										if(response.data.data[w].data[c].name == '观看-视频'){
+											this.shipingArr = response.data.data[w].data[c].data
+										}
+										if(response.data.data[w].data[c].name == '观看-课文'){
+											this.kebenArr = response.data.data[w].data[c].data
+
+										}
+										if(response.data.data[w].data[c].name == '跟读-词汇'){
+											this.danciArr = response.data.data[w].data[c].data
+										}
+										if(response.data.data[w].data[c].name == '跟读-课文'){
+											this.juziArr = response.data.data[w].data[c].data
+										}
+									}
+								}else{
+									this.exerciseData = response.data.data[w].data[0].data
+								}
+							}
+								// this.exerciseData = response.data.data;
+								// console.log(this.exerciseData,this.shipingArr,this.danciArr,this.juziArr,this.kebenArr);
+								// console.log(this.shipingArr,)
+
+	    					i++;
+							this.$nextTick(function(){
+								for(var b=0;b<$('.exerciseInner').length;b++){
+									if($('.exerciseInner').eq(b).find('.addImg').attr('src') =='/Public/img/Apphomework/shanchu.png'){
+										$('.allsorce').html(parseInt($('.allsorce').html())+parseInt($('.exerciseInner').eq(b).find('.score').html()))
+									}
+								}
+							})
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				play:function($event){
+					var that = $event.target;
+					var player = $(that).parent().siblings('audio')[0];
+					if($(that).attr('src')=='/Public/img/Apphomework/weibo.png'){
+						$(that).attr('src','/Public/img/Apphomework/yibo.png').parents('.wordDiv').siblings('.wordDiv').find('.audioBox >img').attr('src','/Public/img/Apphomework/weibo.png')
+							player.play();
+							player.loop = false;
+							player.addEventListener('ended', function () {
+								$(player).siblings('.audioBox').find('img').attr('src','/Public/img/Apphomework/weibo.png')
+							}, false);
+					}else{
+						$(that).attr('src','/Public/img/Apphomework/weibo.png')
+						player.pause();
+						$(player).siblings('.audioBox').find('img').attr('src','/Public/img/Apphomework/weibo.png')
+					}
+				},
+				spxuanzhong:function($event){
+					var id = $($event.target).parents('.sp').attr("id")
+					console.log(id);
+					if($($event.target).parents('.sp').find('.spxuanzhong').css('display') == 'block'){
+						var data2_2 = {
+							"page":"SQdelete",
+							'id':id,
+							'is_media':'1',
+							// 'knowledge_code':''
+						}
+						postApp(data2_2)
+						$('.chooseNum,.yixuan').html(parseInt($('.chooseNum,.yixuan').html())-1)
+						if($('.chooseNum').text() == '0'){
+							$('.bottomBtn2').css('background','#ccc')
+						}
+						$($event.target).parents('.sp').find('.spxuanzhong').hide()
+					}else{
+						var data2_2 = {
+							"page":"SQadd",
+							"data":{
+								"id":id,
+								'is_media':'1',
+								'point':$($event.target).parents('.exerciseInner').find('.score').text(),
+								// 'knowledge_code':''
+							}
+						}
+						postApp(data2_2)
+						$('.chooseNum,.yixuan').html(parseInt($('.chooseNum,.yixuan').html())+1)
+						if($('.chooseNum').text() >'0'){
+							$('.bottomBtn2').css('background','#f2b81a')
+						}
+						$($event.target).parents('.sp').find('.spxuanzhong').show()
+					}
+				},
+				xuankeben:function($event){
+					var id = $($event.target).parents('.shuDiv').attr("id")
+					console.log(id);
+					if($($event.target).parents('.shuDiv').find('.kebenxz').css('display')=='block'){
+						var data2_1 = {
+							"page":"SQdelete",
+							'id':id,
+							'is_media':'1',
+								// 'knowledge_code':''
+						}
+						postApp(data2_1)
+						$('.chooseNum,.yixuan').html(parseInt($('.chooseNum,.yixuan').html())-1)
+						if($('.chooseNum').text() == '0'){
+							$('.bottomBtn2').css('background','#ccc')
+						}
+						$($event.target).parents('.shuDiv').find('.kebenxz').hide()
+					}else{
+						var data2_1 = {
+							"page":"SQadd",
+							"data":{
+								"id":id,
+								'is_media':'1',
+								'point':$($event.target).parents('.exerciseInner').find('.score').text(),
+								// 'knowledge_code':''
+							}
+						}
+							postApp(data2_1)
+						$('.chooseNum,.yixuan').html(parseInt($('.chooseNum,.yixuan').html())+1)
+						if($('.chooseNum').text() >'0'){
+							$('.bottomBtn2').css('background','#f2b81a')
+						}
+						$($event.target).parents('.shuDiv').find('.kebenxz').show()
+
+					}
+				},
+				checkWork:function($event){
+					var that = $event.target;
+					var id = $($event.target).parents('.exerciseBox').attr('id');
+					console.log(id);
+					if($(that).siblings('.xuanzhong').css('display') == 'none'){
+						$(that).siblings('.xuanzhong').show()
+						// var knowledge_code = this.gradeId+'_'+this.termId+'_'+this.chapterId+'_'+this.sectionId+'_'+id;
+						var data2 = {
+							"page":"SQadd",
+							"data":{
+								"id":id,
+								'is_media':'1',
+								'point':$($event.target).parents('.exerciseInner').find('.score').text(),
+								'knowledge_code':''
+							}
+						}
+						$('.chooseNum,.yixuan').html(parseInt($('.chooseNum,.yixuan').html())+1)
+						if($('.chooseNum').text() >'0'){
+							$('.bottomBtn2').css('background','#f2b81a')
+						}
+						postApp(data2)
+					}else {
+						$(that).siblings('.xuanzhong').hide();
+						$(that).siblings('.xuanzhong').hide()
+						var data2 = {
+							"page":"SQdelete",
+							'id':id,
+							'is_media':'1',
+						}
+						postApp(data2)
+						$('.chooseNum,.yixuan').html(parseInt($('.chooseNum,.yixuan').html())-1)
+						if($('.chooseNum').text() == '0'){
+							$('.bottomBtn2').css('background','#ccc')
+						}
+					}
+				},
+				//收藏习题
+				collectExercise: function(e){
+					var that = $(e.currentTarget);
+					if(that.hasClass('active')) {
+						that.removeClass('active').attr('src','__PUBLIC__/img/Apphomework/weishoucang.png');
+						var arr = [$('.exerciseInner').attr('id'), 1];
+						// localStorage.setItem('shoucang', arr)
+						this.iscancel = 1;
+					} else {
+						that.addClass('active').attr('src','__PUBLIC__/img/Apphomework/yishoucang.png');
+						var arr = [$('.exerciseInner').attr('id'), 2];
+						// localStorage.setItem('shoucang', arr)
+						this.iscancel = 2;
+					}
+
+					this.exerciseId = that.parent().parent().attr('id');
+
+					this.$http.post(this.exerciseCollectUrl, {
+						iscancel : this.iscancel,
+						exercise_id : this.exerciseId,
+						// version_id : this.versionId,
+						course_id : this.courseId,
+						grade_id : this.gradeId,
+						school_term : this.schoolTerm,
+						// chapter_id : this.chapterId,
+						section_id : this.festivalId,
+						knowledge_id: this.knowledgeId,
+						// difficulty_id: this.difficultyId,
+						userId : this.userId,
+						role : this.role
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					console.log('成功')
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				returnApp:function(){
+					var data4 = {
+							"page":"backClick"
+						}
+					if (CheckIsIOS()){
+						window.webkit.messageHandlers.iosModel.postMessage(data4)
+					}
+					if(CheckIsAndroid()){
+
+						AppFunction.postMessage(JSON.stringify(data4))
+					}
+
+				},
+				//跳转到单个习题详情
+				goSingleExercise: function(e){
+					this.exerciseId = $(e.currentTarget).parent().attr('id');
+					// window.location.href = '/index.php/ApiInterface/Version1_3/TeacherHomework/exerciseDetails?role='+this.role+'&userId='+userId+'&versionId='+this.versionId+'&courseId='+this.courseId+'&gradeId='+this.gradeId+'&schoolTerm='+this.schoolTerm+'&chapterId='+this.chapterId+'&festivalId='+this.festivalId+'&knowledgeId='+this.knowledgeId+'&exerciseId='+this.exerciseId;
+				},
+				goApp:function(publish){
+					console.log(publish);
+					if($('.chooseNum').text() > '0'){
+						var data8={
+							"page":publish,
+						}
+						postApp(data8)
+					}
+
+
+				},
+				addExercise:function($event){
+
+
+						if($($event.target).attr('src') == '/Public/img/Apphomework/tianjia.png'){
+							// var knowledge_code = this.gradeId+'_'+this.schoolTerm+'_'+this.chapterId+'_'+$('.topFilter>span').attr('id')+'_0';
+							var data2 = {
+								"page":"SQadd",
+								"data":{
+									"id":$($event.target).parents('.exerciseInner').attr('id'),
+									'is_media':'0',
+									'point':$($event.target).parents('.exerciseInner').find('.score').text(),
+									'knowledge_code':''
+								}
+							}
+							var arr = [$('.exerciseInner').attr('id'), 1];
+
+								// localStorage.setItem('id', arr)
+								postApp(data2)
+							$('.chooseNum,.yixuan').html(parseInt($('.chooseNum,.yixuan').html())+1)
+								$('.allsorce').html(parseInt($('.allsorce').html())+parseInt($($event.target).parents('.exerciseInner').find('.score').html()))
+								this.exerciseLength = this.exerciseLength +1
+								if($('.chooseNum').text() >'0'){
+									$('.bottomBtn2').css('background','#f2b81a')
+								}
+							$($event.target).attr('src','/Public/img/Apphomework/shanchu.png')
+						}else{
+							var id = $($event.target).parents('.exerciseInner').attr('id')
+							var data2 = {
+								"page":"SQdelete",
+								'id':id,
+								'is_media':'0',
+							}
+							postApp(data2)
+							var arr = [$('.exerciseInner').attr('id'), 2];
+
+								// localStorage.setItem('id', arr)
+							$('.chooseNum,.yixuan').html(parseInt($('.chooseNum,.yixuan').html())-1)
+								$('.allsorce').html(parseInt($('.allsorce').html())-parseInt($($event.target).parents('.exerciseInner').find('.score').html()))
+								this.exerciseLength = this.exerciseLength -1
+								if($('.chooseNum').text() == '0'){
+									$('.bottomBtn2').css('background','#ccc')
+								}
+							$($event.target).attr('src','/Public/img/Apphomework/tianjia.png')
+						}
+
+
+
+				},
+				a:function(){
+					// alert(localStorage.getItem('shoucang'),localStorage.getItem('id'))
+					if(localStorage.getItem('shoucang') != null){
+						var shoucang = localStorage.getItem('shoucang').split(',');
+						if(shoucang[1] == '1'){
+							$('#'+shoucang[0]).find('.collectImg').attr('src','/Public/img/Apphomework/weishoucang.png')
+						}else{
+							$('#'+shoucang[0]).find('.collectImg').attr('src','/Public/img/Apphomework/yishoucang.png')
+						}
+
+					}
+
+					if(localStorage.getItem('id') != null){
+						var id = localStorage.getItem('id').split(',');
+						$('.chooseNum,.allsorce').html('0')
+						if(id != null){
+							if(id[1] == '1'){
+								$('#'+id[0]).find('.addImg').attr('src','/Public/img/Apphomework/shanchu.png');
+								// $('.chooseNum').html(parseInt($('.chooseNum').html())+1)
+							}else{
+								$('#'+id[0]).find('.addImg').attr('src','/Public/img/Apphomework/tianjia.png');
+								// $('.chooseNum').html(parseInt($('.chooseNum').html())-1)
+							}
+
+						}
+						for(var b=0;b<$('.exerciseInner').length;b++){
+							if($('.exerciseInner').eq(b).find('.addImg').attr('src') =='/Public/img/Apphomework/shanchu.png'){
+								$('.chooseNum').html(parseInt($('.chooseNum').html())+1)
+								$('.allsorce').html(parseInt($('.allsorce').html())+parseInt($('.exerciseInner').eq(b).find('.score').html()))
+							}
+						}
+						// this.exerciseLength = $('.chooseNum').html()
+					}
+				}
+			}
+
+		})
+		function SQngetAllDataID(res){
+
+			// alert(res)
+			app.getExerciseList(res)
+		}
+
+		function refresh(){
+			var shoucang = localStorage.getItem('shoucang');
+			var id = localStorage.getItem('id')
+			if(shoucang != null){
+				$(shoucang).find('.collectImg').attr('/Public/img/Apphomework/yishoucang.png')
+			}
+			if(id != null){
+				$(id).find('.addImg').attr('/Public/img/Apphomework/shanchu.png');
+			}
+		}
+		function refresh(){
+			app.a()
+		}
+			function showWebNav(){}//显示web导航
+	</script>
+</html>

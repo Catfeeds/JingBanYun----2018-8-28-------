@@ -1,0 +1,182 @@
+<style>
+
+    /*-------------导入框----------------*/
+
+    #import_outer {
+        display: none;
+    }
+
+    .import {
+        width: 800px;
+        height: 400px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        margin-left: -400px;
+        margin-top: -200px;
+        background: url(__PUBLIC__/img/home/33.png) no-repeat left top;
+        background-size: 100% 100%;
+        z-index: 20170214
+    }
+
+    .close_btn {
+        float: right;
+        margin: 25px 35px 0 0;
+        cursor: pointer;
+        line-height: 20px;
+    }
+
+    .close_btn img {
+        width: 20px;
+    }
+
+    .info .title_content {
+        width: 115px;
+    }
+
+    .item {
+        width: 28%;
+    }
+
+    .download_form {
+        width: 100%;
+        margin: 80px 0 50px 55px;
+    }
+
+    .browse {
+        width: 100%;
+        margin-left: 70px;
+    }
+
+    .browse input {
+        width: 500px;
+    }
+
+    .file {
+        width: 100%;
+        margin: 30px 0 0 70px;
+    }
+
+    .outer {
+        width: 650px;
+        height: 17px;
+        border: 1px solid #ccc;
+        float: left;
+        margin-top: 8px;
+    }
+
+    .inner {
+        width: 2%;
+        height: 15px;
+        background: #E9C232;
+    }
+    /*-----------------导入成功-------------------*/
+
+    .import_success,
+    .import_fail,
+    .export_success,
+    .export_fail {
+        display: none;
+        width: 500px;
+        height: 300px;
+        position: fixed;
+        top: 40%;
+        left: 32%;
+        z-index: 9999;
+        background: url(/Public/img/home/30.png) no-repeat center;
+        background-size: 100% 100%;
+    }
+
+    .success_top,
+    .fail_top {
+        overflow: hidden;
+        padding: 50px 0 0 80px;
+    }
+
+    .success_top img,
+    .fail_top img {
+        width: 30%;
+        float: left;
+    }
+
+    .success_top p,
+    .fail_top p {
+        float: left;
+        font-size: 40px;
+        color: #666;
+        padding-top: 35px;
+    }
+
+    .success_bottom,
+    .fail_bottom {
+        text-align: center;
+    }
+
+    .success_bottom button,
+    .fail_bottom button {
+        width: 120px;
+        height: 50px;
+        border: none;
+        background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+        background-size: 100% 100%;
+        color: #fff;
+        font-size: 20px;
+        position:relative;
+        top:20px;
+    }
+    .btn3{
+        padding: 4px 14px !important;
+        margin-left: 16px;
+        letter-spacing: 4px;
+        color: #60584D;
+        background-color: #fff;
+        border: 2px solid #E9C232;
+    }
+    .btn3:hover{
+        background: #e9c232;
+        color: #fff
+    }
+</style>
+<div class="Stu_box">
+<div class="class_wrapper">
+        <div>
+            班级编号：{$data_stu.class_info.class_code} &nbsp;&nbsp;&nbsp;&nbsp;班级状态：{$data_stu.class_info.flag_name}
+        </div>
+        <span>班级成员：共{$data_stu.count}人 , 教师{$data_stu.teacher_count}人 , 学生{$data_stu.stu_count}人</span>
+
+        <span class="right right40 tea_stu">筛选：
+			<span class="padding5  "><span class="teacher_student_siftings">学生</span><span class="padding5Active"></span></span>
+				<span class="padding5 "><span class="teacher_siftings findteacher" classid="{$classid}" class_status="{$data_stu.class_info.class_status}">教师</span></span>
+				</span>
+        <div class="class_screen">
+            <div class="search">
+                <button class="school_search_btn search_btn" classid="{$classid}" class_status="{$data_stu.class_info.class_status}">搜索</button>
+                <input type="text" class="search_text" placeholder="输入学生姓名可搜索学生">
+            </div>
+        </div>
+     <input type="hidden" class="teacher_hiddenclass_status" value="{$data_stu.class_info.class_status}">
+     <input type="hidden" class="teacher_search_btn" value="{$classid}">
+        <div class="row stulistinfo">
+            <!--			教师筛选学生-->
+            <volist name="list" id="data" empty="">
+                <div class="col-lg-3 col-md-6 col-sm-12 student_lists">
+                    <?php if (preg_match('/Resources/', $data['avatar'])): ?>
+                    <img class="avatar" width="58" height="58" onerror="img_teacher(this)" src="<?php echo C('oss_path').$data['avatar']?>">
+                    <?php else: ?>
+                        <?php if ( $data['sex']=='男' || empty($data['sex']) ): ?>
+                        <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_m.png">
+                        <?php else: ?>
+                        <img class="avatar" width="58" height="58" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/student_w.png">
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <span class="name">{$data.student_name}</span>
+                    <br>
+                    <span class="sex">{$data.sex}</span>
+                </div>
+            </volist>
+        </div>
+        <div>
+
+        </div>
+    </div>
+</div>

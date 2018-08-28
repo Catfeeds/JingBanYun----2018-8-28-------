@@ -1,0 +1,109 @@
+<layout name="admin_layout_back"/> 
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+    
+    .phone_box {
+        width:100%; 
+        border:1px solid #ccc; 
+        background:#fff; 
+        position:absolute;
+        top:40.8px;
+        left:0;
+        z-index:9999;
+        display:none;
+    }
+    
+    .phone_ul {
+        padding:5px;
+        width:100%;
+        margin:0;
+        list-style:none;
+        font-size: 14px;
+    }
+    
+    .phone_li {
+        cursor: pointer;
+    }
+    
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 年级列表" class="button primary {:session('btntheme')}">&lt; 返回 年级列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="{:U('Grade/createEditGrade')}" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput"
+          data-show-error-hint="true" onsubmit="return checkForm();">
+         <div class="example" data-text="基本信息">
+            <input type="hidden" id="id" name="id" value="{$data.id}">
+             <div class="form_section">
+                <label for="grade">年级</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="grade" id="grade" required data-validate-func="required" value="{$data.grade}" data-validate-hint="班级不能为空"/>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="code">编码</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="code" id="code" required data-validate-func="required" value="{$data.code}" data-validate-hint="班级不能为空"/>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="chinese_code">中文编号</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="chinese_code"  required id="chinese_code" data-validate-func="required" value="{$data.chinese_code}" data-validate-hint="班级不能为空"/>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="short_name">简称</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="short_name"  required id="short_name" data-validate-func="required" value="{$data.short_name}" data-validate-hint="班级不能为空"/>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-actions" style="text-align: left; ">
+            <button type="submit" class="button primary {:session('btntheme')}" onclick="return checkForm();" >保存</button>
+        </div>
+    </form>
+</div>
+
+
+<script>
+
+    function checkForm() {
+	  if($('#grade').val() == '')
+	  {
+	   alert('年级不能为空');
+	   return false;
+	  }
+	  if($('#code').val() == '')
+	  {
+	   alert('编码不能为空');
+	   return false;
+	  }
+	  if($('#chinese_code').val() == '')
+	  {
+	   alert('中文编号不能为空');
+	   return false;
+	  }
+	  if($('#short_name').val() == '')
+	  {
+	   alert('简称不能为空');
+	   return false;
+	  }
+      return true;
+    }
+</script>
+
+</body>
+</html>

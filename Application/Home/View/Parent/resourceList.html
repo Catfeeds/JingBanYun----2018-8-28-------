@@ -1,0 +1,383 @@
+<layout name="parent_layout_2" />
+<link href="__PUBLIC_METRO__/css/app/table_list2.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/resourceList.css" type="text/css" rel="stylesheet">
+
+
+<div class="resource_box">
+    <div class="resource_top">
+        <div class="search">
+            <button class="search_btn"></button>
+            <!--        <input type="text" name="keyword" value="{$keyword}" class="form-control" placeholder="搜索资源名称">-->
+            <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入资源名称">
+        </div>
+    </div>
+
+    <div class="resource_middle" style="position:relative;">
+      
+        <div class="resource_classify">
+            <p class="classify_p">学科</p><span class="class_img"></span><span class="resource_name"></span>
+
+            <ul class="classify_ul course_ul">
+               
+                <!--            <option value="-1" {$course_id==-1?'selected':''}>QXK : 全学科</option>-->                
+                <volist name="courses" id="dataCourse">
+                    <!--                <option value="{$dataCourse.id}" {$dataCourse[ 'id']==$course_id? 'selected': ''}>-->
+                    <li attr_id='{$dataCourse.id}' {$dataCourse[ 'id']==$course_id? 'class="current_selected"': ''}>
+                        {$dataCourse.course_name}
+                    </li>
+                </volist>
+				 <li {$course_id==null? 'class="current_selected1"': ''} attr_id=''>取消选择</li>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">年级</p><span class="class_img"></span><span class="resource_name"></span>
+
+            <ul class="classify_ul grade_ul">
+                
+<!--
+                <option value="-1" {$grade_id==-1?'selected':''}>小学全年级</option>
+                <option value="-2" {$grade_id==-2?'selected':''}>初中全年级</option>
+                <option value="-3" {$grade_id==-3?'selected':''}>高中全年级</option>
+-->
+                
+                    <!--<li attr_id='-1' {$grade_id==-1? 'class="current_selected"': ''}>小学全年级</li>
+                    <li attr_id='-2' {$grade_id==-2? 'class="current_selected"': ''}>初中全年级</li>
+                    <li attr_id='-3' {$grade_id==-3? 'class="current_selected"': ''}>高中全年级</li>-->
+                <volist name="grades" id="dataGrade">
+<!--                <option value="{$dataGrade.id}" {$dataGrade[ 'id']==$grade_id? 'selected': ''}>-->
+                    <li attr_id="{$dataGrade.code}" {$dataGrade['code']==$grade_code? 'class="current_selected"': ''}>
+                        {$dataGrade.grade}
+                    </li>
+                </volist> 
+                <li {$grade_code==null?'class="current_selected1"':''}  attr_id=''>取消选择</li>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p">分册</p><span class="class_img"></span><span class="resource_name"></span>
+
+            <ul class="classify_ul textbook_ul">
+               
+                <li {$textbook_id==1? 'class="current_selected"': ''} attr_id='1'>上册</li>
+                <li {$textbook_id==2? 'class="current_selected"': ''} attr_id='2'>下册</li>
+				<li {$textbook_id==3? 'class="current_selected"': ''} attr_id='3'>全一册</li>
+            <li {$textbook_id==null? 'class="current_selected1"': ''} attr_id=''>取消选择</li>
+            </ul>
+        </div>
+        <div class="resource_classify" style="margin-bottom:0">
+            <p class="classify_p">类型</p><span class="class_img"></span><span class="resource_name"></span>
+
+            <ul class="classify_ul type_ul">
+                
+                <!--
+                    <option value="video" {$type=='video' ? 'selected': ''}>视频</option>
+                    <option value="audio" {$type=='audio' ? 'selected': ''}>音频</option>
+                    <option value="word" {$type=='word' ? 'selected': ''}>Word</option>
+                    <option value="pdf" {$type=='pdf' ? 'selected': ''}>PDF</option>
+                    <option value="ppt" {$type=='ppt' ? 'selected': ''}>PPT</option>
+                    <option value="image" {$type=='image' ? 'selected': ''}>图片</option>
+-->
+                <li attr_id='video' {$type=='video' ? 'class="current_selected"': ''}>视频</li>
+                <li attr_id='audio' {$type=='audio' ? 'class="current_selected"': ''}>音频</li>
+                <li attr_id='image' {$type=='image' ? 'class="current_selected"': ''}>图片</li>
+                <li attr_id='word' {$type=='word' ? 'class="current_selected"': ''}>WORD</li>
+                <li attr_id='ppt' {$type=='ppt' ? 'class="current_selected"': ''}>PPT</li>
+                <li attr_id='pdf' {$type=='pdf' ? 'class="current_selected"': ''}>PDF</li>
+                <li attr_id='swf' {$type=='swf' ? 'class="current_selected"': ''}>SWF</li>
+                <li {$type==null ? 'class="current_selected1"': ''} attr_id=''>取消选择</li>
+            </ul>
+        </div>
+        <div class="resource_classify">
+            <p class="classify_p" >排序</p><span class="class_img"></span><span class="resource_name"></span>
+             <ul class="classify_ul type_ul">
+            <div class="classify_sort left">
+                <div class="sort_text left">
+                    观看
+                </div>
+                <div class="sort_btn right browse_count">
+                    <button {$sort_column=='5' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending'} id="ascending_watch" title="升序">&nbsp;</button>
+                    <button {$sort_column=='4' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending"'} id="descending_watch" title="降序">&nbsp;</button>
+                </div>
+            </div>
+            <div class="classify_sort left">
+                <div class="sort_text left">
+                    点赞
+                </div>
+                <div class="sort_btn right zan_count">
+                    <button {$sort_column=='1' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending'} id="ascending_like" title="升序">&nbsp;</button>
+                    <button {$sort_column=='0' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending'} id="descending_like" title="降序">&nbsp;</button>
+                </div>
+            </div>
+            <div class="classify_sort left">
+                <div class="sort_text left">
+                    收藏
+                </div>
+                <div class="sort_btn right collect_count">
+                    <button {$sort_column=='3' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending'} id="ascending_collect" title="升序">&nbsp;</button>
+                    <button {$sort_column=='2' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending'} id="descending_collect" title="降序">&nbsp;</button>
+                </div>
+            </div>
+            <div class="classify_sort left">
+                <div class="sort_text left">
+                    时间
+                </div>
+                <div class="sort_btn right time_count">
+                    <button {$sort_column=='7' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending'} id="ascending_collect" title="升序">&nbsp;</button>
+                    <button {$sort_column=='6' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending'} id="descending_collect" title="降序">&nbsp;</button>
+                </div>
+            </div>
+			</ul>
+        </div>
+        
+    </div>
+
+  
+
+    <div class="resource_bottom">
+        <ul class="row resource_ul">
+            <volist name="list" id="data" empty="暂时没有资源哦" key="i">
+                <li class="col-md-4 resource_li" id="l_{$data.id}" onclick="return clearPager;">
+                    <switch name="data.type">
+                        <case value="video">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_video.png)no-repeat center;">
+                                <a href="{:U('Parent/resourceDetails?id=')}{$data.id}">
+                                    <if condition="strpos($data['vid_image_path'],'http')===false">
+                                        <img class="resource_img" src="{$oss_path}{$data.vid_image_path}" alt=""> 
+                                    <else />
+                                        <img class="resource_img" src="{$data.vid_image_path}" alt=""> 
+                                     </if>
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="audio">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_radio.png)no-repeat center;">
+                                <a href="{:U('Parent/resourceDetails?id=')}{$data.id}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/b_radio.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="image">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_image.png)no-repeat center;">
+                                <a href="{:U('Parent/resourceDetails?id=')}{$data.id}">
+                                    <img class="resource_img" src="{$oss_path}{$data.file_path}" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="word">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_word.png)no-repeat center;">
+                                <a href="{:U('Parent/resourceDetails?id=')}{$data.id}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/b_word.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="ppt">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_ppt.png)no-repeat center;">
+                                <a href="{:U('Parent/resourceDetails?id=')}{$data.id}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/b_ppt.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="pdf">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_pdf.png)no-repeat center;">
+                                <a href="{:U('Parent/resourceDetails?id=')}{$data.id}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/b_pdf.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                        <case value="swf">
+                            <div class="res_box" style="background:url(__PUBLIC__/img/resource/r_swf.png)no-repeat center;">
+                                <a href="{:U('Parent/resourceDetails?id=')}{$data.id}">
+                                    <img class="resource_img" src="__PUBLIC__/img/resource/b_swf.jpg" alt="">
+                                    <p class="resource_title">{$data.name}</p>
+                                    <if condition="$data.is_new eq yes">
+                                         <img class="newImg" src="{$oss_path}public/web_img/Resource/new.png" alt=""> 
+                                    </if>
+                                </a>
+                        </case>
+                    </switch>
+
+
+                    <p class="resource_p">
+                        <span class="left">{$data.textbook}</span>
+                        <span class="right">
+                                <img src="__PUBLIC__/img/resource/watch.png" alt="">
+                                <span>{$data.follow_count}</span>
+                        <img src="__PUBLIC__/img/resource/like.png" alt="">
+                        <span>{$data.zan_count}</span>
+                        <img src="__PUBLIC__/img/resource/collect.png" alt="">
+                        <span>{$data.favorite_count}</span>
+                        </span>
+                    </p>
+                    <p class="resource_p">
+                        <span class="left">{$data.teacher_name}</span>
+                        <span class="right">{$data.create_at|date="Y-m-d H:i",###}</span>
+                    </p>
+                    </div>
+                </li>
+            </volist>
+        </ul>
+         <div class="Pagination">{$page}</div>
+        </div>
+        </div>
+       
+        <script>
+            $(document).ready(function () {
+                var sort = "{$sort_column}" ? "{$sort_column}" : 0;
+
+                //点击搜索框
+                $('.search_btn').click(function () {
+                    var string = '';
+                     
+
+                    string =  join_string() + get_sort_string();
+                    location.href = "index.php?m=Home&c=Parent&a=resourceList" + string;
+                });
+                //回车搜索
+                $(".search_text").keydown(function (evt) {
+                    if (event.keyCode == "13") { //keyCode=13是回车键
+                        var evt = (evt) ? evt : ((window.event) ? window.event : "")
+                        var keyCode = evt.keyCode ? evt.keyCode : (evt.which ? evt.which : evt.charCode);
+                        var string = '';
+                        /*var keyword = $(".search_text").val();
+                        if (keyword != '') {
+                            keyword = '&keyword=' + keyword;
+                        }*/
+                        string =  join_string() + get_sort_string();
+                        location.href = "index.php?m=Home&c=Parent&a=resourceList" + string;
+
+                    }
+                })
+                //点击删选切换进行
+                $('.classify_ul').children('li').on('click', function () {
+                    $(this).siblings('li').removeClass('current_selected');
+                    $(this).addClass('current_selected');
+                    var string = join_string();
+                    string = string + get_sort_string();
+                    location.href = "index.php?m=Home&c=Parent&a=resourceList" + string;
+                })
+
+                //拿到排序的当前值
+                function get_sort_string() {
+                    sort = '&sort_column=' + sort;
+                    return sort;
+                }
+
+                //点击排序进行切换
+                $(".order_btn").click(function () {
+                    if ($(this).hasClass('sort_desc_red') || $(this).hasClass('sort_asc_red')) {
+                        return false;
+                    }
+
+                    //判断当前是箭头向上还是向下 
+                    var sort_string = "";
+                    if ($(this).hasClass('ascending')) {
+                        var tag = 'up';
+                    } else {
+                        var tag = 'down';
+                    }
+                    //判断当前的类型是哪种类型
+                    if ($(this).parent().hasClass('browse_count')) {
+                        //观看数
+                        if (tag == 'up') {
+                            sort_string = 'sort_column=5';
+                            sort = 5; 
+                        } else {
+                            sort_string = 'sort_column=4';
+                            sort = 4; 
+                        }
+
+                    } else if ($(this).parent().hasClass('zan_count')) {
+                        //点赞数
+                        if (tag == 'up') {
+                            sort_string = 'sort_column=1';
+                            sort = 1; 
+                        } else {
+                            sort_string = 'sort_column=0';
+                            sort = 0; 
+                        }
+
+                    } else if ($(this).parent().hasClass('time_count')) {
+                        //时间数
+                        if (tag == 'up') {
+                            sort_string = 'sort_column=7';
+                            sort = 7; 
+                        } else {
+                            sort_string = 'sort_column=6';
+                            sort = 6; 
+                        }
+
+                    } else {
+                        //其余就是收藏数
+                        if (tag == 'up') {
+                            sort_string = 'sort_column=3';
+                            sort = 3; 
+                        } else {
+                            sort_string = 'sort_column=2';
+                            sort = 2; 
+                        }
+                    }
+                    var string = join_string();
+                    string = string + '&' + sort_string;
+                    location.href = "index.php?m=Home&c=Parent&a=resourceList" + string;
+                });
+
+                //拼接语句
+                function join_string() {
+                    var string = "";
+                    var course_id = $(".course_ul").find('.current_selected,.current_selected1').attr('attr_id');
+                    var grade_id = $(".grade_ul").find('.current_selected,.current_selected1').attr('attr_id');
+                    var textbook_id = $(".textbook_ul").find('.current_selected,.current_selected1').attr('attr_id');
+                    var type_id = $(".type_ul").find('.current_selected,.current_selected1').attr('attr_id');
+                    var keyword = $(".search_text").val();
+                    if (keyword != '') {
+                        string = '&keyword=' + keyword;
+                    }
+                    if (course_id != '') {
+                        string += '&course=' + course_id;
+                    }
+                    if (grade_id != '') {
+                        string += '&grade=' + grade_id;
+                    }
+                    //(/(^[1-9]\d*$)/.test(textbook_id)
+                    if (textbook_id != '') {
+                        string += '&textbook=' + textbook_id;
+                    }
+                    if (type_id != '') {
+                        string += '&type=' + type_id;
+                    }
+
+                    return string;
+                }
+            });
+							    $('.resource_classify').hover(function(){
+			$(this).children('.classify_ul').filter(':not(:animated)').slideDown()
+		},function(){
+			$(this).children('.classify_ul').slideUp()
+		})
+		$('.current_selected').each(function(i,n){
+			  var cho = $.trim($(this).html());
+              $(this).parent().siblings('.resource_name').html(cho)  
+		})
+		$('.sort_desc_red,.sort_asc_red').each(function(i,n){
+			  var cho = $.trim($(this).parent().siblings('.sort_text').html());
+              $(this).parent().siblings('.resource_name').html(cho) ;
+			  $(this).parent().parent().parent().siblings('.resource_name').html(cho)
+		})
+        </script>

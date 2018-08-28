@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>作业系统</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/app/Version1_3/studentHomeworkIndex.css">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<style>
+			[v-cloak]{
+				display: none
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<!-- 做作业 -->
+			<div class="doHomework" v-cloak>
+				<div class="doHomeImgBox">
+					<img src="{$oss_path}public/web_img/APPHomework/zuozuoye.png" alt="" class="doHomeImg">
+				</div>
+				<div class="doHomeTextBox">
+					<p class="doHomeName">做作业</p>
+					<p class="doHomeLabel">老师布置的新作业</p>
+				</div>
+				<a :href="'/index.php/ApiInterface/Version1_3/HomeworkStudent/doHomework?userId='+userId+'&role='+role" class="doHomeHref" v-if="works != '' && works != null">
+					查看全部
+					<img src="{$oss_path}public/web_img/APPHomework/gengduo.png" alt="" class="moreImg">
+				</a>
+			</div>
+
+			<!-- 如果没有作业列表 -->
+			<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/kongbaiye1.png" alt="" class="emptyImg">
+
+			<!-- 如果加载失败 -->
+			<div class="loadFail">加载失败，请点击重试</div>
+
+			<!-- 作业列表 -->
+			<div class="homeworkList" style="padding:10px">
+				<span v-for="(worklist,index) in works" >
+					<a :href="'/index.php/ApiInterface/Version1_3/HomeworkStudent/homeworkList?userId='+userId+'&role='+role+'&id='+worklist.homeworkId+'&classId='+worklist.classId+'&isEnd=0&statue=1'" class="homeworkItem">
+						<img src="{$oss_path}public/web_img/APPHomework/xin.png" alt="" class="newImg">
+						<div class="homeworkIntro">
+							<div class="homeName textHidden">{{ worklist.content1 }}</div>
+							<div class="homeScore">{{ worklist.content6 }}</div>
+							<div class="homeClass textHidden">{{ worklist.content4 }} {{ worklist.content5 }}</div>
+							<div class="homeTime textHidden">截止时间：{{ worklist.content3 }}</div>
+						</div>
+						<div class="homeworkDo">
+							<img src="{$oss_path}public/web_img/APPHomework/yingyu.png" alt="" class="courseImg" v-if="worklist.content2 == '英语'">
+							<img src="{$oss_path}public/web_img/APPHomework/yuwen.png" alt="" class="courseImg" v-if="worklist.content2 == '语文'">
+							<img src="{$oss_path}public/web_img/APPHomework/shuxue.png" alt="" class="courseImg" v-if="worklist.content2 == '数学'">
+							<img src="{$oss_path}public/web_img/APPHomework/doHomework.png" alt="" class="doImg" v-if="worklist.statusText =='做作业'">
+							<img src="__PUBLIC__/img/Apphomework/weijiao.png" alt="" class="doImg" v-if="worklist.statusText =='已过期'">
+							<div>{{ worklist.content7 }}</div>
+						</div>
+					</a>
+				</span>
+			</div>
+
+			<!-- 作业册 -->
+			<div class="homeworkBook" v-cloak>
+				<div class="homeBookBox">
+					<a :href="'/index.php/ApiInterface/Version1_3/HomeworkStudent/homeworkBook?userId='+userId+'&role='+role" class="borderOutter" v-if="booksData.homeworkBookCount > 0">
+						<div class="borderInner">
+							<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/zuoyece.png" alt="" class="booksImg">
+							<div class="booksText">我共完成<span class="redBooksNum">{{ booksData.homeworkBookCount }}</span>次作业</div>
+							<div class="booksText">老师已做批改<span class="redBooksNum">{{ booksData.processedCount }}</span>次</div>
+						</div>
+					</a>
+					<a href="javascript:;" class="borderOutter" v-else>
+						<div class="borderInner">
+							<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/zuoyece.png" alt="" class="booksImg">
+							<div class="booksText">我共完成<span class="redBooksNum">{{ booksData.homeworkBookCount }}</span>次作业</div>
+							<div class="booksText">老师已做批改<span class="redBooksNum">{{ booksData.processedCount }}</span>次</div>
+						</div>
+					</a>
+				</div>
+				<div class="homeBookBox">
+					<a href="javascript:;" class="borderOutter">
+						<div class="borderInner rightBox" @click="cuoti">
+							<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/wodecuotiben.png" alt="" class="rightImg">
+							<div class="rightText">
+								<div class="rightTitle rightTitleBlue">错题本</div>
+								<div class="rightSmall">作业错题尽在其中</div>
+							</div>
+						</div>
+					</a>
+					<a href="javascript:;" class="borderOutter">
+						<div class="borderInner rightBox" @click="xitiku">
+							<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/wodeshitiku.png" alt="" class="rightImg">
+							<div class="rightText">
+								<div class="rightTitle rightTitleRed">我的收藏</div>
+								<div class="rightSmall">我收藏的试题聚集地</div>
+							</div>
+						</div>
+					</a>
+					<a href="javascript:;" class="borderOutter" @click="fenxi">
+						<div class="borderInner rightBox" >
+							<img src="__PUBLIC__/img/app/Version1_3/HomeworkStudent/wodechengjifenxi.png" alt="" class="rightImg">
+							<div class="rightText">
+								<div class="rightTitle rightTitleYellow">我的成绩分析</div>
+								<div class="rightSmall">了解自己的成绩轨迹</div>
+							</div>
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+
+	</body>
+
+	<script>
+		var userId = "{$userId}";
+		var role = "{$role}";
+
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId: userId,
+				role: role,
+				urlUnFinishHomework: '/index.php/ApiInterface/Version1_3/HomeworkStudent/getUnFinishHomeworkList',
+				works:'',
+				pageIndex: 1,
+				pageSize: 3,
+				isFlatten3: 1,
+				urlBooks: '/index.php/ApiInterface/Version1_3/HomeworkStudent/getHomeworkCount',
+				booksData: ''
+			},
+			created: function () { //应用初始化完毕加载
+				// 学生待做作业列表
+				this.getUnFinishHomeworkList();
+				// 学生作业册
+				this.getBooksList();
+			},
+			methods: {
+				// 学生待做作业列表
+				getUnFinishHomeworkList: function(){
+					this.$http.post(this.urlUnFinishHomework, {
+						userId: this.userId,
+						role: this.role,
+						pageIndex : this.pageIndex,
+						pageSize: this.pageSize,
+						isFlatten3: 1
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.works = response.data.data;
+
+							this.$nextTick(function(){
+								//如果没有作业，显示占位图
+								if($('.homeworkItem').length == 0) {
+									$('.emptyImg').show();
+								}
+
+								var winHeight = $(window).height();//屏幕的高度
+								var topHeight = $('.doHomework').outerHeight();//“做作业”的高度
+								var centerHeight = $('.homeworkList').outerHeight();//“作业列表”的高度
+								var bottomHeight = $('.homeworkBook').outerHeight();//“作业册”的高度
+								var allHeight = topHeight*1 + centerHeight*1 + bottomHeight*1 - 10;//三个的高度
+								//三个高度超过屏幕高度时，屏幕可以滚动
+								if(allHeight > winHeight) {
+									$('body').css('height','inherit');
+									$('.homeworkBook').css('position','relative');
+								}
+								//如果屏幕高度减去三个高度大于40的时候，间隔变为10
+								if(winHeight*1 - allHeight*1 > 40 ) {
+									$('.homeworkList').css('padding','10px');
+									$('.homeworkItem').css('margin-bottom','10px');
+								}
+
+								if($('.emptyImg').css('display') == 'block') {
+									$('body').css('height','100%');
+									$('.homeworkBook').css('position','fixed');
+								}
+
+								//如果屏幕高度小于560且作业只有1个的时候
+								if($('.homeworkItem').length <= 1) {
+									$('html,body').css('height','100%');
+									$('.homeworkBook').css({
+										'position':'fixed',
+										'bottom':'0px'
+									});
+								}
+								if(winHeight < 560 && $('.homeworkItem').length <= 1) {
+									$('body').css('height','100%');
+									$('.homeworkBook').css({
+										'position':'fixed',
+										'bottom':'0px'
+									});
+								}
+				            })
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				// 学生作业册
+				getBooksList: function(){
+					this.$http.post(this.urlBooks, {
+						userId: this.userId,
+						role: this.role
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+	    					this.booksData = response.data.data;
+	                    } else {
+	                        console.log('错误1')
+	                    }
+					}, function (response) {
+						console.log('错误2')
+					})
+				},
+				cuoti:function(){
+					window.location.href ='/index.php/ApiInterface/Version1_3/HomeworkStudent/myWrongCourse?userId='+this.userId+'&role='+this.role
+				},
+				xitiku:function(){
+					window.location.href ='/index.php/ApiInterface/Version1_3/HomeworkStudent/myCollectionCourse?userId='+this.userId+'&role='+this.role
+				},
+				fenxi:function(){
+					var data2_1 = {
+						"page":"studentAnalyze",
+						'studentId':this.userId
+					}
+					postApp(data2_1)
+				}
+			}
+		})
+	</script>
+
+	<script>
+		$('.loadFail').click(function(){
+			window.location.reload();
+		})
+		function showNativeBar(){
+
+  		}
+	</script>
+
+</html>

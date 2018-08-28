@@ -1,0 +1,320 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		background: #fff;
+	}
+</style>
+
+<div class="main_opr">
+    <a href="javasxript:;" title="作业列表" class="btn btn-main-opr btn-main-opr-active">作业列表</a>
+    <a href="{:U('TeacherHomework/publishHomework')}" title="布置作业" class="btn btn-main-opr">布置作业</a>
+    <a href="{:U('TeacherHomework/myCollectionList')}" title="我的收藏" class="btn btn-main-opr">我的收藏</a>
+    <a href="{:U('TeacherHomework/wrongList')}" title="学生错题库" class="btn btn-main-opr">学生错题库</a>
+    <a href="{:U('TeacherHomework/testPaperList')}" title="试卷库" class="btn btn-main-opr">试卷库</a>
+</div>
+
+<div id="homework" v-cloak>
+	<div class="filterSearch">
+		<div class="filterSearchLeft">
+			<div class="tileFilterOutter">
+				<div class="tileFilterBox">
+					<div class="tileFilterTitle">班&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</div>
+					<div class="tileFilterMain" type="classtype">
+						<span class="tileFilterOne active" @click=tileFilter($event)>全部</span>
+						<span class="tileFilterOne" v-for="(classD, index) in whereData.class_list" :classId="classD.id" @click=tileFilter($event)>{{ classD.name }}</span>
+					</div>
+				</div>
+				<div class="tileFilterBox">
+					<div class="tileFilterTitle">作业状态：</div>
+					<div class="tileFilterMain" type="statustype">
+						<span class="tileFilterOne active" @click=tileFilter($event)>全部</span>
+						<span class="tileFilterOne" v-for="(statusD, i) in whereData.status_list" :statusId="statusD.id" @click=tileFilter($event)>{{ statusD.name }}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="searchOutter">
+			<input type="text" name="keyword" v-model="search" class="searchText left" placeholder="请输入搜索内容" autocomplete="off">
+			<button type="button" class="searchButton right" @click=searchButton($event) >搜索</button>
+		</div>
+	</div>
+
+	<div class="indexOutter">
+        <div class="emptyDiv mt20" v-if="listData == ''">
+            <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="" class="sorry">
+            <p>抱歉，暂无作业！</p>
+        </div>
+		<div class="indexBox" v-for="(list, i) in listData" v-else>
+            <div class="indexDate" v-if="i === 0">{{ list.create_at }}</div>
+            <div class="indexDate" v-else-if="list.create_at != dateArr[i-1] && i > 0">{{ list.create_at }}</div>
+
+			<!-- 单元测试题 -->
+			<div class="indexMain" :class="{active:list.chapter_id == '期中' || list.chapter_id == '期末'}">
+				<div class="mainTop">
+					<div class="mainLeft">
+						<div class="type textHidden">{{ list.chapter_id }}</div>
+						<div class="grade">
+							{{ list.grade_name }}{{ list.class_name }}
+							<img src="__PUBLIC__/img/homeworkV1/daibuzhi2.png" alt=""  v-if="list.status==='未开始'">
+							<!-- 其余三种状态的图 -->
+							<img src="__PUBLIC__/img/homeworkV1/daipigai2.png" alt="" v-else-if="list.status==='待批改'">
+							<img src="__PUBLIC__/img/homeworkV1/zuoyezhong2.png" alt="" v-else-if="list.status==='作业中'" >
+							<img src="__PUBLIC__/img/homeworkV1/zuoyebaogao2.png" alt="" v-else>
+						</div>
+						<div class="date">
+							截止日期：{{ list.deadline }}
+						</div>
+					</div>
+					<div class="mainCenter">
+						<div class="name">{{ list.name }}</div>
+						<div class="remark">{{ list.exercises_id_count }}道题&nbsp;&nbsp;{{ list.total_score }}分总分&nbsp;&nbsp;{{ list.submit_student_count }}/{{ list.class_student_count}} 人已完成</div>
+					</div>
+					<div class="mainRight">
+						<a href="javascript:;" class="btnCommon" @click="lookHomeWorkDetails($event)" :statusName="list.status" :homeworkId="list.id" :classId="list.class_id" >查看作业</a>
+						<a href="javascript:;" class="btnCommon" @click=homeworkCopy($event) :homeworkId="list.id" :classId="list.class_id">复制习题</a>
+					</div>
+				</div>
+				<div class="mainBottom textHidden">
+					知识点：{{ list.knowledge_id }}
+				</div>
+			</div>
+
+		</div>
+
+
+        <div class="downLoading pt10">
+            <img src="__PUBLIC__/img/homeworkV1/loading.png" alt="" class="loadingRotate">
+            加载中...
+        </div>
+
+	</div>
+</div>
+
+<script>
+    var userId = "{:session('teacher.id')}";
+    var create_user_name = "{:session('teacher.name')}";
+
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+			url: '',
+			// 这些地方应该都用ID，用姓名不准确，暂时先这么写
+			subject: '',
+			volume: '',
+            wUrl:"/index.php/ApiInterface/Version1_3/TeacherHomework/getSearchWhere",
+            userId:0,
+            whereData:{},
+            LUrl:"/index.php?m=Home&c=TeacherHomework&a=getMyClassHomeworkList",
+            classId:0,
+            status:0,
+            listData:0,
+            search:'',
+            setStoreData:{},
+            workData:{},
+            dateArr:[],
+            pageIndex: 1, 
+            pageSize: 20,
+            scrollAllow: false
+		},
+		created: function () {
+		    this.userId = userId;
+			this.getWhere();
+			this.getList();
+		},
+		methods: {
+		    //点击查看作业
+            lookHomeWorkDetails:function(event){
+                var statusname = $(event.target).attr("statusName");
+                var homeworkId = $(event.target).attr("homeworkId");
+                var classId = $(event.target).attr("classId");
+
+                if (statusname =="未开始") {
+					window.location.href = "/index.php?m=Home&c=TeacherHomework&a=homeworkNotStarted"+"&homeworkId="+homeworkId+"&classId="+classId;
+				} else if(statusname== "作业中") {
+                    window.location.href = "/index.php?m=Home&c=TeacherHomework&a=homeworkDoing"+"&homeworkId="+homeworkId+"&classId="+classId;
+				} else if(statusname== "待批改") {
+                    window.location.href = "/index.php?m=Home&c=TeacherHomework&a=homeworkNotCorrect"+"&homeworkId="+homeworkId+"&classId="+classId;
+                } else { //作业报告
+                    window.location.href = "/index.php?m=Home&c=TeacherHomework&a=homeworkReport"+"&homeworkId="+homeworkId+"&classId="+classId;
+				}
+			},
+		    //点击作业复制
+
+            homeworkCopy:function(event){
+                var homeworkId = $(event.target).attr("homeworkId");
+                var classId = $(event.target).attr("classId");
+
+                store.set(this.userId+"selectExerciseList","");
+                store.set(this.userId+"selectExerciseGroupList","");
+                store.set(this.userId+"exerciseNumLength","");
+                store.set(this.userId+"exerciseNumScore","");
+                //store.set(this.userId+"selectExerciseListMap","");
+
+                this.$http.post("/index.php?m=Home&c=TeacherHomework&a=FormatDataHomework", {
+                    homeworkId:homeworkId,
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){ //格式化数据结构 进行缓存加载
+                        this.setStoreData = response.data.data;
+                        store.set(this.userId+"selectExerciseList",this.setStoreData.exerciseIdList);
+                        store.set(this.userId+"selectExerciseGroupList",this.setStoreData.selectExerciseGroupList);
+                        store.set(this.userId+"exerciseNumLength",this.setStoreData.exerciseNumLength);
+                        store.set(this.userId+"exerciseNumScore",this.setStoreData.exerciseNumScore);
+                        store.set(this.userId+"selectcourseId",this.setStoreData.courseId);
+						console.log("success");
+                        window.location.href = "/index.php?m=Home&c=TeacherHomework&a=copyHomework"+"&homeworkId="+homeworkId+"&classId="+classId;
+
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+
+
+
+			},
+            getWhere: function(){
+                this.$http.post(this.wUrl, {
+                    userId : this.userId,
+                    role:2
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.whereData = response.data.data;
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },// 筛选
+
+            getList: function(){
+                this.pageIndex = 1;
+                this.pageSize = 20;
+                this.scrollAllow = true;
+                this.$http.post(this.LUrl, {
+                    userId : this.userId,
+                    role:2,
+                    classId:this.classId,
+                    status:this.status,
+					keywork:this.search,
+                    pageIndex: this.pageIndex,
+                    pageSize: this.pageSize
+                }, {
+                    emulateJSON: 'application/x-www-form-urlencoded'
+                }).then(function (response) {
+                    if(response.status == '200'){
+                        this.listData = response.data.data;
+                        this.dateArr = [];
+                        for(var i=0; i<this.listData.length; i++){
+                            this.dateArr.push(this.listData[i].create_at)
+                        }
+
+                        this.scrollAllow = true;
+                        this.scroll();
+
+                        if(response.data.data.length < this.pageSize) {
+                            this.scrollAllow = false
+                        }
+                    } else {
+                        console.log('错误1')
+                    }
+                }, function (response) {
+                    console.log('错误2')
+                })
+            },
+
+
+            tileFilter: function(event){
+                if(!$(event.target).hasClass('active')) {
+                    $(event.target).addClass('active').siblings().removeClass('active');
+                    //判断是筛选的哪里
+                    var type = $(event.target).parent('.tileFilterMain').attr('type');
+
+                    if(type == 'classtype') {
+                        //班级
+						this.classId = $(event.target).attr('classId');
+                    } else {
+                        //状态
+                        this.status = $(event.target).attr('statusId');
+                    }
+                    this.getList();
+                }
+            },
+
+            searchButton: function(event){
+                this.getList();
+            },
+            scroll:function(){
+                var that = this
+                $(window).scroll(function () {
+                    //已经滚动到上面的页面高度
+                    var scrollTop = $(this).scrollTop();
+                    //页面高度
+                    var scrollHeight = $(document).height();
+                    //浏览器窗口高度
+                    var windowHeight = $(this).height();
+
+                    //此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+                    if (scrollTop + windowHeight == scrollHeight) {
+                        if(that.scrollAllow == true) {
+                            $('.downLoading').show();
+                            that.pageIndex++;
+
+                            that.$http.post(that.LUrl, {
+                                userId : that.userId,
+                                role:2,
+                                classId:that.classId,
+                                status:that.status,
+                                keywork:that.search,
+                                pageIndex: that.pageIndex,
+                                pageSize: that.pageSize
+                            }, {
+                                emulateJSON: 'application/x-www-form-urlencoded'
+                            }).then(function (response) {
+                                if(response.status == '200'){
+                                    for(var a=0;a<response.data.data.length;a++){
+                                        that.listData.push(response.data.data[a]);
+                                    }
+                                    for(var i=0;i<response.data.data.length;i++){
+                                        that.dateArr.push(response.data.data[i].create_at)
+                                    }
+
+                                    $('.downLoading').hide();
+
+                                    if(response.data.data == '') {
+                                        that.scrollAllow = false
+                                    }
+
+                                } else {
+                                    console.log('错误1')
+                                }
+                            }, function (response) {
+                                console.log('错误2')
+                            })
+                        }
+                    }
+                });
+            }
+		}
+	})
+</script>
+
+<script>
+	$(function(){
+		var contentHeight = $('#contentWrapper').height();
+		$('.exerciseOutter').css('min-height', contentHeight-20)
+	})
+</script>

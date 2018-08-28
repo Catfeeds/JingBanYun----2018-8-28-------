@@ -1,0 +1,212 @@
+<layout name="admin_layout_back_iframe"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+	.fullscr {
+		top: 50px;
+	}
+	#addBtn{
+		cursor:pointer;
+	}
+</style>
+
+<!--<form action="" method="post">
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>任教学科：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">英语</option>
+					<option value="2">语文</option>
+				</select>
+			</div>
+			<div class="cell">
+				<label>任教年级：</label>
+				<select id="" class="input-control" name="">
+					<option value="0">-请选择-</option>
+					<option value="1">一年级</option>
+					<option value="2">二年级</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+	</div>
+</form>-->
+
+<div class="grayBox">
+	<div class="left">
+		<span class="btns" id="addBtn">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="" >
+			添加
+		</span>
+	</div>
+	<!--<div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue-->
+	<!--		<button class="upBtn upBtnBlue"></button>
+			<button class="downBtn"></button>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>-->
+</div>
+
+<empty name="list">
+    <div class="emptyResult">没有相关信息</div>
+</empty>
+<notempty name="list">
+	<table id="listWrapperCourse" class="table striped hovered border">
+		<thead>
+			<tr>
+				<th class="text-center" style="width:16%">序号</th>
+				<th class="text-center" style="width:28%">任教年级</th>
+				<th class="text-center" style="width:28%">任教学科</th>
+				<th class="text-center" style="width:28%">操作</th>
+			</tr>
+		</thead>
+		<tbody id="body">
+				<volist name="list" id="item" key="key">
+					<tr>
+				<td class="text-center">
+					{$key}
+				</td>
+				<td class="text-center">
+					{$item.grade}
+				</td>			 
+				<td class="text-center">
+					{$item.course_name}
+				</td>
+				<td class="text-center">
+								<input type="hidden" class="second_id" value="{$item.second_id}" />
+								<a href="javascript::void(0)" class="operBtn delete_class" id="">删除</a>
+				</td>
+			</tr> 
+				</volist>
+		</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+</notempty>
+
+<!--添加任教学科弹窗-->
+<div class="fullscr1">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">添加任教年级学科</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20">
+				<div class="selectBox">
+					<label for="">任教年级：</label>
+					<select name="" class="input-control" id="grade_list">
+						<option value="0">-请选择-</option>
+                                            <volist name="grade_list" id="grade_item">
+						<option value="{$grade_item.id}">{$grade_item.name}</option> 
+                                            </volist>
+					</select>
+				</div>
+				<div class="selectBox">
+					<label for="">任教学科：</label>
+					<select name="" class="input-control" id="course_list">
+						<option value="0">-请选择-</option>
+                                            <volist name="course_list" id="course_item">
+						<option value="{$course_item.id}">{$course_item.name}</option> 
+                                            </volist>
+					</select>
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<!--
+<script>
+    $(document).ready(function () {
+        $('.listWrapperCourse').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"16%"},
+                {"width":"28%"},
+                {"width":"28%"},
+                {"width":"28%"}
+            ]
+        });
+    });
+</script>
+-->
+ 
+
+<script>
+        //点击添加年级学科
+        $('#sureBtn').click(function(){
+            $('.fullscr1').hide();
+            var selected_grade=$("#grade_list").val();
+            var selected_course=$("#course_list").val();
+            if(selected_grade==false){
+                return false;
+            } 
+            if(selected_course==false){
+                return false;
+            }
+            $.ajax({
+                dataType:"json",
+                data:{'teacher_id':gloabl_teacher_id,'grade_id':selected_grade,'course_id':selected_course},
+                type: "post",
+                url:"{:U('Teacher/addTeacherGradeInfo')}",
+                success: function(msg){
+                    if(msg.status==200){
+                        parent.location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            });
+        });
+        
+    
+	$('#addBtn').click(function(){
+		$("#grade_list").val(0);
+		$("#course_list").val(0);
+		$('.fullscr1').show();
+	})
+	
+	$('#cancelBtn').click(function(){
+		$('.fullscr1').hide();
+	})
+        
+        var gloabl_teacher_id="{$teacher_id}";
+        //点击删除
+        $('.delete_class').click(function(){ 
+            var second_id=$(this).siblings('.second_id').val();            
+            $.ajax({
+                type: "post",
+                url: "{:U('Teacher/detelteTeacherGradeInfo')}",
+                dataType: "json",
+                data:{'id':second_id,'teacher_id':gloabl_teacher_id},
+                success: function(msg){
+                    if(msg.status==200){
+                        parent.location.reload();
+                    }else if(msg.status==400){
+                        $.NotifyBox.NotifyNotLogin();
+                    }else{
+                        $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                        return false;
+                    }
+                }
+            })
+        });
+</script>

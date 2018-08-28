@@ -1,0 +1,372 @@
+<layout name="admin_layout_back_iframe"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<form id="form_submit" action="/index.php/Admin/Class/class_iframe_student" method="get">
+        <input type="hidden" value="{$class_id}" name="id"/>
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+			<div class="cell">
+				<label>学生姓名：</label>
+				<input type="text" class="input-control student_name" name="student_name" value="{$student_name}" placeholder="请输入学生姓名">
+			</div>
+			<div class="cell">
+				<label>家长手机号：</label>
+				<input type="text" class="input-control parent_tel" name="parent_tel" value="{$parent_tel}" placeholder="请输入家长手机号">
+			</div>
+			<div class="cell">
+				<label>账号状态：</label>
+				<select id="status" class="input-control" name="status">
+					<option value="">-请选择-</option>
+                                        <option value="1" <if condition="$status==='1'">selected="true"</if> >正常</option>
+                                        <option value="0" <if condition="$status==='0'">selected="true"</if> >停用</option>
+				</select>
+			</div>
+		</div>
+	</div>
+        <input type="hidden" value="0" class="order_class" name="order"/>
+	<hr class="thin bg-grayLighter">
+	<div class="searchBtnBox text-center">
+		<!--<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+		<button class="blueBtn" id="resetBtn">重&nbsp;置</button>-->
+                <input type='submit' value='查询' class='blueBtn'/>
+                <input type='button' value='重置' class='blueBtn resetButton'/>
+	</div>
+</form>
+
+<div class="grayBox">
+	<div class="left">
+		<span class="btns" id="addStudent">
+			<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt=""> 
+                        <a href="javascript:;" >添加</a>
+		</span>
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-import.png" alt=""> 
+                        <a target="_blank" href="{:U('Class/importClassStudentView')}&id={$class_id}">导入</a>
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt="">
+                        <a href="javascript:;" class='export_btn'>批量导出</a> 
+		</span>
+		<span class="btns" style="display: none">
+			<img src="{$oss_path}public/web_img/Admin/icon-export.png" alt=""> 
+                        <a href="{:U('Class/exportedClassStudentAll')}&{$condition_str}">导出全部</a> 
+		</span>
+	</div>
+        <div class="right">
+		<div class="sortBox left">
+			<!--蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue--> 
+                        <if condition="$order=='asc'">
+                            <button class="upBtn upBtnBlue"></button>
+                            <button class="downBtn "></button>
+                        <else />
+                            <button class="upBtn "></button>
+                            <button class="downBtn downBtnBlue"></button>
+                        </if>
+		</div>
+		<div class="right">
+			排序
+		</div>
+	</div>
+        
+</div>
+
+<empty name="list">
+    <div class="emptyResult">没有相关信息</div>
+</empty>
+<notempty name="list">
+	<table id="listWrapper" class="table striped hovered border">
+		<thead>
+			<tr>
+				<th class="text-center" style="width: 10%"><input type="checkbox" class="check_all mr5">全选</th>
+				<th class="text-center" style="width: 5%">序号</th>
+				<th class="text-center" style="width: 15%">学生姓名</th>
+				<th class="text-center" style="width: 10%">性别</th>
+				<th class="text-center" style="width: 15%">家长手机号</th>
+				<th class="text-center" style="width: 15%">账号状态</th>
+				<if condition="$class_data['class_status'] eq 2">
+					<th class="text-center" style="width: 15%">加入班级状态</th>
+				</if>
+				<th class="text-center" style="width: 25%">操作</th>
+			</tr>
+		</thead>
+		<tbody id="body">
+				<volist name="list" id="item" key="key">
+					<tr>
+							<td class="text-center">
+					<input type="checkbox" attr="{$item.id}" class="check_child" name="checkbox">
+				</td>
+				<td class="text-center">
+					{$key}
+				</td>
+				<td class="text-center">
+					{$item.student_name}
+				</td>
+				<td class="text-center">
+					{$item.sex}
+				</td>
+				<td class="text-center">
+					{$item.parent_tel}
+				</td>
+				<td class="text-center">
+								<if condition="$item['flag'] eq 1">
+					正常
+								<else />
+									停用
+								</if>
+				</td>
+							<if condition="$class_data['class_status'] eq 2">
+								<td class="text-center">
+									<if condition="$item['class_student_status'] eq 2">
+										已加入
+									<else />
+										待审核
+									</if> 
+								</td>
+							</if>
+				<td>
+					<a href="javascript:;" attr="{:U('Student/studentDetail')}&id={$item.id}"  class="operBtn browse_class" >详细</a>
+					<a href="javascript:;" attr="{:U('Student/studentModify')}&id={$item.id}"  class="operBtn update_class" >修改</a>
+					<if condition="$item['class_student_status'] eq 1">
+						<a href="javascript:;" class="operBtn apply_class_status allow_status" id="">允许加入班级</a>
+						<a href="javascript:;" class="operBtn apply_class_status deny_status" id="">拒绝加入班级</a> 
+					</if> 
+					<a href="javascript:;" class="operBtn remove_student" id="">移除学生</a>
+									<input type='hidden' class='student_id' value="{$item.id}" />
+				</td>
+			</tr> 
+				</volist>  
+		</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+</notempty>
+
+<!--添加学生弹窗-->
+<div class="fullscr1" id="studentBox">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">添加学生</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20">
+				<div class="selectBox">
+					<label for="">学生姓名：</label>
+					<input type="text" name="" id="add_student_name" class="input-control" placeholder="请输入学生姓名">
+				</div>
+				<div class="selectBox">
+					<label for="">家长手机号：</label>
+					<input type="text" name="" id="add_telephone" class="input-control" placeholder="请输入家长手机号">
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+                            <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sureBtn">确定</a>
+                            <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelBtn">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    //点击批量导出
+    $(".export_btn").click(function(){
+        var check_input=$('#body').find("[name='checkbox']:checked");
+        if(check_input.length<1){
+            $.Notify({
+                caption: '提示',
+                content: '请勾选您要导出的账号',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('Class/exportedClassStudent')}");
+        form.attr('method','post');
+
+        for(var i=0;i<check_input.length;i++){ 
+            var temp_val=$(check_input[i]).attr('attr'); 
+            var temp= $("<input type='hidden' name='hid[]'/>")
+            $(temp).attr('value',temp_val);
+            form.append(temp);
+        } 
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+
+    
+    var class_id="{$class_id}";
+    
+     //点击学生加入班级
+    $('#sureBtn').click(function(){ 
+        var student_name=$("#add_student_name").val();
+        var parent_tel=$("#add_telephone").val();
+        if(student_name==''){
+            return false;
+        } 
+        if(parent_tel==''){
+            return false;
+        }
+        var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regMobilePhone.test(parent_tel)) {     
+            return false;
+        }
+        $.ajax({
+            dataType:"json",
+            data:{'student_name':student_name,'parent_tel':parent_tel,'class_id':class_id},
+            type: "post",
+            url:"{:U('Class/classAddStudent')}",
+            success: function(msg){
+                if(msg.status==200){
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        });
+    });
+    
+    //移除某个学生
+    $(".remove_student").click(function(){
+        var student_id=$(this).siblings('.student_id').val(); 
+        $.ajax({
+            url: "{:U('Common/classRemoveStudent')}",
+            type: "post",
+            dataType :"json",
+            data: {'class_id':class_id,'student_id':student_id},
+            success: function(msg){
+                if(msg.status==200){  
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        });
+    });
+    
+    //同意或拒绝学生加入班级
+    $('.apply_class_status').click(function(){
+        var student_id=$(this).siblings('.student_id').val(); 
+        if($(this).hasClass('allow_status')){
+            var status=1;
+        }else{
+            var status=2;
+        }
+        var id=$(this).siblings('.student_id').val();   
+        var obj=this;
+        $.ajax({
+            type:"post",
+            url:"{:U('Class/managementStudentClassInfo')}",
+            dataType:"json",
+            data:{'id':class_id,'student_id':student_id,'status':status},
+            success: function(msg){
+                if(msg.status==200){  
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+    
+    
+    $(".browse_class").click(function(){
+        var url=$(this).attr('attr');
+        parent.location.href=url;
+    });
+    $(".update_class").click(function(){
+        var url=$(this).attr('attr');
+        parent.location.href=url;
+    });
+    
+    //点击排序
+    $('.upBtn').click(function(){
+        if(!$(this).hasClass('upBtnBlue')){
+            $(this).addClass('upBtnBlue');
+        }
+        $('.downBtn').removeClass('downBtnBlue');
+        $('.order_class').val(1);
+        $('#form_submit').submit();
+    });
+
+    $('.downBtn').click(function(){
+        if(!$(this).hasClass('downBtnBlue')){
+            $(this).addClass('downBtnBlue');
+        }
+        $('.upBtn').removeClass('upBtnBlue');
+        $('.order_class').val(0);
+        $('#form_submit').submit();
+    });
+    
+	//全选
+    $('.check_all').click(function(){
+        var childCheck=$('.check_child');
+        var temp_status=true;
+        if($(this)[0].checked==true){
+            //本次选中
+            temp_status=true;
+        }else{
+            //本次取消
+            temp_status=false;
+        }
+        for(var i=0;i<childCheck.length;i++){
+            childCheck[i].checked=temp_status
+        }
+    });
+	
+    //取消全选
+	var lis_m = document.getElementsByClassName('check_child');
+	for (var j = 0; j < lis_m.length; j++) {
+		lis_m[j].index = j;
+		lis_m[j].onclick = function () {
+			if ($(this)[0].checked == false) {
+				 $('.check_all').removeAttr('checked','checked');
+				 $('.check_all').removeProp('checked','checked');
+			} else if ($(this)[0].checked == true) {
+				if (lis_m.length == $("[name='checkbox']:checked").length) {
+					$('.check_all').attr('checked','checked');
+					$('.check_all').prop('checked','checked');
+				};
+			}
+		}
+	};
+
+        
+        //点击重置 
+        $('.resetButton').click(function(){
+            $('.student_name').val('');
+            $('.parent_tel').val(''); 
+            $('#status').find('option:eq(0)').attr('selected',true); 
+        });
+        
+</script>
+
+<script>
+	$('#addStudent').click(function(){
+		$('#studentBox').show();
+	})
+	
+	$('#cancelBtn').click(function(){
+		$('#studentBox').hide();
+	})
+</script>
+
+<!--iframe跳转-->
+<script>
+	$('.browse_class').click(function(){
+            var url=$(this).attr('attr');
+            parent.location.href=url;
+	})
+	$('.update_class').click(function(){
+            var url=$(this).attr('attr');
+            parent.location.href=url;
+	})
+</script>

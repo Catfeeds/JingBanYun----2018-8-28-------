@@ -1,0 +1,175 @@
+<layout name="admin_layout_back"/>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary " style="box-sizing:border-box;">&lt;
+        返回</a>
+</div>
+<div class="titleBox">
+    <p class="blueText fs18 underline1">
+        绘本管理
+        <span class="blueSpan">
+			<a href="javascript:;">教学+</a>&gt;&gt;
+			<a href="/index.php?m=Admin&c=pictureBooks&a=pictureBooksList">绘本管理</a>&gt;&gt;
+			<a href="javascript:;">上传</a>
+		</span>
+    </p>
+    <div class="underline2"></div>
+</div>
+<form class="" action="" method="post" id="form" enctype="multipart/form-data">
+    <input type="hidden" id="hidden" name="id" value="<?php echo $info['picture_books_id']?>">
+    <div class="grid condensed searchbar" style="margin: 20px 0 0 0;">
+        <div class="row cells4 cellBox">
+            <div class="cell">
+                <label>绘本包名称：</label>
+                <input type="text" name="name" class='input-control input-control-before' id="picName"
+                       data-validate-func="required" value="<?php echo $info['picture_books_name']?>"
+                       placeholder="绘本包名称">
+            </div>
+            <div class="cell">
+                <label>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</label>
+                <select id="grade_id" name="grade_id" class="input-control input-control-before">
+                    <option value="">-请选择-</option>
+                    <volist name="gradeList" id="dataGrade">
+                        <option value="{$dataGrade.id}" {$dataGrade[
+                        'id']== $info['picture_books_grade'] ? 'selected':''}>
+                        {$dataGrade.name}
+                        </option>
+                    </volist>
+                </select>
+            </div>
+            <div class="cell">
+                <label>体&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;裁：</label>
+                <select id="type" name="type" class="input-control input-control-before">
+                    <option value="">-请选择-</option>
+                    <volist name="subjectList" id="subjectListItem">
+                        <option value="{$subjectListItem.id}" {$subjectListItem[
+                        'id']== $info['picture_books_type']?'selected':''}>
+                        {$subjectListItem.name}
+                        </option>
+                    </volist>
+                </select>
+            </div>
+            <div class="cell">
+                <label>主&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;题：</label>
+                <select id="subject" name="subject" class="input-control input-control-before">
+                    <option value="">-请选择-</option>
+                    <volist name="themeList" id="themeListItem">
+                        <option value="{$themeListItem.id}" {$themeListItem[
+                        'id']==$info['picture_books_subject']?'selected':''}>
+                        {$themeListItem.name}
+                        </option>
+                    </volist>
+                </select>
+            </div>
+            <div class="cell">
+                <label>绘本提供方：</label>
+                <select id="source" name="source" class="input-control input-control-before">
+                    <option value=''>-请选择-</option>
+                    <volist name="sources" id="sourceListItem">
+                        <option value="{$sourceListItem['id']}" {$sourceListItem[
+                        'id'] ==$info['picture_books_source']?'selected':''} >{$sourceListItem['name']}</option>
+                    </volist>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="newSection blueDashed" style="background:none">
+        <span class="redStar">*</span>
+        <label for="">上传封面 <span>(图片比列1:1 最大不要超过400*400 最小不要小于200*200)</span></label>
+        <input type="file" name="pc_cover" id="pcFile" accept="image/jpg">
+        <?php if($info){?>
+        <img src="http://jbyoss.oss-cn-beijing.aliyuncs.com/<?php echo $info['picture_books_cover']?>" id="pc_cover"
+             style="width:300px;">
+        <?php }?>
+    </div>
+    <div class="form_section">
+        <label for="name">上传绘本配置文件</label>
+        <div class="input-control text full-size required">
+            <input type="text" name="picture_books_config" id="picDeploy" data-validate-func="required"
+                   value="<?php echo $info['picture_books_config']?>" data-validate-hint="名称不能为空"
+                   placeholder="绘本配置文件地址">
+        </div>
+    </div>
+    <div class="form_section">
+        <label for="name">上传绘本配套课件</label>
+        <div class="input-control text full-size required">
+            <input type="text" name="picture_books_courseware" id="picCourse" data-validate-func="required"
+                   value="<?php echo $info['picture_books_courseware']?>" data-validate-hint="名称不能为空"
+                   placeholder="绘本配套课件地址">
+        </div>
+    </div>
+    <div class="form_section">
+        <label for="name">上传绘本配套教学设计</label>
+        <div class="input-control text full-size required">
+            <input type="text" name="picture_books_teacher_design" id="picDesign" data-validate-func="required"
+                   value="<?php echo $info['picture_books_teacher_design']?>" data-validate-hint="名称不能为空"
+                   placeholder="绘本配套教学设计地址">
+        </div>
+    </div>
+    <div class="form_section">
+        <label for="name">上传绘本配套练习</label>
+        <div class="input-control text full-size required">
+            <input type="text" name="picture_books_practice" id="picExercise" data-validate-func="required"
+                   value="<?php echo $info['picture_books_practice']?>" data-validate-hint="名称不能为空"
+                   placeholder="绘本配套练习地址">
+        </div>
+    </div>
+    <div class="form-actions" style="text-align: left; margin-top: 40px;">
+        <button id="submitButton" type="submit" class="button primary primary" onclick="return check()">完成</button>
+    </div>
+</form>
+<script>
+    var id = $('#hidden').val();
+    if (id) {
+        $("#form").attr("action", "/index.php?m=Admin&c=PictureBooks&a=pictureBooksSave");//修改
+    } else {
+        $("#form").attr("action", "/index.php?m=Admin&c=PictureBooks&a=pictureBooksAdd");//添加
+    }
+
+    $('#pcFile').bind('change', function () {
+        if ((file = this.files[0])) {
+            img = new Image();
+            img.onload = function () {
+                if (this.width != this.height) {
+                    alert('上传图片宽高比必须为1:1');
+                    $('#pcFile').val('');
+                }
+            };
+            img.src = URL.createObjectURL(file);
+        }
+    });
+    function check() {
+        if ($('#picName').val() == '') {
+            $.NotifyBox.NotifyOne('提示', '请填写绘本包名称。', '确定');
+            return false
+        } else if ($('#grade_id').val() == '') {
+            $.NotifyBox.NotifyOne('提示', '请选择年级。', '确定');
+            return false
+        } else if ($('#type').val() == '') {
+            $.NotifyBox.NotifyOne('提示', '请选择题材。', '确定');
+            return false
+        } else if ($('#subject').val() == '') {
+            $.NotifyBox.NotifyOne('提示', '请选择主题。', '确定');
+            return false
+        } else if ($('#pc_cover').length == 0 && $('#pcFile').val() == '') {
+                $.NotifyBox.NotifyOne('提示', '请上传封面。', '确定');
+                return false
+        } else if ($('#picDeploy').val() == '') {
+            $.NotifyBox.NotifyOne('提示', '请上传绘本配置文件。', '确定');
+            return false
+        /*} else if ($('#picCourse').val() == '') {
+            $.NotifyBox.NotifyOne('提示', '请上传绘本配套课件。', '确定');
+            return false
+        } else if ($('#picDesign').val() == '') {
+            $.NotifyBox.NotifyOne('提示', '请上传绘本教学设计。', '确定');
+            return false
+        } else if ($('#picExercise').val() == '') {
+            $.NotifyBox.NotifyOne('提示', '请上传绘本练习。', '确定');
+            return false*/
+        } else if ($('#source').val() == '') {
+            $.NotifyBox.NotifyOne('提示', '请选择绘本提供商。', '确定');
+            return false
+        } else {
+            return true
+        }
+    }
+</script>

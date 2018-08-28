@@ -1,0 +1,877 @@
+<layout name="teacher_layout_2" />
+
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/uploadify/uploadify.css">
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/css/rotate.css">
+
+<style>
+    body {
+        display: block;
+    }
+	.fullscreen  .wrapper{
+		height: 900px;
+	}
+    .form_section {
+        margin-bottom: 12px;
+    }
+    
+ 
+    
+    #adds_file {
+        margin-top: 10px
+    }
+    
+    #adds_file a {
+        text-decoration: none;
+        color: #333
+    }
+    
+    #adds_file p {
+        width: 460px;
+        margin: 10px auto
+    }
+    
+    #adds_file p a:nth-child(1) {
+        float: left
+    }
+    
+    #adds_file p a:nth-child(2) {
+        float: right
+    }
+    
+    .adda {
+        color: #333;
+        text-indent: 38px;
+    }
+    
+    .adda:hover {
+        color: #333;
+    }
+    
+    .form-control {
+        display: inline-block;
+    }
+	
+	#fine-uploader {
+		width: 50%;
+		margin: 0 auto;
+	}
+	
+	.qq-uploader {
+		width: 100%;
+	}
+	
+	.qq-upload-list li {
+		margin-top: 5px
+	}
+	
+	.qq-thumbnail-selector {
+		width: 50px;
+	}
+	
+	.qq-upload-button {
+		background: #30b753;
+		border: 1px solid #30b753
+	}
+	#contentWrapper{
+		border: 1px solid #30b753;
+		background: #f5fcf6;
+	}
+	select,textarea,input,.qq-uploader{
+		background: #f5fcf6 !important;
+        resize: none
+	}
+</style>
+
+<div class="main_opr">
+   <a href="{:U('ResourceList/resourceIndex')}" title="发布资源" class="btn btn-main-opr">教师分享</a> 
+    <a href="{:U('Teach/publishResource')}" title="发布资源" class="btn  btn-main-opr btn-main-opr-active">发布资源</a> 
+    <a href="{:U('Teach/myPublishResource')}" title="我发布的资源" class="btn btn-main-opr">我发布的资源</a> 
+<!--    <a href="{:U('Teach/myFavorResource')}" title="我收藏的资源" class="btn btn-main-opr">我收藏的资源</a>-->
+</div>
+<!-- <div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn2">返回</a>
+</div> -->
+
+<form id="mainForm" action="__URL__/publishResource" method="post" onsubmit="$('#saveButton').attr('disabled',true);">
+    <div style="text-align:center">
+        <div class="example " data-text="基本信息">
+            <div class="form_section ">
+                <label for="name">资源名称</label>
+
+                <div class="input-control text full-size" style="display:inline-block">
+                    <input type="text" name="name" id="name" class="form-control" required placeholder="必填，不超过40个字" maxlength="40" style="width:400px">
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="description" style="vertical-align:top">资源描述</label>
+
+                <div class="input-control text full-size" style="display:inline-block">
+                    <textarea id="description" name="description" rows="4" class="form-control" required placeholder="必填，不超过500个字" maxlength="500" style="width:400px"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="example" data-text="关联数据">
+            <div class="form_section">
+                <label for="course_id">关联学科</label>
+
+                <div class="input-control text full-size" style="display:inline-block">
+                    <select id="course_id" name="course_id" class="form-control"  required style="width:400px">
+                        <option value="">-请选择-</option>
+                        <volist name="courses" id="dataCourse" empty="暂时没有信息">
+                            <option value="{$dataCourse.id}">{$dataCourse.code} : {$dataCourse.course_name}</option>
+                        </volist> 
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="grade_id">关联年级</label>
+
+                <div class="input-control text full-size" style="display:inline-block">
+                    <select id="grade_id" name="grade_id" class="form-control"  required style="width:400px">
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                            <option value="{$dataGrade.id}">{$dataGrade.grade}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="textbook_id">教材分册</label>
+
+                <div class="input-control text full-size" style="display:inline-block">
+                    <select id="textbook_id" name="textbook_id" class="form-control" required style="width:400px">
+                        <option value="">-请先选择学科和年级-</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="type">资源类型</label>
+
+                <div class="input-control text full-size" style="display:inline-block">
+                    <select id="type" name="type" class="form-control" required style="width:400px">
+                        <option value="">-请选择-</option>
+                        <option extval=".mp4,.mov,.wmv,.flv,.avi" value="VIDEO">视频</option>
+                        <option extval=".mp3" value="AUDIO">音频</option>
+                        <option extval=".swf" value="SWF">SWF</option>
+                        <option extval=".doc,.docx" value="WORD">WORD</option>
+                        <option extval=".ppt,.pptx" value="PPT">PPT</option>
+                        <option extval=".pdf" value="PDF">PDF</option>
+                        <option extval=".jpg,.png,.jpeg" value="IMAGE">图片</option>
+                        <option extval=".zip,.rar" value="condensed">压缩包</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <input type='hidden' name='unique_string' id='unique_string' />
+        <input type='hidden' name='unique_vid' id='unique_vid' />
+        <input type='hidden' name='vid_width' id='vid_width' />
+        <input type='hidden' name='vid_time' id='vid_time' />
+        <input type='hidden' name='real_type' id='real_type' />
+        <input type='hidden' name='vid_fullpath' id='vid_fullpath' />
+        <input type='hidden' name='vid_image_path' id='vid_image_path' />
+        <input type='hidden' name='vid_transition' id='vid_transition' />
+        <!--<div><a href="javascript:void(0)" style="color:#dd1010;text-decoration: none" class='choose_file'>选择上传文件</a></div>
+        <div id="add_files">
+            <p>
+
+            </p>
+        </div>--> 
+        <div id="fine-uploader" style="display:none;"> 
+            
+        </div>
+        <div class="form-actions" style="background:none">
+            <!--<button type="button" class="btn btn-primary" id="uploadButton">开始上传</button>-->
+            <button type="submit" class="btn btn-primary" id="saveButton" onclick="return check();">确定</button>
+        </div>
+
+</form>
+
+<div id="adds_file">
+    <a href="javascript:void(0)" style="color:#dd1010;text-decoration: none;display:none" class='choose_file'>选择上传文件</a>
+    <div style='display:none;'>
+        <input type='file' name='file[]' class='hidden_file' />
+    </div>
+    <p>
+
+    </p>
+    <form id="secondForm" action="__URL__/upload_file" method="post" enctype="multipart/form-data">
+        <div style='display:none;' class='upload_file'>
+
+        </div>
+        <div style="display:none;">
+            <button type="submit" class="btn btn-primary" id="real_uploadButton">开始上传</button>
+        </div>
+    </form>
+</div>
+
+
+<div id="last_div" style="display:none;">
+    <input type="button" onclick="javascript:$('#uploadToBLWS').uploadify('upload','*')" id="upload_video" value="上传视频">
+</div>
+
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<!--<script src="__PUBLIC__/js/external/jquery.form.js"></script>-->
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script type="text/template" id="qq-template">
+        <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+            <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+                <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+            </div>
+            <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+                <span class="qq-upload-drop-area-text-selector"></span>
+            </div>
+            <div class="qq-upload-button-selector qq-upload-button">
+                <div>上传文件</div>
+            </div>
+            <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+            <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+                <li>
+                    <div class="qq-progress-bar-container-selector">
+                        <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                    </div>
+                    <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                    <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+                    <span class="qq-upload-file-selector qq-upload-file"></span>
+                    <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                    <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                    <span class="qq-upload-size-selector qq-upload-size"></span>
+                    <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">取消</button>
+                    <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">重传</button>
+                    
+                    <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+                </li>
+            </ul>
+
+            <dialog class="qq-alert-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Close</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-confirm-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">No</button>
+                    <button type="button" class="qq-ok-button-selector">Yes</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-prompt-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <input type="text">
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                    <button type="button" class="qq-ok-button-selector">Ok</button>
+                </div>
+            </dialog>
+        </div>
+    </script>
+<script>
+    var uploadInfo = {};
+    function changeInputFilter(){
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').attr('accept',acceptStr);
+    }
+    changeInputFilter();
+    
+    function onFileCheck(){
+        if($('li').hasClass('qq-upload-fail')){
+            // alert('有文件上传错误');
+            $.NotifyBox.NotifyPromptOne('提示','有文件上传错误','确定');
+            return false;
+        }
+        if($('li').hasClass('qq-in-progress')){
+            // alert('文件未上传完毕,无法提交');
+            $.NotifyBox.NotifyPromptOne('提示','文件未上传完毕,无法提交','确定');
+            return false;
+        }
+
+        return true;
+    }
+    var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById('fine-uploader'),
+        request1Enable : true,
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mov","mp4","mp3",'wmv','avi','flv'),
+            inputName:'Filedata', 
+        },
+        request: {
+            endpointnum: 0,
+            endpoint: 'index.php?m=Home&c=Teach&a=upload_file&watermark_status=1',
+            params:{},
+            inputName:'file[]',							
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'				
+        },
+        retry: {
+           enableAuto: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[id];
+        },
+        responseCallBack: function(id,specNum,xhr){       
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                // alert('上传失败!错误原因'+e);
+                $.NotifyBox.NotifyPromptOne('提示','上传失败!错误原因'+e,'确定');
+                return false;
+            }
+            if(specNum == 0){			  
+              if(result.code == 0){ 
+                    if(typeof(uploadInfo[id])== 'undefined'){
+                        uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid_file_path'] = result.res;
+                    uploadInfo[id]['vid_image_path'] = result.message_video_image;     //这里是视频截图,如果不是视频这里就是空
+                    uploadInfo[id]['is_transition'] = result.is_transition;            //这里是视频转换状态。
+                    return true;
+               }else{ 
+                    // alert(result.msg);
+                    $.NotifyBox.NotifyPromptOne('提示',result.msg,'确定');
+               }
+            }else if(specNum == 1){
+                if(result.error == 0){
+                //alert("上传成功!VID:"+result.data[0].vid);
+                    //TODO: add result.res to XXX
+                    if(typeof(uploadInfo[id])== 'undefined')
+                    {
+                    uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid'] = result.data[0].vid;
+                    uploadInfo[id]['playerwidth'] = result.data[0].playerwidth + '*' +result.data[0].playerheight;
+                    uploadInfo[id]['duration'] = result.data[0].duration;
+                    uploadInfo[id]['vid_fullpath'] = result.data[0].mp4; 
+                    return true;
+                }else{ 
+                    // alert("上传失败!错误码:"+result.error);
+                    $.NotifyBox.NotifyPromptOne('提示','上传失败!错误码:'+result.error,'确定');
+                }
+            }
+            return false;
+        }			
+    }); 
+    
+     
+    
+    $("#fine-uploader").find(':file').live('click',function(){ console.log('run'); 
+        if($("#type").val()==''){
+            return false;
+        }
+    });
+  
+    //学科或年级发生变化
+    $("#course_id,#grade_id").change(function(){
+        var course_id=$("#course_id").val();
+        var grade_id=$("#grade_id").val();
+        if(course_id!='' && grade_id!=''){
+            getTextbooks();
+        }
+    });
+    var before_type=$("#type").val();
+    $("#type").change(function () {
+        $("#fine-uploader").show();
+        //$("#type").attr('disabled', true)   
+        var file_count=$('.qq-upload-list').children('li').length;
+        if(file_count>0){
+            if(confirm('您确认改变资源类型吗?改变后之前的资源将会被清除')){
+                uploadInfo={};  
+                /*$("#unique_string").val();
+                $("#unique_vid").val();
+                $("#vid_width").val();
+                $("#vid_time").val();  
+                $("#vid_fullpath").val(''); 
+                $("#vid_image_path").val('');
+                $("#vid_transition").val(''); */
+
+                $('.qq-upload-list').children('li').remove();
+            }else{
+                $("#type").find("option[value="+before_type+"]").attr('selected',true);   
+            }   
+        }
+            //$("#fine-uploader").find(':file').attr('accept','undefined'); 
+        var inner_type=$("#type").val();
+        if(inner_type==''){
+            $("#fine-uploader").find(':file').attr('accept','undefined');
+        }
+        $("#real_type").val(inner_type);
+        before_type=inner_type;  
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').attr('accept',acceptStr);
+    });
+     
+    
+    function check() {
+        //资源名称
+        if(!onFileCheck()){
+            return false;
+        }
+        //TODO: PROECESS uploadInfo
+        $('#unique_string').val('');    
+        $("#unique_vid").val();         
+        $("#vid_width").val();          
+        $("#vid_time").val();           
+        $("#vid_fullpath").val('');
+        $("#vid_image_path").val('');
+        $("#vid_transition").val(''); 
+        
+        
+        for(var key in uploadInfo){ 
+            $('#unique_string').val($('#unique_string').val() + uploadInfo[key].vid_file_path +',');
+            var width = typeof(uploadInfo[key].playerwidth) != 'undefined' ? uploadInfo[key].playerwidth : '0*0';
+            
+            $('#vid_width').val($('#vid_width').val() + width +',');
+            var duration = typeof(uploadInfo[key].playerduration) != 'undefined' ? uploadInfo[key].playerduration : '00:00:00';
+            
+            $('#vid_time').val($('#vid_time').val() + duration +',');
+            var vid = typeof(uploadInfo[key].vid) != 'undefined' ? uploadInfo[key].vid : '0';
+            $('#unique_vid').val($('#unique_vid').val() + vid +',');
+            
+            var vid_fullpath= typeof(uploadInfo[key].vid_fullpath) != 'undefined' ? uploadInfo[key].vid_fullpath : '0';
+            $('#vid_fullpath').val($('#vid_fullpath').val()+vid_fullpath+',');
+            
+            var vid_image_path= typeof(uploadInfo[key].vid_image_path) != 'undefined' ? uploadInfo[key].vid_image_path : '0';
+            $('#vid_image_path').val($('#vid_image_path').val()+vid_image_path+',');
+            
+            var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+            $('#vid_transition').val($('#vid_transition').val()+vid_transition+',');
+        } 
+        $('#unique_string').val($('#unique_string').val().substr(0 ,$('#unique_string').val().length-1));
+        $('#vid_width').val($('#vid_width').val().substr(0 ,$('#vid_width').val().length-1));
+        $('#vid_time').val($('#vid_time').val().substr(0 ,$('#vid_time').val().length-1));
+        $('#unique_vid').val($('#unique_vid').val().substr(0 ,$('#unique_vid').val().length-1));
+        $('#vid_fullpath').val($('#vid_fullpath').val().substr(0 ,$('#vid_fullpath').val().length-1));
+        $('#vid_image_path').val($('#vid_image_path').val().substr(0 ,$('#vid_image_path').val().length-1));
+	$('#vid_transition').val($('#vid_transition').val().substr(0 ,$('#vid_transition').val().length-1));
+        
+        var vid_file_path=$('#unique_string').val();   
+        if(vid_file_path==''){ 
+            // alert('上传文件不能为空');
+            $.NotifyBox.NotifyPromptOne('提示','上传文件不能为空','确定');
+            return false;
+        } 
+        return true;
+    }
+</script>
+
+<script>  
+    /*
+    Array.prototype.elremove = function(m){  
+　　      if(isNaN(m)||m>this.length){return false;}  
+　　      this.splice(m,1);  
+　   } 
+    var temp_input = "<input type='file' name='file[]' class='real_hidden_file uncomplete' />";
+    var temp_a = "<div><a href='javascript:void(0)' class='adda'>二氧化碳的溶解性-副本（2）.mp4-{22mb}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='##' style='color:red;' class='delete_file no'>删除</a></div>";
+    var new_element = '';
+    var number = 0;
+    var global_array = new Array();
+    var global_click_event = 1;
+    var BLWSUploadError = 0;
+    var currentUploadingVideo = 0;
+    var is_upload_file=0;
+    var global_vid=new Array();
+    var global_vid_file_path=new Array();
+    var global_playerwidth=new Array();
+    var global_playerduration=new Array();  
+    var global_vid_fullpath=new Array();
+    var global_vid_image_path=new Array();
+    var global_transition=new Array();
+    
+    var before_type=$("#type").val();
+    var file_type = $('#type').val(); //接收类型
+    $("#real_type").val(file_type);
+    
+
+    var options = {
+        success: showResponse, // post-submit callback
+        resetForm: false,
+        dataType: 'json'
+    };
+    var optionsVideo = {
+        success: showResponseVideo, // post-submit callback
+        resetForm: false,
+        dataType: 'json',
+        async: false
+    };
+
+    //点击开始上传文件,去调用第二个form
+    $("#uploadButton").click(function () {
+        $("#real_uploadButton").trigger('click');
+    });
+
+    $("#type").change(function () {
+        $("#fine-uploader").show();
+        //$("#type").attr('disabled', true)  
+        if(before_type!=''){
+            if(confirm('您确认改变资源类型吗?改变后之前的资源将会被清除')){
+                $("#add_files").find('div').remove();
+                $("#upload_file").find('input').remove();
+                $("#unique_string").val('');
+                $("#unique_vid").val('');
+                $("#vid_width").val('');
+                $("#vid_time").val(''); 
+                $("#vid_fullpath").val(''); 
+                $("#vid_image_path").val('');
+                $("#vid_transition").val('');
+    
+                $(".real_hidden_file").remove();
+                //$("#type").attr('disabled', true);
+                global_vid=[];
+                global_vid_file_path=[];
+                global_playerwidth=[];
+                global_playerduration=[];
+                global_vid_fullpath=[];
+                global_vid_image_path=[];
+                global_transition=[];
+            }else{
+                $("#type").find("option[value="+before_type+"]").attr('selected',true);  
+            } 
+        } 
+        var inner_type=$("#type").val();
+        $("#real_type").val(inner_type);
+        before_type=inner_type;
+        global_click_event=1;
+            
+    });
+
+
+    $(".choose_file").click(function () {
+        file_type = $('#type').val();
+        if(file_type==''){
+            alert('请选择文件类型');
+            return false;
+        }
+        if (global_click_event == 0) {
+            return false;
+        }
+
+        file_type = $('#type').val();
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+
+        number++;
+        new_element = $(temp_input).clone(true);
+        $(new_element).addClass('class_' + number);
+        $(new_element).attr('number',  number);
+        $(new_element).attr('accept', acceptStr);
+
+        $(".upload_file").append(new_element);
+        $(new_element).trigger('click');
+    });
+    
+    function join_file_type(){
+        var type_value=$("#type").val();
+        var accept_value=[];
+        switch (type_value) {
+            case 'VIDEO':
+                accept_value=['.mp4']
+                break;
+            case 'AUDIO':
+                accept_value=['.mp3']
+                break;
+            case 'SWF':
+                accept_value=['.swf']
+                break;
+            case 'WORD':
+                accept_value=['.doc','.docx']
+                break;
+            case 'PPT':
+                accept_value=['.ppt','.pptx']
+                break;
+            case 'PDF':
+                accept_value=['.pdf']
+                break;
+            case 'IMAGE':
+                accept_value=['.jpg','.png','.jpeg']
+                break; 
+        }
+        return accept_value;
+    }
+    
+
+    allow_type=2;
+    $(".real_hidden_file").live('change', function () {     
+        //这里判断类型是否是video或audio 如果是则再复制一份    
+        //$("#upload_video").trigger('click'); 
+        if(file_type=='AUDIO' || file_type=='VIDEO'){alert(123);
+            //upload_object_class='id_'+number;   
+            $('#uploadToBLWS').uploadify('upload','*');
+        //}
+       // $("#type").attr('disabled', true) 
+       var accept_parameter=join_file_type(); 
+       //这里判断文件类型
+       if(check_file(this,accept_parameter)==false){
+           return false;
+       }
+       
+        if (global_click_event == 0) {
+            return false;
+        }
+
+        var file_value = $(".class_" + number).val();
+
+        var a_element = $(temp_a).clone(true);
+        $(a_element).find('a').last().attr('number', number)
+        $(a_element).find('a').last().addClass('delete'+number);
+        $(a_element).find('a').eq(0).text(file_value);
+        $("#add_files").children('p').append(a_element);
+    });
+
+    $('.delete_file').live('click', function () {
+        if (global_click_event == 0) {
+            return false;
+        }
+        var attr_number = $(this).attr('number');
+        $(".class_" + attr_number).remove();
+        var index=$(this).parent().index(); 
+        
+        //$(".upload_file").find('input').eq(index).remove();   
+        if($(this).hasClass('yes')){  
+            //判断是否是视频,音频
+            var type = $("#type").val()
+            if(type == 'VIDEO' || type == 'AUDIO'){
+                global_vid.elremove(index);
+                global_playerwidth.elremove(index);
+                global_playerduration.elremove(index);
+                global_vid_fullpath.elremove(index);
+                global_vid_image_path.elremove(index);
+                global_transition.elremove(index);
+                
+            }
+            global_vid_file_path.elremove(index); 
+        } 
+        $(this).parent().remove();
+    })
+
+    $("#saveButton").click(function () { 
+        if (is_upload_file == 0) {
+            alert('请选择资源文件');
+            return false;
+        }
+        //这里要重新拼接那个资源,先把以前的那些资源进行替换
+        var vid_string=global_vid.join(','); 
+        var vid_width_string=global_playerwidth.join(',');
+        var vid_time_string=global_playerduration.join(',');
+        var vid_file_string=global_vid_file_path.join(',');
+        var vid_fullpath=global_vid_fullpath.join(',');
+        var vid_image_path=global_vid_image_path.join(',');
+        var vid_transition=global_transition.join(',');
+        
+        $("#unique_vid").val(vid_string);
+        $("#vid_width").val(vid_width_string);
+        $("#vid_time").val(vid_time_string);
+        $("#unique_string").val(vid_file_string); 
+        $("#vid_fullpath").val(vid_fullpath);
+        $("#vid_image_path").val(vid_image_path);
+        $("#vid_transition").val(vid_transition);
+        
+    });
+
+    $('#secondForm').submit(function () {
+        //如果没有所有的文件都没有值则不上传
+        var all_file = $(".real_hidden_file");
+        var file_exists = 0;
+		if(0 == all_file.length)
+		{
+		alert('没有需要上传的文件');
+		}
+        for (var i = 0; i < all_file.length; i++) {
+            if ($(all_file[i]).val() != '') {
+                file_exists = 1;
+            } else {
+                $(all_file[i]).remove();
+            }
+        }
+        if (file_exists == 1) {
+            //if (confirm('您确定上传么?上传后不可再次操作资源')) {
+                //这里判断类型是否是video,audio
+                var type = $("#type").val()
+
+                if (type == 'VIDEO' || type == 'AUDIO') {
+                    //$(".real_hidden_file").each(function (i, n) {
+                    $(".uncomplete").each(function (i, n) {     
+                        //currentUploadingVideo = $(n).attr('id');
+                        //设置删除
+                        //var num=$(n).attr('number');
+                        //$(".delete"+num).removeClass('no').addClass('yes'); 
+                        $(n).removeClass('uncomplete').addClass('complete');
+                        var current_class = $(n).attr('class');
+                        var form = makeMediaForm($(n)[0]);
+                        //optionsVideo
+                        $(form).submit(function () {
+                            $(this).ajaxSubmit(optionsVideo);
+                            return false;
+                        });
+                        $(form).submit();
+                        $(form).find('[class="' + current_class + '"]').attr('name', 'file[]');
+                        $('.upload_file')[0].appendChild($(form).find('[class="' + current_class + '"]')[0]); //[0].appendChild($(form).find('[class="real_hidden_file"]')[0]); 
+                        if (BLWSUploadError == 1) {
+                            return false;
+                        }
+                    });
+                }
+                console.log(321);
+                $(this).ajaxSubmit(options);
+                //$('#uploadButton').attr('disabled', true); //unique_vid
+                //global_click_event = 0;
+                is_upload_file=1;
+                $('.upload_file').empty();
+                var all=$('.no');
+                for(var i=0;i<all.length;i++){
+                    $(all[i]).removeClass('no').addClass('yes');
+                }
+            //}
+        }
+        return false;
+    });
+
+    function showResponse(responseText, statusText) {
+        switch (responseText.code) {
+        case 0: //success
+            alert(responseText.msg);
+            if($('#unique_string').val()==''){
+                $('#unique_string').val(responseText.res);
+            }else{
+                $('#unique_string').val($('#unique_string').val()+','+responseText.res);
+            }  
+            var arr=responseText.res.split(',');
+            var video_image_arr=responseText.message_video_image.split(',');
+            var vid_transition_arr=responseText.is_transition.split(',');
+            
+            for(var i=0;i<arr.length;i++){
+                global_vid_file_path.push(arr[i]);
+                global_vid_image_path.push(video_image_arr[i]);
+                global_transition.push(vid_transition_arr[i]);
+            } 
+            
+            //global_vid_file_path.push(responseText.res);
+            //global_array.push(responseText.res);
+            break;
+
+        default:
+            alert(responseText.msg);
+            $('#unique_string').val('');
+            //global_array.push(responseText.res);
+            break;
+        }
+    }
+
+    function showResponseVideo(responseText, statusText) {
+        switch (responseText.error) {
+        case '0': //success
+            if ($('#unique_vid').val() == "") {
+                $('#unique_vid').val(responseText.data[0].vid); 
+                
+                if(responseText.data[0].playerwidth=='' || responseText.data[0].playerheight==''){
+                    $("#vid_width").val('0*0');
+                }else{
+                    $("#vid_width").val(responseText.data[0].playerwidth + '*' + responseText.data[0].playerheight);
+                } 
+                if(responseText.data[0].duration==''){
+                    $("#vid_time").val('00:00:00');
+                }else{
+                    $("#vid_time").val(responseText.data[0].duration);
+                }
+            } else {
+                $('#unique_vid').val($('#unique_vid').val() + ',' + responseText.data[0].vid);
+                //$("#vid_width").val($("#vid_width").val() + ',' + responseText.data[0].playerwidth + '*' + responseText.data[0].playerheight);
+                //$("#vid_time").val($("#vid_time").val() + ',' + responseText.data[0].duration);
+                
+                if(responseText.data[0].playerwidth=='' || responseText.data[0].playerheight==''){
+                    $("#vid_width").val($("#vid_width").val()+','+'0*0');
+                }else{
+                    $("#vid_width").val($("#vid_width").val()+','+responseText.data[0].playerwidth + '*' + responseText.data[0].playerheight);
+                }
+             
+                if(responseText.data[0].duration==''){
+                    $("#vid_time").val($("#vid_time").val() + ','+'00:00:00');
+                }else{
+                    $("#vid_time").val($("#vid_time").val() + ',' + responseText.data[0].duration);
+                }
+                
+                $("#vid_fullpath").val($("#vid_fullpath").val()+','+ responseText.data[0].mp4); 
+                
+            }
+            global_vid.push(responseText.data[0].vid);
+            global_playerwidth.push(responseText.data[0].playerwidth + '*' + responseText.data[0].playerheight);
+            global_playerduration.push(responseText.data[0].duration);
+            global_vid_fullpath.push(responseText.data[0].mp4); 
+            
+            BLWSUploadError = 0;
+            break;
+        default:
+            alert("上传失败!错误码:" + responseText.error);
+            BLWSUploadError = 1;
+            break;
+        }
+        //$('#'+currentUploadingVideo).attr('name','file[]');
+        //console.log($('#' + currentUploadingVideo).val());
+    }
+
+   
+
+    //保利威视上传
+    function makeMediaForm(mediaNode) {
+        // 创建一个 form
+        var form1 = document.createElement("form");
+        form1.id = "form1";
+        form1.name = "form1";
+        form1.enctype = "multipart/form-data";
+        // 添加到 body 中
+        // 创建一个输入
+        var input = document.createElement("input");
+        // 设置相应参数
+        input.type = "text";
+        input.name = "writetoken";
+        input.value = "9c538d85-340c-466c-9e35-bb301734eb0d";
+        form1.appendChild(input);
+        var input2 = document.createElement("input");
+        input2.type = "text";
+        input2.name = "JSONRPC";
+        input2.value = '{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}';
+        form1.appendChild(input2);
+        var clonedNode = mediaNode.cloneNode(true); // 克隆节点
+        mediaNode.setAttribute('name', 'Filedata');
+        $(mediaNode).appendTo($(form1));
+        //form1.appendChild(mediaNode);
+        form1.action = 'http://v.polyv.net/uc/services/rest?method=uploadfile';
+        form1.method = 'POST';
+
+        // 对该 form 执行提交
+        return form1;
+        // 删除该 form
+    }*/
+</script>
+
+<script>
+    /*
+                var um;
+                $(function () {
+                    window.setTimeout(function () {
+                        um = UM.getEditor('contentEditor');
+                    }, 1000);
+                });*/
+</script>
+<script>
+    // $("#mainForm").validate();
+</script>

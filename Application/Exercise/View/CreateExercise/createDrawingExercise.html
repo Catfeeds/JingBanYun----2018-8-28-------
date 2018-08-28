@@ -1,0 +1,131 @@
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/new_ueditor/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+
+<div class="boxOutter">
+
+  <div class="">
+      <include file="CreateExercise:commheader" />
+
+          <div class="">
+            <div class="dib mtb10 ">
+              <span class="color3baeabFixed w64 mr0 text-right vertical-top">正确答案</span>
+              <div style="width: 580px;" class="dib">
+                <script type="text/plain" id="Answermessage1" name="message" style="width:100%;height:50px;"></script>
+              </div>
+            </div>
+            <div class="dib mtb10 vertical-top">
+              <span class="color3baeabFixed  mr0">分数</span>
+              <input type="number" class="count_score inputCommon">
+              <div class="red classred dn mt10 answerRed" v-if="subject">*该项为必选项或格式错误</div>
+            </div>
+          </div>
+      <include file="CreateExercise:footer" />
+      </li>
+      </ul>
+  </div>
+</div>
+<div class="exercise_choice dn">
+	<div class="exerciseTitle">
+		<p class="box1000 mt20">
+		</p>
+		<div class="exerciseTemplate">
+			<div class="p15 pb0">
+				<span class="score"></span>
+				<span class="caption"></span>
+			</div>
+			<div class="exerciseAnswer">
+				<span class="color3baeab">【答案】</span>
+				<span class="solution"></span>
+			</div>
+			<div class="exerciseJx">
+				<span class="color3baeab">【解析】</span>
+				<span class="analysisSpan"></span>
+			</div>
+			<div class="difficulty">
+				<span >难度：</span>
+				<span class="">
+
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" class="big_paper_id" value="{$big_paper_id}">
+<input type="hidden" class="paper_id" value="{$paper_id}">
+<input type="hidden" name="repeat_commit" class="repeat_commit" value="{:session('TOKEN')}">
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script>
+    var completionA = UE.getEditor('completionA');
+    var Answermessage1 = UE.getEditor('Answermessage1');
+    var messageJx = UE.getEditor('messageJx');
+    $('.zuotuaddExercise').click(function(){
+        if(resShow()>0){
+            return false
+        }
+    })
+    function resShow(){
+        var a = 0;
+        if($('.subjectLi').eq(1).find('.color3baeab').length == 0){
+            $('.subjectLi').eq(1).children('.red').show();
+            a++
+        }else {
+            $('.subjectLi').eq(1).children('.red').hide();
+        }
+        if($('.subjectLi').eq(2).find('.color3baeab').length == 0){
+            $('.subjectLi').eq(2).children('.red').show();
+            a++
+        }else {
+            $('.subjectLi').eq(2).children('.red').hide();
+        }
+        if(UE.getEditor('completionA').getContentLength() == 0){
+            $('#completionA').parent().siblings('.red').show();
+            a++
+        }else{
+            $('#completionA').parent().siblings('.red').hide();
+        }
+        if(UE.getEditor('Answermessage1').getContentLength() == 0 ||$('.count_score').val() == '' ||$('.count_score').val() <=0){
+            $('.answerRed').show();
+            a++
+        }else{
+            $('.answerRed').hide();
+        }
+        if(UE.getEditor('messageJx').getContentLength() == 0){
+            $('.jxtext').show();
+            a++
+        }else{
+            $('.jxtext').hide();
+        }
+        if($('.presentation').children('option:checked').text() == '请选择' ||$('.presentation').children('option:checked').text() == '' ){
+            $('.presentation').siblings('.red').show();
+            a++
+        }else {
+            $('.presentation').siblings('.red').hide();
+        }
+        return a
+    }
+    $('.previewAllBtn').click(function(){
+        layer.open({
+    		type: 1,
+    		shade: 0,
+    		zIndex: 20160922,
+    		content: $('.exercise_choice'),
+    		area: ['100%', '100%'],
+    		closeBtn: 1,
+    		move: false,
+    		scrollbar: false,
+    		title: ['习题预览', 'color：#fff']
+    	});
+        $('.score').text('('+$('.count_score').val()+'分)');
+        var title = completionA.getContent();
+        $('.caption').html(title);
+        var answerExer = Answermessage1.getContent();
+        $('.solution').html(answerExer);
+        var answerJX = messageJx.getContent();
+        $('.analysisSpan').html(answerJX);
+    })
+</script>
+
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>

@@ -1,0 +1,772 @@
+<link rel="stylesheet" href="__PUBLIC__/css/exercise.css">
+<div class="box_ctrl" id="teacher_homework_ctrl">
+    <div class="sub_opr_wrapper" id="lesson_info_ctrl">
+        <button id="loadInClassHomeworkCtrl" class="sub_opr selected" onclick="loadInClassHomework(this)">课堂作业</button>
+        <button id="loadOutClassHomeworkCtrl" class="sub_opr" onclick="loadOutClassHomework(this)">课后作业</button>
+    </div>
+</div>
+<div class="box_ctrl" style="padding-top: 1px;">
+    <div class="third_opr_wrapper" id="create_outclass_homework_ctrl">
+        <button class="sub_opr" onclick="createOutClassHomework()">创建作业</button>
+    </div>
+</div>
+<div class="table_wrapper" id="exerciselib_list_outclass_wrapper">
+    <div style="padding: 6px;">
+        <table cellpadding="4" cellspacing="0" class="search_table_wrapper">
+            <tr>
+                <td width="88" nowrap>
+                    作业名称：
+                </td>
+                <td width="180" nowrap>
+                    <input id="homework_search_name" type="text" class="form-control">
+                </td>
+                <td width="76" nowrap>
+                    年级：
+                </td>
+                <td width="160">
+                    <select id="homework_search_grade" class="form-control">
+                        <option value="">-请选择-</option>
+                        <volist name="dict_grades" id="grade_item" empty="">
+                            <option value="{$grade_item.id}">{$grade_item.grade}</option>
+                        </volist>
+                    </select>
+                </td>
+                <td width="76" nowrap>
+                    学科：
+                </td>
+                <td width="160">
+                    <select id="homework_search_course" class="form-control">
+                        <option value="">-请选择-</option>
+                        <volist name="dict_courses" id="course_item" empty="">
+                            <option value="{$course_item.id}">{$course_item.course_name}</option>
+                        </volist>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td width="100" nowrap>
+                    &nbsp;教材分册：
+                </td>
+                <td width="180" nowrap>
+                    <select id="homework_search_textbook" class="form-control">
+                        <option value="">请先选择年级和学科</option>
+                    </select>
+                </td>
+                <td width="50" nowrap>
+                    &nbsp;状态：
+                </td>
+                <td width="160">
+                    <select id="homework_search_state" class="form-control">
+                        <option value="">-请选择-</option>
+                        <option value="2">未布置</option>
+                        <option value="1">已布置</option>
+                    </select>
+                </td>
+                <td nowrap>
+                </td>
+                <td nowrap>
+                    <button class="sub_opr" style="margin: 0;" onclick="loadClassHomework()">搜索</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="exerciselib_list_outclass" style="overflow-y: auto;">
+    </div>
+</div>
+<div id="create_outclass_homework" style="display: none;">
+    <table width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="400" valign="top" style="padding: 10px;">
+                <div class="form_section">
+                    <label for="form_homework_name">作业名称</label>
+
+                    <div class="input-control">
+                        <input type="text" name="form_homework_name" id="form_homework_name" class="form-control">
+
+                        <div class="wrongformat_info" id="form_homework_name_wrongformat_info"></div>
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="form_homework_claim">作业要求</label>
+
+                    <div class="input-control">
+                        <textarea id="form_homework_claim" class="form-control" rows="1"></textarea>
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="form_homework_type_id">作业类型</label>
+
+                    <div class="input-control">
+                        <select id="form_homework_type_id" name="form_homework_type_id" class="form-control" disabled>
+                            <option value="">-请选择-</option>
+                            <option value="课后作业">课后作业</option>
+                            <option value="课堂作业">课堂作业</option>
+                        </select>
+                    </div>
+                    <div class="promptformat_info" style="">如果选择课堂作业，则所关联的课堂为当前课堂(编号:{$classroomId})</div>
+                    <div class="wrongformat_info" id="form_homework_type_wrongformat_info"></div>
+                </div>
+                <div class="form_section">
+                    <label for="form_homework_grade_id">选择年级</label>
+
+                    <div class="input-control">
+                        <select id="form_homework_grade_id" name="form_homework_grade_id" class="form-control">
+                            <option value="0">-请选择-</option>
+                            <volist name="dict_grades" id="grade_item">
+                                <option value="{$grade_item.id}">{$grade_item.grade}</option>
+                            </volist>
+                        </select>
+                    </div>
+                    <div class="wrongformat_info" id="form_homework_grade_wrongformat_info"></div>
+                </div>
+
+                <div class="form_section">
+                    <label for="form_homework_class_id">选择班级</label>
+
+                    <div class="input-control">
+                        <select id="form_homework_class_id" name="form_homework_class_id" class="form-control">
+                            <option value="0">-请选择-</option>
+                            <volist name="dict_classes" id="class_item" empty="">
+                                <option value="{$class_item.id}">{$class_item.name}</option>
+                            </volist>
+                        </select>
+                    </div>
+                    <div class="wrongformat_info" id="form_homework_class_wrongformat_info"></div>
+                </div>
+
+                <div class="form_section">
+                    <label for="form_homework_course_id">选择学科</label>
+
+                    <div class="input-control">
+                        <select id="form_homework_course_id" name="form_homework_course_id" class="form-control">
+                            <option value="">-请选择-</option>
+                            <volist name="dict_courses" id="dataCourse" empty="">
+                                <option value="{$dataCourse.id}">{$dataCourse.code} :{$dataCourse.course_name}</option>
+                            </volist>
+                        </select>
+                    </div>
+                    <div class="wrongformat_info" id="form_homework_course_wrongformat_info"></div>
+                </div>
+
+                <div class="form_section">
+                    <label for="form_homework_textbook_id">教材分册</label>
+
+                    <div class="input-control">
+                        <select id="form_homework_textbook_id" name="form_homework_textbook_id" class="form-control">
+                            <option value="">-请先选择学科和年级-</option>
+                        </select>
+                    </div>
+                    <div class="wrongformat_info" id="form_homework_textbook_wrongformat_info"></div>
+                </div>
+                <div class="wrongformat_info" id="form_submit_wrongformat_info"></div>
+                <div class="form_section" style="text-align: center;">
+                    <button class="sub_opr" style="color: #ff0000;" onclick="cancelCreateOutClassHomework()">取 消
+                    </button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button class="sub_opr" onclick="createHomeworkOutClass()">保 存</button>
+                </div>
+            </td>
+            <td valign="top" style="padding: 10px;">
+                <div>已选择习题：<span id="form_selected_exercise"></span></div>
+                <div style="text-align: center;">
+                    <select id="form_homework_chapter" class="form-control"
+                            style="display: inline-block;width: 120px; margin-right: 30px;">
+                        <option value="">--请选择章--</option>
+                    </select>
+                    <select id="form_homework_section" class="form-control"
+                            style="display: inline-block;width: 120px;">
+                        <option value="">--请选择节--</option>
+                    </select>
+                </div>
+                <div id="lesson_info_exerciseLibraryList_outclass" style="overflow-y: auto;">
+                    <div class="emptyResult">该课本({$book.name})尚未习题库</div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" class="xiti_id">
+    <div id="form_exercise_chooser" style="display: none;">
+
+    </div>
+</div>
+<div class="table_wrapper" id="homework_complate_details" style="display: none;"></div>
+<div id="btn_tuya_homework_wrapper">
+    <img onclick="toggleTuYaForHomework()" id="btn_tuya_homework_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuyaanniu1.png" title="启用/禁用白板">
+    <img onclick="beginTuYaHomework()" id="btn_tuya_homework_ctrl_pen" class="btn_tuya_sub_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_pen_deactive.png" style="display: none;" title="绘制">
+    <img onclick="clearHomeworkTuYa()" id="btn_tuya_homework_ctrl_eraser" class="btn_tuya_sub_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_eraser_deactive.png" style="display: none;"
+         title="擦除">
+    <img onclick="clearAllHomeworkTuYa()" id="btn_tuya_homework_ctrl_clear" class="btn_tuya_sub_ctrl" width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_blank_deactive.png" style="display: none;"
+         title="清空">
+    <img onclick="toggleTuYaForHomeworkOpacity()" id="btn_tuya_homework_ctrl_opacity" class="btn_tuya_sub_ctrl"
+         width="50"
+         src="__PUBLIC__/DigitalClassroom/images/tuya/tuya_switch_deactive.png" style="display: none;"
+         title="透明控制">
+
+    <div id="homeworkColorPickerWrapper" class="colorPickerWrapper btn_tuya_sub_ctrl" style="display: none;">
+        <span onclick="changeHomeworkTuyaLineColor('#ff0000')" class="colorPicker colorPicker_red selected"
+              data-color="#ff0000"></span>
+        <br>
+        <span onclick="changeHomeworkTuyaLineColor('#D8A209')" class="colorPicker colorPicker_yellow"
+              data-color="#D8A209"></span>
+        <br>
+        <span onclick="changeHomeworkTuyaLineColor('green')" class="colorPicker colorPicker_green"
+              data-color="green"></span>
+        <br>
+        <span onclick="changeHomeworkTuyaLineColor('#000000')" class="colorPicker colorPicker_black"
+              data-color="#000000"></span>
+        <br>
+    </div>
+</div>
+<div id="whiteboard_homework" class="whiteboard">
+    <canvas id="homework_canvas">
+        您的浏览器不支持白板功能
+    </canvas>
+</div>
+
+
+
+<script type="text/javascript">
+    //布置作业相关
+    var choosedExerciseLibraryChapter = '';
+    var isShowingInClassHomeworkList = true;
+    var currentSelectedExerciseLibrary = [];
+    var selectedExercise = [];
+    var isShowCorrectAnswer = false;
+
+    function clearHomeworkForm() {
+        $('#form_homework_name').val('');
+        $('#form_homework_claim').val('');
+        $('#form_homework_type_id').val('');
+        $('#form_homework_grade_id').val('');
+        $('#form_homework_class_id').val('');
+        $('#form_homework_course_id').val('');
+        $('#form_homework_textbook_id').val('');
+        $('#form_homework_chapter').html('<option value="">--请选择章--</option>');
+        $('#form_homework_section').html('<option value="">--请选择节--</option>');
+        $('#form_selected_exercise').html('');
+        choosedExerciseLibraryChapter = '';
+        currentSelectedExerciseLibrary = [];
+        selectedExercise = [];
+
+        $('#lesson_info_exerciseLibraryList_outclass').html('<div class="emptyResult">请在左侧选择教材</div>');
+    }
+
+    //进入创建作业页面
+    function createOutClassHomework() {
+        $('#exerciselib_list_outclass_wrapper,#create_outclass_homework_ctrl').hide();
+        $('#create_outclass_homework #form_submit_wrongformat_info').html('');
+        $('#create_outclass_homework #form_homework_name_wrongformat_info').html('');
+        $('#create_outclass_homework').show();
+        if (isShowingInClassHomeworkList) {
+            $('#form_homework_type_id').val('课堂作业');
+        } else {
+            $('#form_homework_type_id').val('课后作业');
+        }
+        $('#form_homework_grade_id').val(gradeId);
+        $('#form_homework_class_id').val(classId);
+        $('#form_homework_course_id').val(courseId);
+        $('#form_homework_grade_id').change();
+    }
+    //关闭创建作业页面
+    function cancelCreateOutClassHomework() {
+        $('#create_outclass_homework').hide();
+        $('#exerciselib_list_outclass_wrapper,#create_outclass_homework_ctrl').show();
+        clearHomeworkForm();
+    }
+</script>
+<script>
+    //获得章节习题库里的章字典
+    function getChaptersInExerciseLibrary() {
+        var chapters = [];
+        $.each(currentSelectedExerciseLibrary, function (i, n) {
+            if ($.inArray(n.chapter, chapters) == -1) {
+                chapters.push(n.chapter);
+            }
+        })
+        return chapters;
+    }
+    //获得章节习题库里的节字典,根据章来查询
+    function getSectionsByChapter(chapter) {
+        var sections = [];
+        $.each(currentSelectedExerciseLibrary, function (i, n) {
+            if (chapter != '' && n.chapter != chapter) return true;
+            if ($.inArray(n.festival, sections) == -1) {
+                sections.push(n.festival);
+            }
+        });
+        return sections;
+    }
+
+    //根据章节筛选习题库
+    function getExerciseLibraryByChapterAndSection(chapter, section) {
+        if (chapter == '' && section == '') return currentSelectedExerciseLibrary;
+        var result = [];
+        $.each(currentSelectedExerciseLibrary, function (i, n) {
+            if (chapter != '') {
+                if (n.chapter != chapter) return true;
+                if (section == '' || (section != '' && n.festival == section)) {
+                    result.push(n);
+                }
+            } else if (section != '' && n.festival == section) {
+                result.push(n);
+            }
+
+        });
+        return result;
+    }
+    //渲染习题库列表
+    function renderExerciseLibrary(libraries) {
+
+        var tpl = '<div class="exerciseChapterWrapper" data-id="{1}" onclick="chooseHomeworkOutClass(this)">{1}.{0}</div>';
+        var html = [];
+        $(libraries).each(function (i, n) {
+            html.push(tpl.format(n.title, n.id))
+        });
+        $('#lesson_info_exerciseLibraryList_outclass').html(html.join(''));
+        if (html.length == 0) {
+            $('#lesson_info_exerciseLibraryList_outclass').html('<div class="emptyResult">该教材尚未有关联的习题</div>');
+        }
+    }
+
+    //渲染习题库里的每个习题
+    function renderExerciseInALibrary(chapterId) {
+        //ajax 获取章节内的小题
+        renderExerciseLibraryChapter(chapterId, '', function (res) {
+            var checkedselect = 0;
+            var allex =0;
+
+            $('#exerciseWrapper input,#exerciseWrapper textarea').remove();//去掉了习题里的操作框（单选框、复选框、输入框），以免与习题的作答功能混在一起干扰教师选择小题
+            //$('#exerciseWrapper .exerciseQuestion').prepend('<input type="checkbox" name="choose_exercise" onclick="onClick_SelectOneExerciseInALibrary(this)">');
+            var choosed_ids = '';
+            $('#exerciseWrapper .exerciseQuestion').each(function (i, n) {
+                allex++;
+                var checked = '';
+                var exercise_id = $(n).attr('data-originalid');
+
+                $.each(selectedExercise, function (j, m) {
+
+                    if (m.chapter_id == chapterId && m.exercise_id == exercise_id) {
+
+                        checkedselect++;
+                        checked = 'checked';
+                        choosed_ids = choosed_ids + exercise_id + ',';
+                    }
+                });
+
+                
+                //这里操作收藏   
+                $(n).prepend('<input type="checkbox" name="choose_exercise" id="selectSingleExercises" onclick="onClick_SelectOneExerciseInALibrary(this)" {0}>'.format(checked)); 
+                var exercise_id=$(n).attr('data-originalid');
+                $.getJSON('index.php?m=Home&c=Teach&a=ExerciseCollect',{id:exercise_id},function(msg){ 
+                    if(msg.is_collect=='no'){
+                            $(n).append('<img class="collectImg" onclick="collectExercise(this)" src="/Public/img/icon/collect1.png">');
+                        }else{
+                            $(n).append('<img class="collectImg" onclick="collectExercise(this)" src="/Public/img/icon/collect2.png">');
+                        }
+                        var audioType= typeof($('.mp3_player'));
+//                            if(audioType == 'object'){
+//                                    $('.mp3_player').parent().css({
+//                                            position:'relative'
+//                                    })
+//                                    $('.mp3_player').siblings('.collectImg').css({
+//                                            position:'absolute',
+//                                            left: '50%',
+//                                            top: '0'
+//                                    })
+//                            }
+                }); 
+                
+            });
+
+            if(allex == checkedselect) { //设置全选按钮
+                $('#selectAllExercises').attr('checked','checked');
+            }
+            $('#form_exercise_chooser_selected').html(choosed_ids);
+        });
+    }
+     //收藏或取消收藏
+    function collectExercise(obj){
+        var exercise_pri_id=0;
+        exercise_pri_id=$(obj).parents('.exerciseQuestion').attr('data-originalid'); 
+        $.get("{:U('Teach/collectExercise')}",{id:exercise_pri_id},function(data){ 
+            if(data==0){
+                alert('操作失败');
+            }else if(data==1){
+                //添加收藏
+                $(obj).attr('src',"/Public/img/icon/collect2.png");
+            }else{
+                //删除收藏
+                $(obj).attr('src',"/Public/img/icon/collect1.png");
+            }
+        });
+    }
+    
+    
+    //选择小题的触发事件
+    function onClick_SelectOneExerciseInALibrary(obj) {
+        var xiti_id = $('.xiti_id').val();
+        var changdu = $("input:checkbox[name='choose_exercise']:checked").length;
+        if (xiti_id == changdu) {
+            $('#selectAllExercises').prop("checked", true);
+        }
+
+        var ids = $('#form_exercise_chooser_selected').html();
+        var currentId = $(obj).parent().attr('data-originalid');
+        if (obj.checked) {
+
+            if (ids.indexOf(currentId + ',') == -1) {
+                ids = ids + currentId + ',';
+            }
+        } else {
+            ids = ids.replace(currentId + ',', '');
+            $('#selectAllExercises').removeAttr('checked');
+        }
+
+        if (ids != '' && ids[ids.length - 1] != ',')ids = ids + ',';
+        $('#form_exercise_chooser_selected').html(ids);
+//        $('#form_exercise_chooser_selected').hide();
+    }
+    //确定选择小题的事件
+    function onClick_ConfirmTheSelectedExerciseInALibrary() {
+        var newResult = [];
+        $.each(selectedExercise, function (i, n) {
+            if (n.chapter_id != choosedExerciseLibraryChapter) {
+                newResult.push(n);
+            }
+        });
+        var currentSelectedIds = $('#form_exercise_chooser_selected').text().split(',');
+        $.each(currentSelectedIds, function (i, n) {
+            if (n == '') return true;
+            newResult.push({
+                chapter_id: choosedExerciseLibraryChapter,
+                exercise_id: n
+            });
+        });
+
+        selectedExercise = newResult;
+        renderSelectedExerciseInCreateHomework();
+        $('.layui-layer-page').each(function (i, n) {
+            var id = $(n).attr('id').replace('layui-layer', '');
+            layer.close(id);
+        });
+    }
+    //选择所有小题
+    function onClick_SelectAllTheExerciseInALibrary(obj) {
+        if (obj.checked) {
+            $('#exerciseWrapper input').removeAttr('checked').click();
+        } else {
+            $('#exerciseWrapper input').removeAttr('checked');
+            $('#form_exercise_chooser_selected').html('');
+        }
+    }
+
+    //渲染已经选择的习题列表
+    function renderSelectedExerciseInCreateHomework() {
+        var html = [];
+        $.each(selectedExercise, function (i, n) {
+            html.push(n.chapter_id + '.' + n.exercise_id);
+        });
+        $('#form_selected_exercise').html(html.join('; '));
+    }
+
+    //显示课堂练习
+    function showExerciseLibraryOutClass(tid, callback) {
+        $('#lesson_info_exerciseLibraryList_outclass').show();
+
+        if (tid == '') {
+            $('#lesson_info_exerciseLibraryList_outclass').html('<div class="emptyResult">请在左侧选择教材</div>');
+            return;
+        }
+
+        $.get('index.php?m=Home&c=Teach&a=getExercisesByTextbook', {textbook_id: tid}, function (res) {
+            currentSelectedExerciseLibrary = res;
+            renderExerciseLibrary(res);
+            var chapters = getChaptersInExerciseLibrary();
+
+            var chaptersOptions = [];
+            chaptersOptions.push('<option value="">--请选择章--</option>');
+            $.each(chapters, function (i, n) {
+                chaptersOptions.push('<option value="{0}">{0}</option>'.format(n));
+            });
+            $('#form_homework_chapter').html(chaptersOptions.join(''));
+
+            $('#form_homework_chapter').unbind('change').bind('change', function () {
+                var sections = getSectionsByChapter($(this).val());
+                var sectionOptions = [];
+                sectionOptions.push('<option value="">--请选择节--</option>');
+                $.each(sections, function (i, n) {
+                    sectionOptions.push('<option value="{0}">{0}</option>'.format(n));
+                });
+                $('#form_homework_section').html(sectionOptions.join(''));
+                var lib = getExerciseLibraryByChapterAndSection($('#form_homework_chapter').val(), $('#form_homework_section').val());
+                renderExerciseLibrary(lib);
+            });
+
+
+            $('#form_homework_section').unbind('change').bind('change', function () {
+                var lib = getExerciseLibraryByChapterAndSection($('#form_homework_chapter').val(), $('#form_homework_section').val());
+                renderExerciseLibrary(lib);
+            });
+
+            if (typeof callback == 'function') {
+                callback();
+            }
+        });
+    }
+    //选择习题章节
+    function chooseHomeworkOutClass(obj) {
+
+        $('#create_outclass_homework .exerciseChapterWrapper').removeClass('selected');
+        $(obj).addClass('selected');
+        choosedExerciseLibraryChapter = $(obj).attr('data-id');
+        //习题渲染
+        //
+//        var tpl = '<div style="font-size: 18px;width: 700px;background-color: #fff;">&nbsp;&nbsp;<label><input id="selectAllExercises" onclick="onClick_SelectAllTheExerciseInALibrary(this)" type="checkbox">全选</label>&nbsp;&nbsp;已选择：<span id="form_exercise_chooser_selected" style="font-size: 18px;color: #EAC41B;"></span>&nbsp;&nbsp;<button class="sub_opr" style="float: right;margin: 0 15px 0 0;" onclick="onClick_ConfirmTheSelectedExerciseInALibrary();">确认</button></div><div style="overflow-y: auto;" id="exerciseWrapper"></div>';
+		
+		var tpl = '<div style="font-size: 18px;position: fixed;z-index:9999;left: 0;top:44px;width: 98%;margin-top:-3px;background:#fff"><div><button class="sub_opr btnReturn3 layer-open layui-layer-close" style="margin: 30px;width:72px;border-radius:8px;font-size:16px;position: initial;">返回</button></div><div  class="exerciseChoose"> 选择习题@ ' + $(obj).html() + '</div><div class="allChoose" style="width: 140px;float:left;background:#fff"><label><input id="selectAllExercises" onclick="onClick_SelectAllTheExerciseInALibrary(this)" type="checkbox">全选</label>&nbsp;&nbsp;已选择：</div><div style="width:60%;float:left;background:#fff"><span id="form_exercise_chooser_selected" style="font-size: 18px;color: #EAC41B;word-break: break-all;line-height:36px"></span></div>&nbsp;&nbsp;<div style="width:70px;float:right;" class="querenBtn"><button class="sub_opr btnReturn3" style="float: right;margin: 0 15px 0 0;width:72px;border-radius:8px;font-size:16px;letter-spacing:0;" onclick="onClick_ConfirmTheSelectedExerciseInALibrary();">确&nbsp;定</button></div></div><div id="exerciseWrapper" style="margin-top: 140px"></div>';
+
+        $('#form_exercise_chooser').html(tpl);
+//        $('#exerciseWrapper').height(455);
+        //调整习题wrapper的高度
+        renderExerciseInALibrary(choosedExerciseLibraryChapter);
+		//20161111修改弹窗样式
+        layer.open({
+            type: 1,
+			title: '<img class="navTranImg" src="/Public/img/icon/t_zuoyexitong.png">',
+//            title: '选择习题@' + $(obj).html(),
+			shade: 0,
+			zIndex: 20160922,
+            content: $('#form_exercise_chooser').html(),
+			area: ['100%', '100%'],
+			closeBtn: 0,
+			move: false,
+			scrollbar: false
+//            area: ['700px', '550px']
+        });
+        $('#form_exercise_chooser').html('');
+    }
+    //创建作业
+    function createHomeworkOutClass() {
+        $('.wrongformat_info').html('');
+        var homework = $.trim($('#form_homework_name').val());
+        var homework_type = $('#form_homework_type_id').val();
+        var grade_id = $('#form_homework_grade_id').val();
+        var class_id = $('#form_homework_class_id').val();
+        var course_id = $('#form_homework_course_id').val();
+        var textbook_id = $('#form_homework_textbook_id').val();
+
+        if (homework == '') {
+            $('#form_homework_name_wrongformat_info').html('作业名称不能为空');
+            return false;
+        }
+        if (homework_type == '') {
+            $('#form_homework_type_wrongformat_info').html('作业类型不能为空');
+            return false;
+        }
+        if (grade_id == '') {
+            $('#form_homework_grade_wrongformat_info').html('年级不能为空');
+            return false;
+        }
+        if (class_id == '') {
+            $('#form_homework_class_wrongformat_info').html('班级不能为空');
+            return false;
+        }
+        if (course_id == '') {
+            $('#form_homework_course_wrongformat_info').html('学科不能为空');
+            return false;
+        }
+        if (textbook_id == '') {
+            $('#form_homework_textbook_wrongformat_info').html('教材不能为空');
+            return false;
+        }
+
+        if (selectedExercise.length == 0) {
+            $('#form_submit_wrongformat_info').html('您还没有选择任何习题');
+            return false;
+        }
+
+        var parms = {
+            homework_name: homework,
+            claim: $('#form_homework_claim').val(),
+            class_id: class_id,
+            course_id: course_id,
+            grade_id: grade_id,
+            textbook_id: textbook_id,
+            exercise_ids: $('#form_selected_exercise').text(),
+            type: homework_type,
+            classroom_id: classroomId
+        };
+
+        $.post('__URL__/assignHomework', parms, function (res) {
+            if (typeof  res == 'string') {
+                if (isShowingInClassHomeworkList) {
+                    loadInClassHomework();
+                } else {
+                    loadOutClassHomework();
+                }
+                clearHomeworkForm();
+                cancelCreateOutClassHomework();
+            }
+        });
+    }
+    //异步加载课堂作业
+    function loadInClassHomework(obj) {
+        $('#homework_complate_details').css('display','none');
+        isShowingInClassHomeworkList = true;
+        $('#create_outclass_homework').hide();
+        $('#exerciselib_list_outclass_wrapper,#create_outclass_homework_ctrl').show();
+
+        var data = getHomeworkSearchParms();
+        $('#exerciselib_list_outclass').load('__URL__/loadInClassHomework', data);
+        if (typeof obj !== 'undefined') {
+            $('#teacher_homework_ctrl .sub_opr').removeClass('selected');
+            $(obj).addClass('selected');
+        }
+    }
+    //异步加载课后作业
+    function loadOutClassHomework(obj) {
+        $('#homework_complate_details').css('display','none');
+        isShowingInClassHomeworkList = false;
+        $('#create_outclass_homework').hide();
+        $('#exerciselib_list_outclass_wrapper,#create_outclass_homework_ctrl').show();
+        var data = getHomeworkSearchParms();
+        $('#exerciselib_list_outclass').load('__URL__/loadOutClassHomework?classroom_id=' + classroomId, data);
+        if (typeof obj !== 'undefined') {
+            $('#teacher_homework_ctrl .sub_opr').removeClass('selected');
+            $(obj).addClass('selected');
+        }
+    }
+
+    function loadClassHomework() {
+        $('#teacher_homework_ctrl .selected').click();
+    }
+
+    //获得作业查询参数
+    function getHomeworkSearchParms() {
+        var name = $('#homework_search_name').val();
+        var grade = $('#homework_search_grade').val();
+        var course = $('#homework_search_course').val();
+        var textbook = $('#homework_search_textbook').val();
+        var state = $('#homework_search_state').val();
+
+        return {name: name, grade: grade, course: course, textbook: textbook, state: state, teacher_id: teacherId};
+    }
+
+    //复制作业
+    function copyHomework(homeworkId) {
+        $('#exerciselib_list_outclass_wrapper,#create_outclass_homework_ctrl').hide();
+        $('#create_outclass_homework #form_submit_wrongformat_info').html('');
+        $('#create_outclass_homework #form_homework_name_wrongformat_info').html('');
+        $('#create_outclass_homework').show();
+        //获取该作业的情况
+        $.get('__URL__/ajax_LoadHomeworkDetails?homework_id=' + homeworkId, function (res) {
+            $('#form_homework_name').val(res.homework_name);
+            $('#form_homework_claim').val(res.claim);
+            $('#form_homework_type_id').val(res.homework_type);
+            $('#form_homework_grade_id').val(res.grade_id);
+            $('#form_homework_course_id').val(res.course_id);
+            var textbookEle = document.getElementById('form_homework_textbook_id');
+            getTextbooksByCourseAndGrade(res.course_id, res.grade_id, textbookEle, function () {
+                $('#form_homework_textbook_id').val(res.textbook_id);
+                showExerciseLibraryOutClass(res.textbook_id, function () {
+                    choosedExerciseLibraryChapter = res.exercise_chapter_id;
+                    //if (choosedExerciseLibraryChapter == '0') {
+                        selectedExercise = res.exercises;
+                        renderSelectedExerciseInCreateHomework();
+                    //}
+
+                    $('.exerciseChapterWrapper').each(function (i, n) {
+                        if ($(n).attr('data-originalid') == res.exercise_chapter_id) {
+                            $(n).addClass('selected');
+                            return false;
+                        }
+                    });
+
+                    $('#form_homework_class_id option').each(function () {
+                        $(this).removeAttr('selected');
+                    });
+
+                    $('#form_homework_class_id option').each(function () {
+                        console.log($(this).val());
+                        $(this).removeAttr('selected');
+                        if ($(this).val() == res.class_id) {
+                            $(this).attr('selected',true);
+                            return false;
+                        }
+                    });
+
+                });
+            });
+        });
+    }
+
+    //布置作业给学生（作业分发）
+    function assignHomeworkToStudents(homeworkId, type) {
+        if (confirm('确定要该作业布置给学生吗？')) {
+            $.get('__URL__/ajax_AssignHomeworkToStudents?homework_id=' + homeworkId, function (res) {
+                if (res == 'ok') {
+                    if (isShowingInClassHomeworkList) loadInClassHomework();
+                    else loadOutClassHomework();
+
+                    //发送布置作业请求
+                    sendSocket("homework|createdHomework|" + type);
+                }
+            });
+        }
+    }
+
+    //显示作业具体情况
+    function showHomeworkComplateDetails(homeworkId,classroomId) {
+        $('#exerciselib_list_outclass_wrapper,#create_outclass_homework_ctrl').hide();
+        $('#homework_complate_details')
+                .show()
+                .load('__URL__/homeworkCompleteDetails?homeworkId=' + homeworkId+'&classroomId='+classroomId);
+    }
+
+    $(function () {
+        showExerciseLibraryOutClass('');
+        loadInClassHomework();
+        $('#lesson_info_exerciseLibraryList_outclass').height($(window).height() - 180);
+        $('#exerciselib_list_outclass').height($(window).height() - 290);
+        $('#form_homework_grade_id,#form_homework_course_id').change(function () {
+            var grade_id = $('#form_homework_grade_id').val();
+            var course_id = $('#form_homework_course_id').val();
+            var textbookEle = document.getElementById('form_homework_textbook_id');
+            getTextbooksByCourseAndGrade(course_id, grade_id, textbookEle, function () {
+                $('#form_homework_textbook_id').val(textbookId).change();
+            });
+            if($(this).attr('id') == 'form_homework_grade_id'){
+                $("#form_homework_class_id option:not(:eq(0))").remove();
+                $.getJSON("index.php?m=Home&c=Teach&a=getGradeClass", {
+                    'id': grade_id
+                }, function (msg) {
+                    var length = msg.length;
+                    var option = "<option value='0'>-请选择-</option>";
+                    for (var i = 0; i < length; i++) {
+                        var temp = $(option).clone(true);
+                        $(temp).text(msg[i].name);
+                        $(temp).val(msg[i].id);
+
+                        $("#form_homework_class_id").append(temp);
+                    }
+                });
+            }
+        });
+        $('#form_homework_textbook_id').change(function () {
+            var tid = $(this).val();
+            showExerciseLibraryOutClass(tid, null);
+        });
+
+        $('#homework_search_grade,#homework_search_course').change(function () {
+            var grade_id = $('#homework_search_grade').val();
+            var course_id = $('#homework_search_course').val();
+            var textbookEle = document.getElementById('homework_search_textbook');
+            getTextbooksByCourseAndGrade(course_id, grade_id, textbookEle, null);
+
+        });
+    });
+</script>

@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>数字课堂 :: 京版云教育平台</title>
+    <link href="http://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/pctextbook/ebook.css"/>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="__PUBLIC__/js/common.js"></script>
+    <style>
+        html {
+            font-family: Microsoft YaHei, "微软雅黑", Lucida, Verdana, Hiragino Sans GB, STHeiti, WenQuanYi Micro Hei, Droid Sans Fallback, SimSun, sans-serif;
+        }
+
+        a {
+            color: #3BBAFF;
+            text-decoration: none;
+        }
+
+        #mainTable {
+            width: 100%;
+        }
+
+        #mainTable td {
+            padding: 0;
+        }
+
+        .ctrl {
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+            padding: 20px 10px;
+            cursor: pointer;
+        }
+
+        .ctrl.cur {
+            background-color: #3BBAFF;
+            color: white;
+        }
+
+        #leftWrapper {
+
+        }
+
+        .featureWrapper {
+            display: none;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid #ccc;
+
+        }
+    </style>
+    <style>
+        .class_subfeature {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            display: none;
+            background-color: #E2E2E2;
+        }
+
+        .tab {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            width: 400px;
+            overflow: hidden;
+        }
+
+        .tab li {
+            float: left;
+            width: 100px;
+            height: 49px;
+            background: #fff;
+            color: #333;
+            text-align: center;
+            line-height: 49px;
+            cursor: pointer;
+        }
+        .tabv {
+
+            margin-top: 25px;
+            padding-left: 0;
+            list-style: none;
+            width: 42px;
+            height:190px;
+
+
+        }
+
+        .tabv li {
+            border-radius: 4px;
+		    padding-top:12px;
+			writing-mode:vertical-rl;
+            width: 42px;
+            height: 50px;
+            background: #fff;
+            color: #333;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
+
+        }
+        .on {
+            display: block;
+        }
+
+        .tab li.cur {
+            background: #3BBAFF;
+            color: white;
+        }
+        .tabv li.cur {
+            background: #3BBAFF;
+            color: white;
+        }
+        .resource_item {
+            height: 56px;
+            line-height: 56px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #fff;
+            padding-left: 20px;
+        }
+
+        .resource_content {
+            display: none;
+        }
+    </style>
+    <style>
+        .pptTable {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+
+        .pptTable td {
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .pptTableNav {
+            width: 200px;
+            overflow: auto;
+        }
+
+        .ppt_img_wrapper {
+            margin: 6px;
+            border: 1px solid #ccc;
+            display: inline-block;
+        }
+
+        .ppt_img_wrapper img {
+            width: 100%;
+        }
+
+        .pptTableContent {
+            text-align: center;
+        }
+
+        .pptTableContent img {
+            width: 90%;
+            max-height: 95% !important;
+        }
+    </style>
+    <style>
+        #kalaok {
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100px;
+            z-index: 1000;
+            background-color: #fff;
+            display: none;
+            padding-left: 20px;
+        }
+
+        .text {
+            position: relative;
+            top: 8px;
+            display: -webkit-box;
+            display: -moz-box;
+            -webkit-box-orient: horizontal;
+            -moz-box-orient: horizontal;
+            -webkit-box-align: center;
+            -moz-box-align: center;
+            font: normal normal bold 20px 微软雅黑, sans-serif;
+            -webkit-filter: brightness(2);
+            filter: brightness(2);
+        }
+
+        .text p {
+            background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%), -webkit-linear-gradient(left, #f00 0%, #00f 0%);
+            background: -moz-linear-gradient(top, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%), -moz-linear-gradient(left, #f00 0%, #00f 0%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /*-webkit-text-stroke:1px #f00;*/
+            -webkit-filter: drop-shadow(0px 0px 1px #f00);
+
+        }
+
+        .ctrl {
+            position: relative;
+            <if condition="$platform neq 'pad'">
+            top: 25px;
+            </if>
+            background: #0aa;
+            display: -webkit-box;
+            display: -moz-box;
+            -webkit-box-shadow: 0 0 5px #646464;
+            -moz-box-shadow: 0 0 5px #646464;
+            border-radius: 4px;
+        }
+
+        .ctrl span {
+            padding: 0 10px;
+        }
+
+        .ctrl span:hover {
+            background: #088;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body style="padding: 0;margin: 0;">
+<table id="mainTable" cellpadding="0" cellspacing="0">
+    <tr>
+        
+         <td valign="top">
+            <div class="featureWrapper" id="classWrapper" style="display: block;">
+
+                <div class="class_subfeature" id="tab_class_1" style="display: block;">
+                    <div id="bookWrapper">
+                        <div id="coverLayer"></div>
+                        <div id="wrapper">
+
+                            <table id="pageTable" cellpadding="0" cellspacing="0">
+                            <button id="click" class="ctrl cur" onclick="showFrame();">Sohu</button>
+                            <iframe src="" id="frameSohu" frameborder="0" width="100%" ></iframe>
+                                <!--
+                                <tr>
+                                    <td align="right">
+                                        <div class="pageWrapper" id="page1Wrapper" style="text-align: right">
+                                            <img class="page" id="page1">
+                                        </div>
+                                    </td>
+                                    <td align="left">
+                                        <div class="pageWrapper" id="page2Wrapper" style="text-align: left;">
+                                            <img class="page" id="page2">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table id="rectClickImgWrapper" cellpadding="0" cellspacing="0" style="width:100%">
+                                <tr>
+                                    <td id="rectClickImgCell" valign="middle" align="center">
+                                        <img id="rectClickImg">
+                                        <audio id="rectClickAudio" src=""></audio>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table id="actionWrapper" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td id="actionCell" valign="middle" align="center">
+
+                                    </td>
+                                </tr>-->
+                            </table>
+                        </div>
+                        <if condition="$platform neq 'pad'">
+                        <!--<div id="footer">
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td id="footerTableCell" width="100" align="center">
+                                        <span id="speedCtrl" tapmode onclick="switchSpeed()">正常语速</span>
+                                    </td>
+                                    <td align="center" valign="middle">
+                                        <img class="f-content" tapmode src="__PUBLIC_METRO__/img/ebook/icon_content.png"
+                                             onclick="turnToContentPage()">
+                                        <img id="bPreviousPage" class="f-pre" tapmode src="__PUBLIC_METRO__/img/ebook/icon_pre.png"
+                                             onclick="turnToPreviousPage()">
+                                        <img id="bNextPage" class="f-nex" tapmode src="__PUBLIC_METRO__/img/ebook/icon_next.png"
+                                             onclick="turnToNextPage()">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>-->
+                        </if>
+                        <div id="kalaok">
+                            <div class="text" id="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </td>
+    </tr>
+</table>
+<script type="text/javascript" src="__PUBLIC__/js/modernizr.2.5.3.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/socket.io-1.1.0.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/textbook_kalaok.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/class_resource/hanshu.js"></script>
+<script>
+    var classroomId = '{$classroomId}';
+    var isTeacher = '{$isTeacher}';
+    var studentId = '{$studentId}';
+    function hasControlPower()
+    {
+        if (isTeacher == 'true')
+        return true;
+        else
+        return false;
+    }
+    function getStudentId()
+    {
+        if('{$studentId}' == studentId)
+        return -1;
+        return studentId;
+    }
+</script>
+<script>
+
+    $(function () {
+        var height = $(window).height();
+        $('#leftWrapper,.featureWrapper').height(height);
+        <if condition="$platform eq 'pad'">
+        $('.class_subfeature,#whiteboard').height(height - 15);
+        </if>
+        <if condition="$platform neq 'pad'">
+        $('.class_subfeature,#whiteboard').height(height);
+        </if>
+        $('#frameSohu').hide();
+
+    })
+
+    function showFeature(obj, name) {
+        $('.featureWrapper').hide();
+        $('#' + name + 'Wrapper').show();
+        $('.ctrl').removeClass('cur');
+        $(obj).addClass('cur');
+    }
+</script>
+<script>
+function showSohuFrame()
+{
+    $('#frameSohu').show();
+    $('#click').hide();
+    $('#frameSohu').height($("#mainTable").height());
+	document.getElementById("frameSohu").src='http://www.sohu.com' 
+}
+function showFrame()
+{
+    showSohuFrame();
+    var obj = {
+        "my_room": my_room,
+        "my_name": curSessionId,
+        "my_content": 'clicksohu|' + 'na'
+    };
+    socket.emit('send_message', JSON.stringify(obj));
+
+
+}
+</script>
+<script>
+    $(document).ready(function () {
+        if (hasControlPower()) {
+            $("#classWrapper .tab li,#classWrapper .tabv li").click(function () {
+                var id = $(this).attr('data-id');
+                $('#classWrapper .tab li,#classWrapper .tabv li').removeClass('cur');
+                $(this).addClass('cur');
+                $('.class_subfeature').hide();
+                $('#tab_class_' + id).show();
+                <if condition="$platform eq 'pad'">
+                if(1==id)
+                  $('#controlButtons').show();
+                else
+                  $('#controlButtons').hide();
+                </if>
+                var obj = {
+                    "my_room": my_room,
+                    "my_name": curSessionId,
+                    "my_content": 'SwitchFeature|' + id + '|na'
+                };
+                socket.emit('send_message', JSON.stringify(obj));
+            });
+
+            $('.resource_item').click(function () {
+                var id = $(this).attr('data-id');
+                $('#resource_list,.resource_content').hide();
+                $('#resource_content').show();
+                $('#resource_' + id).show();
+                $('#lessonplan').attr('src', $('#lessonplan').attr('src'));
+                $('#lessonplan').height($('#tab_class_2').height()-73);
+
+                var obj = {
+                    "my_room": my_room,
+                    "my_name": curSessionId,
+                    "my_content": 'SwitchResource|' + id + '|na'
+                };
+                socket.emit('send_message', JSON.stringify(obj));
+
+            });
+        }
+        //loadLessonPlannings();
+    });
+    /*
+    function loadLessonPlannings() {
+        var lessonEles = $('.resource_content');
+        $(lessonEles).each(function (i, n) {
+            var lessonId = $(this).attr('data-id');
+            loadPPT(lessonId);
+        });
+        $('.pptimg_nav').click(function () {
+            var lessonId = $(this).attr('data-id');
+            var lessonIndex = $(this).attr('data-index');
+            var currentSrc = $(this).attr('src');
+            $('#preview_ppt_' + lessonId).attr('src', currentSrc).attr('data-index',lessonIndex).unbind('click').click(function(){
+                gotoNextPPTSlide(this);
+            });
+        });
+    }
+    function loadPPT(lessonPlanningId) {
+        var wrapper = '#resource_pptnav_' + lessonPlanningId;
+        var pages = parseInt($(wrapper).attr('data-pages'));
+        var ossPath = $(wrapper).attr('data-oss');
+        var html = [];
+        for (var i = 1; i <= pages; i++) {
+            var dataSource = "{0}/lessonplanning/{1}/".format(ossPath, lessonPlanningId);
+            var imgPath = "{0}/lessonplanning/{1}/{2}.jpg".format(ossPath, lessonPlanningId, i);
+            var imgEle = '<div class="ppt_img_wrapper"><img data-id="{1}" data-index="{2}" class="pptimg_nav" src="{0}"></div>'.format(imgPath, lessonPlanningId, i);
+            html.push(imgEle);
+            if (i == 1) {
+                $('#preview_ppt_' + lessonPlanningId).attr({'data-source':dataSource,'data-pages':pages,'src':imgPath,'data-index':1}).click(function(){
+                    if(hasControlPower()) {
+                        gotoNextPPTSlide(this);
+                    }
+                });
+            }
+        }
+        $(wrapper).html(html.join(''));
+        //http://jingbanyun.oss-cn-beijing.aliyuncs.com/lessonplanning/9/1.jpg
+    }
+    //
+    function gotoNextPPTSlide(obj){
+        var currentIndex = $(obj).attr('data-index');
+        var dataSource = $(obj).attr('data-source');
+        var nextIndex = parseInt($(obj).attr('data-index'))+1;
+        //judge index is valid
+        var total = parseInt($(obj).attr('data-pages'));
+        if(nextIndex>total){
+            nextIndex=1;
+        }
+        var nextSlideSrc = dataSource+nextIndex+'.jpg';
+        $(obj).attr({'src':nextSlideSrc,'data-index':nextIndex});
+    }*/
+</script>
+<script type="text/javascript">
+    if (isTeacher == 'true') {
+        //TODO
+    }
+
+    function returnResourceList() {
+        if(hasControlPower()) {
+            $('#resource_content,#resource_fx').hide();
+            $('#resource_list').show();
+
+            var obj = {
+                "my_room": my_room,
+                "my_name": curSessionId,
+                "my_content": 'ReturnResourceList|' + 1 + '|na'
+            };
+            socket.emit('send_message', JSON.stringify(obj));
+        }
+    }
+
+    function sendTurnPage(page1Id,page2Id) {
+        if(hasControlPower()) {
+            $('#resource_content,#resource_fx').hide();
+            $('#resource_list').show();
+
+            var obj = {
+                "my_room": my_room,
+                "my_name": curSessionId,
+                "my_content": 'TurnPage|' + page1Id + '|' + page2Id
+            };
+            socket.emit('send_message', JSON.stringify(obj));
+        }
+    }
+</script>
+<script type="text/javascript">
+    var curSessionId = guid();
+    var my_room = '{$classroomId}';
+    var socket = io("http://123.56.145.63:8091");
+    socket.on('connect', function () {
+        socket.emit('room', my_room);
+    });
+    socket.on('send_message', function (msg) {
+        var msg1 = eval('(' + msg + ')');//json数据 序列化成js对象
+        if (msg1.my_name == curSessionId) return;
+        var content = msg1.my_content.split('|');
+        var eventName = content[0];
+        var eventParm1 = content[1];
+        var eventParm2 = content[2];
+        switch (eventName) {
+            case 'TurnPage':
+                var page1 = eventParm1;
+                var page2 = eventParm2;
+                turnPage(page1,page2, 0);
+
+                //$("#flipbook").turn("page", page);
+                break;
+            case 'SwitchFeature':
+                var id = eventParm1;
+                $('#classWrapper .tab li,#classWrapper .tabv li').removeClass('cur');
+                $('#class_ctrl_' + id).addClass('cur');
+                $('.class_subfeature').hide();
+                $('#tab_class_' + id).show();
+                break;
+            case 'ReturnResourceList':
+                $('#resource_content').hide();
+                $('#resource_list').show();
+                break;
+            case 'SwitchResource':
+                var id = eventParm1;
+                $('#resource_list,.resource_content').hide();
+                $('#resource_content').show();
+                $('#resource_' + id).show();
+                $('#lessonplan').attr('src', $('#lessonplan').attr('src'));
+                $('#lessonplan').height($('#tab_class_2').height()-73);
+            case 'clicksohu':
+                showSohuFrame();
+                break;
+            default:
+        }
+    });
+
+    function guid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+</script>
+<script type="text/javascript">
+    var bookId = '{$book.id}';
+    var bookName = '{$book.name}';
+    var has_ebook = '{$book.has_ebook}';
+    var currentPageId = [1, 2];
+    var contentPage1Id = 0;
+    var contentPage2Id = 0;
+    var serverPath = '{$book.server_path}';
+    var speed = 'normal';//语速 normal 正常 slow 缓慢
+    var book = null;
+    var pageWidth = 512;//每一页的宽度
+    //var pageHeight = getClientWidthHeight().height;
+    var bookInfo = {
+        width: 512,
+        height: 713,
+        pages: []
+    };
+
+    var currentPage1Info = null;
+    var currentPage2Info = null;
+    var currentPage1KalaOKInfo = [];
+    var currentPage2KalaOKInfo = [];
+
+    var pagePos = {
+        paddingTop: 0,
+        paddingBottom: 0
+    };
+
+    var audio = null;
+    var video = null;
+
+    $(function () {
+        adjustPage();});
+
+    var flashSwf = ['<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="{1}" height="{2}"',
+        '                        codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">',
+        '                    <param name="movie" value="{0}">',
+        '                    <param name="quality" value="high">',
+        '                    <param name="bgcolor" value="#F0F0F0">',
+        '                    <param name="menu" value="false">',
+        '                    <param name="wmode" value="opaque">',
+        '                    <param name="FlashVars" value="">',
+        '                    <param name="allowScriptAccess" value="always">',
+        '                    <param name="loop" value="false">',
+        '                    <param name="play" value="true">',
+        '                    <embed name="swf" src="{0}"',
+        '                           width="{1}" height="{2}"',
+        '                           align="middle"',
+        '                           quality="high"',
+        '                           menu="false"',
+        '                           play="true"',
+        '                           loop="false"',
+        '                           FlashVars=""',
+        '                           allowScriptAccess="always"',
+        '                           type="application/x-shockwave-flash"',
+        '                           pluginspage="http://www.adobe.com/go/getflashplayer">',
+        '                    </embed>',
+        '                </object>'].join("");
+
+</script>
+<script>
+    //固定page高度
+    function adjustPage() {
+        <if condition="$platform neq 'pad'">
+        var windowHeight = $(window).height();
+        var windowWidth = $(window).width() - 36;
+        </if>
+        <if condition="$platform eq 'pad'">
+        var windowHeight = $(window).height() -10 ;
+        var windowWidth = $(window).width();
+        </if>
+        var halfWindowWidth = parseInt(windowWidth / 2);
+		<if condition="$platform neq 'pad'">
+        pageWidth = parseInt((windowHeight) * (512 / 713));
+        </if>
+		<if condition="$platform eq 'pad'">
+		pageWidth = parseInt((windowHeight - 10) * (512 / 713));
+		</if>
+        <if condition="$platform neq 'pad'">
+        $('#wrapper,.pageWrapper,.page').height(windowHeight);
+        </if>
+        <if condition="$platform eq 'pad'">
+        $('#wrapper,.pageWrapper,.page').height(windowHeight - 10);
+        </if>
+        $('.page,.pageWrapper').width(pageWidth);
+        $('#footer,#footerTableCell').height(0);
+		<if condition="$platform neq 'pad'">
+		$('#actionCell').height(windowHeight);
+		</if>
+		<if condition="$platform eq 'pad'">
+        $('#actionCell').height(windowHeight-10);
+		</if>
+        $('#rectClickImgCell').height(windowHeight);
+        $('.pptTableNav>div').height(windowHeight);
+    }
+</script>
+<script>
+
+</script>
+<script>
+    //书本点击信息
+    function renderClickRects(pageInfo, isLeftPage) {
+        var clickRectImages = $(pageInfo).find('ClickRectImage');
+        $.each(clickRectImages, function (i, n) {
+            var item = $(n);
+            var clickRect = {
+                name: item.attr('xmlname'),
+                positionX: parseInt(item.attr('positionx')),
+                positionY: parseInt(item.attr('positiony')),
+                width: parseInt(item.attr('width')),
+                height: parseInt(item.attr('height')),
+                fileName: item.attr('filename')
+            };
+            renderClickRect(clickRect, isLeftPage);
+        });
+    }
+    //渲染点击区域
+    function renderClickRect(clickRect, isLeftPage) {
+        var pageWrapperEleId = isLeftPage ? '#page1Wrapper' : '#page2Wrapper';
+        var rate = pageWidth / bookInfo.width;
+        var positionX = parseInt(clickRect.positionX * rate);
+        var positionY = parseInt(clickRect.positionY * rate) + pagePos.paddingTop;
+        var width = parseInt(clickRect.width * rate);
+        var height = parseInt(clickRect.height * rate);
+
+        var rectArea = '<div class="rectClickArea" id="rc_{0}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;" onclick="onClickRect(\'{5}\',{6})"></div>'
+                .format(clickRect.name, positionX, positionY, width, height, clickRect.fileName, isLeftPage ? 'true' : 'false');
+
+        $(pageWrapperEleId).append(rectArea);
+    }
+    //点击行为播放音频
+    function onClickRect(fileName, isLeftPage) {
+        if(hasControlPower()) {
+            var loadPageId = isLeftPage ? contentPage1Id : contentPage2Id;
+            var imgSrc = '{0}/Pages/page{1}/{2}.png'.format(serverPath, loadPageId, fileName);
+            var audioSrc = '{0}/Pages/page{1}/{2}{3}.mp3'.format(serverPath, loadPageId, fileName, speed == 'normal' ? '' : '_slow');
+
+            $('#rectClickImg').attr('src', imgSrc);
+            //play
+            var rectAudio = document.getElementById('rectClickAudio');
+            rectAudio.src = audioSrc;
+
+            $('#rectClickImgWrapper,#coverLayer').show().click(function () {
+                $('#rectClickImgWrapper,#coverLayer,#kalaok').hide();
+                rectAudio.pause();
+            });
+            window.setTimeout(function () {
+                rectAudio.play();
+            }, 100);
+
+            var loadPageKalaok = isLeftPage ? currentPage1KalaOKInfo : currentPage2KalaOKInfo;
+            var sayid = fileName.replace('image/say', '');
+            sayid = sayid.replace('image/duihuakuang', '');
+            sayid = sayid.replace('image/duihk-', '');
+            sayid = sayid.replace('image/', '');
+            rectAudio.onplaying = function(){
+                $(loadPageKalaok).each(function (i, n) {
+                    if ((i + 1) == sayid && ("object" == typeof n.kala)) {
+
+                        $('#kalaok').show();
+                        var c = [];
+                        c.push(n)
+                        _processK(c);
+                        //eval('_processK(lines' + index + ')')
+                    }
+                });
+            }
+
+        }
+    }
+    //切换语速
+    function switchSpeed() {
+        if(hasControlPower()) {
+            switch (speed) {
+                case 'normal':
+                    speed = 'slow';
+                    $('#speedCtrl').html('缓慢语速');
+                    break;
+                case 'slow':
+                    speed = 'normal';
+                    $('#speedCtrl').html('正常语速');
+                    break;
+            }
+        }
+    }
+</script>
+<script>
+    //渲染听力部分
+    function renderActions(nodeName, pageInfo, isLeftPage) {
+        var listens = $(pageInfo).find(nodeName);
+        $.each(listens, function (i, n) {
+            var item = $(n);
+            var info = {
+                name: item.attr('xmlname'),
+                positionX: item.attr('positionx'),
+                positionY: item.attr('positiony'),
+                flashFilename: item.attr('FlashFilename'),
+                goPage: item.attr('GoPage')
+            };
+            renderActionArea(nodeName, info, isLeftPage);
+        });
+    }
+    function renderActionArea(nodeName, info, isLeftPage) {
+        var pageWrapperEleId = isLeftPage ? '#page1Wrapper' : '#page2Wrapper';
+        var rate = pageWidth / bookInfo.width;
+
+        var positionX = parseInt((info.positionX) * rate);
+        var positionY = parseInt(info.positionY * rate) + pagePos.paddingTop + 2;
+
+        if (nodeName == 'GoPageButton') {
+            var rectArea = '<div class="contentClickArea" id="bc_{0}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;" onclick="onClickContent(\'{5}\')"></div>'
+                    .format(info.name, positionX, positionY, parseInt(280 * rate), parseInt(20 * rate), info.goPage);
+            $(pageWrapperEleId).append(rectArea);
+        } else {
+            var src = '__PUBLIC_METRO__/img/ebook/icon_{0}.png'.format(nodeName);
+            var areaEle = '<img class="actionArea" id="listen_{0}" style="left:{1}px;top:{2}px;"onclick="onClickActionArea(\'{3}\',{5})" src="{4}">'
+                    .format(info.name, positionX, positionY,encodeURI(info.flashFilename).replace("'", "####"), src, isLeftPage ? 'true' : 'false');
+
+            $(pageWrapperEleId).append(areaEle);
+        }
+    }
+    //播放
+	var swfVideoPlay = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="{1}" height="{2}" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf"><embed width="{1}" height="{2}" name="plugin" src="{0}" type="application/x-shockwave-flash"><param name="loop" value="false"><param name="movie" value="{0}"></object>';
+    function onClickActionArea(flashFilename, isLeftPage) {
+        if(hasControlPower()) {
+            var loadPageId = isLeftPage ? contentPage1Id : contentPage2Id;
+            flashFilename = flashFilename.replace("####", "'")
+            var videoSrc = '{0}/Pages/page{1}/{2}'.format(serverPath, loadPageId, flashFilename);
+            //var videoH = document.getElementById('actionVideo');
+            //videoH.src = videoSrc;
+            //videoH.play();
+            //
+
+            $('#actionWrapper,#coverLayer').show();
+            $('#actionWrapper,#coverLayer').click(function () {
+                $('#actionWrapper,#coverLayer').hide();
+                $('#actionCell').html('');
+            });
+            var resizedFlashSize = getResizeFlash();
+            var videoEle = swfVideoPlay.format(videoSrc,resizedFlashSize.width,resizedFlashSize.height);
+            $('#actionCell').html(videoEle);
+        }
+    }
+
+    function onClickContent(pageId) {
+        pageId = parseInt(pageId);
+        turnPage(pageId - 2, pageId - 1, 1);
+    }
+</script>
+<script>
+    function turnPage(page1Id, page2Id,needSendSocket) {
+        currentPageId[0] =  parseInt(page1Id);
+        currentPageId[1] =  parseInt(page2Id);
+
+        $('.actionArea,.rectClickArea,.contentClickArea').remove();
+        loadPageInfo(page1Id, true);
+        loadPageInfo(page2Id, false);
+        var page1Url = '{0}/content/{1}.png'.format(serverPath, page1Id)
+        var page2Url;
+        if (bookInfo.pages.length < page2Id) {
+             page2Url = '{0}/content/{1}.png'.format(serverPath, 1)
+        } else {
+             page2Url = '{0}/content/{1}.png'.format(serverPath, page2Id)
+        }
+        getEle('page1').src = page1Url;
+        getEle('page2').src = page2Url;
+        if(1 == needSendSocket)
+        sendTurnPage(page1Id,page2Id);
+        //翻书声音 todo
+    }
+    function turnToContentPage() {
+        if(hasControlPower()) {
+            turnPage(5, 6, 1);
+        }
+    }
+    function turnToPreviousPage() {
+        if(hasControlPower()) {
+            if (currentPageId[0] == 1) return;
+
+            currentPageId[0] = parseInt(currentPageId[0]) - 2;
+            currentPageId[1] = parseInt(currentPageId[1]) - 2;
+
+            turnPage(currentPageId[0], currentPageId[1], 1);
+        }
+    }
+    function turnToNextPage() {
+        if(hasControlPower()) {
+            if (currentPageId[0] == bookInfo.pages.length || currentPageId[1] == bookInfo.pages.length) return;
+            currentPageId[0] =  parseInt(currentPageId[0]) + 2;
+            currentPageId[1] =  parseInt(currentPageId[1]) + 2;
+
+            turnPage(currentPageId[0], currentPageId[1], 1);
+        }
+    }
+</script>
+<script>
+    function getClientWidthHeight()
+    {
+        return {
+            "height": $("#mainTable").height(),
+            "width": $("#mainTable").width()
+        };
+    }
+    function getResizeFlash()
+    {
+        var clientWidthHeight = getClientWidthHeight();
+        var xResizeCoeff = clientWidthHeight.width / 800;
+        var yResizeCoeff = clientWidthHeight.height / 600;
+        var resizeCoeff = (xResizeCoeff>yResizeCoeff) ? yResizeCoeff:xResizeCoeff;
+		resizeCoeff -= 0.01;
+        var targetWidth = 800 * resizeCoeff;
+        var targetHeight = 600 * resizeCoeff;
+        return {
+            "height": targetHeight,
+            "width": targetWidth
+        };
+    }
+</script>
+</body>
+</html>

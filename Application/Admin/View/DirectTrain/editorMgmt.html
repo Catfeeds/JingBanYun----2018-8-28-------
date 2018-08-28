@@ -1,0 +1,327 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/adminDirectTrain.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<script src="__PUBLIC__/js/ajaxfile.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<div class="grayBox">
+	<div class="left">
+		<span class="btns">
+			<img src="{$oss_path}public/web_img/Admin/icon-shelve.png" alt=""> 
+            <a href="javascript:;" class="shelveBtn" status="1">批量上传</a>
+			<input type="file" name="file" style="display:none;" class="batchUp" id="batchUp" />
+		</span>
+		<span class="btns">
+		<a href="{:U('DirectTrain/sampleDownloadFile')}" class="activeA">下载编者模板</a>
+		</span>
+	</div>
+</div>
+
+<p class="blueText fs16">编者列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center">专栏作者</th>
+			<th class="text-center">账号</th>
+			<th class="text-center">版本</th>
+			<th class="text-center">学科</th>
+			<th class="text-center">学段</th>
+			<th class="text-center">禁用启用状态</th>
+			<th class="text-center">操作</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+	<volist name="list" id="data" empty="">
+		<tr id="l_{$data.id}">
+			<td class="text-center">
+				{$data['name']}
+			</td>
+			<td class="text-center">
+				{$data['telephone']}
+			</td>
+			<td class="text-center">
+				{$data['house']}
+			</td>
+			<td class="text-center">
+				{$data['course_name']}
+			</td>
+			<td class="text-center">
+				<if condition="$data['phase_of_studying_id'] eq 1 ">
+					小学
+					<elseif condition="$data['phase_of_studying_id'] eq 2"/>
+					初中
+					<else />
+					高中
+				</if>
+			</td>
+			<td class="text-center account-status">
+				<if condition="$data['flag'] eq 1 ">
+				启用
+				<else/>
+				禁用
+				</if>
+			</td>
+			<td class="text-center">
+				<a href="javascript:;" class="button editBtn"  data-teacher-id="{$data['teacher_id']}" attr-id="<?php echo $data['id']?>">修改</a>
+				<a href="javascript:;" class="button outEditor" data-teacher-id="{$data['teacher_id']}" data-editor-id="{$data['id']}">解除编者身份</a>
+				<if condition="$data['flag'] eq 1">
+				<a href="javascript:;" class="button displayAccount" data-teacher-id="{$data['teacher_id']}" data-teacher-status="0" data-teacher-id="{$data['teacher_id']}">禁用账号</a>
+				<elseif condition="$data['flag'] eq 0"/>
+				<a href="javascript:;" class="button displayAccount" data-teacher-id="{$data['teacher_id']}" data-teacher-status="1" data-teacher-id="{$data['teacher_id']}">启用账号</a>
+				</if>
+			</td>
+		</tr>
+	</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<div class="fullscr1" id="editEditor">
+	<div class="adminNotifyBox1 aBoxHeight">
+		<div class="adminNotifyTitle">修改编者信息</div>
+		<div class="adminNotifyContent aConHeight" style="height:370px">
+			<div class="adminSelect pt10">
+				<div class="selectBox mb10">     
+					<label for="">姓名：</label>
+					<input type="text" class="input-control" id="infoName" value="" placeholder="请输入姓名">
+				</div>
+				<div class="selectBox mb10">
+					<label for="">账号：</label>
+					<input type="text" class="input-control" name="" id="infoAccount" value="" placeholder="请输入账号">
+				</div>
+				<div class="selectBox mb10">
+					<label for="">密码：</label>
+					<input type="text" class="input-control" name="" id="infoPaaword" value="" placeholder="请输入密码">
+				</div>
+				<div class="selectBox mb10">
+					<label for="">版本：</label>
+					<select name=""  class="input-control" name="infoVersions" id="infoVersions">
+						<option value="0">请选择版本</option>
+						<option value="1">北京出版社</option>
+					</select>
+				</div>
+				<div class="selectBox mb10">
+					<label for="">学科：</label>
+					<select name=""  class="input-control" name="" id="infoSubject">
+						<option value="0">请选择</option>
+						<?php foreach($courseList as $item){?>
+						<option value="<?php echo $item['id']?>"><?php echo $item['name']?></option>
+						<?php } ?>
+					</select>
+				</div>
+				<div class="selectBox mb10">
+					<label for="">学段：</label>
+					<select name="" class="input-control" name="" id="infoLevel">
+						<option value="0">请选择学段</option>
+						<option value="1">小学</option>
+						<option value="2">初中</option>
+						<option value="3">高中</option>
+					</select>
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="confirmRegInfo">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancelRegInfo">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+<div class="successInfo" style="display: none">
+	<div class="tableTopNotify">
+		<!-- 显示隐藏下边这个标签 -->
+		<span class="uploadResult">共录入<span class="totalNum">0</span>条数据，<span class="successTotal">0</span>条成功，<span class="loserTotal">0</span>条失败</span>
+	</div>
+</div>
+
+<div class="htmlerrorcsv" style="display: none">
+	<form action="index.php?m=Admin&c=DirectTrain&a=downloadError" method="post" id="errorImportSubmit">
+
+	</form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 475) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"15%"},
+                {"width":"15%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"10%"},
+                {"width":"40%"}
+            ]
+        });
+    });
+</script>
+
+<script>
+     id = '';
+     teacherId = '';
+	// 点击修改，修改弹窗出现
+	$('.editBtn').click(function(){
+		$('#editEditor').show();
+         id = $(this).attr('attr-id');
+         teacherId = $(this).attr('data-teacher-id');
+		//请求ajax加载编者详情
+		$.ajax({
+			data:{'id':id},
+			url:"index.php?m=Admin&c=DirectTrain&a=editorDetails",
+			dataType:"JSON",
+			type:"post",
+			success:function (data) {
+				if(data.status == '200'){
+					$('#infoName').val(data.data.name);
+					$('#infoAccount').val(data.data.telephone);
+					$('#infoPaaword').val(data.data.password);
+                    //$("").val(data.data.dict_publishing_house_id);
+					$('#infoVersions').val(data.data.dict_publishing_house_id);
+					$('#infoSubject').val(data.data.course_id);
+					$('#infoLevel').val(data.data.phase_of_studying_id);
+				}
+            }
+		})
+	})
+
+	// 点击弹窗的确定，弹窗消失
+	$('#confirmRegInfo').click(function(){
+		$('#editEditor').hide();
+		var name = $('#infoName').val();
+		var account = $('#infoAccount').val();
+		var password = $('#infoPaaword').val();
+		var publishing_house_id = $('#infoVersions').val();
+		var course_id = $('#infoSubject').val();
+		var phase_of_studying_id = $('#infoLevel').val();
+        $.ajax({
+            data:{'editor_id':id,'teacher_id':teacherId,'name':name,'account':account,'password':password,'publishing_house_id':publishing_house_id,'course_id':course_id,'phase_of_studying_id':phase_of_studying_id},
+            url:"index.php?m=Admin&c=DirectTrain&a=updateEditor",
+            dataType:"JSON",
+            type:"post",
+            success:function (data) {
+                if(data.status == '200'){
+					//alert(data.message);
+                    $.NotifyBox.NotifyPromptOne('信息',data.message,'关闭');
+                }
+            }
+        })
+	})
+
+	// 点击弹窗的取消，弹窗消失
+	$('#cancelRegInfo').click(function(){
+		$('#editEditor').hide()
+	});
+</script>
+<script>
+	$('.outEditor').click(function () {
+        if(confirm('确定要执行此操作吗？')){
+            var editorId = $(this).attr('data-editor-id');
+            $.ajax({
+                data:{'editorId':editorId},
+                url:"index.php?m=Admin&c=DirectTrain&a=relieveEditor",
+                dataType:"JSON",
+                type:"post",
+                success:function (data) {
+                    if(data.status == '200'){
+                        $.NotifyBox.NotifyPromptOne('信息',"成功",'关闭');
+                        window.history.go();
+                    }else{
+                        $.NotifyBox.NotifyPromptOne('信息',"失败",'关闭');
+                    }
+                }
+            });
+		}else{
+
+		}
+    });
+	$('.displayAccount').click(function () {
+        var teacher_id = $(this).attr('data-teacher-id');
+        var accountStatus = $(this).attr('data-teacher-status');
+        var obj = $(this);
+        $.ajax({
+            data:{'teacher_id':teacher_id,'accountStatus':accountStatus},
+            url:"index.php?m=Admin&c=DirectTrain&a=forbiddenEditor",
+            dataType:"JSON",
+            type:"post",
+            success:function (data) {
+                if(data.status == '200'){
+                    $.NotifyBox.NotifyPromptOne('信息',"成功",'关闭');
+                    if(accountStatus == '1'){
+                        obj.text('禁用账号');
+                        obj.parent().siblings('.account-status').text('启用');
+                        obj.attr('data-teacher-status','0');
+					}else if(accountStatus == '0'){
+                        obj.text('启用账号');
+                        obj.parent().siblings('.account-status').text('禁用');
+                        obj.attr('data-teacher-status','1');
+					}
+
+                }else{
+                    $.NotifyBox.NotifyPromptOne('信息',"失败",'关闭');
+				}
+            }
+        })
+    })
+</script>
+<script>
+    //上传数据
+    $(document).on('click','.shelveBtn',function(event){
+        $('.batchUp').val('');
+        $('.batchUp').trigger('click');
+    });
+    $(document).off('change','.batchUp').on('change','.batchUp',function(){
+        var filepath = $('.batchUp').val();
+        var extStart = filepath.lastIndexOf(".");
+        var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+
+        if (ext == '.XLS' || ext == '.XLSX' ||ext == '.CSV' ) {
+            $.ajaxFileUpload({
+                url: 'index.php?m=Admin&c=DirectTrain&a=batchUpload', //用于文件上传的服务器端请求地址
+                secureuri: false, //是否需要安全协议，一般设置为false
+                fileElementId: 'batchUp', //文件上传域的ID
+                dataType: 'JSON', //返回值类型 一般设置为json
+                success: function (data) //服务器成功响应处理函数
+                {
+                    var data = JSON.parse(data);
+                    if (data.status== '200') {
+                        $('.file_csv').val('');
+                        $('.totalNum').text(data.data.totalNum);
+                        $('.successTotal').text(data.data.successTotal);
+                        $('.loserTotal').text(data.data.loserTotal);
+                            $('.successInfo').show();
+                        if ( data.data.loserTotal > 0) { //有错误的
+                            var html = "<input type='hidden' name='errorlist' value='"+ data.data['errordata'] +"'>";
+                            $('form').append( html );
+
+                            //点击按钮触发错误提交
+                            $.NotifyBox.NotifyOneCall('下载导入失败数据',"共有"+data.data.loserTotal+"条数据上传失败<br>下载导入失败数据",'确定',function(){
+                                $('#errorImportSubmit').submit();
+                            })
+                        }
+
+                    } else {
+                        $.NotifyBox.NotifyPromptOne('错误信息',"导入失败，请刷新网页进行重新尝试",'关闭');
+                    }
+
+                },
+                error: function (data) //服务器响应失败处理函数
+                {
+                    removeLoad('createAnswerQuestions');
+                    $.NotifyBox.NotifyPromptOne('错误信息',"导入超时,请刷新网页进行重新尝试",'关闭');
+                }
+            })
+
+        } else {
+
+            $.NotifyBox.NotifyOneCall('错误信息','不支持此格式导入,请刷新重试','关闭',function(){
+                window.location.reload();
+            })
+        }
+    });
+</script>

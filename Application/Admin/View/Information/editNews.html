@@ -1,0 +1,393 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+<link href="__PUBLIC__/css/adminActivity.css" rel="stylesheet" type="text/css" />
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/uploadify/uploadify.css">
+<style media="screen">
+.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+  box-sizing: content-box;
+}
+.input_margin{
+      margin: .325rem 0;
+      margin-bottom: 10px
+}
+#laydate_hms {
+    display: none !important;
+}
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button primary " style="box-sizing:border-box;">&lt; 返回</a>
+</div>
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		资讯管理
+		<span class="blueSpan">
+			<a href="javascript:;">新闻轮播管理</a>>>
+			<a href="javascript:;">轮播图管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+<form action="{:U('Information/editNews')}" method="post" onsubmit="return check()">
+    <input type="hidden" name="id" value="{$id}">
+    <input type="hidden" name="cid" value="{$cid_add}">
+    <input type="hidden" value="{$inforInfo.file_path}" name="vid" id="vid">
+    <input type="hidden" value="{$inforInfo.file_path}" name="vid_file_path" id="vid_file_path">
+    <input type="hidden" value="" name="playerwidth" id="playerwidth">
+    <input type="hidden" value="" name="playerduration" id="playerduration">
+    <input type="hidden" value="" name="vid_fullpath" id="vid_fullpath">
+    <input type="hidden" value="" name="vid_image_path" id="vid_image_path">
+    <input type="hidden" value="" name="is_transition" id="is_transition">
+    <input type="hidden" value="" name="vid_fullsize" id="vid_fullsize">
+
+  <div class="grid condensed cellBox">
+    <div class="row cells2">
+      <div class="cell">
+          <label for="">日期:</label>
+          <input type="text" name="activityStart" id="activityStart"  class="input_control_short input-control-before input_margin" value="{$inforInfo.starttime}"  placeholder="开始时间">  -  <input type="text" name="activityEnd" id="activityEnd" class="input_control_short input-control-before input_margin" value="{$inforInfo.endtime}"  placeholder="结束时间">
+      </div>
+        <div class="cell">
+            <label>链接地址：</label>
+            <input type="text" name="urlname"  class="input-control stu_time_id w80 input-control-before "  autocomplete="off" value="{$inforInfo.linkaddress}">
+        </div>
+      <div class="cell ">
+          <label>显示文字：</label>
+          <input type="tel"  name="displaytxt" class="input-control stu_time_id input-control-before w376 " value="{$inforInfo.title}">
+      </div>
+      <div class="cell ">
+        <label>播放顺序：</label>
+        <input type="tel" name="playorder"  class="input-control stu_time_id input-control-before w300 "   value="{$inforInfo.play_order}">
+      </div>
+
+  </div>
+  <div class="example" >
+      <span class="exampl">上传图片   图片宽/高值须为  770:340  </span>
+      <div style="float: left;word-break: break-all;width: 70%;">
+          <div id="fine-uploader">
+
+          </div>
+      </div>
+
+      <div class="resource_right_div"  style="float: right;width: 30%;word-break: break-all;padding: 0 10px">
+          <div style="width:100%;" class="resource_image">
+              <img src="{$oss_path}{$inforInfo.file_path}" />
+          </div>
+      </div>
+  </div>
+  <div class="form-actions text-center">
+      <button type="submit" class="button info" >保存</button>
+  </div>
+</div>
+</form>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script type="text/javascript">
+!function(){
+  laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+}();
+var actstart = {
+  elem: '#activityStart',
+  format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+  max: '2099-06-16', //最大日期
+  istime: true,
+  istoday: false,
+  choose: function(datas){
+     actend.min = datas; //开始日选好后，重置结束日的最小日期
+     actend.start = datas; //将结束日的初始值设定为开始日
+//			 appstart.max = datas;
+//			 append.max = datas;
+  }
+};
+
+var actend = {
+  elem: '#activityEnd',
+  format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+  max: '2099-06-16',
+  istime: true,
+  istoday: false,
+  choose: function(datas){
+    actstart.max = datas; //结束日选好后，充值开始日的最大日期
+     appstart.max = datas;
+     append.max = datas;
+  }
+};
+laydate(actstart);
+laydate(actend);
+</script>
+<script src="__PUBLIC__/js/notify/adminNotify.js" defer async="true"></script>
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader-v2beta.js" type="text/javascript"></script>
+<script type="text/template" id="qq-template">
+    <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+        <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+            <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+        </div>
+        <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+            <span class="qq-upload-drop-area-text-selector"></span>
+        </div>
+        <div class="qq-upload-button-selector qq-upload-button">
+            <div>上传文件</div>
+        </div>
+        <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+        <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+            <li>
+                <div class="qq-progress-bar-container-selector">
+                    <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                </div>
+                <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+                <span class="qq-upload-file-selector qq-upload-file"></span>
+                <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                <span class="qq-upload-size-selector qq-upload-size"></span>
+                <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
+                <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
+
+                <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+            </li>
+        </ul>
+
+        <dialog class="qq-alert-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">Close</button>
+            </div>
+        </dialog>
+
+        <dialog class="qq-confirm-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">No</button>
+                <button type="button" class="qq-ok-button-selector">Yes</button>
+            </div>
+        </dialog>
+
+        <dialog class="qq-prompt-dialog-selector">
+            <div class="qq-dialog-message-selector"></div>
+            <input type="text">
+            <div class="qq-dialog-buttons">
+                <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                <button type="button" class="qq-ok-button-selector">Ok</button>
+            </div>
+        </dialog>
+    </div>
+</script>
+
+<script>
+    function check() {
+        var vid_save = $('#vid_file_path').val();
+
+        if (vid_save == null || vid_save == undefined || vid_save == '') {
+            $('#vid').val('');
+            $('#vid_file_path').val('');
+            $('#playerwidth').val('');
+            $('#playerduration').val('');
+            $('#vid_fullpath').val('');
+            $('#vid_image_path').val('');//is_transition
+            $('#is_transition').val('');
+            $('#vid_fullsize').val('');
+            var i = 0;
+            for(var key in uploadInfo){
+                $('#vid_file_path').val($('#vid_file_path').val() + uploadInfo[key].vid_file_path +',');
+                var width = typeof(uploadInfo[key].playerwidth) != 'undefined' ? uploadInfo[key].playerwidth : '0*0';
+
+                $('#playerwidth').val($('#playerwidth').val() + width +',');
+                var duration = typeof(uploadInfo[key].playerduration) != 'undefined' ? uploadInfo[key].playerduration : '00:00:00';
+
+                $('#playerduration').val($('#playerduration').val() + duration +',');
+                var vid = typeof(uploadInfo[key].vid) != 'undefined' ? uploadInfo[key].vid : '0';
+                $('#vid').val($('#vid').val() + vid +',');
+
+                var vid_fullpath= typeof(uploadInfo[key].vid_fullpath) != 'undefined' ? uploadInfo[key].vid_fullpath : '0';
+                $('#vid_fullpath').val($('#vid_fullpath').val()+vid_fullpath+',');
+
+                var vid_image_path= typeof(uploadInfo[key].vid_image_path) != 'undefined' ? uploadInfo[key].vid_image_path : '0';
+                $('#vid_image_path').val($('#vid_image_path').val()+vid_image_path+',');
+
+                var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+                $('#is_transition').val($('#is_transition').val()+vid_transition+',');
+
+                var vid_fullsize = typeof(uploadInfo[key].vid_fullsize) != 'undefined' ? uploadInfo[key].vid_fullsize : '0';
+                $('#vid_fullsize').val($('#vid_fullsize').val()+vid_fullsize+',');
+                i++;
+            }
+            $('#vid_file_path').val($('#vid_file_path').val().substr(0 ,$('#vid_file_path').val().length-1));
+            $('#playerwidth').val($('#playerwidth').val().substr(0 ,$('#playerwidth').val().length-1));
+            $('#playerduration').val($('#playerduration').val().substr(0 ,$('#playerduration').val().length-1));
+            $('#vid').val($('#vid').val().substr(0 ,$('#vid').val().length-1));
+            $('#vid_fullpath').val($('#vid_fullpath').val().substr(0 ,$('#vid_fullpath').val().length-1));
+            $('#vid_image_path').val($('#vid_image_path').val().substr(0 ,$('#vid_image_path').val().length-1));
+            $('#is_transition').val($('#is_transition').val().substr(0 ,$('#is_transition').val().length-1));
+            $('#vid_fullsize').val($('#vid_fullsize').val().substr(0 ,$('#vid_fullsize').val().length-1));
+        } else {
+            var i=1;
+        }
+
+
+        var activityStart = $('#activityStart').val();
+        var activityEnd = $('#activityEnd').val();
+        var urlname = $("input[name='urlname']").val();
+        var displaytxt = $("input[name='displaytxt']").val();
+        var playorder = $("input[name='playorder']").val();
+        if (activityStart == null || activityStart == undefined || activityStart == '') {
+            $.NotifyBox.NotifyPromptOne("提示","请选择开始时间", "确定");
+            return false;
+        }
+        if (activityEnd == null || activityEnd == undefined || activityEnd == '') {
+            $.NotifyBox.NotifyPromptOne("提示","请选择结束时间", "确定");
+            return false;
+        }
+        if (urlname == null || urlname == undefined || urlname == '') {
+            $.NotifyBox.NotifyPromptOne("提示","请填写链接地址", "确定");
+            return false;
+        }
+        if (displaytxt == null || displaytxt == undefined || displaytxt == '') {
+            $.NotifyBox.NotifyPromptOne("提示","请填写显示文字", "确定");
+            return false;
+        }
+
+        if (displaytxt.length > 60) {
+            $.NotifyBox.NotifyPromptOne("提示","显示文字过长", "确定");
+            return false;
+        }
+
+        if (playorder == null || playorder == undefined || playorder == '') {
+            $.NotifyBox.NotifyPromptOne("提示","请填写播放顺序", "确定");
+            return false;
+        }
+        var isnum= isNaN(playorder);
+
+        if (isnum == true) {
+            $.NotifyBox.NotifyPromptOne("提示","请输入有效的数字", "确定");
+            return false;
+        }
+
+        if (i==0){
+            $.NotifyBox.NotifyPromptOne("提示","请上传图片", "确定");
+            return false;
+        }
+
+        return true;
+    }
+    var uploadInfo = {};
+</script>
+<script>
+    var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById('fine-uploader'),
+        request1Enable : true,
+        multiple: false,
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mov","mp4","mp3",'wmv','avi','flv'),
+            inputName:'Filedata',
+        },
+        request: {
+            endpointnum: 0,
+            endpoint: '/index.php?m=Admin&c=Jbresources&a=upload_file',
+            params:{},
+            inputName:'file[]',
+        },
+        fileFilter:[".jpg",".png"],
+        imageRatio:[2.26,2.27],
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'
+        },
+        retry: {
+            enableAuto: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[id];
+        },
+        responseCallBack: function(id,specNum,xhr){
+            uploadInfo={};
+            $(".resource_right_div").remove();
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                alert('上传失败!错误原因'+e);
+                return false;
+            }
+            if(specNum == 0){
+                if(result.code == 0){
+                    if(typeof(uploadInfo[id])== 'undefined'){
+                        uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid_file_path'] = result.res;
+                    uploadInfo[id]['vid_image_path'] = result.message_video_image;     //这里是视频截图,如果不是视频这里就是空
+                    uploadInfo[id]['is_transition'] = result.is_transition;            //这里是视频转换状态。
+                    return true;
+                }else{
+                    alert(result.msg);
+                }
+            }else if(specNum == 1){
+                if(result.error == 0){
+                    //alert("上传成功!VID:"+result.data[0].vid);
+                    //TODO: add result.res to XXX
+                    if(typeof(uploadInfo[id])== 'undefined')
+                    {
+                        uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid_fullsize'] = result.data[0].source_filesize;
+                    uploadInfo[id]['vid'] = result.data[0].vid;
+                    uploadInfo[id]['playerwidth'] = result.data[0].playerwidth + '*' +result.data[0].playerheight;
+                    uploadInfo[id]['duration'] = result.data[0].duration;
+                    uploadInfo[id]['vid_fullpath'] = result.data[0].mp4;
+                    return true;
+                }else{
+                    alert("上传失败!错误码:"+result.error);
+                }
+            }
+            return false;
+        }
+    });
+
+
+    function init_funtion(){
+
+        var temp_li='<div class="show_div" style="margin-left:10px;margin-top:10px;border 1px gray solid buttom;"><input type="hidden" value="{$inforInfo.file_path}" /><span style="margin-left:20px;cursor:pointer;">{$inforInfo.file_path}</span><a href="javascript:" class="delete_button" style="margin-left:10px;cursor:pointer;">删除</a></div>';
+        $('.qq-upload-list-selector').append(temp_li);
+
+    }
+    init_funtion();
+
+
+    $(".delete_button").live('click',function(){
+        $('#vid_file_path').val('');
+        $('.resource_right_div').find('div').css('display','none');
+        var contact_class=$(this).attr('attr_class');
+        var resource_ytpe = $(this).attr('attr_type');
+        $("."+contact_class).remove();
+        $(this).parent().remove();
+        //判断是否还有已存在的,并操作
+        if($('.show_div').length>0){
+            //这里替换右侧
+            resource_path=$('.show_div').eq(0).find('input').val();
+            resource_info_type=$('.show_div').eq(0).find('a').attr('attr_type');//下一个资源的类型
+
+            switch(resource_info_type){
+                case 'image':
+                    $(".resource_image").children('img').attr('src',resource_path);
+                    break;
+                case 'png':
+                    $(".resource_image").children('img').attr('src',resource_path);
+                    break;
+                case 'jpg':
+                    $(".resource_image").children('img').attr('src',resource_path);
+                    break;
+            }
+        }else{
+            //这里删除
+            $(".resource_right_div").remove();
+        }
+    });
+</script>

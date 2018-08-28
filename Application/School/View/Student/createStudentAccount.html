@@ -1,0 +1,270 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+	<div class="standardMain hrefContent">
+		<a href="{:U('Student/studentList')}" class="returnBack">学生列表</a>
+		>
+		<span class="thePage">创建学生</span>
+	</div>
+
+    <div class="standardMain classContent tableContent mt0">
+    	<form action="{:U('Student/createStudentAccount')}" method="post" onsubmit="return checkInfo()">
+    		<div class="blueBox">
+    			<span class="left blueTitle">创建学生</span>
+    			<a href="javascript:;" class="blackText right submitA" id="">
+    				<img src="__PUBLIC__/img/admin/baocun.png" alt="">
+    				<input type='submit' class="submitInput" id="submitSave" value='保存' onClick="return checkInfo()"/>
+    			</a>
+    			<a href="javascript:;" class="blackText right submitA mr20" id="">
+    				<img src="__PUBLIC__/img/admin/tianjia.png" alt="">
+    				<input type='submit' class="submitInput" id="submitAdd" value='关联家长' onClick="return checkInfo()"/>
+    			</a>
+    		</div>
+
+            <input type='hidden' class='next_flag' name='next_flag' value='0'/>
+    		<div class="grid condensed infoOutter infoOutterModify">
+    			<div class="row cells3 infoBox">
+    				<div class="cell">
+    					<label>学生姓名：</label>
+    					<input type="text" class="input-control student_name" name="student_name" value="" placeholder="请输入学生姓名" required>
+    					<span class="redStar">*</span>
+    				</div>
+    				<div class="cell">
+    					<label>家长手机号：</label>
+    					<input type="text" class="input-control telephone" name="telephone" value="" placeholder="请输入家长手机号" required maxlength="11">
+    					<span class="redStar">*</span>
+    				</div>
+    				<div class="cell">
+    					<label>登录密码：</label>
+    					<input type="password" class="input-control password" name="password" value="" placeholder="请输入6-16位登录密码" required minlength="6" maxlength="16">
+    					<span class="redStar">*</span>
+    				</div>
+    				<div class="cell">
+    					<label>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</label>
+    					<select id="sex" class="input-control" name="sex">
+    						<option value="0">-请选择-</option>
+    						<option value="男">男</option>
+    						<option value="女">女</option> 
+    					</select>
+    	                <span class="redStar">*</span>
+    				</div>
+    				<div class="cell">
+    					<label>出生日期：</label>
+    					<input type="text" name="birth_date" id="dateBirthday" class="input-control birth_date" placeholder="出生年月" autocomplete="off" onkeydown="return false">
+                        <span class="redStar">*</span>
+    				</div>
+    			</div>
+    		</div>
+            <input type="hidden" class="class_id" name="class_id"/>
+    	</form>
+
+    	<p class="tableTitle tableTitleInner">添加所属班级</p>
+    	<div class="grid condensed infoOutter infoOutterModify mb10">
+    		<div class="row cells3 infoBox">
+    			<div class="cell">
+    				<label>所属年级：</label>
+    				<select id="grade_list" class="input-control" name="">
+                        <option value="0">-请选择-</option>
+                        <volist name="grade_list" id="grade_item">
+                            <option value="{$grade_item.id}">{$grade_item.grade}</option>
+                        </volist>
+    				</select>
+    			</div>
+    			<div class="cell">
+    				<label>所属班级：</label>
+    				<select id="class_list" class="input-control" name="">
+                        <option value="0">-请选择-</option> 
+    				</select>
+    			</div>
+    			<span class="commonBtnBlue operateBtn btnBig" id="appendGrade">添加</span>
+    		</div>
+    	</div>
+		
+     	<div class="tableOutter">
+    		<table id="listWrapperClass" class="table striped hovered border newTable" style="display: none">
+    			<thead>
+    				<tr>
+    					<th>序号</th>
+    					<th>所属年级</th>
+    					<th>所属班级</th>
+    					<th>操作</th>
+    				</tr>
+    			</thead>
+    			<tbody id="body"> 
+      
+    			</tbody>
+    		</table>
+    		<div class="Pagination">{$page}</div>
+     	</div>
+    </div>
+</div>
+ 
+
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+
+<!--开始时间 结束时间-->
+<script>
+    !function(){
+        laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var actstart = {
+        elem: '#dateBirthday',
+        format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+        max: laydate.now(), //最大日期
+        istime: true,
+        istoday: false
+    };
+
+    laydate(actstart);
+</script>
+
+<script>
+        //直接保存
+        $("#submitSave").click(function(){
+            $('.next_flag').val(0);
+        });
+
+        //添加任教班级按钮进行保存
+        $("#submitAdd").click(function(){
+            $('.next_flag').val(1);
+        });
+    
+	$(function () {
+            var tr="<tr>"+
+                    "<td>1</td>"+
+                    "<td>一年级</td>"+
+                    "<td>一班</td>"+
+                    "<td><a href='javascript:;' class='operBtn delete_button' id='' >删除</a></td>"+
+                    "</tr>";
+
+
+            var temp_class_span="<option value='0'>-请选择-</option>";  
+            //年级发生改变
+            $("#grade_list").change(function(){
+                var grade_id=$("#grade_list").val();
+                if(grade_id==false){
+                    return false;
+                }
+                $.ajax({
+                    type:"post",
+                    dataType:"json",
+                    url:"{:U('Common/getClassByGrade')}",
+                    data:{'grade_id':grade_id},
+                    success: function(msg){
+                        if(msg.status==200){ 
+                            $("#class_list option:not(:eq(0))").remove(); 
+                            for(var i=0;i<msg.data.length;i++){
+                                var temp_span=$(temp_class_span).clone(true);
+                                $(temp_span).val(msg['data'][i].class_id);
+                                $(temp_span).text(msg['data'][i].class_name);
+                                $("#class_list").append(temp_span);
+                            }
+                        } 
+                    }
+                });
+            });
+            
+            $("#appendGrade").click(function(){
+                //判断是否已经创建过班级
+                if($("#body").find('tr').length){
+                    $.NotifyBox.NotifyOne('提示', '一个学生只能拥有一个校建班级!', '确定');
+                    return false;
+                }
+                
+                var grade_val=$("#grade_list").val();
+                var class_val=$("#class_list").val();
+                var grade_text=$("#grade_list").find("option:selected").text();
+                var classtext=$("#class_list").find("option:selected").text();  
+                if(grade_val==false){
+                    return false;
+                }
+                if(class_val==false){
+                    return false;
+                } 
+                var temp_tr=$(tr).clone(true);
+                $(temp_tr).find('td').eq(0).text(1);
+                $(temp_tr).find('td').eq(0).attr('attr_id',class_val);
+                $(temp_tr).find('td').eq(1).text(grade_text);
+                $(temp_tr).find('td').eq(2).text(classtext); 
+                $('#listWrapperClass').show();
+                $("#body").append(temp_tr); 
+            });
+            
+            //点击删除
+            $('.delete_button').live('click',function(){ 
+                $(this).parent().parent().remove();
+            });
+	});
+        
+        function IsDate(mystring) {
+            var reg = /^(\d{4})-(\d{2})-(\d{2})$/;
+            var str = mystring;
+            if (!reg.test(str)  || RegExp.$2>12 || RegExp.$3>31){
+                return false;
+            }
+            return true;
+        }
+        
+        //验证
+        function checkInfo(){    
+            //联系人姓名
+            var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+            var linkmanName = $('.student_name').val();
+            if (linkmanName == '') {
+                $.NotifyBox.NotifyOne('注意','姓名不能为空！','确定'); 
+                return false;
+            } else if (!regName.test(linkmanName)) {
+                $.NotifyBox.NotifyOne('注意','姓名格式不正确！','确定');
+                return false;
+            }
+
+            //联系人电话
+            var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+            var linkmanPhone = $('.telephone').val();
+            if (linkmanPhone == '') { 
+                $.NotifyBox.NotifyOne('注意','请输入家长手机号！','确定');
+                return false;
+            } else if (!regMobilePhone.test(linkmanPhone)) { 
+                $.NotifyBox.NotifyOne('注意','家长手机号格式错误！','确定');
+                return false;
+            }
+
+            var pwd = $.trim($('.password').val());
+            if(pwd == ''){
+                $.NotifyBox.NotifyOne('注意','请输入密码！','确定');
+                return false;
+            } else if(pwd.length < 6 || pwd.length > 16) {
+                $.NotifyBox.NotifyOne('注意','请输入6-16位密码！','确定');
+                return false;
+            }
+
+            var sex_value=$('#sex').val();       
+            if(sex_value==0){ 
+                $.NotifyBox.NotifyOne('注意','请选择性别！','确定');
+                return false;
+            }
+            
+		    var birth_date=$('.birth_date').val();
+            //出生日期
+            if(birth_date==''){
+                $.NotifyBox.NotifyOne('注意','请填写出生日期！','确定');
+                return false;
+            } else if(IsDate(birth_date)==false) {
+                    $.NotifyBox.NotifyOne('注意','出生日期格式错误！','确定');
+                    return false;
+            } 
+
+    		if($("#body").find('tr').length){   
+                var class_id=$("#body").find('tr').eq(0).find('td').eq(0).attr('attr_id');
+                $('.class_id').val(class_id);
+            }
+                
+	        return true;
+	    }
+</script>

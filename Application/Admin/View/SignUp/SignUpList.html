@@ -1,0 +1,310 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+ 
+
+<!--<form id="form_submit" action="/index.php/Admin/SchoolAdmin/adminList" method="get">
+    <p class="blueText fs16">管理员查询</p>
+    <div class="grid condensed cellBox">
+        <div class="row cells4">
+            <div class="cell">
+                <label>管理员账号：</label>
+                <input type="text" class="input-control name" name="name" value="{$name}" placeholder="请输入管理员账号">
+            </div>
+            <div class="cell">
+                <label>所属学校：</label>
+                <input type="text" class="input-control school_name" name="school_name" value="{$school_name}" placeholder="请输入学校名称">
+            </div>
+            <div class="cell">
+                <label>所属学校代码：</label>
+                <input type="text" class="input-control school_code" name="school_code" value="{$school_code}" placeholder="请输入学校代码">
+            </div>
+            <div class="cell">
+                <label>管理员姓名：</label>
+                <input type="text" class="input-control real_name" name="real_name" value="{$real_name}" placeholder="请输入管理员姓名">
+            </div>
+            <div class="cell">
+                <label>管理员手机号：</label>
+                <input type="text" class="input-control telephone" name="telephone" value="{$telephone}" placeholder="请输入管理员手机号">
+            </div>
+            <div class="cell">
+                <label>账号状态：</label>
+                <select id="school_flag" class="input-control" name="status">
+                    <option value="">-请选择-</option>
+                    <option value="1" <if condition="$account_status==='1'">selected="true"</if> >正常</option>
+                    <option value="0" <if condition="$account_status==='0'">selected="true"</if> >停用</option>
+                </select>
+            </div>
+            <div class="cell">
+                <label>账号类型：</label>
+                <select id="account_type" class="input-control" name="type">
+                    <option value="">-请选择-</option>
+                    <option value="1" <if condition="$administartor_type==='1'">selected="true"</if> >学校管理员</option>
+                    <option value="0" <if condition="$administartor_type==='0'">selected="true"</if> >学校子级管理员</option>
+                </select>
+            </div>
+            <input type='hidden' name='order' class="order_class" value='0'/>
+        </div>
+    </div>
+    <hr class="thin bg-grayLighter">
+    <div class="searchBtnBox text-center">
+        &lt;!&ndash;<button class="blueBtn" id="queryBtn">查&nbsp;询</button>
+        <button class="blueBtn" id="resetBtn">重&nbsp;置</button>
+                &ndash;&gt;
+        <input type='submit' value='查询' class='blueBtn'/>
+        <input type='button' value='重置' class='blueBtn resetButton'/>
+    </div>
+</form>-->
+
+<div class="grayBox">
+    <div class="left">
+        <!--<span class="btns addBtn">
+            <img src="{$oss_path}public/web_img/Admin/icon-add.png" alt="">
+            <a href="{:U('SchoolAdmin/createAdmin')}">添加</a>
+        </span>-->
+       <!-- <span class="btns">
+            <img src="{$oss_path}public/web_img/Admin/icon-export.png" alt="">
+            <a href='javascript:;' class='export_btn'>批量导出</a>
+        </span>-->
+        <span class="btns" style="display: none">
+            <img src="{$oss_path}public/web_img/Admin/icon-export.png" alt="">
+            <a href="{:U('SignUp/SignUpExportAll')}">导出全部</a>
+        </span>
+    </div>
+    <div class="right">
+        <!--<div class="sortBox left">
+            &lt;!&ndash;蓝色向上的箭头.upBtnBlue 蓝色向下的箭头.downBtnBlue&ndash;&gt;
+            <if condition="$order=='asc'">
+                <button class="upBtn upBtnBlue"></button>
+                <button class="downBtn "></button>
+                <else />
+                <button class="upBtn "></button>
+                <button class="downBtn downBtnBlue"></button>
+            </if>
+        </div>-->
+       <!-- <div class="right">
+            排序
+        </div>-->
+    </div>
+</div>
+
+<p class="blueText fs16">报名列表</p>
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <!--<th class="text-center"><input type="checkbox" class="check_all mr5">全选</th>-->
+        <th class="text-center">序号</th>
+        <th class="text-center">学生姓名</th>
+        <th class="text-center">学校名字</th>
+        <th class="text-center">年级和班级</th>
+        <th class="text-center">指导老师</th>
+        <th class="text-center">联系方式</th>
+        <th class="text-center">创建时间</th>
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody id="body">
+    <volist name="list" id="item" key="key">
+        <tr>
+            <!--<td class="text-center">
+                <input type="checkbox" class="check_child" name="checkbox" attr="{$item.id}">
+            </td>-->
+            <td class="text-center">
+                {$key}
+            </td>
+            <td class="text-center">
+                {$item.student_name}
+            </td>
+            <td class="text-center">
+                {$item.school_name}
+            </td>
+            <td class="text-center">
+                {$item.class_name}
+            </td>
+            <td class="text-center">
+                {$item.class_teacher}
+            </td>
+            <td class="text-center">
+               {$item.telephone}
+            </td>
+            <td class="text-center">
+               {$item.creat_time}
+            </td>
+            <td class="text-center">
+                <a href="{:U('SignUp/SignUpDetail')}&id={$item.id}" class="operBtn" id="">查看</a>
+                <!--<a href="{:U('SchoolAdmin/adminModify')}&id={$item.id}" class="operBtn" id="">修改</a>
+                <if condition="$item['school_flag'] eq 0">
+                    <a href="javascript:;" class="operBtn account_status enable_button" id="">启用</a>
+                    <else />
+                    <a href="javascript:;" class="operBtn account_status disabled_button" id="">停用</a>
+                </if>-->
+                <input type="hidden" class="account_id"  value="{$item.id}">
+                <!--<a href="javascript:;" class="operBtn delete_button" id="">删除</a>-->
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"8%"},
+                {"width":"8%"},
+                {"width":"11%"},
+                {"width":"11%"},
+                {"width":"11%"},
+                {"width":"11%"},
+                {"width":"11%"},
+                {"width":"18%"}
+            ]
+        });
+    });
+
+    //启用或禁用 
+    $('.account_status').click(function(){
+        var id=$(this).siblings('.account_id').val();
+        var obj=this;
+        $.ajax({
+            type:"post",
+            url:"{:U('SchoolAdmin/updateSchoolAdminStatus')}",
+            dataType:"json",
+            data:{'id':id},
+            success: function(msg){
+                if(msg.status==200){
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+</script>
+
+<script>
+    //点击批量导出
+    $(".export_btn").click(function(){
+        var check_input=$('#body').find("[name='checkbox']:checked");
+        if(check_input.length<1){
+            $.Notify({
+                caption: '提示',
+                content: '请勾选您要导出的账号',
+                type: 'warning'
+            });
+            return false;
+        }
+        var form="";
+        form = $("<form></form>");
+        form.attr('action',"{:U('SchoolAdmin/exportedSchoolAdmin')}");
+        form.attr('method','post');
+
+        for(var i=0;i<check_input.length;i++){
+            var temp_val=$(check_input[i]).attr('attr');
+            var temp= $("<input type='hidden' name='hid[]'/>")
+            $(temp).attr('value',temp_val);
+            form.append(temp);
+        }
+        form.appendTo("body");
+        form.css('display','none');
+        form.submit();
+    });
+
+    //点击重置 
+    $('.resetButton').click(function(){
+        $('.name').val('');
+        $('.school_name').val('');
+        $('.school_code').val('');
+        $('.real_name').val('');
+        $('.telephone').val('');
+        $('#school_flag').find('option:eq(0)').attr('selected',true);
+        $('#account_type').find('option:eq(0)').attr('selected',true);
+    });
+
+    //点击排序
+    $('.upBtn').click(function(){
+        if(!$(this).hasClass('upBtnBlue')){
+            $(this).addClass('upBtnBlue');
+        }
+        $('.downBtn').removeClass('downBtnBlue');
+        $('.order_class').val(1);
+        $('#form_submit').submit();
+    });
+
+    $('.downBtn').click(function(){
+        if(!$(this).hasClass('downBtnBlue')){
+            $(this).addClass('downBtnBlue');
+        }
+        $('.upBtn').removeClass('upBtnBlue');
+        $('.order_class').val(0);
+        $('#form_submit').submit();
+    });
+
+
+    //全选
+    $('.check_all').click(function(){
+        var childCheck=$('.check_child');
+        var temp_status=true;
+        if($(this)[0].checked==true){
+            //本次选中
+            temp_status=true;
+        }else{
+            //本次取消
+            temp_status=false;
+        }
+        for(var i=0;i<childCheck.length;i++){
+            childCheck[i].checked=temp_status
+        }
+    });
+
+    //取消全选
+    var lis_m = document.getElementsByClassName('check_child');
+    for (var j = 0; j < lis_m.length; j++) {
+        lis_m[j].index = j;
+        lis_m[j].onclick = function () {
+            if ($(this)[0].checked == false) {
+                $('.check_all').removeAttr('checked','checked');
+                $('.check_all').removeProp('checked','checked');
+            } else if ($(this)[0].checked == true) {
+                if (lis_m.length == $("[name='checkbox']:checked").length) {
+                    $('.check_all').attr('checked','checked');
+                    $('.check_all').prop('checked','checked');
+                };
+            }
+        }
+    };
+
+</script>
+
+<!--
+<script>
+	//一个按钮，无回调函数
+	$.NotifyBox.NotifyOne('注意','123','确定');
+	//一个按钮，有回调函数
+	$.NotifyBox.NotifyOneCall('注意','123','确定',function(){
+		alert('1')
+	});
+	//两个按钮，一个有回调函数，一个是灰色，一个是蓝色
+	$.NotifyBox.NotifyTwoCallOneGray('注意','123','确定','取消',function(){
+		alert('1')
+	});
+	//两个按钮，一个有回调函数，两个是蓝色
+	$.NotifyBox.NotifyTwoCallOneGray('注意','123','确定','取消',function(){
+		alert('1')
+	});
+	//两个按钮，两个有回调函数，两个是蓝色
+	$.NotifyBox.NotifyTwoCallTwo('注意','123','确定','取消',function(){
+		alert('1')
+	},function(){
+		alert('2')
+	})
+</script>
+-->

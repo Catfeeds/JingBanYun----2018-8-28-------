@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>完成情况</title>
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+					-webkit-tap-highlight-color: rgba(0,0,0,0);
+				-webkit-tap-highlight-color: transparent;
+			}
+			.p20{
+				padding: 10px 20px
+			}
+			body{
+				background: #f4f4f4;
+				padding: 10px 20px;
+				font-size: 16px;
+				color: #333
+			}
+			.situationlist{
+				background: #fff;
+				border-radius: 10px;
+				overflow: hidden;
+				height: 100px;
+				margin: 7px 0
+			}
+			.left{
+				float: left;
+			}
+
+			.head{
+				width: 100%;
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				overflow: hidden;
+				border: 1px solid #eee;
+				margin: 15px 15px 0 15px
+			}
+			.red{
+				color:#ed2222
+			}
+			.color999{
+				color: #999
+			}
+			.details{
+				line-height: 30px;
+				padding-top: 20px
+			}
+			.name{
+				width: 50px;
+				margin-left: 15px;
+				text-align: center
+			}
+		</style>
+	</head>
+	<body>
+
+	<!-- 方法1:ajax请求 -->
+	<script>
+		var userId = "{$userId}";
+		var role = "{$role}";
+		var homeworkId = "{$homeworkId}";
+		var classId = "{$classId}";
+		$(function(){
+			$.ajax({
+		        url:"/ApiInterface/Version1_2/HomeworkParent/getSubmitHomeworkList?role="+role+"&userId="+userId+"&homeworkId="+homeworkId+"&classId="+classId,
+		        // url:"/ApiInterface/Version1_2/HomeworkParent/getSubmitHomeworkList?role=3&userId=1&homeworkId=1&classId=304",
+		        type:'GET',
+	            dataType: 'json',
+		        success:function (msg) {
+		        	var html = '';
+		            if(msg.status == 200){
+		            	for(i = 0; i < msg.data.data.length; i++) {
+		            		html += '<div class="situationlist">';
+		            		html += '<div class="left me">';
+		            		html += '<img src="'+msg.data.data[i].avatar+'" alt="" class="head" onerror="\imageError(this,\''+msg.data.data[i].sex+'\')\" >';
+		            		html += '<div class="name">'+msg.data.data[i].name+'</div>';
+		            		html += '</div><div class="left details">';
+		            		html += '<p>得分：<span class="red">'+msg.data.data[i].content1+'分</span></p>';
+		            		html += '<p class="color999"">'+msg.data.data[i].content2+'</p>';
+		            		html += '</div></div>';
+		            	}
+
+		            	$('body').append(html)
+		            }    
+		        }
+		    })
+		})
+
+		
+		function imageError(img,sex) {
+			if(sex == '男') {
+	        	img.src = '__PUBLIC__/img/classManage/student_m.png';
+			} else {
+				img.src = '__PUBLIC__/img/classManage/student_w.png';
+			}
+	    }
+
+	</script>
+
+	</body>
+</html>

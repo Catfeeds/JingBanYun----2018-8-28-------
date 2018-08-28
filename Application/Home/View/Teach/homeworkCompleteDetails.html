@@ -1,0 +1,596 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/external/highcharts.js"></script>
+<script src="__PUBLIC__/js/highcharts-exporting.js"></script>
+<!--<script src="__PUBLIC__/js/external/grid-light.js"></script>-->
+<script src="__PUBLIC__/js/grid-light.js"></script>
+
+<style>
+	.tj_accuracy_question_wrapper {
+		margin: 8px;
+		padding: 4px;
+		border-bottom: 1px solid #ccc;
+	}
+	
+	.questionaccuracy {
+		float: right;
+		font-weight: 600;
+	}
+	
+	.tj-wrapper a {
+		margin: 0 8px;
+	}
+	
+	.main_head {
+		padding: 17px;
+	}
+	
+	.btn-primary {
+		margin-right: 25px
+	}
+	
+	.leb {
+		line-height: 34px;
+		float: left;
+	}
+	.form-control{
+		width: 80%;
+		float: left;
+	}
+        
+        
+         .ascending {
+        background: url(__PUBLIC__/img/home/ascending.png) no-repeat center;
+        background-size: 80%;
+        background-position: 0 0px;
+    }
+    
+    .descending {
+        background: url(__PUBLIC__/img/home/descending.png) no-repeat center;
+        background-size: 80%;
+        background-position: 0 2px;
+    }
+        .sort_desc_red {
+            background: url(__PUBLIC__/img/home/r_descending.gif) no-repeat center;
+            background-size: 80%;
+            background-position: 0 2px;
+        }
+
+        .sort_asc_red {
+            background: url(__PUBLIC__/img/home/r_ascending.gif) no-repeat center;
+            background-size: 80%;
+            background-position: 0 0px;
+        }
+        #ascending_watch,#descending_watch{outline:none;border:none}
+	.sort_btn{width: 15px;display: inline-block;}
+        #abc{}
+</style>
+<div class="main_opr">
+	<a href="{:U('TeachmulHomework/mulHomework')}" title="语音作业" class="btn btn-main-opr">语音作业</a>
+	<a href="{:U('Teach/homework')}" title="习题作业" class="btn btn-main-opr btn-main-opr-active">习题作业</a>
+	<a href="{:U('Teach/exercisesLibrary')}" title="习题库" class="btn btn-main-opr">习题库</a>
+	<a href="{:U('Teach/wrongHomeworkList')}" title="错题集" class="btn btn-main-opr">错题集</a>
+</div>
+<div style="margin-bottom: 12px;">
+	<a href="{:U('Teach/homework')}" title="返回" class="btn btnReturn3">返回</a>
+</div>
+<!--
+<div class="main_head">
+    <a href="####" title="作业列表" class="btn btn-primary" style="background:#eac31c !important; ">作业列表</a>
+    <a href="{:U('Teach/assignHomework')}" title="布置作业" class="btn btn-primary">布置作业</a>
+</div>
+-->
+<div class="tj-wrapper main_head" style="text-align:center;">
+	<button onclick="showDialog('dialogTJ_accuracy')" title="正确率统计" class="btn btn-primary">正确率统计</button>
+	<button onclick="showDialog('dialogTJ_finishingrate')" title="完成率统计" class="btn btn-primary">完成率统计</button>
+	<button onclick="showDialog('dialogTJ_speed')" title="提交速度统计" class="btn btn-primary">提交速度统计</button>
+	<button onclick="showDialog('dialogTJ_totalscore')" title="总得分统计" class="btn btn-primary">总得分统计</button>
+</div>
+<form action="{:U('Teach/homeworkCompleteDetails')}" method="post">
+	<!--<input type="hidden" name="page" id="page" value="{$page}">-->
+	<input type="hidden" name="homeworkId" value="{$homeworkId}">
+
+	<div class="row">
+		<div class="col-md-3">
+			<label class="leb">姓名：</label>
+			<input type="text" name="name" value="{$name}" class="form-control">
+		</div>
+		<div class="col-md-3">
+			<label class="leb">状态：</label>
+			<select id="state" name="state" class="form-control">
+				<option value="0">请选择</option>
+				<option value="1" {$state=='1' ? 'selected': ''}>未提交</option>
+				<option value="2" {$state=='2' ? 'selected': ''}>已提交</option>
+			</select>
+		</div>
+            <input type="hidden" name="sort_column" class="sort_column"/>
+<!--		<div class="col-md-3">-->
+<!--			<label class="leb">得分：</label>-->
+<!--
+                        <div class="sort_btn right browse_count"> 
+                            <button {$sort_column=='1' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending"'} id="ascending_watch" title="升序">&nbsp;</button>
+                          <button {$sort_column=='2' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending"'} id="descending_watch" title="降序">&nbsp;</button>
+                        </div>
+-->
+			<!--<select id="sort_column" name="sort_column" class="form-control">
+				<option value="0">请选择</option> 
+				<option value="1" {$sort_column=='1' ? 'selected': ''}>总得分低</option>
+				<option value="2" {$sort_column=='2' ? 'selected': ''}>总得分高</option>
+			</select>-->
+                        
+<!--		</div>-->
+		<div class="col-md-3">
+			<label class="leb">&nbsp;</label>
+			<button type="submit" class="btn btn-primary" id="submit_button" style="display: block;">搜索</button>
+		</div>
+	</div>
+</form>
+<empty name="list">
+	<div class="emptyResult">暂时没有学生哦</div>
+</empty>
+<notempty name="list">
+	<div style="margin-top: 20px">
+		<table class="table striped hovered border">
+
+			<thead>
+				<tr>
+					<th class="text-center">序号</th>
+					<th class="text-center">学生姓名</th>
+					<th class="text-center">作业提交时间</th>
+					<th class="text-center">耗时（分）</th>
+				    <th class="text-center">
+						<label for="" style="margin-bottom:0">得分</label>
+						<div class="sort_btn  browse_count" style="height:15px"> 
+							<button {$sort_column=='1' ? 'class="order_btn sort_asc_red"': 'class="order_btn ascending"'} id="ascending_watch" title="升序" style="float:left;height:10px">&nbsp;</button>
+						  <button {$sort_column=='2' ? 'class="order_btn sort_desc_red"': 'class="order_btn descending"'} id="descending_watch" title="降序"  style="float:left">&nbsp;</button>
+						</div>
+					</th>
+					<th class="text-center">状态</th>
+					<th class="text-center">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+
+				<volist name="list" id="data" empty="" key="i">
+					<tr id="l_{$data.id}" class="itemrow">
+						<!-----------------序号---------------->
+						<td class="text-center">
+							<span class="" data-id="">{$i}</span>
+						</td>
+						<td class="text-center">
+							<span class="student-tj" data-id="{$data.student_id}">{$data.student_name}</span>
+						</td>
+						<td class="text-center">
+							<notempty name="data.create_at">
+								<span class="complete_time">{$data.create_at|date="Y-m-d H:i",###}</span>
+							</notempty>
+							<empty name="data.create_at">
+								未提交
+							</empty>
+						</td>
+						<td class="text-center">
+							<span id="duration_{$data.student_id}">{$data.duration}</span>
+						</td>
+						<td class="text-center">
+							<switch name="data.status">
+								<case value="1">&nbsp;</case>
+								<case value="2"><span id="points_{$data.student_id}" class="student-points-tj">{$data.points}</span></case>
+								<default/>
+							</switch>
+						</td>
+						<td class="text-center">
+							<switch name="data.status">
+								<case value="1">已提交</case>
+								<case value="2">批改完成</case>
+								<default/>
+								<span style="color: red;">未提交</span>
+							</switch>
+						</td>
+						<td class="text-center" nowrap>
+							<switch name="data.status">
+								<case value="1">
+									<a href="{:U('Teach/studentHomeworkDetails?id=')}{$data.id}" title="作业详情" class="button">查看作业详情</a>
+								</case>
+								<case value="2">
+									<a href="{:U('Teach/markingAfterHomework?id=')}{$data.id}" title="作业详情" class="button">查看作业详情</a>
+								</case>
+								<default/>
+							</switch>
+
+						</td>
+					</tr>
+				</volist>
+			</tbody>
+		</table>
+	</div>
+
+</notempty>
+<div class="modal fade" id="dialogTJ_speed">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">提交速度统计</h4>
+			</div>
+			<div class="modal-body">
+				<div id="chart_speed" class="tg-chart"></div>
+				<p>
+					平均作业速度：<strong>{$avgDuration}</strong>分钟
+				</p>
+
+				<p>
+					最快作业速度：<strong>{$minDuration}</strong>分钟
+				</p>
+
+				<p>
+					最慢作业速度：<strong>{$maxDuration}</strong>分钟
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="dialogTJ_accuracy">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">正确率统计</h4>
+			</div>
+			<div class="modal-body">
+				<div id="chart_accuracy" class="tg-chart"></div>
+				<div id="tj_accuracyBody"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="dialogTJ_finishingrate">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">完成率统计</h4>
+			</div>
+			<div class="modal-body">
+				<div id="chart_finishingrate" class="tg-chart"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="dialogTJ_totalscore">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">总得分统计</h4>
+			</div>
+			<div class="modal-body">
+				<div id="chart_totalscore" class="tg-chart"></div>
+				<div id="tj_totalscoreBody"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	var homeworkId = parseInt('{$homeworkId}');
+	var classStudentCount = parseInt('{$classStudentCount}');
+	var chapterId = parseInt('{$exercise_chapter_id}');
+	//var chapterId=877;
+	var questions = [];
+	var scoreDetails = [];
+	var chartWidth = 500;
+	var students = [];
+
+	getQuestions();
+	getScoreDetails();
+	getStudents();
+
+        $("#ascending_watch").click(function(){
+            if($(this).hasClass('sort_asc_red')){
+                return false;
+            }else{
+                $('.sort_column').val(1);
+                $("#submit_button").trigger('click');
+            }
+        });
+        
+        $("#descending_watch").click(function(){
+            if($(this).hasClass('sort_desc_red')){
+                return false;
+            }else{
+                $('.sort_column').val(2);
+                $("#submit_button").trigger('click');
+            }
+        })
+
+	//正确率的操作
+	function getQuestions() {
+		$.getJSON('index.php?m=Home&c=Teach&a=getHomeworkExercise', {
+			id: homeworkId
+		}, function (res) {
+			questions = res;
+			console.log(res);
+			renderQuestionsInto_tj_accuracyBody();
+		});
+	}
+
+	function getScoreDetails() {
+		$.get('index.php?m=Home&c=Teach&a=homeworkTongji_Accuracy', {
+			homework_id: homeworkId
+		}, function (res) {
+			scoreDetails = res;
+		});
+	}
+
+	function getStudents() {
+		$('.student-tj').each(function (i, n) {
+			var name = $(n).text();
+			var id = $(n).attr('data-id');
+			var points = $('#points_' + id).text();
+			var duration = parseInt($('#duration_' + id).text());
+			if (points != '') {
+				points = parseInt(points);
+			} else {
+				points = 0;
+			}
+			students.push({
+				id: id,
+				name: name,
+				points: points,
+				duration: duration
+			})
+		});
+	}
+
+	function renderQuestionsInto_tj_accuracyBody() {
+		var html = [];
+		var tpl = '<div class="tj_accuracy_question_wrapper"><span class="question">题目{0}</span><span class="questionaccuracy" id="questionaccuracy_{0}"></span></div>';
+		$(questions).each(function (i, n) {
+			html.push(tpl.format(i + 1)); //n.question_id)
+		});
+		$('#tj_accuracyBody').html(html.join(''));
+	}
+</script>
+<script>
+	function showDialog(id) {
+		$('#' + id).modal('show');
+		chartWidth = $('#' + id + ' .modal-dialog').width() - 40;
+		$('#' + id + ' .tg-chart').width(chartWidth);
+		switch (id) {
+		case 'dialogTJ_accuracy':
+			do_tj_accuracy();
+			break;
+		case 'dialogTJ_finishingrate':
+			do_tj_finishingrate();
+			break;
+		case 'dialogTJ_totalscore':
+			do_tj_totalscore();
+			break;
+		case 'dialogTJ_speed':
+			do_tj_speed();
+			break;
+		}
+	}
+
+	function do_tj_accuracy() {
+		function getDetailsByQuestionId(questionId) {
+			var corrected = 0;
+			$(scoreDetails).each(function (i, n) {
+				//1:完全正确2：完全错误3：不完全正确
+				/*if (n.question_id == questionId && n.flag == 1) {
+				    corrected = corrected + 1;
+				}*/
+				//现在的question_id不是真正的questionId
+				if (n.question_org_id == questionId && n.flag == 1) {
+					corrected = corrected + 1;
+				}
+			});
+			var num = new Number((corrected / classStudentCount) * 100);
+			return '{0}/{1}={2}%|{2}'.format(corrected, classStudentCount, num.toFixed(2));
+		}
+
+		var xAxisArr = [];
+		var yAxisArr = [];
+		$(questions).each(function (i, n) {
+			//var result = getDetailsByQuestionId(n.question_id).split('|');
+			var result = getDetailsByQuestionId(n.exercise_id).split('|');
+			//$('#questionaccuracy_' + n.question_id).html(result[0]);
+			$('#questionaccuracy_' + (i + 1)).html(result[0]);
+			yAxisArr.push(parseFloat(result[1]));
+			//xAxisArr.push('题目' + n.question_id);
+			xAxisArr.push('题目' + (i + 1));
+		});
+
+		$('#chart_accuracy').highcharts({
+			credits: {
+				text: '',
+				href: 'http://www.jtypt.com'
+			},
+			title: {
+				text: '习题正确率-横向对比分析',
+				x: -20 //center
+			},
+			scrollbar: {
+				enabled: true
+			},
+			xAxis: {
+				categories: xAxisArr
+			},
+			yAxis: {
+				title: {
+					text: '正确率 (%)'
+				},
+				plotLines: [{
+					value: 0,
+					width: 1,
+					color: '#808080'
+                }]
+			},
+			tooltip: {
+				valueSuffix: '%'
+			},
+			legend: {
+				layout: 'vertical',
+				align: 'right',
+				verticalAlign: 'middle',
+				borderWidth: 0
+			},
+			series: [{
+				name: '正确率',
+				data: yAxisArr
+            }]
+		});
+		$(window).resize();
+	}
+
+	function do_tj_finishingrate() {
+		var count = $('.complete_time').length;
+		var totalCount = $('.itemrow').length;
+		$('#chart_finishingrate').highcharts({
+			chart: {
+				plotBackgroundColor: null,
+				plotBorderWidth: null,
+				plotShadow: false,
+				type: 'pie'
+			},
+			credits: {
+				text: '',
+				href: 'http://www.jtypt.com'
+			},
+			scrollbar: {
+				enabled: true
+			},
+			title: {
+				text: '完成率统计'
+			},
+			tooltip: {
+				pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+			},
+			plotOptions: {
+				pie: {
+					allowPointSelect: true,
+					cursor: 'pointer',
+					dataLabels: {
+						enabled: true,
+						format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+						style: {
+							color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+						}
+					}
+				}
+			},
+			series: [{
+				name: '完成状态',
+				colorByPoint: true,
+				data: [{
+					name: '已完成学生占比',
+					y: count
+                }, {
+					name: '未完成学生占比',
+					y: totalCount - count,
+					sliced: true,
+					selected: true
+                }]
+            }]
+		});
+	}
+
+	function do_tj_totalscore() {
+		var xAxisArr = [];
+		var yAxisArr = [];
+		$(students).each(function (i, n) {
+			xAxisArr.push(n.name);
+			yAxisArr.push(n.points);
+		});
+
+		$('#chart_totalscore').highcharts({
+			credits: {
+				text: '',
+				href: 'http://www.jtypt.com'
+			},
+			title: {
+				text: '作业总得分-横向对比分析'
+			},
+			scrollbar: {
+				enabled: true
+			},
+			xAxis: {
+				categories: xAxisArr
+			},
+			yAxis: {
+				title: {
+					text: '分数'
+				},
+				labels: {
+					formatter: function () {
+						return this.value;
+					}
+				}
+			},
+			tooltip: {
+				pointFormat: '{series.name} <b>{point.y:,.0f}</b>'
+			},
+			series: [{
+				name: '得分',
+				data: yAxisArr
+            }]
+		});
+	}
+
+	function do_tj_speed() {
+		var xAxisArr = [];
+		var yAxisArr = [];
+		$(students).each(function (i, n) {
+			xAxisArr.push(n.name);
+			yAxisArr.push(n.duration);
+		});
+
+		$('#chart_speed').highcharts({
+			credits: {
+				text: '',
+				href: 'http://www.jtypt.com'
+			},
+			scrollbar: {
+				enabled: true
+			},
+			title: {
+				text: '作业耗时-横向对比分析'
+			},
+			xAxis: {
+				labels: {
+					step: 1,
+					rotation: -45,
+				},
+				categories: xAxisArr
+			},
+			yAxis: {
+				title: {
+					text: '耗时(分钟)'
+				},
+				labels: {
+					formatter: function () {
+						return this.value;
+					}
+				}
+			},
+			tooltip: {
+				pointFormat: '{series.name} <b>{point.y:,.0f}</b>'
+			},
+			series: [{
+				name: '耗时',
+				data: yAxisArr
+            }]
+		});
+	}
+</script>

@@ -1,0 +1,66 @@
+<layout name="admin_layout_school"/>
+
+<style>
+	.contentMain {
+		padding: 0;
+	}
+
+	[v-cloak] {
+		display: none;
+	}
+</style>
+
+<div id="admin" v-cloak>
+	<div class="indexOutter">
+		<div class="standardMain hrefContent">
+			<a href="{:U('Memo/memoList')}" class="returnBack">备忘录</a>
+			>
+			<span class="thePage">备忘录详情</span>
+		</div>
+
+		<div class="standardMain memoNewContent">
+			<div class="memoNewTop">备忘录详情</div>
+			<div class="memoNewMain">
+				<div class="memoDetailsTitle">{{ memoDetailsData.memorandum_title }}</div>
+				<div class="memoDetailsMain" v-html="memoDetailsData.memorandum_content"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var id = "{$id}";
+
+	var admin = new Vue({
+		el: '#admin',
+		data: {
+			id: id,
+			// 备忘录详情地址
+			memoDetailsUrl: '/index.php?m=School&c=Memo&a=getDetail',
+			// 备忘录详情
+			memoDetailsData: ''
+		},
+		created: function () {
+			// 获取备忘录详情
+			this.getMemoDetails();
+		},
+		methods: {
+			// 获取备忘录详情
+			getMemoDetails: function(){ 
+				this.$http.post(this.memoDetailsUrl, {
+					id: this.id
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						this.memoDetailsData = response.data.data
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			}
+		}
+	})
+</script>

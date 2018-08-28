@@ -1,0 +1,224 @@
+<style>
+ul, li {
+    list-style: none;
+}
+.resource_classify {
+	width:250px;
+    overflow: inherit !important;
+	line-height: 20px;
+    border-bottom: 5px solid #ededed;
+	float: left;
+	margin-top: 30px;
+	position: relative;
+	text-align: center;
+}
+.resource_classify span{
+	font-size: 12px
+}
+.classify_p {
+    display: inline-block;
+	padding: 0 20px;
+    height: 100%;
+   height: 30px;
+	margin: 0;
+	float:none !important;
+
+}
+
+.classify_ul {
+	overflow: hidden;
+	margin-bottom: 0;
+	width: 100%;
+	position: absolute;
+	top:35px;
+	z-index: 200;
+	text-align: center;
+	border: 3px solid #04c9a8;
+	border-top: none;
+	padding: 20px 0 ;
+	background: #fff;
+	display: none;
+}
+
+.classify_ul li {
+	    float: left;
+    margin: 0 0px 8px 10px;
+    cursor: pointer;
+    min-width: 66px;
+}
+.current_selected,.current_selected1 {
+    color: red;
+}
+.search {
+    float: right;
+    width: 282px;
+    height: 32px;
+    line-height: 30px;
+    border: 1px solid #b9b9b9;
+    border-radius: 20px;
+    background: #f4f4f4;
+}
+
+.search_btn {
+    float: left;
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: none;
+    background: url(__PUBLIC__/img/resource/search_btn.png) no-repeat center;
+    background-size: 50% 50%;
+    border-radius: 20px;
+    outline: none;
+}
+
+.search_text {
+    width: 250px;
+    text-indent: 15px;
+    border-radius: 20px;
+    border: none;
+    background: none;
+    outline: none;
+    padding: 0;
+    height: 30px;
+    line-height: 30px;
+}
+	.resource_top{
+		overflow: hidden;
+	}
+	.resource_middle {
+	
+	margin: 0 auto;
+/*        overflow: hidden;*/
+	font-size: 16px;
+	font-family: "微软雅黑";
+	color: #7f7f7f;
+		margin-left: 70px;
+}
+	.resource_middle:after{display:block;clear:both;content:"";visibility:hidden;height:0} 
+	.class_img {
+	    padding: 0 7px;
+    background: url(__PUBLIC__/img/home/descending.png) no-repeat;
+    background-size: 10px;
+    background-position: 2px;
+    margin-left: -16px;
+}
+</style>
+<div class="resource_top" style="display:none;">
+    <div class="search">
+        <button class="search_btn"></button>
+        <input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="请输入关键字">
+    </div>
+</div>
+<div class="resource_middle">
+<div class="resource_classify">
+    <p class="classify_p">学科</p><span class="class_img"></span><span class="resource_name"></span>
+    <ul class="classify_ul course_ul">
+       
+        <volist name="courses" id="dataCourse">
+            <li attr_id='{$dataCourse.id}' {$dataCourse['id']==$course_id? 'class="current_selected"': ''}>
+            {$dataCourse.course_name}
+            </li>
+        </volist>
+        <!--<li {$course_id==null? 'class="current_selected1"': ''} attr_id=''>取消选择</li>--> 
+        <if condition="$course_id neq null">
+             <li {$course_id==null? 'class=""': ''} attr_id=''>取消选择</li>
+        </if>
+    </ul>
+</div>
+<div class="resource_classify">
+    <p class="classify_p">年级</p><span class="class_img"></span><span class="resource_name"></span>
+    <ul class="classify_ul grade_ul">
+       
+        <volist name="grades" id="dataGrade">
+            <li attr_id="{$dataGrade.code}" {$dataGrade[ 'code']==$grade_id? 'class="current_selected"': ''}>
+            {$dataGrade.grade}
+            </li>
+        </volist>
+        <if condition="$grade_id neq null">
+            <li {$grade_id==null? 'class=""': ''} attr_id=''>取消选择</li>
+        </if>
+    </ul>
+</div>
+<div class="resource_classify">
+    <p class="classify_p">分册</p><span class="class_img"></span><span class="resource_name"></span>
+    <ul class="classify_ul textbook_ul">
+     
+        <volist name="textbooks" id="textbooks">
+            <if condition="$textbooks['school_term'] eq 1">
+                <li {$textbook_id==1? 'class="current_selected"': ''} attr_id='1'>上册</li>
+            <elseif condition="$textbooks['school_term'] eq 2" />
+                <li {$textbook_id==2? 'class="current_selected"': ''} attr_id='2'>下册</li>
+                <elseif condition="$textbooks['school_term'] eq 3" />
+                <li {$textbook_id==3? 'class="current_selected"': ''} attr_id='3'>全一册</li>
+            </if> 
+        </volist>
+            <if condition="$textbook_id neq null">
+                <li {$textbook_id==null? 'class=""': ''} attr_id=''>取消选择</li>
+            </if>
+    </ul>
+</div>
+</div>
+<script src="__PUBLIC__/js/common.js"></script>
+<script>
+    function localQuery()
+    {
+    }
+
+    localQuery.prototype.getQueryURL = function(){
+        return 'index.php?m='+ getQueryString('m') + '&c=' + getQueryString('c') + '&a=' + getQueryString('a');
+    }
+    localQuery.prototype.getQueryParas =  function(){
+        var course_id = $(".course_ul").find('.current_selected,.current_selected1').attr('attr_id');
+        var grade_id = $(".grade_ul").find('.current_selected,.current_selected1').attr('attr_id');
+        var textbook_id = $(".textbook_ul").find('.current_selected,.current_selected1').attr('attr_id');
+        var keyword = $(".search_text").val();
+        var string="";
+        if (course_id != '') {
+            if(typeof(course_id)!="undefined"){
+                string += '&course=' + course_id;
+            } 
+        }
+        if (grade_id != '') {
+            if(typeof(grade_id)!="undefined"){
+                string += '&grade=' + grade_id;
+            } 
+        }
+        if (textbook_id != '') {
+            if(typeof(textbook_id)!="undefined"){
+                string += '&textbook=' + textbook_id;
+            } 
+        }
+        if (keyword != '') {
+            string += '&keyword=' + keyword;
+        }
+        return string;
+    }
+    localQuery.prototype.query = function(){
+        var url = this.getQueryURL()+this.getQueryParas();
+        location.href = url;
+    }
+    localQuery.prototype.init = function(obj){
+        $('.classify_ul').children('li').on('click', function () {
+            $(this).siblings('li').removeClass('current_selected');
+            $(this).addClass('current_selected');
+            obj.query();
+        });
+        $(".search_text").keydown(function (evt) {
+            if (event.keyCode == "13") { //keyCode=13是回车键
+                obj.query();
+            }
+            });
+        $('.search_btn').click(function(){
+            obj.query();
+        });
+    }
+    			$('.resource_classify').hover(function(){
+			$(this).children('.classify_ul').filter(':not(:animated)').slideDown()
+		},function(){
+			$(this).children('.classify_ul').slideUp()
+		})
+		$('.current_selected').each(function(i,n){
+			  var cho = $.trim($(this).html());
+              $(this).parent().siblings('.resource_name').html(cho)  
+		})
+</script>

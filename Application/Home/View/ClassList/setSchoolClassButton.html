@@ -1,0 +1,83 @@
+<div class="Setting_box">
+
+   <div class="InformationSetting" style="display: block;">
+       <p>班级编号：{$data_stu.class_info.class_code} &nbsp;&nbsp;&nbsp;&nbsp;任教学科：{$dict_string_name} &nbsp;&nbsp;&nbsp;&nbsp;班级状态：{$data_stu.class_info.flag_name}</p>
+       <div class="bjclass">
+           <p class="fontColorEf">班级信息查看</p>
+           <p>年级：{$data_stu.class_info.grade}</p>
+           <p>班级：{$data_stu.class_info.name}</p>
+           <p>学科：{$dict_string_name}</p>
+           <!--<p class="pborder">管理员：{$data_stu.class_info.class_teacher}</p>-->
+       </div>
+
+           <?php if ($is_show_hide != 1): ?>
+                <?php if ($data_stu['class_info']['flag'] != 0): ?>
+                   <div class="divborder">
+                       <p class="fontColorEf">移交班级</p>
+                       <p>任教学科:
+                           <select name="" id="dict_course_id" class="width200 ">
+                               <option value="">请选择学科</option>
+                               <volist name="dict_course_list" id="course_data" empty="">
+                                   <option value="{$course_data.course_id}">{$course_data.course_name}</option>
+                               </volist>
+                           </select>
+                       </p>
+                       <p>
+                           接收老师:
+                           <input type="text" class="width200 margintop5 TeacherPhone" placeholder="请输入接收老师手机号" maxlength="11">
+                       </p>
+                       <button class="right padding15 margintop-65 TransferTeacherclass" classid="{$classid}">移交学科</button>
+                   </div>
+                <?php endif ?>
+        <?php endif ?>
+
+
+       <?php if ( !empty($dest_teacher_list)): ?>
+                <volist name="dest_teacher_list" id="course_lsit" empty="">
+                   <div class="divborder">
+                       <p class="fontColorEf">移交后</p>
+                       <p>接收老师：{$course_lsit.t_name}</p>
+                       <p>接受学科：{$course_lsit.t_dict_name}</p>
+                       <p>
+                           接收老师手机号：{$course_lsit.t_phone}
+                       </p>
+                       <button class="right padding15 margintop-65 RevokeclassTeacher" classid="{$classid}" handoff="{$course_lsit.id}">撤销移交</button>
+                   </div>
+                </volist>
+            <div>
+       <?php endif ?>
+       </div>
+       <div class="leaveClass">
+           <p class="fontColorEf">离开班级</p>
+           <p class="colorccc">*您可以直接离开此班级，无需将班级(任教学科)交给班里其他老师</p>
+           <p class="colorccc">离开班级后您将解除与此班级的关联联系，无法在我的班级中找到与此班级</p>
+           <button class="right padding15 margintop-50 deleteClassAlldata_school" classid="{$classid}" status="1">离开班级</button>
+       </div>
+    </div>
+	
+</div>
+
+<div class="news daorusuccess_class_show_school" style="display: none;">
+    <p><span>离开班级</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+    <p style="margin-bottom:0">确定要离开班级吗</p>
+    <p>
+        <button class="daorusuccess_class_school" style="width:100px;border: none;outline: none;padding: 5px;background-color: #eaca33;border-radius: 5px;color: #fff;display: inline-block;margin-top: 40px;">确定</button>
+    </p>
+</div>
+
+
+<div class="news schoolsuccess_class_show" style="display: none;">
+    <p><span>移交班级</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+    <p style="margin-bottom:0">确定要移交班级吗</p>
+    <p>
+        <button class="schoolyijiaosuccess_class" style="width:100px;border: none;outline: none;padding: 5px;background-color: #eaca33;border-radius: 5px;color: #fff;display: inline-block;margin-top: 40px;">确定</button>
+    </p>
+</div>
+
+<div class="news Revokeschoolclasssuccess_class_show" style="display: none;">
+    <p><span>撤销移交</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+    <p style="margin-bottom:0">确定要撤销移交班级吗</p>
+    <p>
+        <button class="RevokeTransferclasssuccess_class display_none_alert" style="width:100px;border: none;outline: none;padding: 5px;background-color: #eaca33;border-radius: 5px;color: #fff;display: inline-block;margin-top: 40px;">确定</button>
+    </p>
+</div>

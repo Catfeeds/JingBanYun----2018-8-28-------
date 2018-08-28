@@ -1,0 +1,67 @@
+<layout name="parent_layout_3"/>
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<style media="screen">
+    .table td{
+      padding: 16px 10px !important
+    }
+</style>
+<div class="main_opr">
+    <a href="{:U('Parent/myChildren')}" title="添加学生" class="btn btn-main-opr btn-main-opr-active">我的孩子</a>
+    <a href="{:U('Parent/addMyChildren')}" title="添加学生" class="btn btn-main-opr">关联孩子</a>
+</div>
+
+<empty name="list">
+    <div class="emptyDiv">
+        <img src="{$oss_path}public/web_img/Empty/classList.png" alt="">
+        <p>您还没有关联学生哦！</p>
+    </div>
+</empty>
+<notempty name="list">
+<table class="table striped hovered border">
+    <thead>
+    <tr>
+        <th>学生姓名</th>
+        <th>学校</th>
+        <th>学生编号</th>
+        <th>身份证号</th>
+<!--        <th class="text-center">手机</th>-->
+        <th class="text-center">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <volist name="list" id="data" empty="">
+        <tr id="l_{$data.id}">
+            <td>{$data.student_name}</td>
+            <td>
+                {$data.school_name}
+            </td>
+            <td>
+                {$data.student_id}
+            </td>
+            <td>
+                {$data.id_card}
+            </td>
+
+            <td class="text-center" nowrap>
+                <a href="javascript:;" onclick="deleteChildren({$data.id})" title="删除" class="button" style="text-decoration:none;padding:4px 20px !important;    letter-spacing:0">删&nbsp;&nbsp;&nbsp;除</a>
+
+                 <a href="{:U('Parent/classList?student_id=')}{$data.student_id}" title="查看班级" class="button">查看班级</a>
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+</notempty>
+<script>
+    function deleteChildren(id) {
+        $.NotifyBox.NotifyPromptTwoCo("提示","删除后，与该学生相关的数据将同时被删除，请您再次确认", "确定", "取消", function() {
+          $.get('index.php?m=Home&c=Parent&a=deleteMyChildren', {id: id}, function (res) {
+              if (res == 'success') {
+                  window.location.reload();
+              } else {
+                  alert('删除失败，请刷新页面后重新尝试');
+              }
+          })
+    		})
+    }
+</script>

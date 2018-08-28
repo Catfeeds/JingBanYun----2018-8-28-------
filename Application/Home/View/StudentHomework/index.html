@@ -1,0 +1,199 @@
+<layout name="student_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+
+<style>
+	[v-cloak] {
+		display: none;
+	}
+</style>
+
+<div id="homework" v-cloak>
+	<div class="studentIndexOutter">
+		<img src="__PUBLIC__/img/homeworkV1/stuNoHomework.png" alt="" class="stuNoHomework" v-if="homeworkData == '' || homeworkData == null">
+		<div class="stuHomeworkOutter" v-else>
+			<div class="stuHomeworkTop">
+				<div class="leftTitle">待完成作业</div>
+				<div class="stuHomeworkInner">
+					<!-- 循环这个 -->
+					<a :href="'/index.php?m=Home&c=StudentHomework&a=homeworkDoing' + homeworkData.url" class="stuHomeworkBox" v-for="(homeworkData, index) in homeworkData">
+						<div class="subject">
+							{{ homeworkData.content2}}
+
+							<img src="__PUBLIC__/img/homeworkV1/statusDo.png" v-if="homeworkData.hasPassed == 0" alt="" class="statusImg">
+							<img src="__PUBLIC__/img/homeworkV1/statusNotSubmit.png" v-else="" alt="" class="statusImg">
+						</div>
+						<div class="teacher">{{homeworkData.content5}}</div>
+						<div class="title">{{homeworkData.content1}}</div>
+						<div class="numScore">
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseNum.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homeworkData.content4}}</span>道<br>题目
+							</div>
+							<div class="numScoreBox">
+								<img src="__PUBLIC__/img/homeworkV1/exerciseScore.png" alt="" class="numScoreImg">
+								<span class="bigText">{{homeworkData.content6}}</span>分<br>总分
+							</div>
+						</div>
+						<div class="endTime">截止时间:{{homeworkData.content3}}</div>
+						<div class="doImg">做作业</div>
+					</a>
+
+
+				</div>
+			</div>
+			
+			<div class="moreHomework" v-if="homeworkLength > 4" @click="moreHomework($event)">
+				<span class="more" @click="parentClick($event)">更多作业</span>
+			</div>
+		</div>
+
+		<div class="studentTabBox">
+			<a href="/index.php?m=Home&c=StudentHomework&a=homeworkBooks" class="studentTab" id="studentHomework"></a>
+			<a href="/index.php?m=Home&c=StudentHomework&a=wrongList" class="studentTab" id="studentFavor"></a>
+			<a href="/index.php?m=Home&c=StudentHomework&a=myCollectionList" class="studentTab" id="studentWrong"></a>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+			url: '/index.php?m=Home&c=StudentHomework&a=getUnFinishHomeworkList',
+			homeworkLength: '',
+			stuHomeworkTopHeight: '',
+			homeworkData:[]
+		},
+		created: function () {
+			// 获取作业列表
+			this.getHomeworkList();
+		},
+		methods: {
+			//展开英文释义
+			showExplain: function(e){
+				if($(e.target).hasClass('active')) {
+					$(e.target).removeClass('active').text('英文释义');
+					$(e.target).siblings('.explainBox').slideUp()
+				} else {
+					var parentWordBox = $(e.target).parents('.wordBox');
+					var explainLeft = -parentWordBox.position().left - 30;
+
+					if(parentWordBox.parents('.forBox').siblings('.forBox').length > 0) {
+						parentWordBox.parents('.forBox').siblings('.forBox').find('.wordBox').find('.explainBox').stop(false,true).slideUp('normal',function(){
+							parentWordBox.parents('.forBox').siblings('.forBox').find('.wordBox').find('.explainText').removeClass('active').text('英文释义');
+							$(e.target).addClass('active').text('隐藏释义');
+							$(e.target).siblings('.explainBox').css('left', explainLeft).slideDown()
+						});
+					} else {
+						$(e.target).addClass('active').text('隐藏释义');
+						$(e.target).siblings('.explainBox').css('left', explainLeft).slideDown()
+					}
+					
+				}
+			},
+			// 添加评语
+			addAllRemark: function(){
+				layer.open({
+					type: 1,
+					title: '添加评语',
+					shade: 0.7,
+					zIndex: 20160922,
+					content: $('.remarkMain').html(),
+					area: ['1050px', 'auto'],
+					move: false,
+					btn: ['确定', '取消'],
+					yes: function(index, layero){
+					    alert('点击确定');
+					    layer.close(index)
+					},
+					btn2: function(index, layero){
+					    alert('点击取消');
+					},
+					cancel: function(){ 
+					    //右上角关闭回调
+					    
+					    //return false 开启该代码可禁止点击该按钮关闭
+					},
+					btnAlign: 'c'
+				});
+			},
+			// 获取作业列表
+			getHomeworkList: function(){
+				this.$http.post(this.url, {
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						this.homeworkData = response.data.data;
+						for (var i=0;i<this.homeworkData.length;i++){
+							this.homeworkData[i]['url'] = '&homeworkId='+this.homeworkData[i]['homeworkId'] + '&classId=' + this.homeworkData[i]['classId']
+						}
+						this.homeworkLength = this.homeworkData.length;
+
+						this.$nextTick(function(){
+							title()
+						})
+						
+					} else {
+						console.log('错误1')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+
+			},
+			// 查看更多作业
+			moreHomework: function(e){
+				this.stuHomeworkTopHeight = Math.ceil((this.homeworkLength - 4)/4) * 301 + 364;
+				console.log(this.stuHomeworkTopHeight)
+				if($(e.target).hasClass('active')) {
+					$(e.target).removeClass('active').children('.more').text('更多作业');
+					$('.stuHomeworkTop').animate({height: "364px"});
+				} else {
+					$(e.target).addClass('active').children('.more').text('收起');
+					$('.stuHomeworkTop').animate({height: this.stuHomeworkTopHeight});
+				}
+			},
+			// 点击禁止穿透
+			parentClick: function(e){
+				e.stopPropagation();
+				$(e.target).parent().click();
+			},
+		}
+	})
+</script>
+
+<script>
+	// 标题格式
+	function title() {
+		$('.stuHomeworkBox .title').each(function(i, n){
+			console.log($(this).text().length)
+			if($(this).text().length <= 11) {
+				$(this).css({
+					'text-align': 'center',
+					'line-height': '85px',
+					'padding': 0
+				})
+			} else if($(this).text().length > 11 && $(this).text().length <= 16) {
+				$(this).css({
+					'text-align': 'left',
+					'line-height': '28px',
+					'padding': '14.5px 0'
+				})
+			} else if($(this).text().length > 16) {
+				$(this).css({
+					'text-align': 'left',
+					'line-height': '28px',
+					'padding': 0
+				})
+			}
+			console.log()
+		})
+	}
+
+	title()
+</script>
+

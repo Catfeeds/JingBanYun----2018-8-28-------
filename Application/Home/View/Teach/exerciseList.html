@@ -1,0 +1,56 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_THEME__/stylesheets/exercise.css?v=2" rel="stylesheet" type="text/css" />
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css" />
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.js"></script>
+<script src='https://player.polyv.net/script/polyvplayer.min.js'></script>
+<script src="__PUBLIC__/js/exercise/render_3.js?" type="text/javascript"></script>
+<div class="col-md-2" style="text-align: center;float:right;padding:0 0.5%;margin-top:10px">
+    <a href="javascript:;" title="打印" id="printBtn" class="btn btn-primary printBtn" >打印</a>
+</div>
+<div id="exerciseWrapper" style="margin-top: 0px"></div>
+
+<script>
+ var ids='{$ids}';
+ var isShowCorrectAnswer = false;
+ createExerciseByIdString(ids,function(){$('.wrong_img,.right_img').remove();});
+ $('#printBtn').click(function(){
+     $('textArea').removeAttr('placeholder').attr('style','visibility:hidden');
+     $("#exerciseWrapper").print({
+         globalStyles: false,
+         mediaPrint: false,
+         stylesheet: '/Public/theme/2016/assets/stylesheets/exercise_print.css',
+         noPrintSelector: ".collectImg,.match_tools,.selectSingleExercises,.no_print",
+         iframe: true,
+         append: null,
+         prepend: null,
+         manuallyCopyFormValues: true,
+         deferred: $.Deferred()}
+     );
+ });
+ $('#exerciseWrapper').on('click','.selectSingleExercises',function(){
+    if(!$(this).is(':checked'))
+    {
+        $(this).parent().parent().addClass('no_print');
+        $(this).parent().parent().find('*').css('color','gray');
+    }
+    else
+    {
+        $(this).parent().parent().removeClass('no_print');
+        $(this).parent().parent().find('*').css('color','black');
+    }
+     var exerciseIndex = 1;
+     $('.exerciseQuestion').each(function(i,n){
+          if(!$(n).parent().hasClass('no_print'))
+          {
+              $(n).find('span').text(exerciseIndex+ '.');
+              exerciseIndex ++;
+          }
+          else
+              $(n).find('span').text('')
+     })
+
+
+ });
+
+</script>
+<script src="__PUBLIC__/js/jQuery.print.js"></script>

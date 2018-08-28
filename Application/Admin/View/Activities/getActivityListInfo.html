@@ -1,0 +1,95 @@
+<?php if (!empty($registerDetails)): ?>
+<volist name="registerDetails" id="item">
+    <tr id="l_{$item.id}">
+        <if condition = "1">
+        <input value="{$item.id}" class="hidden_input_id" type="hidden"/>
+        <td>
+            {$item.name}
+        </td>
+        <td class="text-center">
+            {$item.telephone}
+        </td>
+        <td class="text-center">
+            {$item.role}
+        </td>
+        <td>
+            {$item.lesson}
+        </td>
+        <td class="text-center">
+            {$item.register_at|date="Y-m-d H:i",###}
+        </td>
+        <td class="text-center">
+            <?php if($item['hasuploadworks'] == 1) echo '是';else echo '否'; ?>
+        </td>
+        <td class="text-center">
+            {$item.invitation_code}
+        </td>
+        <td class="text-center">
+           <if condition="$item.status eq 1">
+               通过
+           <elseif condition="$item.status eq 2" />
+               拒绝
+           <elseif condition="$item.status === '0'" />
+               待审核
+           </if>
+        </td>
+
+        <td class="text-center">
+            <if condition="$item.status eq 1">
+                <if condition="$item.point eq ''">
+                   <input type="text" value="{$item.point}" class="point" <?php if($item['status']!=1) disabled ?>>
+                    <else/>
+                    <span class="pointSpan">{$item.point}</span> <button class="button editAward">编辑</button>
+                </if>
+            </if>
+        </td>
+        <td class="text-center">
+
+            <a tabindex=-1 href="{:U('Activities/lookRanking?id=')}{$item.id}" class="button">查看</a>
+
+        </td>
+            <else />
+            <td>
+                {$item.name}
+            </td>
+            <td class="text-center">
+                手机: {$item.telephone}&nbsp;&nbsp; 邮箱:{$item.email}&nbsp;&nbsp;报名信息:{$item.register_info}
+            </td>
+            <td class="text-center">
+                {$item.register_at|date="Y-m-d H:i",###}
+            </td>
+        </if>
+    </tr>
+</volist>
+
+<?php else: ?>
+<tr><td class="text-center" colspan="12">暂无数据</td></tr>
+<?php endif ?>
+<div class="Pagination">{$page}</div>
+<script>
+    $(function(){
+        function checkPoint(obj)
+        {
+            var reg = /[\(\)\[\]\.\`\~\!\@\#\$\%\^\&\*\+\=\{\}\:\;\"\'\?]/
+            var flag = reg.test($(obj).val());
+            if(flag == true){
+                alert('评奖中有非法字符');
+                $(obj).focus();
+                return false;
+            }
+            return true;
+        }
+
+        $('.point').blur(function(){
+            refreshStatics();
+            return checkPoint(this);
+        })
+
+    })
+    $('.editAward').click(function(){
+        var oldAward = $(this).siblings('span').text();
+        var html = '<input type="text" value="'+oldAward +'" class="point">';
+        $(this).parent().html(html)
+    })
+
+</script>

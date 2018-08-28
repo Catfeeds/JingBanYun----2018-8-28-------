@@ -1,0 +1,315 @@
+<style>
+	#contentWrapper {
+		background: rgb(255, 251, 242);
+		border: 2px solid #efca33
+	}
+
+	.classDiv {
+		width: 621px;
+		margin: 40px auto;
+		text-align: center;
+		font-size: 16px;
+		line-height: 36px;
+	}
+
+	select {
+		width: 212px;
+		height: 42px;
+		padding-left: 5px
+	}
+
+	input {
+		width: 431px;
+		padding-left: 5px
+	}
+
+	button {
+		border: none;
+		outline: none;
+		background: #efca33;
+		color: #fff;
+		width: 100px;
+		border-radius: 5px;
+		height: 43px;
+		position: relative;
+		top: -1px
+	}
+
+	.beizhu {
+		line-height: 24px;
+		font-size: 14px;
+		color: #ccc;
+		text-indent: 85px;
+		text-align: left
+	}
+
+	.myclass {
+		color: #efca33;
+	}
+	table{
+		width: 621px;
+		border: 1px solid #efca33
+	}
+	thead{
+		background: rgb(232,202,51)
+
+	}
+	th,td,tr{
+		border: 1px solid #efca33
+	}
+	.spanleft{
+		float: left;
+		margin-left: 10px;
+		cursor: pointer
+	}
+	.spanright {
+	float: right;
+		margin-right: 10px;
+		cursor: pointer
+    }
+	th{
+		border-right: 1px solid #fff
+	}
+	.fullscreen #contentWrapper{
+		min-height: 1000px !important
+	}
+	.class_code{
+		height: 42px;
+	}
+		.bg{
+		    display: none;
+    position: fixed;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 20170420;
+    -moz-opacity: 0.7;
+    opacity: .70;
+	}
+	#Popup{
+		z-index: 20170421;
+	}
+</style>
+<div class="main_opr">
+	<a href="{:U('ClassstuList/classList')}" title="我的班级" class="btn btn-main-opr ">我的班级</a>
+	<a href="{:U('ClassstuList/registerClass')}" title="加入班级" class="btn btn-main-opr  btn-main-opr-active">加入班级</a>
+</div>
+<div class="classDiv">
+	<p>班级编号：
+		<input type="text" class="class_code" placeholder="请输入班级编号">
+
+		<button class="addclass">申请加入</button>
+	</p>
+	<p class="beizhu">*您可以输入班级编号加入校建班级或教师自建班级，可以向学校或已经加入班级的教
+	</p>
+	<p class="beizhu"> 师询问班级编号加入校建班级，需等待教师审核，您可在申请加入列表中查看审核进展</p>
+	<p>选择班级：
+		<select name="" id="getclassid" onchange="getXueke()">
+			<option value="">请选择年级</option>
+			<volist name="xiaojian" id="xiaojiandata" empty="暂时没有信息">
+				<option value="{$xiaojiandata.grade_id}">{$xiaojiandata.grade}</option>
+			</volist>
+		</select>
+		<select name="dict_course_id" id="dict_course_id">
+			<option value="">请选择班级</option>
+		</select>
+
+		<button class="addclasstwo">申请加入</button>
+	</p>
+	<p class="beizhu">*选择已有校建班级
+	</p>
+	<p class="myclass">我申请加入的班级</p>
+	<table>
+		<thead>
+			<tr>
+				<th class="text-center">序号</th>
+				<th class="text-center">班级编号</th>
+				<th class="text-center">年级</th>
+				<th class="text-center">班级</th>
+				<th class="text-center">申请状态</th>
+				<th class="text-center" style="width:160px;border-right:1px solid #efca33">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+
+		<volist name="class_list" id="class_list_data"  key="k" empty="">
+			<tr>
+				<td>{$k}</td>
+				<td>{$class_list_data.class_code}</td>
+				<td>{$class_list_data.grade}</td>
+				<td>{$class_list_data.name}</td>
+				<td>
+					<?php if ($class_list_data['status'] == 3): ?>
+						已拒绝
+						<?php else: ?>
+						未通过
+					<?php endif ?>
+				</td>
+
+				<?php if ($class_list_data['status'] == 1): ?>
+					<td><a class="spanleft sendremind" classid="{$class_list_data.id}" student_id="{$class_list_data.student_id}">发送提醒</a><a class="spanright noJoin" classid="{$class_list_data.id}" student_id="{$class_list_data.student_id}">不加入</a></td>
+				<?php endif ?>
+
+				<?php if ($class_list_data['status'] == 3 || $class_list_data['status'] == 4): ?>
+					<td>已经被拒绝</td>
+				<?php endif ?>
+
+			</tr>
+
+		</volist>
+
+		</tbody>
+	</table>
+	<empty name="class_list"><p style="width:621px;background:rgb(247, 234, 192);">暂时没有信息</p></empty>
+</div>
+<!--弹窗 -->
+<div id="Popup">
+	<p ><span class="news_title">提示</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt=""></p>
+	<p style="margin-bottom:50px" class="news_content">发送成功</p>
+	<p>
+		<button class="queding">确定</button>
+	</p>
+</div>
+<div class="bg"></div>
+
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+
+<script>
+$('.spanleft').click(function(){
+
+})
+$('#Popup').find('button,img').click(function(){
+	$('#Popup,.bg').hide()
+})
+
+function getXueke() {
+	var gradeId = $('#getclassid').val();
+	if (gradeId == '') {
+		$('#dict_course_id').html('<option value="">-选择-</option>');
+		return;
+	}
+	$.get('__URL__/getclassSchool', {
+		'grade_id': gradeId
+	}, function (res) {
+		var options = [];
+		$.each(res, function (index, item) {
+			options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+		});
+		if (options.length > 0) {
+			$('#dict_course_id').html(options.join(''));
+		} else {
+			$('#dict_course_id').html('<option value="">-请选择-</option>');
+		}
+	})
+}
+
+$('.addclass').click(function () {
+	var class_code = $('.class_code').val();
+	if (class_code == '') {
+		$.NotifyBox.NotifyPromptOne('提示', '请输入正确的班级编号', '确定');
+		return false;
+	}
+	$.get('__URL__/setClassCode', {
+		'class_code': class_code
+	}, function (res) {
+		if (res.code == 200) {
+			if(res.class_category !='school') {
+				$.NotifyBox.NotifyPromptOneCNc('提示', '申请发送成功', '确定', function () {
+					$('.class_code').val('');
+					window.location.reload();
+				})
+			}
+			else
+			{
+				window.location.reload();
+			}
+
+		}else{
+			$('.news_title').html('提示');
+			$('.news_content').html(res.info);
+			$('#Popup,.bg').show()
+		}
+	})
+})
+
+$('.addclasstwo').click(function () {
+	var class_id = $('#dict_course_id').val();
+
+	if (class_id == '') {
+
+		$('.news_title').html('提示');
+		$('.news_content').html('请选择要加入的班级');
+		$('#Popup,.bg').show()
+		return;
+	}
+
+	$.get('__URL__/setClassjoinClass', {
+		'class_id': class_id
+	}, function (res) {
+		if (res.code == 200) {
+			window.location.reload();
+		}else{
+
+			$('.news_title').html('提示');
+			$('.news_content').html(res.info);
+			$('#Popup,.bg').show()
+
+			/*$.Notify({
+				caption: '提示',
+				content: res.info,
+				type: 'warning'
+			});*/
+		}
+	})
+})
+
+$('.noJoin').click(function () {
+	var classid = $(this).attr('classid');
+	var student_id = $(this).attr('student_id');
+
+	$.get('__URL__/delClassjoinClass', {
+		'classid': classid,
+		'student_id':student_id
+	}, function (res) {
+		if (res.code == 200) {
+			window.location.reload();
+		}else{
+
+		$('.news_title').html('提示');
+		$('.news_content').html('删除失败');
+		$('#Popup,.bg').show()
+		}
+	})
+
+})
+
+$('.sendremind').click(function () {
+	var classid = $(this).attr('classid');
+	var student_id = $(this).attr('student_id');
+
+	$.get('__URL__/sendRemind', {
+		'classid': classid,
+		'student_id':student_id
+	}, function (res) {
+
+		if (res.status == 200) {
+			$('.news_title').html('提示');
+			$('.news_content').html('发送成功');
+			$('#Popup,.bg').show();
+			//window.location.reload();
+		}else{
+
+				$('.news_title').html('提示');
+				$('.news_content').html('发送失败');
+				$('#Popup,.bg').show()
+		}
+	},'json')
+
+})
+
+$('.queding').click(function () {
+	window.location.reload();
+})
+</script>

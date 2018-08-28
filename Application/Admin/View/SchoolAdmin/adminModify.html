@@ -1,0 +1,362 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		管理员管理
+		<span class="blueSpan">
+			<a href="javascript:;">用户管理</a>>>
+			<a href="{:U('SchoolAdmin/adminList')}">管理员账号</a>>>
+			<a href="javascript:;">修改管理员信息</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<form action="{:U('SchoolAdmin/adminModify')}" method="post" onsubmit="return checkInfo()">
+    
+<div class="blueBox">
+	<span class="blueText left fs16">修改管理员</span>
+	<a href="javascript:;" class="blackText right submitA" id="" >
+		<img src="{$oss_path}public/web_img/Admin/icon-save.png" alt="" class="mr10"> 
+                <input type='submit' class="submitInput" value='保存修改'/>
+	</a>
+</div>
+<hr class="thin bg-grayLighter">
+
+
+	<div class="grid condensed cellBox">
+		<div class="row cells3">
+                    <input type="hidden" name="admin_id" value="{$data.id}" >
+                    <if condition="$data['parent_id'] neq 0">
+			<div class="cell">
+				<label>省份：</label>
+				<select id="province_list" class="input-control" name="province" required>
+					<option value="0">-请选择-</option>
+					<volist name="province_list" id="province_item">
+						<option value="{$province_item.id}" <if condition="$province_item['id']==$data['province_id']">selected="true"</if> >{$province_item.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>市区：</label>
+				<select id="city_list" class="input-control" name="city" required>
+					<option value="0">-请选择-</option>
+					<volist name="city_list" id="city_item">
+						<option value="{$city_item.id}" <if condition="$city_item['id']==$data['city_id']">selected="true"</if> >{$city_item.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>区县：</label>
+				<select id="district_list" class="input-control" name="district" required>
+					<option value="0">-请选择-</option>
+					<volist name="district_list" id="district_item">
+						<option value="{$district_item.id}" <if condition="$district_item['id']==$data['district_id']">selected="true"</if> >{$district_item.name}</option>
+					</volist>
+				</select>
+			</div>
+			<div class="cell">
+				<label>学校：</label>
+				<select id="school_list" class="input-control" name="school_id" required>
+					<option value="0">-请选择-</option>
+				    <volist name="school_list" id="school_item">
+						<option value="{$school_item.id}" <if condition="$school_item['id']==$data['school_id']">selected="true"</if> >{$school_item.name}</option>
+					</volist>
+				</select>
+			</div>
+                    <else />
+			<div class="cell">
+				<label>学校名称：</label>
+				<input type="text" class="input-control" id="school_list" name="school_id" value="{$data.school_name}" placeholder="请输入学校名称" required> 
+			</div>
+                    </if>
+			<div class="cell">
+				<label>学校代码：</label>
+				<input type="text" class="input-control school_code" name="school_code" value="{$data.school_code}" placeholder="请输入学校代码" disabled='true'>
+			</div>
+			<div class="cell">
+				<label>管理员账号：</label>
+				<input type="text" class="input-control account_name" name="account_name" value="{$data.account}" placeholder="请输入管理员账号" required>
+			</div>
+			<div class="cell">
+				<label>登录密码：</label>
+				<input type="password" class="input-control password" name="password" value="{$data.password}" placeholder="请设置管理员登录密码" required>
+			</div>
+			<div class="cell">
+				<label>管理员姓名：</label>
+				<input type="text" class="input-control real_name" name="real_name" value="{$data.real_name}" placeholder="请输入管理员姓名" required>
+			</div>
+			<div class="cell">
+				<label>管理员手机号：</label>
+				<input type="text" class="input-control telephone" name="telephone" value="{$data.telephone}" placeholder="请输入管理员手机号" required>
+			</div>
+			<div class="cell">
+				<label>管理员邮箱：</label>
+				<input type="text" class="input-control email" name="email" value="{$data.email}" placeholder="请输入管理员邮箱">
+			</div>
+			<div class="cell">
+				<label>账号类型：</label>
+				<if condition="$data['parent_id'] neq 0">
+					<input type="text" class="input-control account_type" name="account_type" value="学校子级管理员" disabled='true'>
+				<else />
+					<input type="text" class="input-control account_type" name="account_type" value="学校管理员" disabled='true'>
+				</if>
+			</div>
+			<div class="cell">
+				<label>账号状态：</label>
+				<select id="account_status" class="input-control" name="account_status" required><!--admin_flag-->
+					<option value="">-请选择-</option>
+					<option value="1" <if condition="$data['admin_flag']==='1'">selected="true"</if> >启用</option>
+					<option value="0" <if condition="$data['admin_flag']==='0'">selected="true"</if> >停用</option>
+				</select>
+			</div>
+		</div>
+	</div>
+
+
+<if condition="$data['parent_id'] neq 0">
+    <p class="blueText fs16 mt30">添加权限</p> 
+    <div class="tabBox">
+            <ul class="left tabUl" id="tabUl">
+                <volist name="owner_permissions" id="permissions_item" key="_key">
+                    <if condition="$_key eq 1">
+                        <li class="tabLi tabActive">
+                                <input type="checkbox" value="{$permissions_item.id}" name="per_id[]" class="admincheck mr5" <if condition="$permissions_item['selected'] eq 1">checked="true"</if> >
+                                {$permissions_item.module_name}
+                        </li> 
+                    <else />
+                        <li class="tabLi">
+                                <input type="checkbox" value="{$permissions_item.id}" name="per_id[]" class="admincheck mr5" <if condition="$permissions_item['selected'] eq 1">checked="true"</if> >
+                                {$permissions_item.module_name}
+                        </li> 
+                    </if>
+                </volist>
+            </ul>
+            <div class="tabCon" id="tabCon">
+                <volist name="owner_permissions" id="permissions_items" key="key">
+                    <if condition="$key eq 1">
+                        <div class="divTable tabConActive">
+                                <ul class="mgmtUl">
+                                    <volist name="permissions_items.child" id="item_child">
+                                        <li class="mgmtLi">
+                                            <input type="checkbox" value="{$item_child.id}" name="per_id[]" class="admincheck mr5" <if condition="$item_child['selected'] eq 1">checked="true"</if> >
+                                                {$item_child.module_name}
+                                        </li> 
+                                    </volist>
+                                </ul>
+                        </div>
+                    <else />
+                        <div class="divTable">
+                                <ul class="mgmtUl">
+                                    <volist name="permissions_items.child" id="item_child">
+                                        <li class="mgmtLi">
+                                                <input type="checkbox" value="{$item_child.id}" name="per_id[]" class="admincheck mr5" <if condition="$item_child['selected'] eq 1">checked="true"</if> >
+                                                {$item_child.module_name}
+                                        </li> 
+                                    </volist>
+                                </ul>
+                        </div> 
+                    </if> 
+                </volist>
+            </div>
+    </div>
+</if>
+</form>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+	window.onload=function(){
+		var tabs=document.getElementById("tabUl").getElementsByTagName("li");
+		var divs=document.getElementById("tabCon").getElementsByClassName("divTable");
+
+		for(var i=0;i<tabs.length;i++){
+			tabs[i].index = i;
+			tabs[i].onclick=function(){
+				change(this);
+			}
+			
+			//全选
+			tabs[i].childNodes.item(1).onclick=function(){
+				var index_ = this.parentNode.index;
+				var childCheck=divs[index_].childNodes.item(1).getElementsByClassName("mgmtLi");
+				var temp_status=true;
+				if(this.checked==true){
+					//本次选中
+					temp_status=true;
+				}else{
+					//本次取消
+					temp_status=false;
+				}
+				for(var j=0;j<childCheck.length;j++){
+					childCheck[j].childNodes.item(1).checked=temp_status
+				}
+			}
+			
+			//单选
+			var check_m = divs[i].childNodes.item(1).getElementsByClassName("mgmtLi");
+			for(var m=0;m<check_m.length;m++){
+				check_m[m].childNodes.item(1).onclick=function(){
+					if ($(this)[0].checked == true) {
+						$('.tabActive').children('input').attr('checked','checked');
+						$('.tabActive').children('input').prop('checked','checked');
+					} else if ($(this)[0].checked == false) {
+						if ($(this).parent().siblings().find("[type='checkbox']:checked").length == 0) {
+							$('.tabActive').children('input').removeAttr('checked','checked');
+							$('.tabActive').children('input').removeProp('checked','checked');
+						}
+					}
+				}
+			}
+		}
+
+		function change(obj){
+			for(var i=0;i<tabs.length;i++){
+				if(tabs[i]==obj){
+					tabs[i].className="tabLi tabActive";
+					divs[i].className="divTable tabConActive";
+				}else{
+					 tabs[i].className="tabLi";
+					 divs[i].className="divTable";
+				}
+			}
+		} 
+	}
+        
+        var parent_id="{$data.parent_id}";
+        var temp_option="<option value='0'>-请选择-</option>";
+        //省份发生变化
+        $('#province_list').change(function(){ 
+            $("#city_list option:not(:eq(0))").remove();
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#province_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getCityByProvince')}",
+                dataType:"json",
+                data:{'province_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#city_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        //城市发生变化
+        $('#city_list').change(function(){ 
+            $("#district_list option:not(:eq(0))").remove();
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#city_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getDistrictByCity')}",
+                dataType:"json",
+                data:{'city_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#district_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        //区县发生变化
+        $('#district_list').change(function(){ 
+            $("#school_list option:not(:eq(0))").remove();
+            var id=$("#district_list").val(); 
+            $.ajax({
+                type:"post",
+                url:"{:U('Common/getSchoolByDistrict')}",
+                dataType:"json",
+                data:{'district_id':id},
+                success: function(msg){ 
+                    for(var i=0;i<msg.data.length;i++){
+                        var clone_option=$(temp_option).clone(true);
+                        $(clone_option).val(msg['data'][i].id);
+                        $(clone_option).text(msg['data'][i].name);
+                        $("#school_list").append(clone_option);
+                    }
+                }
+            })
+        });
+        
+        function checkInfo() {       
+            if(parent_id!=0){
+                var province,city,district,school; 
+                province=$("#province_list").val();
+                city=$("#city_list").val();
+                district=$("#district_list").val();
+                school=$("#school_list").val();
+                       
+                if(province==0 || province==false){
+                    $.NotifyBox.NotifyOne('注意', '请选择省份！', '确定');
+                    return false;
+                }
+                if(city==0 || city==false){
+                    $.NotifyBox.NotifyOne('注意', '请选择城市！', '确定');
+                    return false;
+                }
+                if(district==0 || district==false){
+                    $.NotifyBox.NotifyOne('注意', '请选择区县！', '确定');
+                    return false;
+                }
+                if(school==0 || school==false){
+                    $.NotifyBox.NotifyOne('注意', '请选择学校！', '确定');
+                    return false;
+                } 
+            }
+                var account_name,password;
+                account_name=$(".account_name").val();
+                var password = $('.password').val(); 
+                if(account_name==''){
+                    $.NotifyBox.NotifyOne('注意', '账号不能为空！', '确定');
+                    return false;
+                }
+                if(password==''){
+                    $.NotifyBox.NotifyOne('注意', '密码不能为空！', '确定');
+                    return false;
+                }
+		var real_name = $('.real_name').val();  
+		var telephone=$('.telephone').val();
+		var email = $('.email').val();
+                var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		if (real_name == false) {
+			$.NotifyBox.NotifyOne('注意', '管理员姓名不能为空！', '确定');
+			return false;
+		}else if(!regName.test(real_name)){
+                        $.NotifyBox.NotifyOne('注意','管理员姓名格式不正确！','确定');
+                        return false;
+                }  
+                //联系人电话
+		var regMobilePhone = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+		var linkmanPhone = $('.telephone').val();
+		if (!regMobilePhone.test(linkmanPhone)) { 
+                        $.NotifyBox.NotifyOne('注意','管理员手机号格式错误！','确定');
+			return false;
+		} else if (linkmanPhone == '') { 
+                        $.NotifyBox.NotifyOne('注意','请输入管理员手机号！','确定');
+			return false;
+		} 
+                if (email != '') {
+			var regEmail = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+			if (!regEmail.test(email)) {
+				$.NotifyBox.NotifyOne('注意', '邮箱格式不正确！', '确定');
+				return false;
+			}
+		}
+                var account_status=$("#account_status").val();
+                if(account_status==''){
+                    $.NotifyBox.NotifyOne('注意', '请选择账号状态！', '确定');
+                    return false;
+                }
+                 
+		return true;
+	}
+</script>
+

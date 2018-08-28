@@ -1,0 +1,92 @@
+<layout name="teacher_layout"/>
+<style>
+    html, body {
+        background-color: #C09C7C;
+    }
+
+    .bookshelfImg {
+        height: 19px;
+        width: 100%;
+        clear: both;
+        display: block;
+        margin-bottom: 22px;
+    }
+
+    .booksWrapper {
+        text-align: center;
+
+    }
+
+    .booksWrapper .bookCover {
+        width: 100%;
+    }
+
+    .booksWrapper .bookIntro {
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 20px;
+        line-height: 20px;
+        word-wrap: break-word;
+        z-index: 999;
+        opacity: .6;
+        background: #5F5A5A;
+        font-size: 12px;
+        color: white;
+    }
+
+    .booksWrapper .book {
+        display: inline-block;
+        width: 16%;
+        margin: 0 6px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    #listWrapper {
+        background-color: #C09C7C;
+    }
+</style>
+<div style="margin-top: 40px;" id="listWrapper">
+</div>
+<script type="text/javascript">
+
+    var HTTP_BASE_URL = window.location.protocol + '//' + window.location.host + '/';
+    var PIC_BOOK_PATH = 'ebook/';
+    var template =
+            ['            <div class="book" tapmode="" onclick="showBook({0})">',
+                '                <img class="bookCover"',
+                '                     src="{2}">',
+                '                <div class="bookIntro">{1}</div>',
+                '            </div>'].join("");
+
+
+    renderBooks();
+
+    function renderBooks() {
+        $.post('{0}api/etextbook.action.php/all'.format(HTTP_BASE_URL), function (ret) {
+            var result = ret.result;
+            var allBookHtml = [];
+            var html = [];
+            var flag = 1; //计数器
+            for (var i = 0; i < result.length; i++) {
+                var coverImage = '{0}{1}{2}/cover.jpg'.format(HTTP_BASE_URL, PIC_BOOK_PATH, result[i].server_path);
+                html.push(template.format(result[i].id, result[i].name, coverImage, result[i].server_path));
+                if (flag == 5 || i == result.length - 1) {
+                    flag = 1;
+                    allBookHtml.push('<div class="booksWrapper">' + html.join('') + '</div><img class="bookshelfImg" src="__PUBLIC_METRO__/img/bookShelf/5_gc.jpg">');
+                    html = [];
+                } else {
+                    flag++;
+                }
+            }
+            document.getElementById('listWrapper').innerHTML = allBookHtml.join('');
+        });
+    }
+
+    function showBook(id) {
+        //window.location.href = "index.php?m=Home&c=Teach&a=textbookDetails&id=" + id;
+        window.open("index.php?m=Home&c=Teach&a=textbookDetails&id=" + id);
+    }
+</script>

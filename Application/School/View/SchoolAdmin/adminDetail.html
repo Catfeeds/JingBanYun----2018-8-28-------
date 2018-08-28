@@ -1,0 +1,70 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<div class="indexOutter overHidden">
+	<div class="standardMain hrefContent">
+		<a href="{:U('SchoolAdmin/adminList')}" class="returnBack">管理员列表</a>
+		>
+		<span class="thePage">查看管理员信息</span>
+	</div>
+
+	<div class="standardMain classContent tableContent mt0">
+		<div class="blueBox">
+			<span class="left blueTitle">查看管理员信息</span>
+			<a href="{:U('SchoolAdmin/updateAdmin')}&id={$data.id}" class="blackText right" id="">
+				<img src="__PUBLIC__/img/admin/xiugai.png" alt="" class="mr10">
+				修改信息
+			</a>
+		</div>
+
+		<div class="grid condensed infoOutter">
+			<div class="row cells3 infoBox">
+				<div class="cell">管理员账号：{$data.account}</div>
+				<div class="cell">管理员姓名：{$data.real_name}</div>
+				<div class="cell">管理员手机号：{$data.telephone}</div>
+				<div class="cell">管理员邮箱：{$data.email}</div>
+				<div class="cell">&nbsp;</div>
+				<div class="cell">&nbsp;</div>
+			</div>
+		</div>
+
+		<div class="tableOutter">
+			<p class="tableTitle">管理员已有的权限</p>
+			<table id="listWrapper" class="table striped hovered border newTable">
+				<thead>
+			        <tr>
+			            <th style="width: 200px">模块</th>
+			            <th>可操作的功能</th>
+			        </tr>
+				</thead>
+				<tbody id="body">
+					<empty name="permissions">
+					   	<tr>
+			                <td colspan="5" style="color: #999">
+								暂无信息
+							</td>
+						</tr>
+					</empty>
+					<notempty name="permissions">
+			            <volist name="permissions" id="permissions_item">
+			                <tr> 
+		                        <td attr_id="{$permissions_item.id}">
+		                            {$permissions_item.module_name}
+		                        </td>
+	                            <td class="text-left">
+                                    <volist name="permissions_item.child" id="child_item">
+                                        <span class="pr20" attr_id="{$child_item.id}">{$child_item.module_name}</span> 
+                                    </volist>
+		                        </td>
+			                </tr>
+			            </volist>
+			        </notempty>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+

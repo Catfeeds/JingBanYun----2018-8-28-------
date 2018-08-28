@@ -1,0 +1,180 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/js/ajaxfileupload.js"></script>
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/css/adminDirectTrain.css">
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+
+<div style="margin-bottom: 12px;">
+    <span title="添加标签" class="button primary" id="addBtn">添加标签</span>
+</div>
+
+<p class="blueText fs16">标签列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center">标签名</th>
+			<th class="text-center">操作</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+	<volist name="list" id="data" empty="">
+		<tr id="l_{$data.id}">
+			<td class="text-center">
+				{$data['tags_name']}
+			</td>
+			<td class="text-center">
+				<a href="javascript:;" class="button editBtn" attr-id="{$data['id']}" id="">修改</a>
+				<a class="button delete_button danger" attr="{$data.id}">删除</a>
+			</td>
+		</tr>
+	</volist>
+	</tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<!-- 添加标签弹窗 -->
+<div class="fullscr1" id="addLabel">
+    <div class="adminNotifyBox1">
+        <div class="adminNotifyTitle">添加标签</div>
+        <div class="adminNotifyContent">
+            <div class="adminSelect pt30">
+                <div class="selectBox mb10">     
+                    <label for="">标签名称：</label>
+                    <input type="text" class="input-control" id="infoName" value="" placeholder="请输入标签名称">
+                </div>
+            </div>
+            <p class="adminNotifyButton">
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addSure">确定</a>
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addCancel">取消</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- 修改标签弹窗 -->
+<div class="fullscr1" id="editLabel">
+    <div class="adminNotifyBox1">
+        <div class="adminNotifyTitle">修改标签</div>
+        <div class="adminNotifyContent">
+            <div class="adminSelect pt30">
+                <div class="selectBox mb10">     
+                    <label for="">标签名称：</label>
+                    <input type="text" class="input-control" id="infoNames" value="" placeholder="请输入标签名称">
+                </div>
+            </div>
+            <p class="adminNotifyButton">
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="editSure">确定</a>
+                <a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="editCancel">取消</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+//            "scrollY": ($('body').height() - 475) + "px",
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"50%"},
+                {"width":"50%"}
+            ]
+        });
+    });
+</script>
+
+<script>
+    // 点击添加，添加弹窗出现
+    $('#addBtn').click(function(){
+        $('#addLabel').show()
+    })
+
+    // 点击添加弹窗的确定，添加弹窗消失
+    $('#addSure').click(function(){
+        if($('#infoName').val() == ''){
+            return false;
+        }
+        var tags_name = $('#infoName').val();
+        $.ajax({
+            data:{'tags_name':tags_name},
+            url:'{:U("DirectTrain/addProblem")}',
+            type:'post',
+            dataType:'json',
+            success:function (data) {
+                if(data.status == 200){
+                    history.go();
+                }else{
+                    alert(data.message);
+                }
+            }
+        })
+        $('#addLabel').hide()
+    })
+
+    // 点击添加弹窗的取消，添加弹窗消失
+    $('#addCancel').click(function(){
+        $('#addLabel').hide()
+    })
+    var tags_id = $(this).attr('attr-id');
+    // 点击修改，修改弹窗出现
+    $('.editBtn').click(function(){
+        tags_id = $(this).attr('attr-id');
+        $('#editLabel').show();
+        $.ajax({
+            data:{'tags_id':tags_id},
+            url:'{:U("DirectTrain/problemDetails")}',
+            type:'post',
+            dataType:'json',
+            success:function (data) {
+                if(data.status == 200){
+                    $('#infoNames').val(data.data.tags_name);
+                }
+            }
+        });
+    });
+    // 点击修改弹窗的确定，修改弹窗消失
+    $('#editSure').click(function(){
+        if($('#infoNames').val() == ''){
+            return false;
+        }
+        var tags_name = $('#infoNames').val();
+        $.ajax({
+            data:{'tags_name':tags_name,'tags_id':tags_id},
+            url:'{:U("DirectTrain/editorsProblem")}',
+            type:'post',
+            dataType:'json',
+            success:function (data) {
+                if(data.status == 200){
+                    history.go();
+                }else{
+                    alert(data.message);
+                }
+            }
+        })
+        $('#editLabel').hide()
+    });
+    // 点击修改弹窗的取消，修改弹窗消失
+    $('#editCancel').click(function(){
+        $('#editLabel').hide()
+    });
+    $('.danger').click(function () {
+        var id = $(this).attr('attr');
+        $.ajax({
+            data:{'tip':true,'tags_id':id},
+            url:'{:U("DirectTrain/editorsProblem")}',
+            type:'post',
+            dataType:'json',
+            success:function (data) {
+                if(data.status == 200){
+                    history.go();
+                }else{
+                    alert(data.message);
+                }
+            }
+        })
+    })
+</script>

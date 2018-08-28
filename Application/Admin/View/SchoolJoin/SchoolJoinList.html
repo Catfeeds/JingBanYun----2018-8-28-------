@@ -1,0 +1,82 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+
+
+<p class="blueText fs16">学校加入</p>
+<table id="listWrapper" class="table striped hovered border">
+    <thead>
+    <tr>
+        <!--<th class="text-center"><input type="checkbox" class="check_all mr5">全选</th>-->
+        <th class="text-center">序号</th>
+        <th class="text-center">申请时间</th>
+        <th class="text-center">学校全称</th>
+        <th class="text-center">申请人</th>
+        <th class="text-center">申请人联系电话</th>
+    </tr>
+    </thead>
+    <tbody id="body">
+    <volist name="list" id="item" key="key">
+        <tr>
+            <td class="text-center">
+                {$key}
+            </td>
+            <td class="text-center">
+                {$item.creat_time}
+            </td>
+            <td class="text-center">
+                {$item.school_name}
+            </td>
+            <td class="text-center">
+                {$item.proposer}
+            </td>
+            <td class="text-center">
+                {$item.proposer_tel}
+            </td>
+        </tr>
+    </volist>
+    </tbody>
+</table>
+<div class="Pagination">{$page}</div>
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"25%"},
+                {"width":"25%"},
+                {"width":"25%"},
+                {"width":"25%"},
+            ]
+        });
+    });
+
+    //启用或禁用
+    $('.account_status').click(function(){
+        var id=$(this).siblings('.account_id').val();
+        var obj=this;
+        $.ajax({
+            type:"post",
+            url:"{:U('SchoolAdmin/updateSchoolAdminStatus')}",
+            dataType:"json",
+            data:{'id':id},
+            success: function(msg){
+                if(msg.status==200){
+                    location.reload();
+                }else if(msg.status==400){
+                    $.NotifyBox.NotifyNotLogin();
+                }else{
+                    $.NotifyBox.NotifyOne('注意',msg.msg,'确定');
+                    return false;
+                }
+            }
+        })
+    });
+</script>
+
+

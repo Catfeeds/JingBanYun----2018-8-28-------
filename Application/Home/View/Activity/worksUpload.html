@@ -1,0 +1,962 @@
+<layout name="teacher_layout_1"/>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css?t=1">
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link href="__PUBLIC__/css/activity.css?ver=113" rel="stylesheet" type="text/css"/>
+
+<style>
+	.uploadMainCon {
+		overflow: hidden;
+	}
+	
+	#fine-uploader1, #fine-uploader2, #fine-uploader3 {
+		margin-bottom: 50px;
+	}
+	
+	.qq-uploader {
+		width: calc(100% - 600px)
+	}
+	
+	#innerContent {
+		height: calc(100% - 100px);
+		margin-top: 50px;
+	}
+	
+	.input-control .form-control {
+		display: inline-block
+	}
+
+	textarea {
+		resize: none
+	}
+</style>
+
+
+
+
+<div class="fullBlack"></div>
+<div class="resourceOutter">
+    <span class="resourceClose"></span>
+    <div id="innerContent"></div>
+</div>
+
+
+<div id="uploadOutter">
+    <if condition="$pageType eq WORKUPLOAD">
+	<img src="__PUBLIC__/img/activity/worksUpload3.png" alt="" class="uploadImg" style="margin-bottom: 60px">
+	<elseif condition="$pageType eq WORKVIEW"/>
+	<img src="__PUBLIC__/img/activity/worksExamine3.png" alt="" class="uploadImg">
+	<elseif condition="$pageType eq WORKMODIFY"/>
+	<img src="__PUBLIC__/img/activity/worksModify3.png" alt="" class="uploadImg" style="margin-bottom: 60px">
+	</if>
+
+	<!--点赞/收藏 -->
+	<if condition="$pageType neq WORKUPLOAD">
+		<div class="uploadCtrlBox" >
+<!--
+			<if condition="$existedZan eq 'yes'">
+				<img id="zanIcon" src="__PUBLIC__/img/icon/zaned.png">
+				<else/>
+				<img id="zanIcon" src="__PUBLIC__/img/icon/zan.png">
+			</if>
+-->
+			<if condition="$existedFavor eq 'yes'">
+				<img id="favorIcon" src="__PUBLIC__/img/activity/favored.png" title="取消收藏">
+				<else/>
+				<img id="favorIcon" src="__PUBLIC__/img/activity/favor.png" title="收藏">
+			</if>
+		</div>
+	</if>
+
+	<form id="mainForm" action="{:U('Activity/activityWorkPublish')}" method="post" onsubmit="$('#saveButton').attr('disabled',true);">
+	<input type="hidden" name="id" value="{$data.id}">
+	<div class="uploadInfo">
+		<div class="uploadInfoLeft left">
+			<div class="form_section">
+                <label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;科：</label>
+                <div class="input-control text full-size">
+                    <input type="text" class="form-control" value="{$courses.course_name}" disabled>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="grade_id">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</label>
+
+                <div class="input-control text full-size">
+                    <select id="grade_id" name="grade_id" class="form-control"  required
+					<if condition="($pageType eq WORKVIEW) ">
+					disabled
+					</if>
+					>
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                            <option value="{$dataGrade.grade}" {$dataGrade['grade_name']==$workInfo['grade']?'selected':''}>{$dataGrade.grade_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form_section ">
+                <label for="name">作品名称：</label>
+                <div class="input-control text full-size">
+                    <input type="text" name="name" id="name" class="form-control" required placeholder="必填，不超过100个字" maxlength="100" onchange="this.value=this.value.substring(0, 100)" value="{$workInfo.works_name}" 
+					<if condition="($pageType eq WORKVIEW)">
+					disabled
+					</if>
+					>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="description" style="vertical-align:top">作品描述：</label>
+                <div class="input-control text full-size">
+                    <textarea id="description" name="description" rows="6" class="form-control" required placeholder="必填，不超过500个字" maxlength="500" onchange="this.value=this.value.substring(0, 500)" value=""
+					<if condition="($pageType eq WORKVIEW) ">
+					disabled
+					</if>
+					>{$workInfo.works_description}</textarea>
+                </div>
+            </div>
+		</div>
+		    <input type='hidden' name='file_name' id='file_name' />
+            <input type='hidden' name='unique_string' id='unique_string' />
+            <input type='hidden' name='vid_image_path' id='vid_image_path' />
+            <input type='hidden' name='vid_transition' id='vid_transition' />
+            <input type='hidden' name='vid' id='vid' />
+            <input type='hidden' name='vid_fullpath' id='vid_fullpath' />
+			<input type='hidden' name='file_category' id='file_category' />
+		<div class="uploadInfoRight left">
+			<div class="uploadWishes">
+                <p class="uploadWisTitle">
+                    作者寄语
+                    <img class="uploadWisImg" src="__PUBLIC__/img/activity/authorWishes.png" alt="">
+                </p>
+                <div class="input-control text full-size uploadConBox">
+                    <textarea id="uploadContent" name="authorContent" rows="9" class="form-control" placeholder="不超过100个字" maxlength="100" onchange="this.value=this.value.substring(0, 100)" value=""
+					<if condition="($pageType eq WORKVIEW) ">
+					disabled
+					</if>
+					>{$workInfo.author_remarks}</textarea>
+                </div>
+            </div>
+		</div>
+<!--
+		<if condition="( ($pageType eq WORKUPLOAD) OR ($pageType eq WORKMODIFY)) AND  ($isSelfWork eq true)">
+		<div class="uploadInfoBtn">
+			<a class="btn btn-red">上传文件</a>
+		</div>
+		</if>
+-->
+	</div>
+	
+	<div class="uploadFile">
+		<div class="uploadFileTitle">文件支持压缩包/视频/音频/图片/word/ppt/pdf/swf,其中：</div>
+		<div class="uploadFileContent">
+			<div class="fileConLeft">压缩包(zip/rar)</div>
+			<div class="fileConRight">单个文件大小不超过1GB</div>
+		</div>
+		<div class="uploadFileContent">
+			<div class="fileConLeft">word(doc/docx)</div>
+			<div class="fileConRight">单个文件大小不超过150MB</div>
+		</div>
+		<div class="uploadFileContent">
+			<div class="fileConLeft">视频(mp4/mov/wmv/flv/avi/mpg)</div>
+			<div class="fileConRight">单个文件大小不超过1GB,分辨率小于1280*720像素，帧频要求不小于25帧/秒</div>
+		</div>
+	</div>
+	
+	<div class="uploadMain">
+		<!--教学资源-->
+		<div class="uploadMainCon">
+			<div class="upMainConTop">
+				<div class="imgDiv">
+					<img src="__PUBLIC__/img/activity/teachResource.png" alt="" class="left teachImg">
+					<div class="teachNote">压缩包内可上传教师资源/学生资源/演示文稿/资源目录(必填)</div>
+				</div>
+				
+				<div class="left teachMiddle">
+					<a target="_blank" href="/index.php?m=Home&c=Admin&a=resdownfile&path=http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Activity/teachResource.doc" class="teachDownload">点击下载参考模板</a>
+					<img src="__PUBLIC__/img/activity/teachArrowsRed.png" alt="" class="teachArrows">
+				</div>
+				<div id="fine-uploader1">
+
+                </div>
+				<div class="uploadFiles">
+				
+					<volist name="works2" id="work" key="i">
+						<if condition="$work.file_category eq 1">
+				       <img class="teachFileImg" src="__PUBLIC__/img/activity/teachZip.png" alt="">
+					       <p class="teachFileP">文件名称：{$work.works_file_name}&nbsp;&nbsp;&nbsp;&nbsp;
+						   <if condition = "($pageType eq WORKUPLOAD) OR ($pageType eq WORKMODIFY) ">
+						    <a onclick="uploadAgain(1,this)" href="javascript:void(0);">重新上传</a>
+						   <elseif condition="($pageType eq WORKVIEW) AND  ($isSelfWork eq true)"/>
+						     <a download="{$work.works_file_path}" href="{$oss_path}{$work.works_file_path}">下载</a>
+							</if>
+						   </p>
+						   <br>
+						</if>
+					</volist>
+				</div>
+
+			</div>
+		</div>
+		<!--教学设计-->
+		<div class="uploadMainCon">
+			<div class="upMainConTop">
+				<div class="imgDiv">
+					<img src="__PUBLIC__/img/activity/teachDesign.png" alt="" class="left teachImg">
+					<div class="teachNote">仅可上传单个文件(必填)</div>
+				</div>
+				<div class="left teachMiddle">
+					<a target="_blank" href="/index.php?m=Home&c=Admin&a=resdownfile&path=http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Activity/teachDesign.doc" class="teachDownload">点击下载参考模板</a>
+					<img src="__PUBLIC__/img/activity/teachArrowsRed.png" alt="" class="teachArrows">
+				</div>
+				<div class="uploadFiles">	
+					
+					
+					<volist name="works2" id="work" key="i">
+						<if condition="$work.file_category eq 2">
+						<img class="teachFileImg" src="__PUBLIC__/img/activity/teachWord.png" alt="">
+							<p class="teachFileP">文件名称：<a class="dataA" href="javascript:void(0);" type="word" src="{$oss_path}<?php
+						$path = explode('.',basename($work['works_file_path']));
+                        $path=$path[0].'.pdf';
+						$path = 'Activity/Works/' .$workInfo['id'].'/' .$path;
+                        echo $path;                        
+						?>"											
+							> {$work.works_file_name}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						   <if condition = "($pageType eq WORKUPLOAD) OR ($pageType eq WORKMODIFY) ">
+						    <a onclick="uploadAgain(2,this)" href="javascript:void(0);">重新上传</a>
+						   <elseif condition="($pageType eq WORKVIEW) AND  ($isSelfWork eq true)"/>
+						     <a download="{$work.works_file_path}" href="{$oss_path}{$work.works_file_path}">下载</a>
+							</if>
+							</p>
+						   <br>
+							
+						</if>
+					</volist>
+				</div>
+				<div id="fine-uploader2">
+
+                </div>
+				
+			</div>
+		</div>
+		<!--教学反思-->
+		<div class="uploadMainCon">
+			<div class="upMainConTop">
+				<div class="imgDiv">
+					<img src="__PUBLIC__/img/activity/teachRethink.png" alt="" class="left teachImg">
+					<div class="teachNote">仅可上传单个文件(必填)</div>
+				</div>
+				<div class="left teachMiddle">
+					<a target="_blank" href="/index.php?m=Home&c=Admin&a=resdownfile&path=http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/Activity/teachRethink.doc" class="teachDownload">点击下载参考模板</a>
+					<img src="__PUBLIC__/img/activity/teachArrowsRed.png" alt="" class="teachArrows">
+				</div>
+				<div class="uploadFiles">
+
+					<volist name="works2" id="work" key="i">
+						<if condition="$work.file_category eq 3">
+							<img class="teachFileImg" src="__PUBLIC__/img/activity/teachWord.png" alt="">
+							<p class="teachFileP">文件名称：<a class="dataA" href="javascript:void(0);" type="word" src="{$oss_path}<?php
+						$path = explode('.',basename($work['works_file_path']));
+                        $path=$path[0].'.pdf';
+						$path = 'Activity/Works/' .$workInfo['id'].'/' .$path;
+                        echo $path;                        
+						?>"											
+							> {$work.works_file_name}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						   <if condition = "($pageType eq WORKUPLOAD) OR ($pageType eq WORKMODIFY) ">
+						    <a onclick="uploadAgain(3,this)" href="javascript:void(0);">重新上传</a>
+						   <elseif condition="($pageType eq WORKVIEW) AND  ($isSelfWork eq true)"/>
+						    <a download="{$work.works_file_path}" href="{$oss_path}{$work.works_file_path}">下载</a>
+							</if>
+						   </p>
+						   <br>
+						</if>
+					</volist>
+				</div>
+				<div id="fine-uploader3">
+
+                </div>
+				
+			</div>
+		</div>
+		<!--教学实录-->
+
+		<?php if( ($pageType != WORKVIEW) || in_array(4,array_column($works2,'file_category') )) : ?>
+
+		<div class="uploadMainCon">
+			<div class="upMainConTop">
+				<div class="imgDiv">
+					<img src="__PUBLIC__/img/activity/teachMemoir.png" alt="" class="left teachImg">
+					<div class="teachNote">仅可上传单个文件(必填)</div>
+				</div>
+				<div class="left teachMiddle">
+					<img src="__PUBLIC__/img/activity/teachArrowsRed.png" alt="" class="teachArrows">
+				</div>
+				<div class="uploadFiles">
+				
+					<volist name="works2" id="work" key="i">
+						<if condition="$work.file_category eq 4">
+							<img class="teachFileImg" src="__PUBLIC__/img/activity/teachVideo.png" alt="">
+							<p class="teachFileP">文件名称：<a class="dataA" type="video" href="javascript:void(0);" vid="{$work.vid}"> {$work.works_file_name}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						   <if condition = "($pageType eq WORKUPLOAD) OR ($pageType eq WORKMODIFY) ">
+						    <a onclick="uploadAgain(4,this)" href="javascript:void(0);">重新上传</a>
+							<a onclick="deleteUploadInfo(4,this)" href="javascript:void(0);">删除</a>
+						   <elseif condition="($pageType eq WORKVIEW) AND  ($isSelfWork eq true)"/>
+						    <a download="{$work.works_file_path}" href="{$oss_path}{$work.works_file_path}">下载</a>
+							</if>
+						   </p>
+						   <br>
+						</if>
+					</volist>
+				</div>
+				<div id="fine-uploader4">
+
+                </div>
+				
+			</div>
+		</div>
+		<?php endif; ?>
+		<!--提交-->
+		<if condition="( ($pageType eq WORKUPLOAD) OR ($pageType eq WORKMODIFY)) AND  ($isSelfWork eq true)">
+		<div class="uploadInfoBtn">
+			<button type="submit" class="btn btn-red" id="saveButton" onclick="return checkWork();">提交</button>
+		</div>
+		</if>
+		
+		
+		<!--右上角悬窗-->
+		<if condition="( ($pageType eq WORKUPLOAD) OR ($pageType eq WORKMODIFY)) AND  ($isSelfWork eq true)">
+		<div class="uploadHint">
+			<p>文件过大?<br/>格式不对?<br/>快试试用格式工厂<br/>压缩/转换文件吧!</p>
+			<a href="{:U('Activity/worksFormat')}" onclick="window.open('{:U('Activity/worksFormat')}')" target="_blank" class="uploadTry">去试试</a>
+		</div>
+		</if>
+	</div>
+	</form>
+</div>
+
+<script type="text/javascript" src="__PUBLIC__/js/queryLimit.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script src="__PUBLIC__/js/notify/notifyBox.js?ver=115"></script>
+
+<script>
+	$(document).ready(function () {
+		$(window).scroll(function () {
+			// console.log($(window).scrollTop())
+			if ($(window).scrollTop() >= 860) {
+				$('.uploadHint').css({
+					'position': 'fixed',
+					'right': '6%',
+					'top': '30px'
+				})
+			} else {
+				$('.uploadHint').css({
+					'position': 'absolute',
+					'right': '-25px',
+					'top': '30px'
+				})
+			}
+		});
+	});
+</script>
+
+<!--点赞收藏-->
+<script>
+    var o_status="{$operation_status}";
+var zan= "{$workInfo.zan_count}";
+var favor= "{$workInfo.favor_count}";
+		
+        $('#zanIcon').click(function () {    
+            if(o_status==1){
+                $.notify({
+                    title: '提示',
+                    message: '不能对自己发布的资源进行操作'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+            if (!canQuery()) {
+                $.notify({
+                    title: '提示',
+                    message: '请求过于频繁'
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    }
+                });
+                return false;
+            }
+
+            $.get('__URL__/zanWork', { id: '{$workInfo.id}'}, function (res) {
+                if (res.result == 'yes') {
+					zan++;
+                    $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zaned.png');
+                    $.notify({
+                        title: '提示',
+                        message: '点赞成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+					if(res.status == 402) //self work
+					{
+						$.notify({
+							title: '提示',
+							message: '不能对自己的作品进行点赞'
+						}, {
+							type: 'warning',
+							placement: {
+								from: "top",
+								align: "center"
+							}
+						});
+						return;
+					}
+					zan--;
+                    $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zan.png');
+                    $.notify({
+                        title: '提示',
+                        message: '已经取消点赞'
+                    }, {
+                        type: 'warning',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#favorIcon').click(function () {
+            if(o_status==1){
+//                $.notify({
+//                    title: '提示',
+//                    message: '不能对自己发布的资源进行操作'
+//                }, {
+//                    type: 'success',
+//                    placement: {
+//                        from: "top",
+//                        align: "center"
+//                    }
+//                });
+				$.NotifyBox.NotifyPromptOne('提示','不能对自己发布的资源进行操作','确定')
+                return false;
+            }
+            if (!canQuery()) {
+//                $.notify({
+//                    title: '提示',
+//                    message: '请求过于频繁'
+//                }, {
+//                    type: 'success',
+//                    placement: {
+//                        from: "top",
+//                        align: "center"
+//                    }
+//                });
+				$.NotifyBox.NotifyPromptOne('提示','请求过于频繁','确定')
+                return false;
+            }
+
+            $.get('__URL__/favorWork',  {id: '{$workInfo.id}'}, function (res) {
+                if (res.result == 'yes') {
+					favor++;
+
+                    $('#favorIcon').attr({
+						'src': '__PUBLIC__/img/activity/favored.png',
+						'title': '取消收藏'
+					});
+//                    $.notify({
+//                        title: '提示',
+//                        message: '收藏成功'
+//                    }, {
+//                        type: 'success',
+//                        placement: {
+//                            from: "top",
+//                            align: "center"
+//                        }
+//                    });
+					$.NotifyBox.NotifyPromptOne('提示','收藏成功','确定')
+                } else {
+					favor--;
+                    $('#favorIcon').attr({
+							'src': '__PUBLIC__/img/activity/favor.png',
+							'title': '收藏'
+						});
+//                    $.notify({
+//                        title: '提示',
+//                        message: '已经取消收藏'
+//                    }, {
+//                        type: 'warning',
+//                        placement: {
+//                            from: "top",
+//                            align: "center"
+//                        }
+//                    });
+					$.NotifyBox.NotifyPromptOne('提示','已经取消收藏','确定')
+                }
+            });
+        })
+</script>
+<script>
+ var uploadInfo = {
+    <?php
+    for($i=0;$i<count($works2);$i++)
+    {
+        echo ($works2[$i]['file_category']).':';
+        echo "{'file_category':". $works2[$i]['file_category']."," . "'file_name': '" . $works2[$i]['works_file_name'] ."'," . "'file_path': '".$works2[$i]['works_file_path']."'," . "'image_path': '".$works2[$i]['vid_image_path']."'," . "'is_transition': '".$works2[$i]['is_transition']."'," . "'vid': '".$works2[$i]['vid']."'," ."'vid_fullpath': '".$works2[$i]['vid_fullpath']."'}";
+        if($i!=count($works2)-1)
+            echo ',';
+    }
+    ?>
+
+    };
+ var ignoreVideoUpload = false;	
+	function onFileCheck(){
+		if($('#grade_id').val() == ""){
+            $.NotifyBox.NotifyPromptOne("提示","请选择年级", "确定");
+            return false;
+        }
+
+        if($.trim($('#name').val()) == ""){
+            $.NotifyBox.NotifyPromptOne("提示","请填写作品名称", "确定");
+            return false;
+        }
+
+        if($.trim($('#description').val()) == ""){
+            $.NotifyBox.NotifyPromptOne("提示","请填写作品描述", "确定");
+            return false;
+        }
+
+        if($('li').hasClass('qq-upload-fail')){
+            $.NotifyBox.NotifyPromptOne("提示","有文件上传错误,请修复上传文件错误再提交", "确定");
+            return false;
+        }
+		if($('li').hasClass('qq-in-progress')){
+            $.NotifyBox.NotifyPromptOne("提示","文件未上传完毕,无法提交", "确定");
+            return false;
+        }
+       
+		if(typeof(uploadInfo[1]) == 'undefined')
+		{
+		    $.NotifyBox.NotifyPromptOne("提示","请上传教学资源", "确定");
+            return false;
+		}
+		if(typeof(uploadInfo[2]) == 'undefined')
+		{
+		    $.NotifyBox.NotifyPromptOne("提示","请上传教学设计", "确定");
+            return false;
+		}
+		if(typeof(uploadInfo[3]) == 'undefined')
+		{
+		    $.NotifyBox.NotifyPromptOne("提示","请上传教学反思", "确定");
+            return false;
+		}
+		if(typeof(uploadInfo[4]) == 'undefined')
+		{
+			$.NotifyBox.NotifyPromptOne("提示","请上传教学实录", "确定");
+			return false;
+		}
+		if(0 == ignoreVideoUpload)
+		{
+		 if(typeof(uploadInfo[4]) == 'undefined')
+		 {
+		     $.NotifyBox.NotifyPromptTwoCt("提示","您还未上传教学实录, 确定提交?", "去上传","提交",function(){},function(){
+			 ignoreVideoUpload = 1;
+   	         $('#saveButton').click();
+	      });
+          return false;
+		 }
+		}
+		 ignoreVideoUpload = 0;
+		 return true;
+    }
+	function checkWork() {
+        //资源名称
+        if(!onFileCheck()){
+            return false;
+        }
+        $('#unique_string').val('');
+        $('#file_name').val('');
+        $("#unique_vid").val();
+        $("#vid_width").val();
+        $("#vid_time").val();
+        $("#vid_fullpath").val('');
+        $("#vid_image_path").val('');
+        $("#vid_transition").val('');
+        $("#vid").val('');
+		$("#file_category").val('');
+
+            
+        for(var key in uploadInfo){ 
+
+		    $('#unique_string').val($('#unique_string').val() + encodeURI(uploadInfo[key].file_path)+',');
+			
+            $('#file_name').val($('#file_name').val() + encodeURI(uploadInfo[key].file_name) +',');
+
+            var image_path= typeof(uploadInfo[key].image_path) != 'undefined' ? uploadInfo[key].image_path : '0';
+            $('#vid_image_path').val($('#vid_image_path').val()+image_path+',');
+
+            var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+            $('#vid_transition').val($('#vid_transition').val()+vid_transition+',');
+
+            var vid= typeof(uploadInfo[key].vid) != 'undefined' ? uploadInfo[key].vid : '0';
+            $('#vid').val($('#vid').val()+vid+',');
+
+            var vid_fullpath= typeof(uploadInfo[key].vid_fullpath) != 'undefined' ? uploadInfo[key].vid_fullpath : '0';
+            $('#vid_fullpath').val($('#vid_fullpath').val()+vid_fullpath+',');
+			
+			var file_category= typeof(uploadInfo[key].file_category) != 'undefined' ? uploadInfo[key].file_category : '0';
+            $('#file_category').val($('#file_category').val()+file_category+',');
+			
+        }
+        $('#file_name').val($('#file_name').val().substr(0 ,$('#file_name').val().length-1));
+        $('#unique_string').val($('#unique_string').val().substr(0 ,$('#unique_string').val().length-1));
+        $('#vid_image_path').val($('#vid_image_path').val().substr(0 ,$('#vid_image_path').val().length-1));
+        $('#vid_transition').val($('#vid_transition').val().substr(0 ,$('#vid_transition').val().length-1));
+        $('#vid').val($('#vid').val().substr(0 ,$('#vid').val().length-1));
+        $('#vid_fullpath').val($('#vid_fullpath').val().substr(0 ,$('#vid_fullpath').val().length-1));		
+		$('#file_category').val($('#file_category').val().substr(0 ,$('#file_category').val().length-1));
+
+        var vid_file_path=$('#unique_string').val();
+        if(vid_file_path==''){
+            $.NotifyBox.NotifyPromptOne("提示",'上传文件不能为空', "确定");
+            return false;
+        }
+        return true;
+    }
+</script>
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader-v2beta.js?v=2" type="text/javascript"></script>
+<script type="text/template" id="qq-template">
+    <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+        <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+            <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+        </div>
+        <div class="qq-upload-button-selector qq-upload-button">
+            <div>上传附件</div>
+        </div>
+        
+
+    <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+    <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+        <li>
+            <div class="qq-progress-bar-container-selector">
+                <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+            </div>
+            <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+            <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+            <span class="qq-upload-file-selector qq-upload-file"></span>
+            <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+            <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+            <span class="qq-upload-size-selector qq-upload-size"></span>
+            <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">取消</button>
+            <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">继续上传</button>
+            <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+        </li>
+    </ul>
+
+    <dialog class="qq-alert-dialog-selector">
+        <div class="qq-dialog-message-selector"></div>
+        <div class="qq-dialog-buttons">
+            <button type="button" class="qq-cancel-button-selector">Close</button>
+        </div>
+    </dialog>
+
+    <dialog class="qq-confirm-dialog-selector">
+        <div class="qq-dialog-message-selector"></div>
+        <div class="qq-dialog-buttons">
+            <button type="button" class="qq-cancel-button-selector">No</button>
+            <button type="button" class="qq-ok-button-selector">Yes</button>
+        </div>
+    </dialog>
+
+    <dialog class="qq-prompt-dialog-selector">
+        <div class="qq-dialog-message-selector"></div>
+        <input type="text">
+        <div class="qq-dialog-buttons">
+            <button type="button" class="qq-cancel-button-selector">Cancel</button>
+            <button type="button" class="qq-ok-button-selector">Ok</button>
+        </div>
+    </dialog>
+    </div>
+</script>
+<script>
+<if condition="$pageType neq WORKVIEW">
+function deleteUploadInfo(id,obj)
+    {
+        $('#prompt_delete').show();
+        var thisId = id;
+        var thisObj = obj;
+        $('#toolTipBtn_yes').unbind().click(function(){
+            $(thisObj).parent().remove();
+            delete uploadInfo[thisId];
+            $('#prompt_delete').hide();
+        });
+        $('#toolTipBtn_no').unbind().click(function(){
+            $('#prompt_delete').hide();
+        });
+    }
+var uploaderObject = {};	
+function setUploader(idName,fileTypeIndex,filterArray)
+{	
+ function getUploaderIndex(obj)
+ {
+   var index = -1;
+   $(Object.keys(uploaderObject)).each(function(i,n)
+   {
+    if(obj == uploaderObject[n])
+	 {
+	  index = parseInt(n)+1;
+	  return false;
+	 }
+   });
+   return index;
+ }
+ function getUploaderIndexByDiv(obj){
+ 
+   var index = -1;
+   $(Object.keys(uploaderObject)).each(function(i,n)
+   {
+    if($(obj.element).children().children().children('input').attr('qq-button-id') == uploaderObject[n]._defaultButtonId)
+	 {
+	  index = parseInt(n)+1;
+	  return false;
+	 }
+   });
+   return index;
+    
+ }
+var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById(idName),
+        request1Enable : true,
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mov","mp4","mp3","flv","avi","mpg","wmv","mpeg"),
+            inputName:'Filedata',
+        },
+		multiple: false,
+		fileFilter:filterArray,
+		maxFiles: 1,
+        request: {
+            endpointnum: 0,
+            endpoint: 'index.php?m=Home&c=Activity&a=workFileUpload',
+            params:{},
+            inputName:'file',
+            paramsGetFromServer:1,
+            chunking:{
+                enabled :true,
+                partSize: 2e6,
+                success:{
+                 endpoint:'e'
+                },
+                concurrent:{
+                    enabled:false
+                }
+            },
+        },
+
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'
+        },
+        retry: {
+            enableAuto: true,
+            maxAutoAttempts:0
+        },
+        resume: {
+            enabled: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[getUploaderIndexByDiv(this)];
+        },
+        responseCallBack: function(id,specNum,xhr,handle){
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                $.post('/index.php/Home/Common/pushErrorLog',{'specNum':specNum,'data':xhr.responseText},function(res){;});
+				$.NotifyBox.NotifyPromptOne("提示",'服务器繁忙,请稍候再试', "确定");
+                return false;
+            }
+            if(specNum == 0){
+                if(result.code == 0){
+                    if(typeof(uploadInfo[getUploaderIndex(handle)])== 'undefined'){
+                        uploadInfo[getUploaderIndex(handle)] = {};
+                    }
+                    try {
+					    uploadInfo[getUploaderIndex(handle)]['file_category'] = getUploaderIndex(handle);
+						uploadInfo[getUploaderIndex(handle)]['file_name'] = result.name;
+						try{
+						uploadInfo[getUploaderIndex(handle)]['file_path'] = $(result.res).children('key').text();
+						}
+						catch(e){uploadInfo[getUploaderIndex(handle)]['file_path'] = result.res;}
+                    }
+                    catch(e){;}
+					return true;
+                }else{
+					$.post('/index.php/Home/Common/pushErrorLog',{'specNum':specNum,'data':xhr.responseText},function(res){;});
+					$.NotifyBox.NotifyPromptOne("提示",result.msg, "确定");
+                }
+            }else if(specNum == 1){
+                if(result.error == 0){
+                    //alert("上传成功!VID:"+result.data[0].vid);
+                    //TODO: add result.res to XXX
+                    if(typeof(uploadInfo[getUploaderIndex(handle)])== 'undefined')
+                    {
+                        uploadInfo[getUploaderIndex(handle)] = {};
+                    }
+                    uploadInfo[getUploaderIndex(handle)]['vid'] = result.data[0].vid;
+                    uploadInfo[getUploaderIndex(handle)]['vid_fullpath'] = result.data[0].mp4;
+                    return true;
+                }else{
+					$.post('/index.php/Home/Common/pushErrorLog',{'specNum':specNum,'data':xhr.responseText},function(res){;});
+					$.NotifyBox.NotifyPromptOne("提示",result.error, "确定");
+                }
+            }
+
+            return false;
+        }
+    });	
+	uploaderObject[fileTypeIndex-1] =  uploader;
+}
+var uploaderParams = {
+ 1: {
+     id:'fine-uploader1',
+	 filterArray:Array('.rar','.zip')
+    },
+ 2: {
+     id:'fine-uploader2',
+	 filterArray:Array('.doc','.docx')
+    },
+ 3: {
+     id:'fine-uploader3',
+	 filterArray:Array('.doc','.docx')
+    },
+ 4: {
+     id:'fine-uploader4',
+	 filterArray:Array('.mp4','.mov','.mpg','.avi','.flv','.wmv','.mpeg')
+    },	
+};
+<if condition="$pageType neq WORKMODIFY" >
+for(var i=0;i<4;i++)
+{
+ if( typeof(uploadInfo[i+1]) == 'undefined' )
+  setUploader(uploaderParams[i+1].id,parseInt(i)+1,uploaderParams[i+1].filterArray);
+}
+</if>
+</if>
+</script>
+<script src="__PUBLIC__/js/md5/browser-md5-file.js"></script>
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script src='//player.polyv.net/script/polyvplayer.min.js'></script>
+<script>
+
+function deleteUploadInfo(id,obj)
+{
+    $.NotifyBox.NotifyPromptTwoCt("提示","确认删除吗", "确定","取消",function(){
+   	  $(obj).parent().remove(); 
+	  delete uploadInfo[id];
+	  setUploader(uploaderParams[id].id,parseInt(id),uploaderParams[id].filterArray);
+	});
+    
+}
+function uploadAgain(id,obj)
+    {
+      $.NotifyBox.NotifyPromptTwoCt("提示","重新上传的文件将会替<br>换原文件, 确定重新上传?", "确定","取消",function(){
+	  $(obj).parent().remove();
+	  delete uploadInfo[id];
+	  setUploader(uploaderParams[id].id,parseInt(id),uploaderParams[id].filterArray);
+	  $('#fine-uploader' + id).find('input').click()
+	});
+    }	
+$(function(){
+        var options = {
+            success:    showResponse,  // post-submit callback
+            resetForm:  false,
+            dataType:  'json'
+        };
+
+        // bind to the form's submit event
+        $('#mainForm').submit(function() {
+            $(this).ajaxSubmit(options);
+            return false;
+        });
+    });
+    function showResponse(responseText, statusText) {
+        $('#saveButton').attr('disabled',false);
+        switch(responseText.status)
+        {
+            case 200: //success
+            	$('#saveButton').attr('disabled','disabled');
+                $.NotifyBox.NotifyPromptOneCNc("提示","提交成功", "确定",function(){
+					window.opener=null;window.open('','_self');window.close();
+                });
+
+                break;
+
+            default: $.NotifyBox.NotifyPromptOne("提示",responseText.message, "确定");
+                break;
+        }
+    }
+	
+$('.dataA').click(function(){
+        $('.fullBlack,.resourceOutter').show();
+        var obj = $(this);
+        switch(obj.attr('type'))
+        {
+            case 'image':var template = '<img src="{0}">';
+                $('#innerContent').html(template.format(obj.attr('src')));
+                break;
+            case 'video':
+                var template = '<div id="plv"></div>';
+                $('#innerContent').html(template.format(''));
+                var vid = $(this).attr('vid');
+                var player = polyvObject('#plv').videoPlayer({
+                    'vid': vid
+                });
+                break;
+            case 'audio':var template = '<video controls src="{0}">';
+                $('#innerContent').html(template.format(obj.attr('src')));
+                break;
+            case 'ppt':
+            case 'word':
+            case 'pdf':
+                var pdfTemplate = '<iframe id="resourceFrame" frameborder="0" src="__PUBLIC__/pdfjs/viewer/viewer.html?f={0}" width="100%" height="100%"></iframe>';
+				
+                $('#innerContent').html(pdfTemplate.format(obj.attr('src')));
+                break;
+            case 'swf':
+                var template = '<object id="flashPlayer" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="500" height="500" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" id="swf">' +
+                        '<embed id="sfw_src" width="500" height="500" name="plugin"  src="{0}" type="application/x-shockwave-flash">' +
+                        '<param name="loop" value="false"><param name="movie" value=""></object>';
+                $('#innerContent').html(template.format(obj.attr('src')));
+                break;
+            case 'condensed':break;
+        }
+    })
+
+    $('.resourceClose').click(function(){
+        $('.fullBlack,.resourceOutter').hide();
+        $('#innerContent').html('');
+    })
+	
+	
+</script>

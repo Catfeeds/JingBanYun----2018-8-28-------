@@ -1,0 +1,994 @@
+<layout name="admin_layout"/>
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="__PUBLIC__/uploadify/uploadify.css">
+<link href="__PUBLIC__/js/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<!--<link href="/Public/theme/2016/front/css/bootstrap.min.css" rel="stylesheet">-->
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="__PUBLIC__/uploadify/jquery.uploadify.min.js"></script>
+<script src='__PUBLIC__/js/external/polyvplayer.min.js'></script>
+<script src="/Public/theme/2016/front/js/bootstrap.min.js"></script>
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+</style>
+<input type="hidden" value="{$data.type}" id="unique_class" />
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回 资源列表" class="button {:session('btntheme')}">&lt; 返回 资源列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+    <form action="__URL__/editJBResource" enctype="multipart/form-data" method="post" data-role="validator" data-on-error-input="notifyOnErrorInput"
+          data-show-error-hint="true">
+        <input type="hidden" name="id" value="{$id}">
+
+        <div class="example" data-text="基本信息">
+            <div class="form_section">
+                <label for="name">资源名称</label>
+
+                <div class="input-control text full-size">
+                    <input type="text" name="name" id="name" value="{$data.name}" data-validate-func="required" data-validate-hint="资源名称不能为空">
+                </div>
+            </div>
+            
+            <div class="form_section">
+                <label for="course_id">是否支持下载</label>
+
+                <div class="input-control text full-size">
+                    <select id="is_download" name="is_download"  data-validate-func="required" required data-validate-hint="是否支持下载不能为空">
+                        <option value="10">-请选择-</option>
+                            <option value="1" {$data['is_download']==1?'selected':''}>支持下载</option>
+                            <option value="0" {$data['is_download']==0?'selected':''}>不支持下载</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form_section" style="height: 126px">
+                <label for="description">资源描述</label>
+
+                <div class="input-control text full-size">
+                    <textarea id="description" name="description" rows="3"  data-validate-func="required" data-validate-hint="资源描述不能为空">{$data.description}</textarea>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="example" data-text="关联数据">
+            <div class="form_section">
+                <label for="course_id">关联学科</label>
+
+                <div class="input-control text full-size">
+                    <select id="course_id" name="course_id" onchange="getTextbooks()" data-validate-func="" data-validate-hint="关联学科不能为空">
+                        <option value="0">-请选择-</option>
+                        <volist name="courses" id="dataCourse" empty="暂时没有信息">
+                            <option value="{$dataCourse.id}" {$data['course_id']==$dataCourse['id']?'selected':''}>{$dataCourse.code} : {$dataCourse.course_name}</option>
+                        </volist>
+                            <!--<option value="-1" {$data['course_id']==-1?'selected':''}>QXK : 全学科</option>-->
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="grade_id">关联年级</label>
+
+                <div class="input-control text full-size">
+                    <select id="grade_id" name="grade_id" onchange="getTextbooks()" data-validate-func="" data-validate-hint="关联年级不能为空">
+                        <option value="0">-请选择-</option>
+                        <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                            <option value="{$dataGrade.id}" {$data['grade_id']==$dataGrade['id']?'selected':''}>{$dataGrade.grade}</option>
+                        </volist>
+                            <!--<option value="-1" {$data['grade_id']==-1?'selected':''} >小学全年级</option>
+                            <option value="-2" {$data['grade_id']==-2?'selected':''} >初中全年级</option>
+                            <option value="-3"  {$data['grade_id']==-3?'selected':''}>高中全年级</option>-->
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label for="textbook_id">教材分册</label>
+
+                <div class="input-control text full-size">
+                    <select id="textbook_id" name="textbook_id" data-validate-func="" data-validate-hint="教材分册不能为空" required>
+                        <option value="">-请先选择学科和年级-</option>
+                        <volist name="textbooks" id="dataTextbook" empty="暂时没有信息">
+                            <option value="{$dataTextbook.id}" {$data['textbook_id']==$dataTextbook['id']?'selected':''}>{$dataTextbook.name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+            <div class="form_section">
+                <label></br>栏目：</label>
+                <div class="input-control text full-size">
+                <select id="channel_id" name="channel_id" onchange="" required>
+                    <option value="">-请选择-</option>
+                    <volist name="channel" id="dataChannel">
+                        <option value="{$dataChannel.id}" {$data['channel_id']==$dataChannel['id']?'selected':''}>{$dataChannel.name}
+                        </option>
+                    </volist>
+                </select>
+                </div>
+                <div  style="float:left">
+                    <input type="checkbox" name="isDisplay" id="isDisplay" <?php if($data['isdisplay'] == "1") echo "checked"; ?> / >显示资源
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="example" data-text="资源内容">
+
+            <div class="form_section">
+                <label for="name">资源类型</label>
+
+                <div class="input-control text full-size">
+                    <select id="type" name="type" onchange="changeType()" data-validate-func="required" data-validate-hint="资源类型不能为空">
+                        <option value="0">--请选择--</option>
+                        <option extval=".mp4,.mov" value="video" {$data['type']=='video'?'selected':''}>视频</option>
+                        <option extval=".mp3" value="audio" {$data['type']=='audio'?'selected':''}>音频</option>
+                        <option extval=".doc,.docx" value="word" {$data['type']=='word'?'selected':''}>WORD</option>
+                        <option extval=".ppt,.pptx" value="ppt" {$data['type']=='ppt'?'selected':''}>PPT</option>
+                        <option extval=".pdf" value="pdf" {$data['type']=='pdf'?'selected':''}>PDF</option>
+                        <option extval=".swf" value="swf" {$data['type']=='swf'?'selected':''}>SWF文件</option>
+                        <option extval=".jpg,.png" value="image" {$data['type']=='image'?'selected':''}>图片</option>
+                        <!--<option extval=".gsp" value="gsp" {$data['type']=='gsp'?'selected':''}>几何画板</option>-->
+                        <option extval=".zip,.rar" value="condensed" {$data['type']=='condensed'?'selected':''}>压缩包</option>
+                    </select>
+                </div>
+            </div>
+            <!--这个是新增的-->
+            
+            
+            <div class="form_section">
+                <div id="attachmentWrapper" style="display: none;">
+                    <label>上传附件</label>
+
+                    <div class="input-control text full-size">
+                        <!--<input type="file" name="file[]" id="file" multiple="true" style="padding:0;">-->
+                        <br/>
+                        <div><a href="javascript:void(0)" style="color:#dd1010;text-decoration: none" id="file_button" class='choose_file'>选择上传文件</a></div>
+                    </div>
+                </div>
+                <div id="videoWrapper" style="display: none;">
+                    <input type="file" id="uploadToBLWS">
+                    <input type="button" class="media" onclick="javascript:$('#uploadToBLWS').uploadify('upload','*')" value="上传视频">
+                    <input type="hidden" value="" name="vid" id="vid">
+                    <input type="hidden" value="" name="vid_file_path" id="vid_file_path">
+                    <input type="hidden" value="" name="playerwidth" id="playerwidth">
+                    <input type="hidden" value="" name="playerduration" id="playerduration">
+                    <input type="hidden" value="" name="vid_fullpath" id="vid_fullpath">
+                    <input type="hidden" value="" name="vid_image_path" id="vid_image_path">
+                    <input type="hidden" value="" name="is_transition" id="is_transition">
+                </div>
+            </div>
+            
+            <div class="hidden_ids">
+                <volist name="resource_list" id="resource_item" empty="" key="i"> 
+                        <if condition="$data['type'] eq 'video'">
+                            <input type="hidden" attr_id="{$resource_item.id}" value="{$resource_item.id}" name="hidden_resource[]" vid_image='{$resource_item.vid_image_path}' attr_type='{$resource_item.type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.vvid}"/>  
+                        <elseif condition="$data['type'] eq 'audio'"/>  
+                            <input type="hidden" attr_id="{$resource_item.id}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="" attr_path="{$resource_item.vvid}"/> 
+                        <else />  
+                            <input type="hidden" attr_id="{$resource_item.id}" value="{$resource_item.id}" name="hidden_resource[]" attr_type='{$resource_item.type}' attr_class="contact_{$resource_item.id}" class="contact_{$resource_item.id} resource_class" attr="{$real_file_path}" attr_path="{$resource_item.resource_path}"  />
+                        </if>  
+                </volist> 
+            </div>
+            
+            <div class="row">  
+                <div id="fine-uploader" style="width:75%;">
+            
+                </div>
+                
+                <div class="col-md-5 resource_right_div" style="margin:0 auto;width:25%;">
+                   
+                    <switch name="data.type">
+                        <case value="image">
+                            <div style="width:100%;" class="resource_image">
+                                <img src="{$real_file_path}{$data.file_path}" />
+                            </div>
+                        </case>
+                        <case value="pdf">
+                            <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.pdf</a>-->
+                            <div style="width:100%;" class="resource_pdf">
+                                <a target="_blank" href="{$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                            </div>
+                        </case>
+                        <case value="word">
+                            <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.doc</a>-->
+                            <div style="width:100%;" class="resource_word">
+                                <a target="_blank" href="{:U('Teach/downloadResource')}&url={$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                            </div>
+                        </case>
+                        <case value="swf">
+                            <div style="width:100%;" class="resource_swf">
+                                <a target="_blank" href="{$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                            </div>
+                            <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.swf</a>-->
+                        </case>
+                        <case value="condensed">
+                            <div style="width:100%;" class="resource_swf">
+                                <a target="_blank" href="{:U('Teach/downloadResource')}&url={$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                            </div>
+                            <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.swf</a>-->
+                        </case>
+                        <!--<case value="gsp">
+                            <div style="width:100%;" class="resource_swf">
+                                <a target="_blank" href="{$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                            </div> 
+                        </case>-->
+                        <!--<case value="others">
+                            <a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}</a>
+                        </case>
+                        -->
+                        <case value="ppt">
+                            <!--<a target="_blank" href="http://{$REMOTE_ADDR}/Resources/jb/{$data.file_path}">点击查看{$data.name}.ppt</a>-->
+                            <div style="width:100%;" class="resource_ppt">
+                                <a target="_blank" href="{:U('Teach/downloadResource')}&url={$real_file_path}{$data.file_path}">点击查看{$real_file_path}{$data.file_path}</a>
+                            </div>
+                        </case> 
+                        <case value="video">
+                            <!--<div id='plv' style="margin-right:20px;"></div>-->
+                            <div id='plv'></div>
+                            <script>
+                                var player = polyvObject('#plv').videoPlayer({
+                                    'vid' : '{$data.vid}'
+                                });
+                            </script>
+                        </case>
+                        <case value="audio">
+                            <!--<div id='plv'></div>-->
+                            <div id='plv'></div>
+                            <script>
+                                var player = polyvObject('#plv').videoPlayer({
+                                    'vid' : '{$data.vid}'
+                                });
+                            </script>
+                        </case>
+                        <default/>
+
+                        <div>
+                        </div>
+                    </switch>
+            
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+            <div class="info_show">
+                <p>
+
+                </p>
+            </div>
+        </div> 
+         
+        <div class="form-actions" style="text-align: left; ">
+            <!--<button type="button" class="button info block-shadow-info text-shadow start_upload" >开始上传</button>-->
+            <button type="submit" class="button info block-shadow-info text-shadow" onclick="return check()">保存</button>
+        </div> 
+    </form>
+    
+    <form id="secondForm" action="__URL__/upload_file" method="post" enctype="multipart/form-data">
+            <div style='display:none;' class='upload_file'>
+
+            </div>
+            <div style="display:none;">
+                <button type="submit" class="btn btn-primary" id="real_uploadButton">开始上传</button>
+            </div>
+    </form>  
+</div>
+<div id="last_video_audio_div" style="display: none;">
+    
+</div>
+<!--<script src="__PUBLIC__/js/external/jquery.form.js"></script>-->
+<script src="__PUBLIC__/metro/js/metro.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script> 
+    //点击删除
+    
+    
+    /*
+     /*var resource_path='';
+    $(".browse_resource").click(function(){     
+        //点击查看资源的切换
+        switch(resource_ytpe){
+            case 'image':
+                resource_path=$(this).attr('attr_path');
+                $(".resource_image").children('img').attr('src',resource_path);
+                break;
+            case 'video':
+            case 'audio':
+                resource_path=$(this).attr('attr_path');
+                var player = polyvObject('#plv').videoPlayer({
+                                'vid' : resource_path
+                            });
+                break;
+            case 'swf':
+                resource_path=$(this).attr('attr_path');
+                $(".resource_swf").children('a').attr('href',resource_path).text(resource_path);
+                break;
+            case 'pdf':
+                resource_path=$(this).attr('attr_path');
+                $(".resource_pdf").children('a').attr('href',resource_path).text(resource_path);
+                break;
+            case 'word':
+                resource_path=$(this).attr('attr_path');
+                $(".resource_word").children('a').attr('href',resource_path).text(resource_path);
+                break;
+            case 'ppt':
+                resource_path=$(this).attr('attr_path');
+                $(".resource_ppt").children('a').attr('href',resource_path).text(resource_path);
+                break;
+            case 'zip':
+                resource_path=$(this).attr('attr_path');
+                $(".resource_zip").children('a').attr('href',resource_path).text(resource_path);
+                break;
+        }
+    })
+      
+     * $(".delete_resource").click(function(){ 
+        var attr=$(this).siblings('.browse_resource').attr('src');
+        
+        if(resource_ytpe=='image'){
+            var current_attr=$(".resource_image").children('img').attr('src');
+            $(this).parent().remove();
+            if($('.browse_resource').length>0){
+                if(attr==current_attr){
+                    var path=$('.browse_resource').eq(0).attr('attr_path');
+                    $(".resource_image").children('img').attr('src',path)
+                }
+            }else{
+                $(".resource_image").parent().remove();
+            }
+        }else if(resource_ytpe=='video' || resource_ytpe=='audio'){ 
+            var attr=$(this).attr('attr_path');
+            $(this).parent().remove();  
+                if($('.browse_resource').length>0){
+                    var player = polyvObject('#plv').videoPlayer({
+                                'vid' : attr
+                            });
+                }else{
+                    $('#plv').remove(); 
+                }
+        }else{
+            var class_name='';
+            if(resource_ytpe=='swf'){
+                class_name='swf';
+            }else if(resource_ytpe=='pdf'){
+                class_name='pdf';
+            }else if(resource_ytpe=='word'){
+                class_name='word';
+            }else if(class_name='ppt'){
+                class_name='ppt';
+            }else if(class_name='zip'){
+                class_name='zip';
+            }
+            $(this).parent().remove();
+            if($('.browse_resource').length>0){
+                $(".resource_"+class_name+"").children('a').attr('href',attr)
+            }else{
+                $(".resource_"+class_name+"").remove();
+            }   
+        }    
+    });*/
+    
+    function getTextbooks() {
+
+        var courseId = $('#course_id').val();
+        var gradeId = $('#grade_id').val();
+        if (courseId == '' || gradeId == '') {
+            $('#textbook_id').html('<option value="">-请选择-</option>');
+        }
+        $.get('index.php?m=Home&c=DictRest&a=get_textbooks_by_courseAndGrade', {
+            'course_id': courseId,
+            'grade_id': gradeId
+        }, function (res) {
+            var options = [];
+            $.each(res, function (index, item) {
+                options.push('<option value="{0}">{1}</option>'.format(item.id, item.name));
+            });
+            if (options.length > 0) {
+                $('#textbook_id').html(options.join(''));
+            } else {
+                $('#textbook_id').html('<option value="">-请选择-</option>');
+            }
+
+        })
+    }
+</script>
+
+<script>
+    //$('#attachmentWrapper').show();
+    //$('#videoWrapper').hide();
+    //var um = UM.getEditor('content');
+     
+    var number = 0; 
+    //var temp_input = "<input type='file' name='file[]' class='real_file' />";
+   // var temp_a = "<div class='a_div'><a href='javascript:void(0)' class='adda'>二氧化碳的溶解性-副本（2）.mp4-{22mb}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href='##' style='color:red;' class='delete_file'>删除</a></div><br/>";
+    //var BLWSUploadError = 0;
+   // var global_click_event=1;
+    var before_type=$("#type").val();
+    //var is_upload_file=0;
+    
+    /*var options = {
+        success: showResponse, // post-submit callback
+        resetForm: false,
+        dataType: 'json'
+    };
+    
+    var optionsVideo = {
+        success: showResponseVideo, // post-submit callback
+        resetForm: false,
+        dataType: 'json',
+        async: false
+    };
+     
+
+    function changeType() {
+        var type = $('#type').val();    
+        var click_tag=0;
+        /*
+        if (type == 'video' || type == 'audio') {
+            $('#attachmentWrapper').hide();
+            $('#videoWrapper').show();
+        } else {
+            $('#attachmentWrapper').show();
+            $('#videoWrapper').hide();
+        }*/ 
+        /*if(confirm('您确认改变资源类型吗?改变后之前的资源将会被清除')){
+            $('.real_file').remove();
+            $('.a_div').remove();
+            $(".resource_left_div").remove();
+            $(".resource_right_div").hide();
+            $("#vid").val('');
+            $("#vid_file_path").val('');
+            $("#playerwidth").val('');
+            $("#playerduration").val('');
+            
+            click_tag=1;
+        }else{
+            click_tag=1;    
+            $("#type").find("option[value="+before_type+"]").attr('selected',true); 
+        }  
+        if(click_tag==0){       
+            $('.real_file').remove();
+            $('.a_div').remove();
+            $("#vid").val('');
+            $("#vid_file_path").val('');
+            $("#playerwidth").val('');
+            $("#playerduration").val('');
+        }
+        before_type=$("#type").val();       
+        $("#real_type").val(before_type);
+        global_click_event=1;
+    }*/
+    
+    
+    //点击删除
+    /*$('.delete_file').live('click', function () { 
+        if(global_click_event==0){
+            return false;
+        }
+        var attr_number = $(this).attr('number');
+        $(".class_" + attr_number).remove();
+        $(this).parent().remove(); 
+    })*/
+     
+    //点击选择文件上传 
+    /*$("#file_button").click(function(){  
+        if (global_click_event == 0) {
+            return false;
+        } 
+        file_type = $('#type').val();
+        var acceptStr = $('#type').find("option:selected").attr('extval'); 
+        number++;
+        new_element = $(temp_input).clone(true);
+        $(new_element).addClass('class_' + number);
+        $(new_element).attr('id', 'id_' + number);
+        $(new_element).attr('accept', acceptStr);
+
+        $(".upload_file").append(new_element);
+        $(new_element).trigger('click');
+    });
+        
+    //文件发生变化
+    $(".real_file").live('change',function(){ 
+        if (global_click_event == 0) {
+            return false;
+        }
+        
+        var file_value = $(".class_" + number).val(); 
+        var a_element = $(temp_a).clone(true);
+        $(a_element).find('a').last().attr('number', number)
+        $(a_element).find('a').eq(0).text(file_value);
+        $(".info_show").children('p').append(a_element);
+    });
+    
+    //点击开始上传,去触发真实的上传
+    $(".start_upload").click(function(){
+        $("#real_uploadButton").trigger('click');
+    });
+    
+    //点击开始上传 如果所有文件都没有值则不上传
+    $("#secondForm").submit(function(){
+        var all_file=$('.real_file');
+        
+        var file_exists = 0;
+        for (var i = 0; i < all_file.length; i++) {
+            if ($(all_file[i]).val() != '') {
+                file_exists = 1;
+            } else {
+                $(all_file[i]).remove();
+            }
+        }
+        if(file_exists==1){
+            if (confirm('您确定上传么?上传后不可删除资源')) {
+                //这里判断类型是否是video,audio
+                var type = $("#type").val()
+
+                if (type == 'video' || type == 'audio') {
+                    $(".real_file").each(function (i, n) { 
+                        var current_class = $(n).attr('class');
+                        var form = makeMediaForm($(n)[0]);
+                        //optionsVideo
+                        $(form).submit(function () {
+                            $(this).ajaxSubmit(optionsVideo);
+                            return false;
+                        });
+                        $(form).submit();
+                        $(form).find('[class="' + current_class + '"]').attr('name', 'file[]');
+                        $('.upload_file')[0].appendChild($(form).find('[class="' + current_class + '"]')[0]); //[0].appendChild($(form).find('[class="real_hidden_file"]')[0]);
+                        if (BLWSUploadError == 1) {
+                            return false;
+                        }
+                    });
+                } 
+                $(this).ajaxSubmit(options);
+                $('.start_upload').attr('disabled', true); //unique_vid
+                global_click_event = 0;
+                is_upload_file=1;
+            }
+        }
+        return false;
+    });*/   
+     
+    var resource_ytpe="{$data.type}";
+    before_type=$("#type").val();
+    function changeType() {  
+        var type=$("#type").val();   
+        $("#fine-uploader").show();  
+        if(before_type!=0){
+            if(confirm('您确认改变资源类型吗?改变后之前的资源将会被清除')){
+                uploadInfo={};
+                $('#vid').val('');
+                $('#vid_file_path').val('');
+                $('#playerwidth').val('');
+                $('#playerduration').val(''); 
+                $('.qq-upload-list').children('li').remove();
+                $(".show_div").remove();
+                $(".hidden_ids").remove();
+                $(".resource_right_div").remove();
+                
+            }else{
+                $("#type").find("option[value="+before_type+"]").attr('selected',true);  
+            } 
+        }
+        before_type=$("#type").val();
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').attr('accept',acceptStr);
+    }
+    
+    var resource_path='';
+    //点击查看大图
+    $(".show_div").find('span').live('click',function(){  
+        switch(resource_ytpe){
+            case 'image':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_image").children('img').attr('src',resource_path);
+                break;
+            case 'video':
+            case 'audio':
+                resource_path=$(this).siblings('input').val();
+                var player = polyvObject('#plv').videoPlayer({
+                                'vid' : resource_path
+                            });
+                break;
+            case 'swf':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_swf").children('a').attr('href',resource_path).text(resource_path);
+                break;
+            case 'pdf':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_pdf").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                break;
+            case 'word':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_word").children('a').attr('href',"{:U('Teach/downloadResource')}"+"&url="+resource_path).text('点击查看'+resource_path);
+                break;
+            case 'ppt':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_ppt").children('a').attr('href',"{:U('Teach/downloadResource')}"+"&url="+resource_path).text('点击查看'+resource_path);
+                break;
+            case 'zip':
+                resource_path=$(this).siblings('input').val();
+                $(".resource_zip").children('a').attr('href',resource_path).text('点击查看'+resource_path);
+                break;
+        } 
+    });
+    
+     
+    
+    //点击删除
+    $(".delete_button").live('click',function(){
+        var contact_class=$(this).attr('attr_class');   
+        $("."+contact_class).remove();  
+        $(this).parent().remove();
+        //判断是否还有已存在的,并操作
+        if($('.show_div').length>0){
+            //这里替换右侧
+            resource_path=$('.show_div').eq(0).find('input').val();
+             
+            switch(resource_ytpe){
+                case 'image': 
+                    $(".resource_image").children('img').attr('src',resource_path);
+                    break;
+                case 'audio': 
+                    var player = polyvObject('#plv').videoPlayer({
+                                    'vid' : resource_path
+                                });
+                    break;
+                case 'swf': 
+                    $(".resource_swf").children('a').attr('href',resource_path).text(resource_path);
+                    break;
+                case 'pdf': 
+                    $(".resource_pdf").children('a').attr('href',resource_path).text(resource_path);
+                    break;
+                case 'word': 
+                    $(".resource_word").children('a').attr('href',"{:U('Teach/downloadResource')}"+"&url="+resource_path).text(resource_path);
+                    break;
+                case 'ppt': 
+                    $(".resource_ppt").children('a').attr('href',"{:U('Teach/downloadResource')}"+"&url="+resource_path).text(resource_path);
+                    break;
+                case 'zip': 
+                    $(".resource_zip").children('a').attr('href',resource_path).text(resource_path);
+                    break;
+            } 
+        }else{
+            //这里删除 
+            $(".resource_right_div").remove();
+        }
+    });
+    
+    function check() { 
+        //判断错误文件的
+        if(!onFileCheck()){
+            return false;
+        }
+        $('#vid').val('');
+        $('#vid_file_path').val('');
+        $('#playerwidth').val('');
+        $('#playerduration').val(''); 
+        $('#vid_fullpath').val('');
+        $('#vid_image_path').val('');
+        $('#is_transition').val('');
+        
+        for(var key in uploadInfo){ 
+            $('#vid_file_path').val($('#vid_file_path').val() + uploadInfo[key].vid_file_path +',');
+            var width = typeof(uploadInfo[key].playerwidth) != 'undefined' ? uploadInfo[key].playerwidth : '0*0';
+            
+            $('#playerwidth').val($('#playerwidth').val() + width +',');
+            var duration = typeof(uploadInfo[key].playerduration) != 'undefined' ? uploadInfo[key].playerduration : '00:00:00';
+            
+            $('#playerduration').val($('#playerduration').val() + duration +',');
+            var vid = typeof(uploadInfo[key].vid) != 'undefined' ? uploadInfo[key].vid : '0';
+            $('#vid').val($('#vid').val() + vid +',');
+            
+            var vid_fullpath= typeof(uploadInfo[key].vid_fullpath) != 'undefined' ? uploadInfo[key].vid_fullpath : '0';
+            $('#vid_fullpath').val($('#vid_fullpath').val()+vid_fullpath+',');
+            
+            var vid_image_path= typeof(uploadInfo[key].vid_image_path) != 'undefined' ? uploadInfo[key].vid_image_path : '0';
+            $('#vid_image_path').val($('#vid_image_path').val()+vid_image_path+',');
+            
+            var vid_transition= typeof(uploadInfo[key].is_transition) != 'undefined' ? uploadInfo[key].is_transition : '0';
+            $('#is_transition').val($('#is_transition').val()+vid_transition+',');
+            
+        }
+        $('#vid_file_path').val($('#vid_file_path').val().substr(0 ,$('#vid_file_path').val().length-1));
+        $('#playerwidth').val($('#playerwidth').val().substr(0 ,$('#playerwidth').val().length-1));
+        $('#playerduration').val($('#playerduration').val().substr(0 ,$('#playerduration').val().length-1));
+        $('#vid').val($('#vid').val().substr(0 ,$('#vid').val().length-1));
+        $('#vid_fullpath').val($('#vid_fullpath').val().substr(0 ,$('#vid_fullpath').val().length-1));
+        $('#vid_image_path').val($('#vid_image_path').val().substr(0 ,$('#vid_image_path').val().length-1));
+        $('#is_transition').val($('#is_transition').val().substr(0 ,$('#is_transition').val().length-1));
+         
+        //资源名称
+        if($('#name').val() == ''){
+            $.Notify({
+                caption: '提示',
+                content: '资源名称不能为空',
+                type: 'warning'
+            });
+            return false;    
+        }
+        //是否支持下载
+        /*if($('#is_download').val() == '10'){
+            $.Notify({
+                caption: '提示',
+                content: '是否支持下载不能为空',
+                type: 'warning'
+            });
+            return false;    
+        }*/
+        //资源描述
+        if($('#description').val() == ''){
+            $.Notify({
+                caption: '提示',
+                content: '资源描述不能为空',
+                type: 'warning'
+            });
+            return false;    
+        }
+        //关联学科
+        if($('#course_id').val() == '0'){
+            $.Notify({
+                caption: '提示',
+                content: '关联学科不能为空',
+                type: 'warning'
+            });
+            return false;    
+        }
+        //关联年级
+        if($('#grade_id').val() == '0'){
+            $.Notify({
+                caption: '提示',
+                content: '关联年级不能为空',
+                type: 'warning'
+            });
+            return false;    
+        }
+        
+        //教材分册
+        if($('#course_id').val() == '-1' || $('#grade_id').val() == '-1' || $('#grade_id').val() == '-2' || $('#grade_id').val() == '-3'){
+           
+        } else{
+              
+             if($('#textbook_id').val() == ''){
+                $.Notify({
+                    caption: '提示',
+                    content: '教材分册不能为空',
+                    type: 'warning'
+                });
+                return false; 
+            }
+        } 
+        var type = $('#type').val();
+        //var hid_type=$("#unique_class").val();  
+        /*if(type!=hid_type){
+            alert("只能上传"+hid_type+"格式文件");
+            return false;
+        }*/
+        
+        var is_upload_file_falg=0;      //这里判断还有问题
+        if (type == 'video' || type == 'audio') {
+            var vid = $('#vid').val();     
+            if (vid == '') {
+                if($(".resource_class").length<1){
+                    $.Notify({
+                        caption: '提示',
+                        content: '上传视频或音频不能为空',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+            }    
+            
+        } else {
+            //var s = document.form1.file.value;  
+            if ($(".resource_class").length<1) {
+                var vid_file_path=$('#vid_file_path').val();
+                if(vid_file_path==''){
+                    $.Notify({
+                        caption: '提示',
+                        content: '上传文件不能为空',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+            }
+        } 
+        //join_string();  
+        return true;
+    }
+    var uploadInfo = {};  
+
+</script> 
+
+<script>
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+     
+</script>
+<script type="text/template" id="qq-template">
+        <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
+            <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+                <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+            </div>
+            <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+                <span class="qq-upload-drop-area-text-selector"></span>
+            </div>
+            <div class="qq-upload-button-selector qq-upload-button">
+                <div>上传文件</div>
+            </div>
+            <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+            <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
+                <li>
+                    <div class="qq-progress-bar-container-selector">
+                        <div role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" class="qq-progress-bar-selector qq-progress-bar"></div>
+                    </div>
+                    <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                    <img class="qq-thumbnail-selector" qq-max-size="100" qq-server-scale>
+                    <span class="qq-upload-file-selector qq-upload-file"></span>
+                    <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                    <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                    <span class="qq-upload-size-selector qq-upload-size"></span>
+                    <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
+                    <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
+                    
+                    <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+                </li>
+            </ul>
+
+            <dialog class="qq-alert-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Close</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-confirm-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">No</button>
+                    <button type="button" class="qq-ok-button-selector">Yes</button>
+                </div>
+            </dialog>
+
+            <dialog class="qq-prompt-dialog-selector">
+                <div class="qq-dialog-message-selector"></div>
+                <input type="text">
+                <div class="qq-dialog-buttons">
+                    <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                    <button type="button" class="qq-ok-button-selector">Ok</button>
+                </div>
+            </dialog>
+        </div>
+</script>
+<script src="__PUBLIC__/js/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script> 
+var global_init=1;
+    function changeInputFilter(){       
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        $(':file').attr('accept',acceptStr);
+    } 
+    changeInputFilter();
+    
+    function onFileCheck(){
+        if($('li').hasClass('qq-upload-fail')){
+            alert('有文件上传错误');
+            return false;
+        }
+        return true;
+    }
+    var uploader = new qq.FineUploader({
+        debug: false,
+        element: document.getElementById('fine-uploader'),
+        request1Enable : true,
+        request1: {
+            endpointnum :1,
+            endpoint: 'http://v.polyv.net/uc/services/rest?method=uploadfile',
+            params:{'writetoken':'9c538d85-340c-466c-9e35-bb301734eb0d','JSONRPC':'{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}'},
+            fileFilter:Array("mov","mp4","mp3"),
+            inputName:'Filedata', 
+        },
+        request: {
+            endpointnum: 0,
+            endpoint: 'index.php?m=Home&c=Admin&a=upload_file',
+            params:{},
+            inputName:'file[]',							
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/uploads'				
+        },
+        retry: {
+           enableAuto: true
+        },
+        onCancel: function(id){
+            delete uploadInfo[id];
+        },
+        responseCallBack: function(id,specNum,xhr){         
+            var result;
+            try{
+                result = JSON.parse(xhr.responseText);
+            }
+            catch(e){
+                alert('上传失败!错误原因'+e);
+                return false;
+            }
+            if(specNum == 0){			  
+              if(result.code == 0){ 
+                    if(typeof(uploadInfo[id])== 'undefined'){
+                        uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid_file_path'] = result.res;
+                    uploadInfo[id]['vid_image_path'] = result.message_video_image;     //这里是视频截图,如果不是视频这里就是空
+                    uploadInfo[id]['is_transition'] = result.is_transition;            //这里是视频转换状态。
+                    return true;
+               }else{ 
+                    alert(result.msg);
+               }
+            }else if(specNum == 1){
+                if(result.error == 0){
+                //alert("上传成功!VID:"+result.data[0].vid);
+                    //TODO: add result.res to XXX
+                    if(typeof(uploadInfo[id])== 'undefined')
+                    {
+                    uploadInfo[id] = {};
+                    }
+                    uploadInfo[id]['vid'] = result.data[0].vid;
+                    uploadInfo[id]['playerwidth'] = result.data[0].playerwidth + '*' +result.data[0].playerheight;
+                    uploadInfo[id]['duration'] = result.data[0].duration;
+                    uploadInfo[id]['vid_fullpath'] = result.data[0].mp4; 
+                    return true;
+                }else{ 
+                    alert("上传失败!错误码:"+result.error);
+                }
+            }
+            return false;
+        } 
+    });  
+    function init_funtion(){        
+        //var temp_ul='<div class="qq-uploader-selector qq-uploader"></div>'
+        var temp_li='<div class="show_div" style="margin-left:10px;margin-top:10px;border 1px gray solid buttom;"><img src=""><input type="hidden" /><span style="margin-left:20px;cursor:pointer;"></span><a class="delete_button" style="margin-left:10px;cursor:pointer;">删除</a></div>';
+        var other_file_id=3;
+        var copy_li,copy_ul;
+
+        //这里开始复制
+        var all_exists_input=$('.hidden_ids').children('input'); 
+        for(var i=0;i<all_exists_input.length;i++){ 
+            copy_li=$(temp_li).clone(true);
+            $(copy_li).find('a').attr('attr_class',($(all_exists_input[i]).attr('attr_class')));
+            $(copy_li).find('img').css('width',100);
+            $(copy_li).find('span').text($(all_exists_input[i]).attr('attr_path')); 
+            if($(all_exists_input[i]).attr('attr_type')=='video'){ 
+                var vid_image_path='';
+                if($(all_exists_input[i]).attr('vid_image').indexOf('http')== -1){
+                    vid_image_path="{$oss_path}"+$(all_exists_input[i]).attr('vid_image');
+                }else{
+                    vid_image_path=$(all_exists_input[i]).attr('vid_image');
+                }
+                
+                $(copy_li).find('img').attr('src',vid_image_path) 
+                $(copy_li).find('input').val($(all_exists_input[i]).attr('attr_path'));
+                
+            }else if($(all_exists_input[i]).attr('attr_type')=='audio'){ 
+                $(copy_li).find('img').remove();
+                $(copy_li).find('input').val($(all_exists_input[i]).attr('attr_path'));
+                
+            }else{ 
+                $(copy_li).find('img').remove();
+                $(copy_li).find('input').val($(all_exists_input[i]).attr('attr')+$(all_exists_input[i]).attr('attr_path')); 
+            } 
+            $('.qq-upload-list-selector').append(copy_li);
+        } 
+    } 
+    init_funtion();
+    
+    
+</script>

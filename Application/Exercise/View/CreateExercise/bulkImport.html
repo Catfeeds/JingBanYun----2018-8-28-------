@@ -1,0 +1,114 @@
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<div class="boxOutter">
+	<div class="borderBottom pb10">
+		注：点击上传按钮进行习题导入
+	</div>
+
+	<div class="p20 pl0">
+		<div class="mt20 ">
+			<button type="button" name="button" class="btn" id="import_btn">独立题上传</button>
+		</div>
+	</div>
+</div>
+
+<div class="fullBack"></div>
+<div class="adminNotifyBox" id="teacherAssign">
+	<div class="adminNotifyTitle">
+		批量导入 <img src="__PUBLIC__/adminExercise/img/close_btn.png" alt="" /style="width: 30px;margin: 5px;position: absolute;right: 0;" class="close">
+	</div>
+
+	<div class="adminNotifyContent">
+		<div class="m20">
+			<a href="{:U('CreateExercise/downloadFile')}" target="_blank" title="下载" class="color3baeab">下载示例表格</a>
+		</div>
+		<div class="teacherChoose">
+			<input class="inputCommon" type="text" style="width:200px">
+			<button type="button" name="button" class="btn browse_button">浏览</button>
+			<button type="button" name="button" class="btn upload_file">独立题上传</button>
+            <input type="file" name="file" style="display:none;" class="file_csv" id="file_csv" />
+		</div>
+	</div>
+</div>
+<input type="hidden" name="repeat_commit" class="repeat_commit" value="{:session('TOKEN')}">
+
+<form action="index.php?m=Exercise&c=CreateExercise&a=ImportErrorExercise" method="post" id="errorImportSubmit">
+	<input type="hidden" name="errorjson" class="errorjson">
+</form>
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script src="__PUBLIC__/js/ajaxfile.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+
+<script type="text/javascript">
+	$('.subjectUl').find('span').click(function(){
+		$(this).addClass('color3baeab').siblings().removeClass('color3baeab')
+	})
+
+	//批量导入
+	$(document).on('click','#import_btn',function(event){
+		$('#import_outer').css('display', 'block');
+		$('.bg').css('display', 'block');
+	});
+	$('#import_btn').click(function(){
+		$('#teacherAssign,.fullBack').show()
+	})
+	$('.close').click(function(){
+		$('#teacherAssign,.fullBack').hide()
+	})
+
+    $(document).on('click','.browse_button',function(event){
+        //$('#address').val('');
+        $('.file_csv').trigger('click');
+    });
+
+    //点击导入文件
+    $(document).on('click','.upload_file',function(event){
+
+        if ($('#file_csv').val() == '' || !$('#file_csv').val()) {
+            showError('请选择需要上传的文件格式');
+        } else {
+			$('#teacherAssign').hide();
+			loadingImport('import');
+            $.ajaxFileUpload({
+                url: "index.php?m=Exercise&c=CreateExercise&a=ImportExerciseInfo", //用于文件上传的服务器端请求地址
+                secureuri: false, //是否需要安全协议，一般设置为false
+                fileElementId: 'file_csv', //文件上传域的ID
+                dataType: 'json', //返回值类型 一般设置为json
+                success: function (data,status) //服务器成功响应处理函数
+                {
+					if (data.code==200) {
+						removeLoad('import');
+						$('.fullBack').hide();
+						showImport('请到习题列表进行查看');
+					} else {
+						//不等于200的时候下载错误信息
+						$('.errorjson').val(data.msg); //错误信息
+						removeLoad('import');
+						$('.fullBack').hide();
+						ImportError('立即下载错误信息');
+					}
+
+                },
+                error: function (data, status, e) //服务器响应失败处理函数
+                {
+					removeLoad('import');
+					$('.fullBack').hide();
+                    showError('导入超时,请刷新网页进行重新尝试');
+                }
+            })
+        }
+    });
+
+    $(document).off('change','.file_csv').on('change','.file_csv',function(){
+        var filepath = $('.file_csv').val();
+        var extStart = filepath.lastIndexOf(".");
+        var ext = filepath.substring(extStart, filepath.length).toUpperCase();
+
+        if (ext == '.XLS' || ext == '.XLSX' ||ext == '.CSV' ) {
+            $('.inputCommon').val(filepath);
+        } else {
+            showError('不支持此格式导入,请刷新重试');
+        }
+    });
+</script>

@@ -1,0 +1,445 @@
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script type="text/javascript" src="http://cdn.bootcss.com/highcharts/4.2.5/highcharts.js"></script>
+<script src="__PUBLIC__/js/highcharts-exporting.js"></script>
+<script src="http://cdn.bootcss.com/highcharts/4.2.5/themes/grid-light.js"></script>
+<style>
+    .filterTable {
+        width: 100%;
+        border: 1px solid #000;
+        border-radius: 10px;
+    }
+    
+    .filterTable td {
+        text-align: center;
+        width: 20%;
+        padding: 0px;
+    }
+    
+    .filterTable_item.selected {
+        background-color: #41C7DB;
+		 border-radius: 10px;
+        ;
+    }
+    
+    .filterTable_item {
+        position: relative;
+        cursor: pointer;
+        height: 30px;
+    }
+    
+    .filter_unit {
+        line-height: 30px;
+        font-size: 18px;
+    }
+    
+    .filter_show {
+        position: absolute;
+        z-index: 200;
+        left: 0;
+        top: 30px;
+        border: 1px solid #000;
+        width: 200px;
+        background-color: #fff;
+        display: none;
+        padding: 4px;
+    }
+    
+    .filter_show input {
+        width: 100%;
+    }
+    
+    .filter_show_section {
+        margin: 12px 0;
+    }
+    
+    .filterTable_item img {
+        height: 26px;
+        position: absolute;
+        z-index: 200;
+        right: 3px;
+        top: 3px;
+    }
+    
+    #filter_day,
+    #filter_month {
+        height: 26px;
+    }
+    
+    .emptyResult {
+    padding-top: 40px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+</style>
+<empty name="data_exists">
+    <div class="emptyResult text-center">暂无数据</div>
+</empty>
+
+<notempty name="data_exists">
+<div style="position: relative;"> 
+    <div style="width: 600px;text-align: center;margin: 0 auto;">
+        <table class="filterTable" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <div class="filterTable_item selected" data-id="day">
+                        <div class="filter_unit">日</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_day">
+                            <div class="filter_show_section" style="text-align: left;">请选择时间</div>
+                            <div class="filter_show_section">
+                                <input type="date" value="" id="filter_day">
+                            </div>
+                            <div class="filter_show_section" style="text-align: right;">
+                                <button class="btn btn-primary" onclick="filterTongji('day')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="filterTable_item" data-id="week">
+                        <div class="filter_unit">周</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_week">
+                            <div class="filter_show_section" style="text-align: left;">请选择周</div>
+                            <div class="filter_show_section">
+                                <input type="week" value="" id="filter_week">
+                            </div>
+                            <div class="filter_show_section" style="text-align: right;">
+                                <button class="btn btn-primary" onclick="filterTongji('week')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="filterTable_item" data-id="month">
+                        <div class="filter_unit">月</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_month">
+                            <div class="filter_show_section" style="text-align: left;">请选择月</div>
+                            <div class="filter_show_section">
+                                <input type="month" value="" id="filter_month">
+                            </div>
+                            <div class="filter_show_section" style="text-align: right;">
+                                <button class="btn btn-primary" onclick="filterTongji('month')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="filterTable_item" data-id="term">
+                        <div class="filter_unit">学期</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_term">
+                            <div class="filter_show_section" style="text-align: left;">请选择学期</div>
+                            <div class="filter_show_section">
+                                <select id="filter_term">
+                                    <option value="2015-9~2016-1">2015年9月~2016年1月</option>
+                                    <option value="2016-3~2016-7">2016年3月~2016年7月</option>
+                                    <option value="2016-9~2017-1">2016年9月~2017年1月</option>
+                                    <option value="2017-3~2017-7">2017年3月~2017年7月</option>
+                                    <option value="2017-9~2018-1">2017年9月~2018年1月</option>
+                                </select>
+                            </div>
+                            <div class="filter_show_section" style="text-align: right;">
+                                <button class="btn btn-primary" onclick="filterTongji('term')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="filterTable_item" data-id="year">
+                        <div class="filter_unit">学年</div>
+                        <img src="__PUBLIC__/img/down.png">
+
+                        <div class="filter_show" id="filter_show_year">
+                            <div class="filter_show_section" style="text-align: left;">请选择学年</div>
+                            <div class="filter_show_section">
+                                <select id="filter_year">
+                                    <option value="2015-9~2016-6">2015年9月~2016年6月</option>
+                                    <option value="2016-9~2017-6">2016年9月~2017年6月</option>
+                                    <option value="2017-9~2018-6">2017年9月~2018年6月</option>
+                                </select>
+                            </div>
+                            <div class="filter_show_section" style="text-align: right;">
+                                <button class="btn btn-primary" onclick="filterTongji('year')">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div id="chart">
+
+</div> 
+</notempty>
+<script>
+    Date.prototype.Format = function (fmt) { //author: meizz 
+        var o = {
+            "M+": this.getMonth() + 1, //月份 
+            "d+": this.getDate(), //日 
+            "h+": this.getHours(), //小时 
+            "m+": this.getMinutes(), //分 
+            "s+": this.getSeconds(), //秒 
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+            "S": this.getMilliseconds() //毫秒 
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    
+    var studentId = '{$student_id}';
+    var scoresDetails = [];
+    var startDate = '',
+        endDate = '',
+        courseId = '';
+    var startDateStr = '',
+        endDateStr = '';
+    var xAxisArr = [];
+    var yAxisArr = [];
+    var homeworkIdArr = [];
+    getHomeworkScoreByStudentId();
+
+    function getHomeworkScoreByStudentId() {
+        xAxisArr = [];
+        yAxisArr = [];
+        homeworkIdArr = [];
+        $.get('index.php?m=Home&c=Teach&a=getHomeworkScoreByStudentId', {
+                student_id: studentId,
+                tag:1,
+                startDate: startDate,
+                endDate: endDate,
+                course: courseId
+            },
+            function (res) {
+                scoresDetails = res;
+                do_tj();
+            });
+
+    }
+
+    function do_tj() {
+        var studentNameArr = [];
+        $(scoresDetails).each(function (i, n) {
+            if ($.inArray(n.homework_id, homeworkIdArr) == -1) {
+                xAxisArr.push(n.homework_name);
+                homeworkIdArr.push(n.homework_id);
+            }
+            var studentName = n.student_name;
+            if ($.inArray(studentName, studentNameArr) == -1) {
+                studentNameArr.push(studentName);
+            }
+        });
+
+        function series(name, length) {
+            this.name = name;
+            this.data = new Array(length);
+
+        }
+
+        var seriesArray = new Array(studentNameArr.length);
+        $(seriesArray).each(function (i, n) {
+            seriesArray[i] = new series(studentNameArr[i], homeworkIdArr.length);
+            $(seriesArray[i].data).each(function (index, nouse) {
+                seriesArray[i].data[index] = null;
+            });
+        });
+        $(scoresDetails).each(function (i, n) {
+            var studentName = n.student_name;
+            $(studentNameArr).each(function (iName, SName) {
+                if (SName == studentName)
+                    seriesArray[iName].data[$.inArray(n.homework_id, homeworkIdArr)] = parseInt(n.points);
+            });
+        });
+        $(seriesArray).each(function (i, n) {
+            yAxisArr.push(n);
+        });
+
+        $('#chart').highcharts({
+            credits: {
+                text: '',
+                href: 'http://www.jtypt.com'
+            },
+            title: {
+                text: startDateStr + '~' + endDateStr + '学习成绩轨迹图' + (scoresDetails.length == 0 ? '（没有数据）' : ''),
+                x: -20 //center
+            },
+            xAxis: {
+                title: {
+                    text: '作业名称'
+                },
+                categories: xAxisArr
+            },
+            yAxis: {
+                title: {
+                    text: '绩成'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                valueSuffix: '分'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: yAxisArr
+        });
+        $(window).resize();
+    }
+</script>
+<script>
+    $(function () {
+        $('.filterTable_item').click(function () {
+            $('.filterTable_item').removeClass('selected');
+            var target = $(this).attr('data-id');
+            $('.filter_show').hide();
+            $('#filter_show_' + target).show();
+            $(this).addClass('selected');
+            event.stopPropagation();
+        });
+        $('#contentWrapper').bind('click', function () {
+            $('.filter_show').hide();
+        });
+
+        $('#course_id').change(function () {
+            courseId = $(this).val();
+            getHomeworkScoreByStudentId();
+        });
+
+    });
+
+    function filterTongji(type) {
+        window.setTimeout(function () {
+            $('.filter_show').hide();
+        }, 200);
+
+        switch (type) {
+        case 'day':
+            var day = $('#filter_day').val();
+            if (day == '') {
+                break;
+            }
+            startDate = day + ' 00:00:00';
+            endDate = day + ' 23:59:59';
+            break;
+        case 'week':
+            var getDaysByWeek = function (year, index) {
+                var d = new Date(year, 0, 1);
+                while (d.getDay() != 1) {
+                    d.setDate(d.getDate() + 1);
+                }
+                var to = new Date(year + 1, 0, 1);
+                var i = 1;
+                var arr = [];
+                for (var from = d; from < to;) {
+                    if (i == index) {
+                        arr.push(from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+                    }
+                    var j = 6;
+                    while (j > 0) {
+                        from.setDate(from.getDate() + 1);
+                        if (i == index) {
+                            arr.push(from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+                        }
+                        j--;
+                    }
+                    if (i == index) {
+                        return arr;
+                    }
+                    from.setDate(from.getDate() + 1);
+                    i++;
+                }
+            }
+            var week = $('#filter_week').val();
+            var year = parseInt(week.split('-')[0]);
+            var week = parseInt(week.split('-')[1].replace('W', ''));
+            var arr = getDaysByWeek(year, week);
+            startDate = arr[0] + ' 00:00:00';
+            endDate = arr[6] + ' 23:59:59';
+            break;
+        case 'month':
+            var filter_month = $('#filter_month').val();
+            var year = parseInt(filter_month.split('-')[0]);
+            var month = parseInt(filter_month.split('-')[1]);
+            var lastDay = getLastDayInMonth(year, month);
+            startDate = filter_month + '-01 00:00:00';
+            endDate = filter_month + '-' + lastDay + ' 23:59:59';
+            break;
+        case 'term':
+            var filter_term = $('#filter_term').val();
+            startDate = filter_term.split('~')[0] + '-01 00:00:00';
+            var filter_term_2 = filter_term.split('~')[0]
+            var year = parseInt(filter_term_2.split('-')[0]);
+            var month = parseInt(filter_term_2.split('-')[1]);
+            var lastDay = getLastDayInMonth(year, month);
+            endDate = filter_term.split('~')[1] + '-' + lastDay + ' 23:59:59';
+            break;
+        case 'year':
+            var filter_term = $('#filter_year').val();
+            startDate = filter_term.split('~')[0] + '-01 00:00:00';
+            var filter_term_2 = filter_term.split('~')[0]
+            var year = parseInt(filter_term_2.split('-')[0]);
+            var month = parseInt(filter_term_2.split('-')[1]);
+            var lastDay = getLastDayInMonth(year, month);
+            endDate = filter_term.split('~')[1] + '-' + lastDay + ' 23:59:59';
+            break;
+        }
+
+        if (startDate == '' || endDate == '') {
+            return;
+        }
+        startDateStr = startDate.substring(0, startDate.indexOf(' '));
+        endDateStr = endDate.substring(0, endDate.indexOf(' '));
+        startDate = new Date(startDate).getTime().toString();
+        endDate = new Date(endDate).getTime().toString();
+        startDate = startDate.substring(0, startDate.length - 3);
+        endDate = endDate.substring(0, endDate.length - 3);
+        getHomeworkScoreByStudentId();
+    }
+
+    //月份里的最后一天
+    function getLastDayInMonth(year, month) {
+        var new_year = year;
+        var new_month = month++;
+        if (month > 12) {
+            new_month -= 12;
+            new_year++;
+        }
+        var new_date = new Date(new_year, new_month, 1);
+        return (new Date(new_date.getTime() - 1000 * 60 * 60 * 24)).getDate();
+    }
+    
+    var before_val=$("#filter_year").val();
+    var before_text=$("#filter_year").find('option:selected').text();
+        
+        //filter_year
+        var date1 = new Date().Format("yyyy-M"); 
+        $("#filter_year").change(function(){
+            var before_date=$("#filter_year").val(); 
+            var before_date_text=$("#filter_year").find('option:selected').text();
+            
+            var temp_start_date=before_date.split('~');
+            temp_start_date=temp_start_date[0]; 
+            if(date1<temp_start_date){
+                $("#filter_year").val(before_val); 
+                $("#filter_year").find('option:selected').text(before_text);
+            }else{
+                before_val=before_date;
+                before_text=before_date_text;
+            }  
+        });
+</script>

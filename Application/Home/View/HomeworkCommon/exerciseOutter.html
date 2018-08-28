@@ -1,0 +1,239 @@
+<div class="exerciseOutterBottom" id="homeworkDetail">
+	<!-- 大题需要循环这里 -->
+	<div class="exerciseContent" v-for="(exercise,index) in homeworkList" :class="{exerciseContentElse:(exercise.data[0].category !='1' && exercise.data[0].category !='2')}">
+		<div class="exerciseTitleBox" >
+			<span class="title">{{ index+1 | filtersVoiceNumber }}、{{exercise.name}}</span>
+			<span class="remark">（共{{exercise.data.length}}题，总分值为{{total(index,"total_point")}}分）</span>
+			<div class="oneScore" v-if="exercise.data[0].topic_type == null" >
+				<span class="num">{{total(index,"point")}}</span><span class="text">分</span>
+			</div>
+		</div>
+         <div v-for="(subExercise,subIndex) in exercise.data" class="forBox innerId" :exerciseId="subExercise.id"><!-- 小题需要循环这里 -->
+			 <!-- 单词开始 -->
+			 <div class="exerciseMainBox" v-if="subExercise.category == '1'">
+				 <div class="wordBox">
+					 <div class="wordBoxLeft">
+						 <div class="wordTop">
+							 <div class="wordNum">{{subIndex+1}}.</div>
+							 <div class="wordMainBox">
+								 <div class="wordMain">
+									 <img src="__PUBLIC__/img/homeworkV1/videoGray36×30.png" :audioSrc="subExercise.org_answer_url" alt="" class="videoPrimary" @click="play($event)">
+									 <div class="wordRight">
+										 {{subExercise.name}}
+									 </div>
+								 </div>
+                                <audio :src="subExercise.org_answer_url" class="audioHide"></audio>
+								 <div class="wordBottom">
+									 <div class="explainText" @click="showExplain($event)">英文释义</div>
+									 <div class="explainBox">
+										 <div class="word">{{subExercise.name}}</div>
+										 <div class="chinese">{{subExercise.translation}}</div>
+									 </div>
+								 </div>
+							 </div>
+						 </div>
+					 </div>
+					 <div class="wordBoxRight" v-if="subExercise.student_answer != '' && subExercise.student_answer != null">
+						 <img src="__PUBLIC__/img/homeworkV1/weibofang.png" alt=""  :audioSrc="subExercise.student_answer" class="videoStudent" @click="playOne($event)">
+						 <div class="score">{{subExercise.point}}分</div>
+                         <audio :src="subExercise.student_answer" class="audioHide"></audio>
+					 </div>
+				 </div>
+			 </div>
+			 <!-- 单词结束 -->
+			 <!-- 句子开始 -->
+			 <div class="exerciseMainBox overHidden" v-if="subExercise.category == '2'">
+				 <div class="wordBox">
+					 <div class="wordBoxLeft">
+						 <div class="wordTop">
+							 <div class="wordNum">{{subIndex+1}}.</div>
+							 <div class="wordMainBox">
+								 <div class="wordMain">
+									 <img src="__PUBLIC__/img/homeworkV1/videoGray36×30.png" :audioSrc="subExercise.org_answer_url" alt="" class="videoPrimary" @click="play($event)">
+									 <div class="wordRight">
+										 {{subExercise.name}}
+									 </div>
+								 </div>
+                                 <audio :src="subExercise.org_answer_url" class="audioHide"></audio>
+							 </div>
+						 </div>
+					 </div>
+					 <div class="wordBoxRight" v-if="subExercise.student_answer != '' && subExercise.student_answer != null">
+						 <img src="__PUBLIC__/img/homeworkV1/weibofang.png" alt="" :audioSrc="subExercise.student_answer" class="videoStudent" @click="playOne($event)">
+						 <div class="score">{{subExercise.point}}分</div>
+                         <audio :src="subExercise.student_answer" class="audioHide"></audio>
+					 </div>
+				 </div>
+			</div>
+			 <!-- 句子结束 -->
+			 <!-- 视频开始 -->
+             <div class="exerciseMainBox" v-if="subExercise.category == '3'">
+                 <div class="commonBox">
+                     <div class="exerciseNum">{{subIndex+1}}.<span class="span ownScore">({{subExercise.total_point}}分)</span></div>
+                     <video :src="subExercise.subject_name" class="videoPlay" controls preload controlsList="nodownload"></video>
+                 </div>
+
+                 <div class="oneScore">
+                     <span class="num">{{subExercise.point}}</span><span class="text">分</span>
+                 </div>
+             </div>
+			 <!-- 视频结束 -->
+			 <!-- 课本开始 -->
+             <div class="exerciseMainBox" v-if="subExercise.category == '4'">
+                 <div class="commonBox">
+                     <div class="exerciseNum">{{subIndex+1}}.<span class="span ownScore">({{subExercise.total_point}}分)</span></div>
+                     <img :src="subExercise.subject_name" alt="" class="bookImg" title="点击可查看大图" onclick="zoomIn(this)">
+                 </div>
+
+                 <div class="oneScore">
+                     <span class="num">{{subExercise.point}}</span><span class="text">分</span>
+                 </div>
+             </div>
+			 <!-- 课本结束 -->
+
+             <!--普通题-->
+             <!-- 选择题 -->
+             <div class="exerciseMainBox" v-if="subExercise.topic_type == 1 || subExercise.topic_type == 3">
+                 <div class="exerciseBox">
+                     <div class="exerciseNum">{{subIndex + 1}}.<span class="span ownScore">({{subExercise.total_point}}分)</span></div>
+                     <div class="boxOutter">
+                         <div class="exerciseTitle" v-html="subExercise.subject_name"></div>
+                         <div class="exerciseMain">
+                             <div class="answerChoice">
+                                <span class="option" v-if="subExercise.topic_type == 1" v-for="(answerValue,answerIndex) in subExercise.answer" :class="{w100:subExercise.class_type != 2 && subExercise.class_type != 4, w50:subExercise.class_type == 2, w25:subExercise.class_type == 4}">{{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;<span v-html="answerValue"></span>&nbsp;&nbsp;</span>
+                            </div>
+                            <div class="answerChoice">
+                                <span class="option" v-if="subExercise.topic_type == 3" v-for="(answerValue,answerIndex) in subExercise.answerList" :class="{w100:subExercise.class_type != 2 && subExercise.class_type != 4, w50:subExercise.class_type == 2, w25:subExercise.class_type == 4}">{{String.fromCharCode(65 + answerIndex)}}.&nbsp;&nbsp;<span v-html="answerValue"></span>&nbsp;&nbsp;</span>
+                            </div>
+                         </div>
+                         <div class="answerBox" :class="{active:subExercise.total_point != subExercise.point}">
+                            <div class="title" v-if="subExercise.total_point == subExercise.point">答对</div>
+                            <div class="title" v-else>答错</div>
+                            <div class="studentAnswer">
+                                答题者答案
+                                <span class="answer" v-if="subExercise.student_answer == '' && subExercise.topic_type == 1">未作答</span>
+                                <span class="answer" v-else-if="subExercise.student_answer.split(',').length -1 == subExercise.student_answer.length && subExercise.topic_type == 3">未作答</span>
+                                <span class="answer" v-else>{{subExercise.student_answer}}</span>
+                            </div>
+                             <div class="rightAnswer" v-if="subExercise.topic_type == 1">正确答案 <span class="answer" >{{subExercise.answer_select}}</span></div>
+                             <div class="rightAnswer" v-if="subExercise.topic_type == 3">正确答案 <span class="answer" v-html="subExercise.answer"></span></div>
+                         </div>
+                     </div>
+                     <div class="exerciseBtnBox" :exerciseId="subExercise.id">
+                         <span class="favorBox" @click="favorExercise($event)" v-if="subExercise.eid == ''" :id="subExercise.id">收藏</span>
+                         <span class="favorBox active" @click="favorExercise($event)" v-else :id="subExercise.id">取消收藏</span>
+                         <span class="showAnalysis">显示解析</span>
+                         <div class="analysisOutter">
+                             <div class="analysisBox">
+                                 <span class="analysisTitle">解析：</span>
+                                 <span class="analysisMain analysis" v-html="subExercise.translation"></span>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="oneScore">
+                     <span class="num">{{subExercise.point}}</span><span class="text">分</span>
+                 </div>
+             </div>
+             <!-- 选择题结束 -->
+
+             <!-- 连线 -->
+             <div class="exerciseMainBox" v-if="subExercise.topic_type == 4">
+                 <div class="exerciseBox">
+                 暂不支持连线題
+                 </div>
+             </div>
+             <!-- 连线题结束 -->
+             <!-- 填空 作图 解答 -->
+             <div class="exerciseMainBox" v-if="subExercise.topic_type == 2 || subExercise.topic_type == 5 || subExercise.topic_type == 6">
+                 <div class="exerciseBox">
+                     <div class="exerciseNum">{{subIndex + 1}}.<span class="span ownScore">({{subExercise.total_point}}分)</div>
+                     <div class="boxOutter">
+                         <div class="exerciseTitle" v-html="subExercise.subject_name"></div>
+                         <div class="exerciseMain">
+                             <img :src="subExercise.student_answer" alt="" class="answerImg" v-show="subExercise.student_answer != '' "  title="点击可查看大图" onclick="zoomIn(this)">
+                         </div>
+                     </div>
+                     <div class="exerciseBtnBox" :exerciseId="subExercise.id">
+                         <span class="favorBox" @click="favorExercise($event)" v-if="subExercise.eid == ''" :id="subExercise.id">收藏</span>
+                         <span class="favorBox active" @click="favorExercise($event)" v-else :id="subExercise.id">取消收藏</span>
+                         <span class="showComment" v-if="subExercise.comment != ''">查看评语</span>
+                         <span class="showAnalysis">显示解析</span>
+                         <div class="commentOutter">
+                             <img src="__PUBLIC__/img/homeworkV1/pingyujiantou.png" alt="" class="commentCorner">
+                             <div v-html="subExercise.comment"></div>
+                         </div>
+                         <div class="analysisOutter">
+                         	<div class="analysisBox">
+								<span class="analysisTitle">答案：</span>
+								<span class="analysisMain analysisMainMuch" v-html="subExercise.answer"></span>
+							</div>
+                             <div class="analysisBox">
+                                 <span class="analysisTitle">解析：</span>
+                                 <span class="analysisMain analysis" v-html="subExercise.answer_select + subExercise.translation"></span>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="oneScore" v-if="subExercise.has_process == '1'">
+                     <span class="num">{{subExercise.point}}<span class="text">分</span></span>
+                 </div>
+                
+                <div class="oneScore" v-else>
+                    <span class="text">待批改</span>
+                 </div>
+             </div>
+             <!-- 填空 作图 解答结束 -->
+
+		 </div>
+
+	</div>
+
+</div>
+
+<!-- 课本图片放大区域 -->
+<div class="zoomInOutter">
+    <div class="zoomInBox" onclick="closeZoomIn()"></div>
+    <img src="" alt="" class="zoomInImg">
+</div>
+
+
+
+<script>
+    // 放大课本图片
+    function zoomIn(obj) {
+        var imgUrl = $(obj).attr('src');
+        $('.zoomInOutter').show().children('.zoomInImg').attr('src', imgUrl);
+        $('body').css('overflow-y', 'hidden')
+    }
+
+    // 缩小课本图片
+    function closeZoomIn() {
+        $('.zoomInOutter').hide();
+        $('body').css('overflow-y', 'auto')
+    }
+</script>
+
+
+<script>
+    // 左侧固定
+    function isFixed(){
+        var winHeight = $(window).height();// 浏览器窗口高度
+        var titleHeight = $('.studentIndexOutter .homeworkLeft.homeworkLeftFixed .homeworkLeftTitle').height() + 17;// 左侧title高度
+        var mainHeight = winHeight - 120 - 40 - 30 - titleHeight - 22 - 61 - 178 - 50; // 答题卡最高高度
+        console.log(titleHeight)
+        $('.homeworkLeft.homeworkLeftFixed .homeworkLeftMain').css('height', mainHeight);
+        $('.homeworkLeft.homeworkLeftFixed').css('height', mainHeight + titleHeight + 22 + 61 + 178);
+    }
+
+    $(window).scroll(function(){
+        var scrollHeight = $(this).scrollTop();
+        if(scrollHeight >= 220) {
+            $('.homeworkLeft.homeworkLeftFixed').addClass('fixed').siblings('.homeworkRight').css('margin-left', '230px')
+        } else{
+            $('.homeworkLeft.homeworkLeftFixed').removeClass('fixed').siblings('.homeworkRight').css('margin-left', '0')
+        }
+    });
+</script>

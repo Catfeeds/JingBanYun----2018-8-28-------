@@ -1,0 +1,147 @@
+<layout name="student_layout_withouticon"/>
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+<style>
+    .list_avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+    }
+
+    h3 {
+        text-align: center;
+    }
+
+/*
+    .ctrl_box {
+        position: absolute;
+        right: 20px;
+        top: 192px;
+        z-index: 100;
+        width: 40px;
+        height: 80px;
+    }
+*/
+
+    .ctrl_box img {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        margin-bottom: 15px;
+        cursor: pointer;
+    }
+
+   
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div data-text="活动内容">
+    <div class="listview set-border padding10">
+        <div class="padding10">
+            <h3>{$data.title}</h3>
+
+            <div class="padding10" style="font-size:16px;font-family:'黑体';overflow:hidden;">
+                <div style="float: left;width: 400px;">
+                    {$data.create_at|date="Y-m-d",###} {$data.publisher}
+                </div>
+                <div style="float: right;width: 400px;text-align: right;">
+                    面向 {$data.stakeholder}
+                </div>
+            </div>
+            <div class="padding10" style="font-size:16px;font-family:'黑体';overflow:hidden;">
+                <div style="float: left;width: 400px;">
+                    京版活动-北京出版社组织
+                </div>
+                <div style="float: right;">
+                    <div class="ctrl_box">
+                        <if condition="$existedZan eq 'yes'">
+                            <img id="zanIcon" src="__PUBLIC__/img/icon/zaned.png">
+                            <else/>
+                            <img id="zanIcon" src="__PUBLIC__/img/icon/zan.png">
+                        </if>
+                        <if condition="$existedFavor eq 'yes'">
+                            <img id="favorIcon" src="__PUBLIC__/img/icon/favored.png">
+                            <else/>
+                            <img id="favorIcon" src="__PUBLIC__/img/icon/favor.png">
+                        </if>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;word-break: break-all;padding: 10px 35px 10px 10px; border: 1px solid #bababa;
+        background: #f4f4f4;">{$data.content}</div>
+        </div>
+    </div>
+</div>
+
+<br>
+
+</if>
+
+<script>
+    $(function () {
+        $('#zanIcon').click(function () {
+            $.get('__URL__/zanActivity', {social_activity_id: '{$data.id}'}, function (res) {
+                if (res == 'success') {
+                    $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zaned.png');
+                    $.notify({
+                        title: '提示',
+                        message: '点赞成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+                    $('#zanIcon').attr('src', '__PUBLIC__/img/icon/zan.png');
+                    $.notify({
+                        title: '提示',
+                        message: res
+                    }, {
+                        type: 'warning',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#favorIcon').click(function () {
+            $.get('__URL__/favorActivity', {social_activity_id: '{$data.id}'}, function (res) {
+                if (res == 'success') {
+                    $('#favorIcon').attr('src', '__PUBLIC__/img/icon/favored.png');
+                    $.notify({
+                        title: '提示',
+                        message: '收藏成功'
+                    }, {
+                        type: 'success',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                } else {
+                    $('#favorIcon').attr('src', '__PUBLIC__/img/icon/favor.png');
+                    $.notify({
+                        title: '提示',
+                        message: res
+                    }, {
+                        type: 'warning',
+                        placement: {
+                            from: "top",
+                            align: "center"
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>

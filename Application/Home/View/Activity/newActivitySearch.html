@@ -1,0 +1,97 @@
+
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=3.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/newActivity.css" type="text/css" rel="stylesheet">
+
+<div><a href="{:U('Activity/activities')}" title="返回" class="btn btnReturn1">返回</a></div>
+<div class="activitySearch_main">
+	<div class="activitySearch_top">
+		<form action="{:U('Activity/search')}" method="post" id="myForms">
+		<div class="filter">
+			<div class="filterTop ">筛选</div>
+			<ul class="filterUl">
+				<li class="filterLi <?php echo $type==1 ? 'active': ''?>" attr-value="1">赛事</li>
+				<li class="filterLi <?php echo $type==2 ? 'active': ''?>" attr-value="2">培训</li>
+			</ul>
+		</div>
+		<div class="search">
+			<select name="time_status" id="time_status">
+				<option value="" >--请选择--</option>
+				<option value="1" <?php echo $time_status=='1' ? 'selected' : ''?>>活动未开始</option>
+				<option value="2" <?php echo $time_status=='2' ? 'selected' : ''?>>活动进行中</option>
+				<option value="3" <?php echo $time_status=='3' ? 'selected' : ''?>>历史活动</option>
+			</select>
+			<button class="search_btn">搜索</button>
+			<input type="text" name="keyword" value="{$keyword}" class="search_text" placeholder="关键字搜索" maxlength="28">
+		</div>
+		</form>
+		<div class="searchText"><?php if($time_status=='1') { echo '活动未开始';}elseif($time_status=='2') {echo '活动进行中';}elseif($time_status=='3'){echo'历史活动';}?> 共有<?php echo $count?>条结果</div>
+	</div>
+	<div class="activitySearch_con">
+		<empty name="list">
+			<div class="emptyDiv mt20">
+				<img src="{$oss_path}public/web_img/Empty/sorry.png" alt="" class="sorry">
+				<p>抱歉，没有搜索到相关的活动！</p>
+			</div>
+		</empty>
+		<notempty>
+		<ul class="searchUl seUl">
+			<?php foreach($list as $value){
+				if($value['class_id'] ==1){?>
+			<!--赛事-->
+			<li class="searchLi">
+				<div class="left imgBox" style="background: url(Resources/socialactivity/<?php echo $value['short_content']?>) no-repeat center; background-size: 100%"></div>
+				<div class="textBox left">
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>" class="textA" title="<?php echo $value['title']?>"><?php echo $value['title']?></a>
+					<div class="textObject">参与对象：<?php echo $value['stakeholder']?></div>
+					<div class="textTime">活动时间：<?php echo $value['display_activity_startendtime']?></div>
+				</div>
+				<img src="__PUBLIC__/img/activity/eventRight.png" alt="" class="right">
+			</li>
+			<?php }elseif($value['class_id'] == 2){?>
+			<!--培训-->
+			<li class="searchLi">
+				<div class="left imgBox" style="background: url(Resources/socialactivity/<?php echo $value['short_content']?>) no-repeat center; background-size: 100%"></div>
+				<div class="textBox left">
+					<a href="<?php echo 'index.php?m=Home&c=Activity&a=activityApplyDetails&id='.$value['id']?>" class="textA" title="<?php echo $value['title']?>"><?php echo $value['title']?></a>
+					<div class="textObject">参与对象：<?php echo $value['stakeholder']?></div>
+					<div class="textTime">活动时间：<?php echo $value['display_activity_startendtime']?></div>
+				</div>
+				<img src="__PUBLIC__/img/activity/trainRight.png" alt="" class="right">
+			</li>
+			<?php }}?>
+		</ul>
+		<div class="Pagination">{$page}</div>
+		</notempty>
+	</div>
+</div>
+<!--点击类型就提交表单-->
+<script>
+	function submits(type_values,tip) {
+        var str = '';
+        var keyword = $('.search_text').val();
+        var time_status = $('#time_status').val();
+        if(type_values != undefined){
+            str += '&type='+type_values;
+        }
+        if(time_status != 0){
+            str += '&time_status='+time_status;
+        }
+        if(keyword != ''){
+            str += '&keyword='+keyword;
+        }
+        if(tip != undefined){
+            str += '&tip='+tip;
+		}
+        str = "index.php?m=Home&c=Activity&a=search" + str;
+        location.href = str;
+    }
+	$('.search_btn').click(function () {
+        submits();
+        return false;
+    });
+	$('.filterLi').click(function () {
+	    var type_values = $(this).attr('attr-value');
+	    var tip = 2;
+        submits(type_values,tip);
+    })
+</script>

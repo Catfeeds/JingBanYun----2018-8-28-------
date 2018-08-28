@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>{$name}</title>
+		<link rel="stylesheet" href="__PUBLIC__/css/app/studentHomeworkElse.css?v=1">
+	    <script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	    <script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<style>
+			[v-cloak]{
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<div class="homeworkListOutter">
+				<div class="listhomeListItem homeListTime">
+					<div class="listName">截止时间：</div>
+					<div class="listText">{{ jiezhi }}</div>
+				</div>
+				<div class="listhomeListItem homeListRequest">
+					<div class="listName">作业要求：</div>
+					<div class="listText">{{ yaoqiu }}</div>
+				</div>
+			</div>
+
+			<div class="homeworkListTabBox">
+				<div class="homeListTab active homeListTab1">
+					<img src="{$oss_path}public/web_img/APPHomework/img0_1.png" alt="" class="tabImg1">
+					共<span>{{ total_e }}</span>道题
+				</div>
+				<div class="homeListTab homeListTab2">
+					<img src="{$oss_path}public/web_img/APPHomework/img1_2.png" alt="" class="tabImg2">
+					{{ studentCount }}名同学已完成
+				</div>
+			</div>
+
+			<div class="homeworkListTabContent">
+				<div class="homeListCon homeListCon1">
+
+					<div class="homeListConTitle">
+						<img src="{$oss_path}public/web_img/APPHomework/huangseditu.png" alt="">
+						<span>语音作业</span>
+					</div>
+					<div class="">
+
+					<div class="parent_index homeCircleList" v-for="(ex,index) in exlist">
+						<p class="homeCircleName">
+							{{ ex.name }}
+						</p>
+						<ul class="homeCircleUl">
+							<li class="homeCircleLi" v-for="(exchild,cindex) in ex.data">
+								<a href="javascript:"  class="qbtn">{{ cindex+1 }}</a>
+							</li>
+						</ul>
+					</div>
+
+				</div>
+					<?php if ($isEnd==1): ?>
+						<div class="homeworkStart"><p class="btn">查看作业</p></div>
+					<?php else: ?>
+						<div class="homeworkStart"><p class="btn">开始作业</p></div>
+					<?php endif ?>
+				</div>
+
+				<div class="homeListCon homeListCon2">
+					<img src="{$oss_path}public/web_img/APPHomework/emptyList.png" alt="" class="emptyImg">
+					<div class="homeConItem" v-for="(stu,index) in stulist">
+						<div class="itemImgBox">
+							<img :src="stu.avatar" alt="" onerror="imageError(this)">
+						</div>
+						<div class="itemTextBox">
+							<div class="itemTextName textHidden">{{ stu.name }}</div>
+							<div class="itemTextTime textHidden">{{ stu.content2 }}</div>
+						</div>
+						<div class="itemScoreBox">
+							<div class="itemScoreName">得分</div>
+							<div class="itemScoreNum"><span class="num">{{ stu.content1 }}</span>分</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+
+		<script>
+			$(function(){
+				var winHeight = $(window).height();//屏幕的高度
+			    var topHeight = $('.homeworkListOutter').outerHeight();//“作业介绍”的高度
+			    var centerHeight = $('.homeworkListTabBox').outerHeight();//“作业标签”的高度
+			    var minusHeight = winHeight*1 - topHeight*1 - centerHeight*1 - 10;//相减的高度
+			    $('.homeListCon').css('minHeight',minusHeight);//标签页的最小高度
+			})
+
+			$(window).load(function(){
+				// $('body').on('click','.homeListTab',function(){
+			    $('.homeListTab').click(function(){
+			    	var index = $(this).index();
+			    	if(!$(this).hasClass('active')) {
+			    		if(index == 0) {
+		    				$('.tabImg1').attr('src','{$oss_path}public/web_img/APPHomework/img0_1.png');
+		    				$('.tabImg2').attr('src','{$oss_path}public/web_img/APPHomework/img1_2.png');
+			    		} else {
+			    			$('.tabImg1').attr('src','{$oss_path}public/web_img/APPHomework/img0_2.png');
+		    				$('.tabImg2').attr('src','{$oss_path}public/web_img/APPHomework/img1_1.png');
+			    		}
+			    		$(this).addClass('active').siblings('.homeListTab').removeClass('active');
+			    		$('.homeListCon').eq(index).show().siblings('.homeListCon').hide();
+			    	}
+			    })
+			});
+
+			function imageError(img,sex) {
+				if(sex == '男') {
+		        	img.src = '__PUBLIC__/img/classManage/student_m.png';
+				} else {
+					img.src = '__PUBLIC__/img/classManage/student_w.png';
+				}
+		    }
+		</script>
+
+	<!-- 方法1:ajax请求 -->
+	</body>
+	<script>
+		var userId = "{$userId}";
+		var role = "{$role}";
+		var homeworkId = "{$homeworkId}";
+		var classId = "{$classId}";
+		var app = new Vue({
+			el: '#app',
+			data: {
+				userId:0,
+				role:0,
+				homeworkId:0,
+				classId:0,
+				jiezhi:'',
+				yaoqiu:'',
+				name:'',
+				studentCount:0,
+				stulist:'',//学生列表
+				exlist:'',//习题列表
+				total_e:0,
+
+			},
+			created: function () { //应用初始化完毕加载
+				this.userId = userId;
+				this.role = role;
+				this.homeworkId = homeworkId;
+				this.classId = classId;
+				this.$http.post('/ApiInterface/Version1_2/HomeworkStudent/getHomeworkAbstract',{userId:userId,role:role,homeworkId:homeworkId},{emulateJSON:'application/x-www-form-urlencoded'}).then(function(response){ //发送http请求
+					this.jiezhi = response.data.data.endTime;
+					document.title = response.data.data.name;
+					this.yaoqiu = response.data.data.requirement;
+				}, function(response){
+					// 响应错误回调
+					console.log('初始化作业信息错误');
+				});
+
+				this.$http.post('/ApiInterface/Version1_2/HomeworkStudent/getSubmitHomeworkList',{userId:userId,role:role,homeworkId:homeworkId,classId:classId},{emulateJSON:'application/x-www-form-urlencoded'}).then(function(response){ //发送http请求
+					this.studentCount = response.data.data.data.length;
+					this.stulist = response.data.data.data;
+					this.$nextTick(function(){
+						//如果没有作业，显示占位图
+						if($('.homeConItem').length == 0) {
+							$('.emptyImg').css('display','block')
+						}
+		            })
+				}, function(response){
+					// 响应错误回调
+					console.log('初始化学生列表错误');
+				});
+
+				this.$http.post('/ApiInterface/Version1_2/HomeworkStudent/getHomeworkDetail',{userId:userId,role:role,homeworkId:homeworkId,classId:classId,isFlatten:1},{emulateJSON:'application/x-www-form-urlencoded'}).then(function(response){ //发送http请求
+					this.exlist = response.data.data.data;
+					this.total_e = response.data.data.total;
+				}, function(response){
+					// 响应错误回调
+					console.log('初始化作业详情错误');
+				});
+
+			},
+		})
+
+		// $(document).on('click','.homeworkStart',function(){
+		$('.homeworkStart').click(function(){
+			var i =0;
+			var a = 0;
+			var c = 0;
+			var isEnd = "{$isEnd}";
+			if($(this).parents('.parent_index').index() == 0){
+				var i = $(this).parent().index();
+			}else{
+				var a = $(this).parents('.parent_index').index();
+				for(var b = 0;b<a;b++){
+					c += $('.parent_index').eq(b).find('.homeCircleLi').length;
+					i = c
+				}
+				i = i + $(this).parent().index()
+
+			}
+
+			window.location.replace("__URL__/exerciseDetails?&classId={$classId}&submitId=0&userId={$userId}&role={$role}&id={$homeworkId}&type=1&flag=0&isEnd="+isEnd);
+			// return false;
+		})
+	</script>
+</html>

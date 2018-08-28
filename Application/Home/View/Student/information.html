@@ -1,0 +1,617 @@
+<layout name="student_layout_withouticon" />
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<style>
+    .list_avatar {
+        border-radius: 6px;
+    }
+    
+    .navTitle {
+        display: none !important;
+    }
+    
+    .navTitleImg {
+        width: 100px;
+    }
+    
+    .my_message {
+        display: none;
+    }
+    
+    .m_title {
+        text-align: right;
+        padding-right: 20px !important;
+        font-size: 18px;
+    }
+    
+    .m_input {
+        width: 265px;
+    }
+    
+    .m_input input,
+    .m_input textarea,
+    .m_input select {
+        background-color: #fbeded;
+        padding: 5px 10px;
+        margin: 5px 0;
+        border: none;
+        width: 265px;
+        font-size: 16px;
+    }
+    
+    .modi_info_form {
+        text-align: center;
+    }
+    
+    .m_btn {
+        background: #cf7c7d;
+        font-size: 20px;
+        padding: 5px 20px;
+        border-radius: 5px;
+        border: none;
+        color: #fff;
+        margin-top: 50px;
+    }
+    
+    .ui-datepicker-trigger {
+        width: 6%;
+        display: inline;
+        cursor: pointer;
+        margin-left: 6px;
+    }
+    
+    /*================选择学校=======================*/
+        #bg {
+            display: none;
+            position: fixed;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 1001;
+            -moz-opacity: 0.7;
+            opacity: .70;
+            filter: alpha(opacity=70);
+        }
+        
+        #show {
+            display: none;
+            position: fixed;
+            top: 25%;
+            left: 22%;
+            width: 53%;
+            height: 55%;
+            padding: 8px;
+            border: 8px solid #E8E9F7;
+            background-color: white;
+            z-index: 1002;
+            overflow: auto;
+        }
+        .show_top {
+            width: 100%;
+            height: 80%;
+            text-align: center;
+        }
+        
+        .show_bottom {
+            width: 100%;
+            height: 20%;
+        }
+        
+        .school_select {
+            margin-right: 10px;
+        }
+        
+        .school_select select {
+            width: 50%;
+            background-color: #E8E9F7;
+            margin: 5px 0;
+            display:inline-block;
+        }
+        
+        #queding {
+            display: block;
+            margin: 0 auto;
+            width: 96px;
+            height: 30px;
+            background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+            background-size: 100% 100%;
+            color: #fff;
+            font: 18px/30px "微软雅黑";
+            text-align: center;
+            text-decoration: none;
+        }
+</style>
+
+<div class="main_opr">
+    <a href="javascript:;" title="编辑个人资料" target="_blank" class="btn btn-main-opr" style="background:#fff;color:#333;">编辑个人资料</a>
+</div>
+
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Student/me')}" title="返回" class="btn btnReturn1">返回</a>
+</div>
+
+<div class="modi_info" data-text="编辑资料" style="padding:30px;margin:0 auto;">
+<!--
+    <div style="width:40%;float:left;">
+        <img onerror="img_teacher(this)" class="list_avatar navListImg" style="display:block;margin:0 auto;">
+    </div>
+-->
+    <div style="width:410px;margin: 0 auto">
+        <form class="modi_info_form" action="" method="post" onsubmit="return check();">
+            <table class="modi_info_table">
+                <tr>
+                    <td class="m_title">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名</td>
+                    <td class="m_input">
+                        <input type="text" name="name" id="student_name" placeholder="请输入姓名" maxlength="20" required value="{$data.student_name}">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="m_title">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</td>
+                    <td class="m_input">
+                        <label for="man" style="font-weight:normal;margin-left:20px;">
+                            <input name="sex" type="radio" id="man" value="男" style="width:35px;background:#fff" <?php if($data[ 'sex']=='男' ) echo 'checked' ?> >男</label>
+                      
+                        <img style="width:30px; display:inline; margin-right:30px;" src="/Public/img/man.png">
+                        <label for="woman" style="font-weight:normal;">
+                            <input name="sex" type="radio" id="woman" value="女" style="width:35px;background:#fff" <?php if($data[ 'sex']=='女' ) echo 'checked' ?> >女</label>
+                        <img style="width:26px; display:inline;" src="/Public/img/woman.png">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="m_title">选择学校</td>
+                    <td class="m_input">
+                        <input type="text" id="school_input" placeholder="选择学校" onkeydown="return false" autocomplete="off" onclick="return showChooseSchoolDlg()" required value="{$data.school_name}">
+                        <input type="hidden" name="school_id" id="school_id" data-validate-func="required" data-validate-hint="学校不能为空">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="m_title">出生年月</td>
+                    <td class="m_input">
+                        <input style="width:235px;line-height:20px" type="text" name="birthday" id="datepicker" placeholder="出生年月" autocomplete="off" required value="{$data.birth_date}" onkeydown="return false">
+                        <!--                        <img style="width:8%;display:inline;cursor:pointer;" src="/Public/img/birthday.png">-->
+                    </td>
+                </tr>
+                <tr>
+                    <td class="m_title">学生编号</td>
+                    <td class="m_input">
+                        <input type="text" name="stuID" id="stuID" placeholder="学生编号" required value="{$data.student_id}">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="m_title">身份证号</td>
+                    <td class="m_input">
+                        <input type="text" name="identity" id="identity" placeholder="选填项" maxlength="18" value="{$data.id_card}">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="m_title">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱</td>
+                    <td class="m_input">
+                        <input type="email" name="email" id="student_email" placeholder="请输入邮箱" value="{$data.email}">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="m_title">家长手机号</td>
+                    <td class="m_input">
+                        <input type="text" name="telephone" id="telephone" placeholder="请输入手机号码" maxlength="11" autocomplete="off" required value="{$data.parent_tel}">
+                    </td>
+                </tr>
+<!--
+                <tr>
+                    <td class="m_title">密码</td>
+                    <td class="m_input">
+                        <input onfocus="this.type='password'" type="text" name="password" id="password" placeholder="请输入6-16位密码" maxlength="16"  autocomplete="off">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="m_title">确认密码</td>
+                    <td class="m_input">
+                        <input onfocus="this.type='password'" type="text" name="confirm_password" id="confirm_password" placeholder="请输入6-16位密码" maxlength="16"  autocomplete="off">
+                    </td>
+                </tr>
+-->
+                <tr>
+                    <td class="m_title"></td>
+                    <td class="m_input">
+                        <button class="m_btn" type="submit" style="" onclick="return check();">确定</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<!----------------选择学科------------------->
+<div id="bg"></div>
+<div id="show">
+    <div class="show_top" style="position:relative">
+        <div id="province" class="school_select">
+            省份：<select name="" id="pro_select" class="form-control">
+                <option value="">请选择省市区</option>
+            </select>
+        </div>
+        <div id="city" class="school_select">
+            市区：<select name="" id="city_select" class="form-control">
+                <option value="">请选择市区</option>
+            </select>
+        </div>
+        <div id="country" class="school_select">
+            区县：<select name="" id="coun_select" class="form-control">
+                <option value="">请选择区县</option>
+            </select>
+        </div>
+        <div id="school" class="school_select">
+            学校：<select name="" id="sch_select" class="form-control">
+                <option value="">请选择学校</option>
+            </select>
+        </div>
+        <img class="close_img" src="/Public/img/home/close_gray.png" alt="" style="position:absolute;right:0;top:0;cursor:pointer;">
+    </div>
+    <div class="show_bottom">
+        <a id="queding" href="javascript:;">确定</a>
+    </div>
+</div>
+
+<script src="__PUBLIC__/js/jquery.min.1.7.js"></script>
+<script src="__PUBLIC__/js/external/jquery-1.10.2.min.js"></script>
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    //navTitleImg图片路径
+    $('.navTitleImg').attr('src', '__ROOT__/Uploads/Avatars/1-01.png?v=' + Date.parse(new Date()));
+    //navTranImg图片路径
+    $('.navTranImg').attr('src', '__ROOT__/Uploads/Avatars/1-02.png?v=' + Date.parse(new Date()));
+
+    //    $('.navListImg').attr('src', '__ROOT__/Uploads/Avatars/{$data.avatar}_t.jpg?v=' + Date.parse(new Date()));
+
+    $('.navListImg').attr('src', '__ROOT__/Uploads/StudentAvatars/{$data.avatar}?v=' + Date.parse(new Date()));
+</script>
+<script>
+    function check() {
+        //姓名验证
+        var student_name = $('#student_name').val();
+        var regTel = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+        if (!regTel.test(student_name)) {
+            alert('姓名格式不正确');
+            return false;
+        }
+        if (!checkCard()) {
+            return false;
+        }
+
+        var password = $('#password').val();
+        if(password != "")
+        {
+            if (password.length < 6) {
+                alert('密码长度不少于6位');
+                return false;
+            }
+
+            var confirm_password = $('#confirm_password').val();
+            if (password!=confirm_password) {
+                alert('两次密码输入不一致');
+                return false;
+            }
+        }
+		
+        var telephone = $('#telephone').val();
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+        if (!regTel.test(telephone)) {
+            alert('手机号格式不正确');
+            return false;
+        }
+
+        var email = $('#student_email').val();
+        if (email != '') {
+            var emailReg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+            if (!emailReg.test(email)) {
+                alert('请输入有效的Email地址');
+                return false;
+            }
+        }
+
+        return true;
+
+    }
+</script>
+<script>
+    var vcity = {
+        11: "北京",
+        12: "天津",
+        13: "河北",
+        14: "山西",
+        15: "内蒙古",
+        21: "辽宁",
+        22: "吉林",
+        23: "黑龙江",
+        31: "上海",
+        32: "江苏",
+        33: "浙江",
+        34: "安徽",
+        35: "福建",
+        36: "江西",
+        37: "山东",
+        41: "河南",
+        42: "湖北",
+        43: "湖南",
+        44: "广东",
+        45: "广西",
+        46: "海南",
+        50: "重庆",
+        51: "四川",
+        52: "贵州",
+        53: "云南",
+        54: "西藏",
+        61: "陕西",
+        62: "甘肃",
+        63: "青海",
+        64: "宁夏",
+        65: "新疆",
+        71: "台湾",
+        81: "香港",
+        82: "澳门",
+        91: "国外"
+    };
+
+    var checkCard = function () {
+        var card = document.getElementById('identity').value;
+        if(card == "")
+        return true;
+        //是否为空
+        if (card === '') {
+            alert('请输入身份证号，身份证号不能为空');
+            document.getElementById('identity').focus;
+            return false;
+        }
+        //校验长度，类型
+        if (isCardNo(card) === false) {
+            alert('您输入的身份证号码不正确，请重新输入');
+            document.getElementById('identity').focus;
+            return false;
+        }
+        //检查省份
+        if (checkProvince(card) === false) {
+            alert('您输入的身份证号码不正确,请重新输入');
+            document.getElementById('identity').focus;
+            return false;
+        }
+        //校验生日
+        if (checkBirthday(card) === false) {
+            alert('您输入的身份证号码生日不正确,请重新输入');
+            document.getElementById('identity').focus();
+            return false;
+        }
+        //检验位的检测
+        if (checkParity(card) === false) {
+            alert('您的身份证校验位不正确,请重新输入');
+            document.getElementById('identity').focus();
+            return false;
+        }
+        return true;
+    };
+
+
+    //检查号码是否符合规范，包括长度，类型
+    isCardNo = function (card) {
+        //身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X
+        var reg = /(^\d{15}$)|(^\d{17}(\d|X)$)/;
+        if (reg.test(card) === false) {
+            return false;
+        }
+
+        return true;
+    };
+
+    //取身份证前两位,校验省份
+    checkProvince = function (card) {
+        var province = card.substr(0, 2);
+        if (vcity[province] == undefined) {
+            return false;
+        }
+        return true;
+    };
+
+    //检查生日是否正确
+    checkBirthday = function (card) {
+        var len = card.length;
+        //身份证15位时，次序为省（3位）市（3位）年（2位）月（2位）日（2位）校验位（3位），皆为数字
+        if (len == '15') {
+            var re_fifteen = /^(\d{6})(\d{2})(\d{2})(\d{2})(\d{3})$/;
+            var arr_data = card.match(re_fifteen);
+            var year = arr_data[2];
+            var month = arr_data[3];
+            var day = arr_data[4];
+            var birthday = new Date('19' + year + '/' + month + '/' + day);
+            return verifyBirthday('19' + year, month, day, birthday);
+        }
+        //身份证18位时，次序为省（3位）市（3位）年（4位）月（2位）日（2位）校验位（4位），校验位末尾可能为X
+        if (len == '18') {
+            var re_eighteen = /^(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)$/;
+            var arr_data = card.match(re_eighteen);
+            var year = arr_data[2];
+            var month = arr_data[3];
+            var day = arr_data[4];
+            var birthday = new Date(year + '/' + month + '/' + day);
+            return verifyBirthday(year, month, day, birthday);
+        }
+        return false;
+    };
+
+    //校验日期
+    verifyBirthday = function (year, month, day, birthday) {
+        var now = new Date();
+        var now_year = now.getFullYear();
+        //年月日是否合理
+        if (birthday.getFullYear() == year && (birthday.getMonth() + 1) == month && birthday.getDate() == day) {
+            //判断年份的范围（3岁到100岁之间)
+            var time = now_year - year;
+            if (time >= 3 && time <= 100) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    };
+
+    //校验位的检测
+    checkParity = function (card) {
+        //15位转18位
+        card = changeFivteenToEighteen(card);
+        var len = card.length;
+        if (len == '18') {
+            var arrInt = new Array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+            var arrCh = new Array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+            var cardTemp = 0,
+                i, valnum;
+            for (i = 0; i < 17; i++) {
+                cardTemp += card.substr(i, 1) * arrInt[i];
+            }
+            valnum = arrCh[cardTemp % 11];
+            if (valnum == card.substr(17, 1)) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    };
+
+    //15位转18位身份证号
+    changeFivteenToEighteen = function (card) {
+        if (card.length == '15') {
+            var arrInt = new Array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+            var arrCh = new Array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+            var cardTemp = 0,
+                i;
+            card = card.substr(0, 6) + '19' + card.substr(6, card.length - 6);
+            for (i = 0; i < 17; i++) {
+                cardTemp += card.substr(i, 1) * arrInt[i];
+            }
+            card += arrCh[cardTemp % 11];
+            return card;
+        }
+        return card;
+    };
+</script>
+
+<script>
+        String.prototype.format = function (args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if (args[key] != undefined) {
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            var reg = new RegExp("({)" + i + "(})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        function hideChooseSchoolDlg() {
+            document.getElementById("bg").style.display = 'none';
+            document.getElementById("show").style.display = 'none';
+        }
+
+
+        function showChooseSchoolDlg() {
+
+            document.getElementById("bg").style.display = "block";
+            document.getElementById("show").style.display = "block";
+            $('#schoolWrapper').height($('#show').height() - 130);
+
+        }
+        bindQueryDistrictEvent('/index.php/Home/Teach/', 'pro_select', 'city_select', 'coun_select', 'sch_select');
+    </script>
+
+    <script>
+        function CountDown() {
+            if (times < 1) {
+                hasSentPhoneCode = false;
+                clearInterval(isinerval);
+                $('#sendcodebutton').html('重新发送');
+                return;
+            }
+            $('#GetVerify').html(times);
+            times--;
+        }
+    </script>
+
+    <!-------------------选择学校---------------------->
+    <script>
+        $('#queding').on('click', function () {
+            $('#bg').css('display', 'none');
+            $('#show').css('display', 'none');
+            $('#school_input').val($('#sch_select option:selected').text());
+            $('#school_id').val($('#sch_select option:selected').attr('data-id'));
+        })
+        $('.close_img').on('click', function () {
+            $('#bg').css('display', 'none');
+            $('#show').css('display', 'none');
+            $('#show_course').css('display', 'none');
+        })
+    </script>
+    
+<!--------------日历----------------->
+<script>
+    $(function () {
+        $("#datepicker").datepicker({
+            dateFormat: "yy-mm-dd",
+            showOn: "both",
+            buttonImage: "/Public/img/birthday2.png",
+            buttonImageOnly: true,
+            showButtonPanel: true,
+            changeMonth: true,
+            maxDate: '0',
+            changeYear: true,
+            yearRange: "1950:2050"
+        });
+    });
+</script>
+
+
+<script>
+    jQuery(function ($) {
+        $.datepicker.regional['zh-CN'] = {
+            clearText: '清除',
+            clearStatus: '清除已选日期',
+            closeText: '关闭',
+            closeStatus: '不改变当前选择',
+            prevText: '<上月',
+            prevStatus: '显示上月',
+            prevBigText: '<<',
+            prevBigStatus: '显示上一年',
+            nextText: '下月>',
+            nextStatus: '显示下月',
+            nextBigText: '>>',
+            nextBigStatus: '显示下一年',
+            currentText: '今天',
+            currentStatus: '显示本月',
+            monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+            monthStatus: '选择月份',
+            yearStatus: '选择年份',
+            weekHeader: '周',
+            weekStatus: '年内周次',
+            dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+            dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+            dayStatus: '设置 DD 为一周起始',
+            dateStatus: '选择 m月 d日, DD',
+            dateFormat: 'yy-mm-dd',
+            firstDay: 1,
+            initStatus: '请选择日期',
+            isRTL: false
+        };
+        $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+    });
+</script>

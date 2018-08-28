@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html> 
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>{$data.name}</title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC_THEME__/stylesheets/app.css?v=3" />
+	<link type="text/css" rel="stylesheet" href="__PUBLIC__/umeditor/third-party/mathquill/mathquill.css">
+	<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	<script type="text/javascript" src="__PUBLIC__/umeditor/third-party/mathquill/mathquill.min.js"></script>
+	<style>
+		.left { 
+			float: left;
+		}
+		
+		.right {
+			float: right;
+		}
+		
+		ul {
+			list-style: none;
+		}
+		
+		html {
+			width: 100%;
+			height: 100%;
+		}
+		
+		body {
+			width: 100%;
+			height: 100%;
+			background: url({$oss_path}public/web_img/App/resourceBack.jpg) no-repeat fixed;
+			background-size: cover;
+			-webkit-tap-highlight-color: rgba(0,0,0,0);
+		}
+		
+		.wrapper {
+			color: #333;
+			font-size: 1.2rem;
+		}
+		
+		.resourceTitle {
+			text-align: center;
+			font-size: 2rem;
+			margin-bottom: 25px;
+			word-break: break-all;
+		}
+		
+		.wrapper p {
+			width: 100%;
+			overflow: hidden;
+			margin: 5px 0 !important
+		}
+		
+		.resourceFooter {
+			width: 100%;
+			height: 50px;
+			background: #c8c8c8;
+			position: fixed;
+			left: 0;
+			bottom: 0;
+			z-index: 20161110
+		}
+		
+		.resourceFooter button {
+			width: 33.33%;
+			height: 50px;
+			line-height: 50px;
+			border: none;
+			padding: 0;
+			color: #333;
+			background-color: none;
+			outline: none;
+			text-align: center;
+			font-size: 1.2rem
+		}
+		
+		.resourceFooter button img{
+			width: 30px;
+			vertical-align: middle
+		}
+		
+		#shareIcon img, #zanIcon img{
+			margin-top: -5px
+		}
+
+		#data_load {
+			padding: 0;
+			margin: 0;
+			margin-bottom: 10px;
+			text-align: center;
+		}
+		
+		#data_load li {
+			margin-bottom: 10px;
+		}
+		
+		#data_load a {
+			color: #fff;
+			font-size: 1.5rem
+		}
+		
+		#data_load li img, #data_load li video, #data_load li audio {
+			max-width: 95%
+		}
+		
+		.contentBox {
+			margin-bottom: 60px;
+			text-align: center;
+		}
+		
+		.contentBox img, .contentBox video, .contentBox audio {
+			max-width: 95%
+		}
+		
+		video {
+			background: #000;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="wrapper">
+		<h3 class="resourceTitle">{$data.name}</h3>
+		<p>
+			<span class="left resourcePublisher">{$data.teacher_name}</span>
+			<span class="right">{$data.create_at|date="Y-m-d H:i",###}</span>
+		</p>
+		<p>
+			<span class="left resourcePublisher">{$data.course_name}/{$data.grade}/{$data.textbook}</span>
+			<span class="right">{$data.type}</span>
+		</p>
+		<p style="font-size: 1.5rem;text-align: justify;line-height: 2rem;margin-top:12px !important">
+			 资源描述：{$data.description}
+		</p>
+	</div>
+	<div>
+		<ul id="data_load">
+			<volist name="contact_data" id="contact_data_item"  empty="" key="i"> 
+				<li>
+					<a href="javascript:;" class="browse_resource" attr_ppt_flag="{$contact_data_item.flag}" attr_id="{$contact_data_item.vid}" attr_path="{$oss_path}<?php
+						if($data['type'] == 'word' ||$data['type'] == 'ppt')
+						{
+						$path = explode('.',basename($contact_data_item['resource_path']));
+						$path=$path[0].'.pdf'; 
+						$path = 'teacher/' .$data['id'].'/'.$contact_data_item['id'] .'/' .$path;
+						echo $path;
+						}
+						else
+						echo $contact_data_item['resource_path'];
+						?>
+					">查看第{$i}个资源</a>
+				</li> 
+			</volist>
+		</ul>
+		<div class="contentBox" style="display:none;"> 
+                    <switch name="data.type">
+                        <case value="pdf|word|ppt"> 
+                            <iframe id="resourceFrame" frameborder="0"  src="__PUBLIC__/pdfjs/viewer/viewer.html?f={$oss_path}<?php
+                                if($data['type'] == 'word' ||$data['type'] == 'ppt')
+                                {
+                                $path = explode('.',basename($contact_data[0]['resource_path']));
+                                $path=$path[0].'.pdf'; 
+                                                        $path = 'teacher/' .$data['id'].'/'.$contact_data[0]['id'] .'/' .$path;
+                                echo $path;
+                                }
+                                else
+                                echo $contact_data[0]['resource_path'];
+                                ?>" width="100%" height="500">
+                            </iframe>
+                        </case>
+                        <case value="image">
+                            <div class="browse_image">
+                                <img src="{$oss_path}{$data.file_path}" />
+                            </div>
+                        </case> 
+                        <case value="video"> 
+                            <div id='plv'>
+                                <video src="{$contact_data_item.vid_fullpath}" controls/>
+                            </div>
+                        </case>
+                        <case value="audio">
+                            <div id='plv'>
+                                <video src="{$contact_data_item.vid_fullpath}" controls/>
+                            </div>
+                        </case>
+                        <default/>
+                        <div>
+                        </div>
+                    </switch>
+                </div>
+	</div>
+	<div class="resourceFooter">
+		<button id="shareIcon" class="left">
+			<img src="{$oss_path}public/web_img/App/fenxiang.png" alt="">
+			分享
+		</button>
+		<if condition="$existedZan eq 'yes'">
+			<button id="zanIcon" class="left">
+				<img src="{$oss_path}public/web_img/App/dianzan_after.png" alt="">
+				<span>{$data.zan_count}</span>
+			</button>
+		<else/>
+			<button id="zanIcon" class="left">
+				<img src="{$oss_path}public/web_img/App/dianzan.png" alt="">
+				<span>{$data.zan_count}</span>
+			</button>
+		</if>
+		<if condition="$existedFavor eq 'yes'">
+			<button id="favorIcon" class="left">
+				<img src="{$oss_path}public/web_img/App/shoucang_after.png" alt="">
+				<span>{$data.favorite_count}</span>
+			</button>
+		<else/>
+			<button id="favorIcon" class="left">
+				<img src="{$oss_path}public/web_img/App/shoucang.png" alt="">
+				<span>{$data.favorite_count}</span>
+			</button>
+		</if>
+	</div>
+	
+	<script type="text/javascript">
+		(function (doc, win) {
+			var docEl = doc.documentElement,
+				resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+				recalc = function () {
+					var clientWidth = docEl.clientWidth;
+					if (!clientWidth) return;
+					docEl.style.fontSize = 10 * (clientWidth / 320) + 'px';
+				};
+
+			if (!doc.addEventListener) return;
+			win.addEventListener(resizeEvt, recalc, false);
+			doc.addEventListener('DOMContentLoaded', recalc, false);
+		})(document, window);
+	</script>
+	
+	<!--不同角色不同功能-->
+	<script>
+		var obj = {};
+		var sp_arr = window.location.search.substr(1).split("&");
+		for (var i = 0; i < sp_arr.length; i++) {
+			var arr2 = sp_arr[i].split("=");
+			obj[arr2[0]] = arr2[1];
+		}
+//		console.log(obj.user_id)
+//		console.log(obj.role)
+	        if(obj.user_id == undefined)
+                {
+                  if(obj.userId != undefined)
+                   obj.user_id = obj.userId;
+                } 
+		var zan= "{$data.zan_count}";
+		var favor= "{$data.favorite_count}";
+		console.log(zan)
+		console.log(favor)
+		 if(!(obj.user_id >0))
+          obj.user_id = obj.userId;
+		switch(obj.role) {
+			case '2':
+				$(function () {
+					$('#zanIcon').click(function () {
+						$.get("/index.php/Home/Teach/zanResource", {id: '{$data.id}',user_id: obj.user_id}, function (res) {
+							if (res == 'success') {
+								zan++;
+								$('#zanIcon').children('span').html(zan);	$('#zanIcon').children('img').attr('src','{$oss_path}public/web_img/App/dianzan_after.png');
+							} else if(res == '已经取消点赞'){
+								if(zan != 0)
+								zan--;
+								$('#zanIcon').children('span').html(zan);
+								$('#zanIcon').children('img').attr('src','{$oss_path}public/web_img/App/dianzan.png');
+							}  
+						});
+					});
+
+					$('#favorIcon').click(function () {
+						$.get("/index.php/Home/Teach/favorResource", {id: '{$data.id}',user_id: obj.user_id}, function (res) {
+							if (res == 'success') {
+								favor++;
+								$('#favorIcon').children('span').html(favor);	$('#favorIcon').children('img').attr('src','{$oss_path}public/web_img/App/shoucang_after.png');
+							} else if(res == '已经取消收藏'){
+                                if(favor != 0)
+								favor--;
+								$('#favorIcon').children('span').html(favor);
+								$('#favorIcon').children('img').attr('src','{$oss_path}public/web_img/App/shoucang.png');
+							}
+						});
+					});
+				});
+				break;
+			case '3':
+				$(function () {
+					$('#zanIcon').click(function () {
+						$.get("/index.php/Home/Student/zanResource", {id: '{$data.id}',user_id: obj.user_id}, function (res) {
+							if (res == 'success') {
+								zan++;
+								$('#zanIcon').children('span').html(zan);	$('#zanIcon').children('img').attr('src','{$oss_path}public/web_img/App/dianzan_after.png');
+							} else if(res == '已经取消点赞'){
+                                if(zan != 0)
+								zan--;
+								$('#zanIcon').children('span').html(zan);
+								$('#zanIcon').children('img').attr('src','{$oss_path}public/web_img/App/dianzan.png');
+							}  
+						});
+					});
+
+					$('#favorIcon').click(function () {
+						$.get("/index.php/Home/Student/favorResource", {id: '{$data.id}',user_id: obj.user_id}, function (res) {
+							if (res == 'success') {
+								favor++;
+								$('#favorIcon').children('span').html(favor);	$('#favorIcon').children('img').attr('src','{$oss_path}public/web_img/App/shoucang_after.png');
+							} else if(res == '已经取消收藏'){
+                                if(favor != 0)
+								favor--;
+								$('#favorIcon').children('span').html(favor);
+								$('#favorIcon').children('img').attr('src','{$oss_path}public/web_img/App/shoucang.png');
+							}
+						});
+					});
+				});
+				break;
+			case '4':
+				$(function () {
+					$('#zanIcon').click(function () {
+						$.get("/index.php/Home/Parent/zanResource", {id: '{$data.id}',user_id: obj.user_id}, function (res) {
+							if (res == 'success') {
+								zan++;
+								$('#zanIcon').children('span').html(zan);	$('#zanIcon').children('img').attr('src','{$oss_path}public/web_img/App/dianzan_after.png');
+							} else if(res == '已经取消点赞'){
+                                if(zan != 0)
+								zan--;
+								$('#zanIcon').children('span').html(zan);
+								$('#zanIcon').children('img').attr('src','{$oss_path}public/web_img/App/dianzan.png');
+							}  
+						});
+					});
+
+					$('#favorIcon').click(function () {
+						$.get("/index.php/Home/Parent/favorResource", {id: '{$data.id}',user_id: obj.user_id}, function (res) {
+							if (res == 'success') {
+								favor++;
+								$('#favorIcon').children('span').html(favor);	$('#favorIcon').children('img').attr('src','{$oss_path}public/web_img/App/shoucang_after.png');
+							} else if(res == '已经取消收藏'){
+							    if(favor != 0)
+								favor--;
+								$('#favorIcon').children('span').html(favor);
+								$('#favorIcon').children('img').attr('src','{$oss_path}public/web_img/App/shoucang.png');
+							}
+						});
+					});
+				});
+				break;
+		}
+	</script>
+	<!--分享按钮--> 
+    <script>
+		$('#shareIcon').click(function(){
+			window.location.href = 'https://www.baidu.com'
+		})
+	</script>    
+	<!--动态创建标签-->
+	<script>
+                var host="{$host}";    
+                url=host+"/ApiInterface/Version1_1/Activity/dataConversion";    
+                
+		$('.browse_resource').click(function(){
+			var u = navigator.userAgent;
+			var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+			var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+			console.log('是否是Android：'+isAndroid);
+			console.log('是否是iOS：'+isiOS);
+			//ios系统 除了image,别的都新页面打开
+			if(isiOS == true){
+				var type = '{$data.type}';
+				switch(type) {
+					case 'image':
+						$(".contentBox").css('display','block');
+						var file_path = $(this).attr('attr_path');  
+						$(".browse_image").children('img').attr('src', file_path).css('margin-bottom','60px');
+						break;
+                                        case 'ppt': 
+					case 'word': 
+					case 'pdf': 
+                                            if($(this).attr('attr_ppt_flag')==1){
+                                                location.href=url;
+                                            }else{
+                                                $(".contentBox").css('display','block');
+                                                var attrPath;
+                                                for(i=0;i<$('.browse_resource').length;i++){
+                                                        attrPath= $('.browse_resource').eq(i).attr('attr_path')
+                                                        $('.browse_resource').eq(i).attr('href',attrPath)
+                                                }
+                                            }
+                                             break;
+					case 'video': 
+					case 'audio': 
+					case 'swf':
+					case 'condensed':0
+						$(".contentBox").css('display','block');
+						var attrPath;
+						for(i=0;i<$('.browse_resource').length;i++){
+							attrPath= $('.browse_resource').eq(i).attr('attr_path')
+							$('.browse_resource').eq(i).attr('href',attrPath)
+						}
+						break;
+
+				}
+			} else if(isAndroid == true) {
+				
+				var type = '{$data.type}';
+				console.log(type)
+				switch(type) {
+					case 'video': 
+					case 'audio':
+                                                $(".contentBox").css('display','block');
+						var video_src = $(this).attr('attr_path');
+						var videoBox = '<video src="'+video_src+'" controls/>'
+						$("#plv").empty().append(videoBox)
+	//                                        $("#plv").find('video').attr('src',video_src);
+											break;
+					case 'image':
+                                                $(".contentBox").css('display','block');
+						var file_path = $(this).attr('attr_path');  
+                                                    $(".browse_image").children('img').attr('src', file_path);
+						break;
+					case 'ppt': 
+					case 'word': 
+					case 'pdf': 
+                                                if($(this).attr('attr_ppt_flag')==1){
+                                                    location.href=url;
+                                                }else{
+                                                    $(".contentBox").css('display','block');
+                                                    var file_path = $(this).attr('attr_path');
+                                                    $("#resourceFrame").attr('src', "__PUBLIC__/pdfjs/viewer/viewer.html?f=" + file_path);
+                                                }
+						break;
+					case 'swf':
+                                                $(".contentBox").css('display','block');
+						var swfBox = '<span>暂时不支持该格式</span>';
+						$('.contentBox').empty().append(swfBox);
+						break; 
+				}
+			}
+			
+		}) 
+		function rightUI() {
+			return {
+				'type': 0,
+				'share': {
+					'url': "http://{$_SERVER['SERVER_NAME']}__URL__/resourceDetailsShare?id={$data['id']}",
+					'title': "{$data['name']}",
+					'content': "<?php echo mb_substr(strip_tags($data['description']),0,40); ?>"
+				}
+			};
+		}
+	</script>
+</body>
+
+</html>

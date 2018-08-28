@@ -1,0 +1,388 @@
+<layout name="teacher_layout_1"/>
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/directTrainList.css" rel="stylesheet" type="text/css"/>
+<div class="search">
+    <button class="search_btn">搜索</button>
+    <input type="text" name="" value="" class="search_text" placeholder="">
+</div>
+<div class="indexBox mt20">
+    <div class="leftNav left">
+        <ul>
+            <li>
+                <span class="navSort">筛选</span>
+            </li>
+            <?php foreach($course_list as $k=>$itemCource){?>
+            <li>
+                <span class="navSubject" name="course_id" attr-value="<?php echo $itemCource?>"><?php echo $k?></span>
+
+                <div class="navBox">
+                    <ul class="m0 p20">
+                        <li>
+                            <p class="fz18">
+                                <b>年级</b>
+                            </p>
+                            <p class="of grade">
+                                <?php foreach($grade_list as $itemGrade){?>
+                                <span name="grade_id" attr-value="<?php echo $itemGrade['id']?>"><?php echo $itemGrade['name']?></span>
+                                <?php }?>
+                            </p>
+                            <p class="fz18">
+                                <b>分册</b>
+                            </p>
+                            <p class="of fascicule">
+                                <span  name="fascicule_id" attr-value="1">上册</span>
+                                <span  name="fascicule_id" attr-value="2">下册</span>
+                                <span  name="fascicule_id" attr-value="3">全一册</span>
+                            </p>
+                            <p class="fz18">
+                                <b>讲授人</b>
+                            </p>
+                            <p class="of editor">
+                                <?php foreach($editors_list as $itemEditors){?>
+                                <span name="editor" attr-value="<?php echo $itemEditors['teacher_id']?>"><?php echo $itemEditors['name']?></span>
+                                <?php }?>
+                            </p>
+							<p class="text-center mt20">
+								<button type="button" name="button" class="determine">确定</button>
+							</p>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <?php }?>
+        </ul>
+    </div>
+    <div class="searchIframe">
+        <div class="searchBox of">
+            <ul class="of">
+                <li class="sort" name="isDefault">默认</li>
+                <li class="sort" name="isNew">最新</li>
+                <li class="sort" name="isHot">人气</li>
+                <li class="sort" name="isPrice">价格</li>
+                <li><input type="radio" name="isGratis" value="" class="free" style="position:relative;top:2px">免费</li>
+                <li><input type="radio" name="isToll" value="" class="charge" style="position:relative;top:2px">收费</li>
+                <li><input type="radio" name="isPurchased" value="" class="purchased" style="position:relative;top:2px">已购买</li>
+            </ul>
+        </div>
+        <div class="searchList of">
+            <!-- include  取下面这个UL-->
+            <include file="./Application/Home/View/DirectTrain/iframe.html" />
+        </div>
+
+    </div>
+    <div class="answerBox  mt20">
+        <?php if($isEditor === false){?>
+        <div class="questions">
+            <img src="__PUBLIC__/img/directTrain/wendaditu.png" alt=""/>
+            <p class="questionsNum of ml20 mr20 pb10">
+                <a href="index.php?m=Home&c=DirectTrain&a=myQuestion&type=3"><span>未回答(<?php echo $noReplyCount?>)</span></a>
+                <a href="index.php?m=Home&c=DirectTrain&a=myQuestion&type=2"><span>已回答(<?php echo $YesReplyCount?>)
+                    <?php if($isTrue === true){?>
+                    <img src="__PUBLIC__/img/directTrain/hongdian.png" alt=""  class="redDot"></span>
+                    <?php }?>
+                </a>
+            </p>
+            <p class="text-center">
+                <a href="index.php?m=Home&c=DirectTrain&a=raiseQuestion">
+                    <button type="button" name="button" class="askQuestions">我要提问</button>
+                </a>
+            </p>
+        </div>
+        <?php }?>
+        <div class="historyQuestions mt10">
+            <p class="historyP">
+                <img src="__PUBLIC__/img/directTrain/lishiwenda.png" alt=""  class="redDot">历史问答
+            </p>
+            <div class="pr20 pl20 historyQuestionsList">
+                <?php foreach($question_list as $itemQuestion){?>
+                <div class="of mb10 historyQuestionsListDiv">
+                    <img src="<?php echo !empty($itemQuestion['avatar']) ? $oss_path.$itemQuestion['avatar'] : '/Public/img/classManage/teacher_m.png'?>" alt="" class="left" style="width:20px;height:20px;border-radius: 50%;overflow: hidden;">
+                    <p class="right m0 historyQuestionsP">
+                        <a href="index.php?m=Home&c=DirectTrain&a=questionsDetails&id=<?php echo $itemQuestion['id']?>"><?php echo $itemQuestion['special_column_question_title']?></a>
+                    </p>
+                    <span class="ml30"><img src="__PUBLIC__/img/directTrain/wenda2.png" alt=""/> &nbsp;<?php echo !empty($itemQuestion['count']) ? $itemQuestion['count'] : '0' ?>个回复</span>
+                </div>
+                <?php }?>
+                <div class="of mb10 historyQuestionsListMore">
+                    <a href="index.php?m=Home&c=DirectTrain&a=myQuestion&type=1" class="right">更多>></a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $(':radio').removeAttr('checked')
+    })
+    $('.historyQuestionsP').each(function () {
+        var maxwidth = 35;
+        var trimString = $.trim($(this).text());
+        if (trimString.length > maxwidth) {
+            $(this).text(trimString.substring(0, maxwidth) + '…');
+        }
+    });
+    $('.searchTitle').children('b').each(function () {
+        var maxwidth = 35;
+        var trimString = $.trim($(this).text());
+        if (trimString.length > maxwidth) {
+            $(this).text(trimString.substring(0, maxwidth) + '…');
+        }
+    });
+    if($('.historyQuestionsListDiv').length>4){
+        $('.historyQuestionsListDiv').eq(4).hide()
+    }else{
+        $('.historyQuestionsListMore').hide()
+    }
+
+    $('.leftNav').children('ul').children('li').hover(function () {
+        $(this).addClass('leftNavLi')
+		$(this).children('.navSubject').css('color','#e9573f')
+        $(this).children('.navBox').show()
+    }, function () {
+        $(this).removeClass('leftNavLi')
+		$(this).children('.navSubject').css('color','#333')
+        $(this).children('.navBox').hide();
+		$(this).find('.active').removeClass('active');
+		// delete dataArr["grade_id"];
+		// delete dataArr["fascicule_id"];
+		// delete dataArr["editor"];
+    });
+
+/****************************************************************************************************************/
+
+	$('.free').click(function(){
+
+		if($(this).attr('checked') == 'checked'){
+                $(this).removeAttr('checked');
+            $(this).attr('checked',false)
+            delete dataArr["isGratis"];
+		}else {
+            $(this).attr('checked','checked');
+            $('.charge,.purchased').attr('checked',false)
+            dataArr["isGratis"] = 'isGratis';
+            delete dataArr["isToll"];
+            delete dataArr["isPurchased"];
+		}
+        request();
+		console.log(dataArr);
+
+	})
+	$('.charge').click(function(){
+		if($(this).attr('checked') == 'checked'){
+            $(this).removeAttr('checked');
+            $(this).attr('checked',false)
+            delete dataArr["isToll"]
+		}else {
+            $(this).attr('checked','checked');
+            $('.free,.purchased').attr('checked',false)
+            dataArr["isToll"] = 'isToll';
+            delete dataArr["isGratis"];
+            delete dataArr["isPurchased"];
+		}
+        request();
+		console.log(dataArr);
+
+	})
+	$('.purchased').click(function(){
+        if($(this).attr('checked') == 'checked'){
+            $(this).removeAttr('checked');
+            $(this).attr('checked',false)
+            delete dataArr["isPurchased"]
+        }else {
+            $(this).attr('checked','checked');
+            $('.free,.charge').attr('checked',false)
+            dataArr["isPurchased"] = 'isPurchased';
+            delete dataArr["isGratis"];
+            delete dataArr["isToll"];
+        }
+		// if($(this).is(':checked')){
+        //
+		// }else {
+        //
+		// }
+        request();
+		console.log(dataArr);
+
+	});
+
+    /****************************************************************************************************************/
+
+    /*点击默认等操作*/
+	var dataArr = {};
+
+    $('.sort').click(function () {
+        $(this).addClass('active').siblings('.sort').removeClass('active')
+        if ($(this).attr('class').indexOf('xia') != '-1') {
+            $(this).removeClass('xia').addClass('shang');
+
+			switch ($(this).index()) {
+				case 0:
+                console.log(dataArr);
+					dataArr['isDefault'] = 'asc';
+					delete dataArr["isNew"];
+					delete dataArr["isHot"];
+					delete dataArr["isPrice"];
+					break;
+
+				case 1:
+					dataArr['isNew'] = 'asc';
+					delete dataArr["isDefault"];
+					delete dataArr["isHot"];
+					delete dataArr["isPrice"];
+					break;
+
+				case 2:
+					dataArr['isHot'] = 'asc';
+					delete dataArr["isDefault"];
+					delete dataArr["isNew"];
+					delete dataArr["isPrice"];
+					break;
+
+				case 3:
+					dataArr['isPrice'] = 'asc';
+					delete dataArr["isDefault"];
+					delete dataArr["isNew"];
+					delete dataArr["isHot"];
+					break;
+
+			}
+				console.log(dataArr);
+        } else {
+            $(this).addClass('xia');
+            $(this).siblings('.sort').removeClass('xia');
+            $(this).siblings('.sort').removeClass('shang');
+			switch ($(this).index()) {
+				case 0:
+					dataArr['isDefault'] = 'desc';
+					delete dataArr["isNew"];
+					delete dataArr["isHot"];
+					delete dataArr["isPrice"];
+					break;
+
+				case 1:
+					dataArr['isNew'] = 'desc';
+					delete dataArr["isDefault"];
+					delete dataArr["isHot"];
+					delete dataArr["isPrice"];
+					break;
+
+				case 2:
+					dataArr['isHot'] = 'desc';
+					delete dataArr["isDefault"];
+					delete dataArr["isNew"];
+					delete dataArr["isPrice"];
+					break;
+
+				case 3:
+					dataArr['isPrice'] = 'desc';
+					delete dataArr["isDefault"];
+					delete dataArr["isNew"];
+					delete dataArr["isHot"];
+					break;
+
+			}
+			console.log(dataArr);
+
+        }
+        request();
+
+    });
+</script>
+<script>
+
+	var grade_id = '' ;
+	var fascicule_id ='';
+	var editor = '';
+	var course_id = '';
+	$('.grade').children('span').click(function(){
+		$(this).addClass('active').siblings('span').removeClass('active active1');
+	})
+	$('.fascicule').children('span').click(function(){
+		$(this).addClass('active').siblings('span').removeClass('active active1');
+	})
+	$('.editor').children('span').click(function(){
+		$(this).addClass('active').siblings('span').removeClass('active active1');
+	})
+	$('.determine').click(function(){
+        $(this).parents('.navBox').find('.active').addClass('active1').end().parent().siblings().find('.active1').removeClass('active1')
+        dataArr['editor'] = editor;
+        dataArr['fascicule_id'] = fascicule_id ;
+        dataArr['grade_id'] = grade_id ;
+		course_id = $(this).parents('.navBox').siblings('.navSubject').attr('attr-value');
+        grade_id = $(this).parent().siblings('.grade').find('.active,.active1').attr('attr-value');
+        fascicule_id = $(this).parent().siblings('.fascicule').find('.active,.active1').attr('attr-value');
+        editor_id =  $(this).parent().siblings('.editor').find('.active,.active1').attr('attr-value');
+        $(this).parents('.navBox').siblings('.navSubject').addClass('actives').parent().siblings('li').find('.actives').removeClass('actives')
+		dataArr['course_id'] = course_id;
+        dataArr['fascicule_id'] = fascicule_id;
+        dataArr['grade_id'] = grade_id ;
+        dataArr['editor'] = editor_id;
+        $('.navBox').hide();
+        request();
+		console.log(dataArr);
+	})
+    $('.navSubject').click(function(){
+
+        $(this).addClass('actives').parent().siblings('li').find('.actives').removeClass('actives');
+        dataArr['course_id'] = $(this).attr('attr-value');
+        delete dataArr["fascicule_id"];
+        delete dataArr["grade_id"];
+        delete dataArr["editor"];
+        request();
+        console.log(dataArr);
+    })
+    /****************************************************************************************************************/
+    function request() {
+        var search = JSON.stringify(dataArr);
+        $.ajax({
+            data:{'searchData':search,'zoneBit':1,'ajaxType':'index'},
+            url:'{:U("DirectTrain/getAjaxSearchData")}',
+            type:'get',
+            success:function (data) {
+                $('.searchList').html(data);
+                $("html,body").animate({scrollTop:0}, 300);
+            }
+        })
+    }
+    function callback(data) {
+        var arr = data.split("&p=");
+        //console.log(arr);return false;
+        return_ajax(arr[1]);
+    }
+    function return_ajax($page) {
+        if($page){
+            var page = $page;
+        }
+        var search = JSON.stringify(dataArr);
+        var keyword = "<?php echo $keyword ;?>";
+        //console.log(temp_arr);return false;
+        $.ajax({
+            url: '/index.php?m=Home&c=DirectTrain&a=getAjaxSearchData',
+            type: 'GET',
+            //dataType: 'json',
+            data:{'searchData':search,'p':page,'keyword':keyword,'ajaxType':'index','zoneBit':1},
+            success: function (data) {
+                $('.searchList').html(data);
+                $("html,body").animate({scrollTop:0}, 300);
+            },
+            error: function () {
+                alert('cuo');
+            }
+        });
+    }
+</script>
+<script>
+    function search()
+    {
+        window.location.href = 'index.php?m=Home&c=DirectTrain&a=searchResultList&keyword=' + $('.search_text').val();
+    }
+    $(".search_text").keydown(function (evt) {
+        if (event.keyCode == "13") { //keyCode=13是回车键
+            search();
+        }
+    });
+    $('.search_btn').click(function(){
+        search();
+    });
+</script>

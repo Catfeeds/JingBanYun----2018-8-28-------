@@ -1,0 +1,949 @@
+<layout name="teacher_layout_3" />
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/activity.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/classlist.css" type="text/css" rel="stylesheet">
+<style>
+	.courseRemind {
+		width: 80px;
+		height: 80px;
+		margin-top: 8px;
+		cursor: pointer;
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind1.png) no-repeat center;
+		background-size: cover;
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
+	
+	.blackBack {
+		display: none;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.6);
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 20160921;
+	}
+	
+	.courseRemind:hover {
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind2.png) no-repeat center;
+		background-size: cover;
+	}
+	
+	.workPublish {
+		
+		min-height: 60%;
+	}
+	
+	.courseRemind {
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind1.png) no-repeat center;
+		background-size: cover;
+	}
+	
+	.courseRemind:hover {
+		background: url({$oss_path}public/web_img/classTimeTable/courseRemind2.png) no-repeat center;
+		background-size: cover;
+	}
+	
+	.bellTopP2 {
+		background: url({$oss_path}public/web_img/classTimeTable/plusBell.png) no-repeat center;
+		background-size: cover;
+	}
+	
+	#bg {
+		display: none;
+		position: fixed;
+		top: 0%;
+		left: 0%;
+		width: 100%;
+		height: 100%;
+		background-color: black;
+		z-index: 1001;
+		-moz-opacity: 0.7;
+		opacity: .70;
+		filter: alpha(opacity=70);
+	}
+	
+	#trans_class {
+		display: none;
+		width: 400px;
+		height: 400px;
+		position: fixed;
+		top: 30%;
+		left: 40%;
+		z-index: 1002;
+		background: url(/Public/img/classManage/transfer_class.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+	
+	#trans_class .inner {
+		width: 70%;
+		height: 50%;
+		margin: 30% auto 0;
+		font-size: 16px;
+	}
+	
+	.close_btn {
+		float: right;
+		margin: 10px 15px 0 0;
+		cursor: pointer;
+	}
+	
+	.close_btn img {
+		width: 20px;
+		z-index: 9999;
+	}
+	/*-----------------导入成功-------------------*/
+	
+	.receive_success,
+	/*        .transfer_success,*/
+	
+	.undo_success {
+		display: none;
+		width: 500px;
+		height: 300px;
+		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		z-index: 9999;
+		background: url(/Public/img/home/30.png) no-repeat center;
+		background-size: 100% 100%;
+	}
+	
+	.transfer_success {
+		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		width: 500px;
+		background: url(/Public/img/home/30.png) no-repeat center;
+		height: 300px;
+		display: none;
+		z-index: 99999;
+	}
+	
+	.success_top {
+		overflow: hidden;
+		padding: 50px 0 0 80px;
+	}
+	
+	.success_top img {
+		width: 30%;
+		float: left;
+	}
+	
+	.success_top p {
+		float: left;
+		font-size: 40px;
+		color: #666;
+		padding-top: 35px;
+	}
+	
+	.success_bottom {
+		text-align: center;
+	}
+	
+	.success_bottom button {
+		width: 120px;
+		height: 50px;
+		border: none;
+		background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+		background-size: 100% 100%;
+		color: #fff;
+		font-size: 20px;
+	}
+</style>
+<div class="main_opr">
+	<a href="{:U('Teach/classList')}" title="创建班级" class="btn btn-main-opr btn-main-opr-active">我的班级</a>
+	<a href="{:U('Teach/createClass')}" title="创建班级" class="btn btn-main-opr">创建班级</a>
+	<a href="{:U('Teach/joinClass')}" title="加入班级" class="btn btn-main-opr">加入班级</a>
+	<a href="{:U('Teach/acceptClass')}" title="接收班级" class="btn btn-main-opr">接收班级</a>
+</div>
+
+<!--
+<form id="selectForm" action="{:U('Teach/classList')}" method="post">
+<div class="row">
+	<div class="col-md-3">
+		<label>年级：</label>
+		<select name="grade" id="grade" class="form-control"  data-role="select_text">
+			<option value="0">-请选择-</option>
+			<volist name="grade_list" id="grade_item" empty="">
+				<option value="{$grade_item.id}" <if condition="$grade_item['id']==$default_grade">selected</if>>{$grade_item.grade}</option>
+			</volist>
+		</select>
+	</div>
+	<div class="col-md-3">
+		<label>班级：</label>
+		<select name="class" id="class" class="form-control">
+			<option value="0">-请选择-</option>
+			<volist name="class_list" id="class_item" empty="">
+				<option value="{$class_item.id}" <if condition="$class_item['id']==$default_class">selected</if>>{$class_item.name}</option>
+			</volist>
+		</select>
+	</div>
+	<div class="col-md-3">
+		<label>&nbsp;</label>
+		<button type="submit" class="btn btn-primary search_homework" style="display: block;">搜索</button>
+	</div>
+</div>
+	<input type="hidden" class="class_id_view" value="{$class_id_view}">
+</form>
+-->
+<empty name="list">
+	<div class="emptyResult">您还没有创建任何班级</div>
+</empty>
+
+<notempty name="list">
+	<!--	<table class="table striped hovered border">-->
+
+
+	<div class="row row1" style="position:relative">
+		<!--			<volist name="list" id="data" empty="">-->
+		<!--			认证班左边-->
+		<div class="class_left">
+			<div class="class_name">
+				<img src="__PUBLIC__/img/classManage/yirenzheng.png" alt="">{$data.grade}&nbsp;{$data.name}
+			</div>
+			<div class="class_member class_active">
+				<img src="__PUBLIC__/img/classManage/icon_banjichengyuan.png" alt="">班级成员
+			</div>
+			<div class="timetables">
+				<img src="__PUBLIC__/img/classManage/icon_kechengbiao.png" alt="">课程表&nbsp;&nbsp;&nbsp;&nbsp;
+			</div>
+			<div class="class_information">
+				<img src="__PUBLIC__/img/classManage/icon_xinxishezhi.png" alt="">信息设置
+			</div>
+		</div>
+		<!--			</volist>-->
+		<!--			自建班左边-->
+		<div class="class_left">
+			<div class="class_name">
+				自建{$data.grade}&nbsp;{$data.name}
+			</div>
+			<div class="class_member class_active">
+				<img src="__PUBLIC__/img/classManage/icon_banjichengyuan.png" alt="">班级成员
+			</div>
+			<div class="timetables">
+				<img src="__PUBLIC__/img/classManage/icon_kechengbiao.png" alt="">课程表&nbsp;&nbsp;&nbsp;&nbsp;
+			</div>
+			<div class="class_information">
+				<img src="__PUBLIC__/img/classManage/icon_xinxishezhi.png" alt="">信息设置
+			</div>
+		</div>
+		<!--			<volist name="list" id="data" empty="">-->
+		<div class="class_student col-lg-10 col-md-9 col-sm-9 class_right">
+			<div></div>
+			<div class="class_wrapper">
+				<div>
+					班级编号：10001 &nbsp;&nbsp;&nbsp;&nbsp;任教学科：英语 &nbsp;&nbsp;&nbsp;&nbsp;班级状态：正常<span class="class_gary">认证班级无管理员</span>
+				</div>
+				<span>班级成员：共50人 , 教师2人 , 学生{$data.student_count}人</span>
+
+
+
+<!--
+				<a href="{:U('Teach/classStudentMgmt?classId=')}{$data.id}" title="班级学生" class="button">班级学生</a> &nbsp;
+				<a href="{:U('Teach/classTimetable?classId=')}{$data.id}" title="班级课表" class="button">班级课表</a> &nbsp;
+				<a href="{:U('Teach/editClass?classId=')}{$data.id}" title="修改班级" class="button">修改班级</a>
+-->
+
+
+				<span class="right right40 tea_stu">筛选：
+			<span class="padding5  "><span class="student_siftings">学生</span><span class="padding5Active"></span></span>
+				<span class="padding5 "><span class="teacher_siftings">教师</span></span>
+				</span>
+				<div class="class_screen">
+					<div class="search">
+						<button class="search_btn"></button>
+						<input type="text" class="search_text" placeholder="输入学生姓名，手机号可搜索学生">
+					</div>
+					<div class="right right40 btn4right">
+						<button href="" class="padding15">批量导入</button>
+						<button href="" class="padding15">批量导出</button>
+						<button href="" class="padding15 addstubtn">添加学生</button>
+						<button href="" class="padding15">批量移除</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-3 col-md-6 col-sm-12 student_list">
+						<img src="__PUBLIC__/img/teacher.jpg" alt="" class="student_avatar">
+						<span class="name">赵日天</span>
+						<input type="checkbox">
+						<br>
+						<span class="sex">男</span>
+						<br>
+						<br>
+						<p class="parent_tel">家长手机号：13755550000</p>
+						<p class="email">邮箱地址：3295016361@qq.com</p>
+						<img src="__PUBLIC__/img/classManage/icon_delete.png" alt="" class="delete_student">
+					</div>
+
+				</div>
+				<div>
+
+				</div>
+			</div>
+			<div class="classtimetables">
+			    <div>
+					班级编号：10001 &nbsp;&nbsp;&nbsp;&nbsp;任教学科：英语 &nbsp;&nbsp;&nbsp;&nbsp;班级状态：正常&nbsp;&nbsp;&nbsp;&nbsp;管理员：赵日天
+				</div>
+				<div style="overflow:hidden">
+				<span class="right right40 tea_stu">筛选：
+			<span class="padding5  "><span class="teacher_TimeTable">教师课表</span><span class="padding5Active"></span></span>
+				<span class="padding5 "><span class="class_TimeTable">班级课表</span></span>
+				</span>
+				</div>
+				<div style="width:800px;margin:0 auto;position:relative;overflow:hidden">
+					<iframe src="{:U('Common/classTimetableInner')}" frameborder="0" width="800" height="900" border=0 style="float:left">
+					</iframe>
+					<p class="courseRemind"></p>
+				</div>
+				<div class="blackBack"></div>
+				<div class="workPublish">
+					<div style="overflow:hidden;">
+						<img src="{$oss_path}public/web_img/classTimeTable/myRemind.png" alt="" class="left" style="width: 140px">
+						<span class="right workPublishClose"></span>
+					</div>
+					<div class="bellBox">
+						<div class="bellTop">
+							<div class="bellTopP1 ">
+								<div style="overflow:hidden;text-align:left">
+									<span class=" bellTopSpan1">
+						<select id="hour_id" name="hour_id" class="form-control">
+							<option value="00">00</option>
+							<option value="01">01</option>
+							<option value="02">02</option>
+							<option value="03">03</option>
+							<option value="04">04</option>
+							<option value="05">05</option>
+							<option value="06">06</option>
+							<option value="07">07</option>
+							<option value="08">08</option>
+							<option value="09">09</option>
+							<option value="10">10</option>
+							<option value="11">11</option>
+							<option value="12">12</option>
+							<option value="13">13</option>
+							<option value="14">14</option>
+							<option value="15">15</option>
+							<option value="16">16</option>
+							<option value="17">17</option>
+							<option value="18">18</option>
+							<option value="19">19</option>
+							<option value="20">20</option>
+							<option value="21">21</option>
+							<option value="22">22</option>
+							<option value="23">23</option>
+						</select>
+						<label for="hour_id">时</label>&nbsp;
+						<select id="minute_id" name="minute_id" class="form-control">
+							<option value="00">00</option>
+						<option value="01">01</option>
+						<option value="02">02</option>
+						<option value="03">03</option>
+						<option value="04">04</option>
+						<option value="05">05</option>
+						<option value="06">06</option>
+						<option value="07">07</option>
+						<option value="08">08</option>
+						<option value="09">09</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="22">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+						<option value="31">31</option>
+						<option value="32">32</option>
+						<option value="33">33</option>
+						<option value="34">34</option>
+						<option value="35">35</option>
+						<option value="36">36</option>
+						<option value="37">37</option>
+						<option value="38">38</option>
+						<option value="39">39</option>
+						<option value="40">40</option>
+						<option value="41">41</option>
+						<option value="42">42</option>
+						<option value="43">43</option>
+						<option value="44">44</option>
+						<option value="45">45</option>
+						<option value="46">46</option>
+						<option value="47">47</option>
+						<option value="48">48</option>
+						<option value="49">49</option>
+						<option value="50">50</option>
+						<option value="51">51</option>
+						<option value="52">52</option>
+						<option value="53">53</option>
+						<option value="54">54</option>
+						<option value="55">55</option>
+						<option value="56">56</option>
+						<option value="57">57</option>
+						<option value="58">58</option>
+						<option value="59">59</option>
+						</select>
+						<label for="minute_id">分</label>
+					</span>
+									<span class=" bellTopSpan2">
+						<span>每</span>
+									<select id="min_id" name="min_id" class="form-control">
+										<option value="03">03</option>
+										<option value="05">05</option>
+										<option value="10">10</option>
+									</select>
+									<span>分钟提醒一次</span>
+									</span>
+								</div>
+								<div>
+									<label for="">重复：</label>
+									<input type="checkbox" value="1" class="weekCheck"> 星期一
+									<input type="checkbox" value="2" class="weekCheck"> 星期二
+									<input type="checkbox" value="3" class="weekCheck"> 星期三
+									<input type="checkbox" value="4" class="weekCheck"> 星期四
+									<input type="checkbox" value="5" class="weekCheck"> 星期五
+									<input type="checkbox" value="6" class="weekCheck"> 星期六
+									<input type="checkbox" value="0" class="weekCheck"> 星期日
+								</div>
+							</div>
+							<div class="bellTopP2 right" title="增加提醒"></div>
+						</div>
+						<div class="bellBottom">
+							<div class="emptyResult">暂时没有提醒哦</div>
+							<table>
+								<thead style='display:none;'>
+									<tr>
+										<th class="text-center">&nbsp;</th>
+										<th class="text-center">时间</th>
+										<th class="text-center">提醒频率</th>
+										<th class="text-center" style="width: 50%">重复</th>
+										<th class="text-center">操作</th>
+									</tr>
+								</thead>
+								<tbody>
+
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="InformationSetting">
+				<div>
+					<p>班级编号：10001 &nbsp;&nbsp;&nbsp;&nbsp;任教学科：英语 &nbsp;&nbsp;&nbsp;&nbsp;班级状态：正常</p>
+					<div class="bjclass">
+						<p class="fontColorEf">班级信息查看</p>
+						<p>年级：{$data.grade}</p>
+						<p>班级：{$data.name}</p>
+						<p>任教学科：数学 英语</p>
+						<p class="pborder">管理员：无</p>
+					</div>
+
+					<div class="divborder">
+						<p class="fontColorEf">移交班级</p>
+						<p>任教学科:
+							<select name="" id="" class="width200 ">
+								<option value="">请选择学科</option>
+							</select>
+						</p>
+						<p>
+							接收老师:
+							<input type="text" class="width200 margintop5" placeholder="请输入接收老师手机号">
+						</p>
+						<button class="right padding15 margintop-65">移交学科</button>
+					</div>
+					<div class="divborder">
+						<p class="fontColorEf">移交后</p>
+						<p>接收老师：王老师</p>
+						<p>接受学科：英语</p>
+						<p>
+							接收老师手机号：19000001234
+						</p>
+						<button class="right padding15 margintop-65">撤销移交</button>
+					</div>
+					<div>
+
+					</div>
+					<div class="leaveClass">
+						<p class="fontColorEf">离开班级</p>
+						<p class="colorccc">*您可以直接离开此班级，无需将班级(任教学科)交给班里其他老师</p>
+						<p class="colorccc">离开班级后您将解除与此班级的关联联系，无法在我的班级中找到与此班级</p>
+						<button class="right padding15 margintop-50">离开班级</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<!--			</volist>-->
+		<div class="class_student col-lg-10 col-md-9 col-sm-9 class_right">
+			<div></div>
+			<div class="class_wrapper">
+				<div>
+					班级编号：10001 &nbsp;&nbsp;&nbsp;&nbsp;任教学科：英语 &nbsp;&nbsp;&nbsp;&nbsp;班级状态：正常<span class="class_gary">认证班级无管理员</span>
+				</div>
+				<span>班级成员：共50人 , 教师2人 , 学生{$data.student_count}人</span>
+
+				<a href="{:U('Teach/classTimetable?classId=')}{$data.id}" title="班级课表" class="button">班级课表</a>
+
+				<a href="{:U('Teach/classStudentMgmt?classId=')}{$data.id}" title="班级学生" class="button">班级学生</a> &nbsp; &nbsp;
+				<a href="{:U('Teach/editClass?classId=')}{$data.id}" title="修改班级" class="button">修改班级</a>
+
+
+				<span class="right right40 tea_stu">筛选：
+			<span class="padding5  "><span class="student_siftings">已通过的学生</span><span class="padding5Active"></span></span>
+				<span class="padding5 "><span class="student_nosiftings">未通过的学生</span></span>
+				</span>
+				<div class="class_screen">
+					<div class="search">
+						<button class="search_btn"></button>
+						<input type="text" class="search_text" placeholder="输入学生姓名，手机号可搜索学生">
+					</div>
+					<div class="right right40 btn4right">
+
+						<button href="" class="padding15">批量导出</button>
+						<button href="" class="padding15">批量通过</button>
+						<button href="" class="padding15">批量不通过</button>
+					</div>
+				</div>
+				<div class="row">
+
+					<div class="col-lg-3 col-md-6 col-sm-12 student_list">
+						<img src="__PUBLIC__/img/teacher.jpg" alt="" class="student_avatar">
+						<span class="name">赵日天</span>
+						<input type="checkbox">
+						<br>
+						<span class="sex"> 男</span>
+						<br>
+						<br>
+						<p class="parent_tel">家长手机号：13755550000</p>
+						<p class="email">邮箱地址：3295016361@qq.com</p>
+						<div class="receive">
+							<a href="javascript:;" class="receive_y">通过</a>
+							<a href="javascript:;" class="receive_no">拒绝</a>
+						</div>
+					</div>
+				</div>
+				<div>
+
+				</div>
+			</div>
+			<div class="classtimetables">
+
+			</div>
+			<div class="InformationSetting">
+				<div>
+					<p>班级编号：10001 &nbsp;&nbsp;&nbsp;&nbsp;任教学科：英语 &nbsp;&nbsp;&nbsp;&nbsp;班级状态：正常</p>
+					<div class="bjclass">
+						<p class="fontColorEf">班级信息查看</p>
+						<p>年级：{$data.grade}</p>
+						<p>班级：{$data.name}</p>
+						<p>任教学科：数学 英语</p>
+						<p class="pborder">管理员：无</p>
+					</div>
+					<div class="zjclass">
+						<p class="fontColorEf">班级信息查看</p>
+						<p>年级：{$data.grade}</p>
+						<p>班级：{$data.name}</p>
+						<p>任教学科：<span class="remsubject">数学</span><span class="remsubject">英语</span>
+							<select name="" id="">
+								<option value="">--选择--</option>
+							</select>
+						</p>
+						<p>管理员：无</p>
+						<button class="right padding15 margintop-105">保存修改</button>
+					</div>
+					<div class="divborder">
+						<p class="fontColorEf">移交班级</p>
+						<p>任教学科:
+							<select name="" id="" class="width200 ">
+								<option value="">请选择学科</option>
+							</select>
+						</p>
+						<p>
+							接收老师:
+							<input type="text" class="width200 margintop5" placeholder="请输入接收老师手机号">
+						</p>
+						<button class="right padding15 margintop-65">移交学科</button>
+					</div>
+					<div class="divborder">
+						<p class="fontColorEf">移交后</p>
+						<p>接收老师：王老师</p>
+						<p>接受学科：英语</p>
+						<p>
+							接收老师手机号：19000001234
+						</p>
+						<button class="right padding15 margintop-65">撤销移交</button>
+					</div>
+					<div>
+
+					</div>
+					<div class="leaveClass">
+						<p class="fontColorEf">删除班级</p>
+						<p class="colorccc">*自建班级，可直接删除，删除后班级内的学生将解除与班级的关联关系</p>
+						<p class="colorccc">同事将解除您与此班级的关联关系，您将无法在我的班级中找到此班级</p>
+						<button class="right padding15 margintop-50">删除班级</button>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+
+	<!--
+					<div>
+						{$data.school_name}
+					</div>
+-->
+
+	<!--
+					<div class="text-center">
+						{$data.class_teacher}
+					</div>
+-->
+	<!--
+					<div class="text-center">
+						
+					</div>
+					<div class="text-right" nowrap>
+					
+					</div>
+-->
+	<!--
+					<div class="text-center" nowrap>
+						<if condition="$data.flag eq 2">
+							<a href="javascript:;" title="撤销移交" classid="{$data.id}" class="button undo_class">撤销移交</a>
+						</if>
+
+						<if condition="$data.flag eq 3">
+							<a href="javascript:;" title="接收班级" classid="{$data.id}" class="button receive_class">接收班级</a>
+						</if>
+
+						<if condition="$data.flag eq 1">
+							<a href="javascript:;" title="移交班级" classid="{$data.id}" class="button transfer_class" style="background: #E9C232;">移交班级</a>
+						</if>
+					</div>
+-->
+	<!--				</div>-->
+	<!--			</volist>-->
+	<!--		</tbody>-->
+	<!--	</table>-->
+	<!--		<div class="Pagination">{$page}</div>-->
+
+	<!----------------------接收班级教师信息---------------------->
+	<div id="bg"></div>
+	<div id="trans_class">
+		<div class="close_btn" id="closeWindow">
+			<img src="__PUBLIC__/img/home/close.png" alt="">
+		</div>
+		<form action="__URL__/transferClass" method="post" id="transferClass" onsubmit="$('#confirmButton').attr('disabled',true);">
+			<div class="example inner" data-text="基本信息">
+				<div class="form_section">
+					<label for="name">接收班级教师姓名</label>
+					<input type="text" name="name" id="name" class="form-control" required maxlength="20" placeholder="必填，不超过20个字">
+				</div>
+				&nbsp;
+				<div class="form_section">
+					<label for="grade_id">接收班级教师手机号</label>
+					<input type="text" name="telephone" id="telephone" class="form-control" required maxlength="11" placeholder="必填">
+				</div>
+				<div class="form-actions" style="text-align: center; background: #fff; ">
+					<button type="submit" class="btn btn-primary" id="confirmButton">确定</button>
+				</div>
+			</div>
+			<input type="hidden" id="input_ClassId" name="classId" />
+		</form>
+
+	</div>
+	<input type="hidden" id="class_teacher_id" value="{$t_id_info}" />
+	<!-------------------班级接收成功---------------------->
+	<div class="receive_success">
+		<div class="success_top">
+			<img src="__PUBLIC__/img/home/32.png" alt="">
+			<p>班级接收成功！</p>
+		</div>
+		<div class="success_bottom">
+			<button type="submit" class="tr_success_sure">确定</button>
+		</div>
+	</div>
+	<!-------------------班级移交成功---------------------->
+	<div class="transfer_success">
+		<div class="success_top">
+			<img src="__PUBLIC__/img/home/32.png" alt="">
+			<p>班级移交成功！</p>
+		</div>
+		<div class="success_bottom">
+			<button type="submit" class="tr_success_sure">确定</button>
+		</div>
+	</div>
+	<!-------------------撤销成功---------------------->
+	<div class="undo_success">
+		<div class="success_top">
+			<img src="__PUBLIC__/img/home/32.png" alt="">
+			<p>撤销成功！</p>
+		</div>
+		<div class="success_bottom">
+			<button type="submit" class="tr_success_sure">确定</button>
+		</div>
+	</div>
+</notempty>
+<div id="Popup">
+	<p>加入班级<img src="__PUBLIC__/img/classManage/close_btn.png" alt=""></p>
+	<p>确定将此学生移除班级？</p>
+	<p>
+		<button>确定</button>
+	</p>
+</div>
+<div id="addstudentTk">
+	<p id="addstuP">添加学生<img src="__PUBLIC__/img/classManage/close_btn_s.png" alt=""></p>
+	<!--    <span><input type="radio" checked="checked">您的学生已经注册京版云账号</span><span><input type="radio" checked="checked">还未注册京版云账号</span>-->
+	<div>
+		<input type="radio" id="student_register" checked="checked">
+		<label for="student_register" id="student_registerlb">您的学生已经注册京版云账号</label>
+		<input type="radio" id="student_noregister">
+		<label for="student_noregister" id="student_noregisterlb">还未注册京版云账号</label>
+	</div>
+	<div id="student_registerDiv">
+		<p><span>学生姓名</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p><span>家长手机号</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p><span>登陆密码</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p><span>确认密码</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p class="pbtn">
+			<button>确定</button>
+		</p>
+	</div>
+	<div id="student_noregisterDiv" style="padding-top:30px">
+		<p><span>学生姓名</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p><span>家长手机号</span>: &nbsp;
+			<input type="text">
+		</p>
+		<p class="pbtn" style="margin-top:40px">
+			<button>确定</button>
+		</p>
+	</div>
+</div>
+<script>
+	$('.addstubtn').click(function () {
+		$('#addstudentTk').show()
+	})
+	$('#student_noregister,#student_register').click(function () {
+		$(this).attr('checked', 'checked');
+		$(this).siblings().removeAttr('checked');
+	})
+	$('#student_noregister,#student_noregistelb').click(function () {
+		$('#student_noregisterDiv').show();
+		$('#student_registerDiv').hide();
+	})
+	$('#student_register,#student_registelb').click(function () {
+		$('#student_registerDiv').show();
+		$('#student_noregisterDiv').hide();
+	})
+	$('.class_right').eq(0).show();
+	$('.class_name').click(function () {
+
+		if ($(this).siblings().is(':hidden')) {
+			$(this).siblings().slideDown();
+		} else {
+			$(this).siblings().slideUp();
+		}
+		$(this).parent().siblings().find('.class_name').siblings().slideUp()
+		$('.class_name').find('img').hide();
+		$(this).find('img').show();
+
+	})
+	$('.class_left').click(function () {
+		var classIndex = $(this).index();
+		$('.class_right').eq(classIndex).show().siblings('.class_right').hide()
+	})
+	$(function () {
+		$('.class_name').find('img').hide();
+		$('.class_name').eq(0).find('img').show();
+		$('.class_name').eq(0).siblings().show()
+		var d = $('.class_right').eq(0).children().eq(1).height();
+		$('.row1').css('min-height', d)
+	})
+	$('.teacher_siftings,.student_nosiftings,.class_TimeTable').click(function () {
+		var w = $(this).width();
+		$(this).parent().siblings().find('.padding5Active').animate({
+			left: w + 12
+		})
+	})
+	$('.student_siftings,.teacher_TimeTable').click(function () {
+		$(this).siblings('.padding5Active').animate({
+			left: '0'
+		})
+	})
+	$('.delete_student').click(function () {
+		$(this).parent('.student_list').remove()
+	})
+	$('.class_left').children('.class_member,.timetables,.class_information').click(function () {
+		var a = $(this).index();
+		var c = $(this).parent().index();
+		$(this).addClass('class_active').siblings().removeClass('class_active');
+		var b = $('.class_right').eq(c).children().eq(a).height();
+		$('.row1').css('min-height', b + 50)
+		$('.class_right').eq(c).children().eq(a).show().siblings().hide();
+	})
+	$('#Popup').find('img').click(function () {
+		$('#Popup').hide()
+	})
+	$('#addstudentTk').find('img').click(function () {
+		$('#addstudentTk').hide()
+	})
+	$('.courseRemind').click(function () {
+
+		$('body').css('overflow-y', 'hidden');
+		$('.workPublish,.blackBack').show();
+	})
+	$('.workPublishClose').click(function () {
+			$('body').css('overflow-y', 'auto');
+			$('.workPublish,.blackBack').hide();
+		})
+		//	------以前的JS  
+	$('[data-role="select_text"]').change(function () {
+		var grade_id = $("#grade option:selected").val();
+		var class_teacher_id = $("#class_teacher_id").val();
+		$.get('index.php?m=Home&c=Teach&a=getListClass', {
+			grade_id: grade_id,
+			class_teacher_id: class_teacher_id,
+		}, function (res) {
+
+			var provinces = res.res;
+			var html = [];
+			var option_select = '<option value="" >-请选择-</option>';
+			var tpl = '<option value="{1}" data-id="{1}" data-name="{0}">{0}</option>';
+			html.push(option_select);
+
+			$.each(provinces, function (i, n) {
+				html.push(tpl.format(n.name, n.id));
+			});
+			//alert(html.join());
+			$('#class').html(html.join(''));
+		})
+	});
+
+	$('.tr_success_sure').click(function () {
+		location.reload();
+	});
+	$('.undo_class').on('click', function () {
+		var classId = $(this).attr('classid');
+		$.post('__URL__/undoClass', {
+			classid: classId
+		}, function (res) {
+			if (res.code == 200) {
+				$('#bg').css('display', 'block');
+				$('.undo_success').css('display', 'block');
+			}
+
+		});
+	});
+	$('.receive_class').on('click', function () {
+		var classId = $(this).attr('classid');
+		$.post('__URL__/receiveClass', {
+			classid: classId
+		}, function (res) {
+			if (res.code == 200) {
+				$('#bg').css('display', 'block');
+				$('.receive_success').css('display', 'block');
+			} else {
+				alert('接收失败');
+			}
+		});
+	});
+
+	$('.transfer_class').on('click', function () {
+			var classId = $(this).attr('classid');
+			$('#input_ClassId').val(classId);
+			$('#bg').css('display', 'block');
+			$('#trans_class').css('display', 'block');
+		})
+		//确定（需要判断之后再关闭）
+	$('#closeWindow').on('click', function () {
+
+		$('#bg').css('display', 'none');
+		$('#trans_class').css('display', 'none');
+	})
+</script>
+<!--<script src="__PUBLIC__/js/external/jquery.form.js" ></script>-->
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+	$(function () {
+		var options = {
+			// target:        '#output',   // target element(s) to be updated with server response
+			//beforeSubmit:  showRequest,  // pre-submit callback
+			success: showResponse, // post-submit callback
+			resetForm: false,
+			dataType: 'json'
+
+			// other available options:
+			//url:       url         // override for form's 'action' attribute
+			//type:      type        // 'get' or 'post', override for form's 'method' attribute
+			//dataType:  null        // 'xml', 'script', or 'json' (expected server response type)
+			//clearForm: true        // clear all form fields after successful submit
+			//resetForm: true        // reset the form after successful submit
+
+			// $.ajax options can be used here too, for example:
+			//timeout:   3000
+		};
+
+		// bind to the form's submit event
+		$('#transferClass').submit(function () {
+			// inside event callbacks 'this' is the DOM element so we first
+			// wrap it in a jQuery object and then invoke ajaxSubmit
+			$(this).ajaxSubmit(options);
+
+			// !!! Important !!!
+			// always return false to prevent standard browser submit and page navigation
+			return false;
+		});
+
+		function showResponse(responseText, statusText) {
+			switch (responseText.code) {
+			case -1: //transfer user does not exist
+				alert(responseText.msg);
+				break;
+			case 0: // transfer success
+				// $('#forceAdd').val('false');
+				$('#bg').css('display', 'block');
+				$('.transfer_success').css('display', 'block');
+
+				break;
+			default:
+				alert(responseText.msg);
+				break;
+			}
+			$('#confirmButton').attr('disabled', false);
+		}
+	});
+</script>

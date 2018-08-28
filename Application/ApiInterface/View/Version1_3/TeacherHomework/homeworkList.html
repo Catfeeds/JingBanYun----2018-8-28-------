@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<script type="text/javascript" src="__PUBLIC__/js/checkApp.js"></script>
+		<title>作业列表</title>
+		<style media="screen">
+			*{
+				margin: 0;
+				padding: 0;
+				color: #333;
+				-webkit-tap-highlight-color:rgba(0,0,0,0);
+
+
+			}
+			body{
+				background: #eee
+			}
+			ul li{
+				list-style: none
+			}
+			.left{
+				float: left;
+			}
+			.right{
+				float: right;
+			}
+			.of{
+				overflow: hidden;
+			}
+			.workHeader{
+				position: fixed;
+				width: 100%;
+				background: #fff;
+				z-index: 20;
+				top:45px
+			}
+			.workHeader ul{
+				height: 40px;
+
+			}
+			.workHeader li {
+				width: 50%;
+				text-align: center;
+
+				border-bottom: 1px solid #eee;
+				color:#333;
+				font-size: 16px;
+				background: #fff;
+				position: relative;
+				z-index: 20;
+			}
+			.workHeaderName{
+				border-right: 1px solid #ccc
+			}
+			.borderNone{
+				border: none
+			}
+			.workList{
+				padding:0px 15px;
+				font-size: 16px;
+				margin-top: 92px
+			}
+			.workList p{
+				margin-bottom: 4px;
+
+			}
+			.workList  li{
+				padding: 5px 0;
+				border-bottom: 1px solid #eee;
+
+			}
+			.workDiv{
+				background: #fff;
+
+				border-radius: 8px
+			}
+			.workState{
+				background: url(__PUBLIC__/img/Apphomework/youjian.png) no-repeat center right;
+				background-size: 7px;
+				padding-right: 10px;
+				text-align: right;
+			}
+
+			.workState img{
+				width: 15px;
+				position: relative;
+				top: 2px;
+
+			}
+			.red{
+				color: #eb2222
+			}
+			.yellow{
+				color: #f2b81a
+			}
+			.gray{
+				color: #999
+			}
+			.green{
+				color: #009290
+			}
+			.workNum{
+				color: #999
+			}
+
+			.workHeader li .workHeaderSeach {
+				position: absolute;
+    			background: #fff;
+				text-align: left;
+				display: none;
+				top:43px;
+				left: 0
+			}
+			.workHeader li .workHeaderSeach p{
+				margin: 0 30px;
+				border-bottom: 1px solid #eee;
+				line-height: 40px
+			}
+			.mask{
+				width: 100%;
+				background: #000;
+				opacity: 0.3;
+				position: absolute;
+				top: 0;
+				left: 0;
+				z-index: 19;
+				display: none
+			}
+			.appTop .appTopTitle {
+			    height: 44px;
+			    line-height: 44px;
+			    font-size: 20px;
+			    margin: 0 60px;
+			    text-align: center;
+			}
+			.appTop .appTopTitle .title {
+			    overflow: hidden;
+			    text-overflow: ellipsis;
+			    white-space: nowrap;
+			    max-width: 100%;
+			    display: inline-block;
+			}
+			.appTop .returnBox {
+			    width: 44px;
+			    height: 100%;
+			    background: url(__PUBLIC__/img/Apphomework/fanhui.png) no-repeat center;
+			    background-size: 10px 16px;
+			    position: absolute;
+			    top: 0;
+			    left: 0;
+			}
+			.workName{
+				width: 210px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.appTop {
+			    height: 44px;
+			    width: 100%;
+			    border-bottom: 1px solid #eee;
+			    position: fixed;
+			    top: 0;
+			    background: #fff;
+			    z-index: 100;
+			    box-sizing: content-box;
+			}
+			.workHeaderSeach{
+				height: 215px;
+				overflow: hidden;
+			}
+			.knowledge,.chaper{
+				display: inline-block;
+				background: #e5f2f6;
+				border-top-left-radius: 8px;
+				padding: 0 7px;
+				border-bottom-right-radius: 8px;
+			}
+			.knowledge.active{
+				background: #f7e0d7
+			}
+			.chaper{
+				width: 80px;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				position: absolute;
+				bottom: -4px;
+				right:0;
+				background: #efca33;
+				color:#fff;
+				text-align: center;
+			}
+			.chaper.active{
+				background: #b28c8a
+			}
+			.p5{
+				padding: 5px
+			}
+			.jiazai{
+				text-align: center;
+				margin: 5px 0;
+				display: none
+			}
+		</style>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue.js"></script>
+		<script type="text/javascript" src="__PUBLIC__/adminExercise/js/vue-resource.min.js"></script>
+		<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div class="app">
+			<div class="appTop">
+				<div class="returnBox" @click="returnApp"></div>
+				<div class="appTopTitle">
+					<p class="title">作业详情</p>
+				</div>
+			</div>
+		<div class="workHeader">
+
+			<ul >
+				<li class="left" style="line-height:42px">
+					<p class="workHeaderName className" @click="search('.className')">
+						<span>班级</span> <img src="__PUBLIC__/img/Apphomework/xialaBlack.png" alt="" / style="width:10px">
+					</p>
+					<div class="workHeaderSeach">
+						<p @click="all">
+							全部
+						</p>
+						<p v-for=" (item,index) in classData" :id="item.id" @click="getClassId">
+							{{item.name}}
+						</p>
+					</div>
+
+				</li>
+				<li class="left" style="line-height:42px">
+					<p class="workHeaderName borderNone statusName" @click="search('.statusName')">
+						<span>状态</span> <img src="__PUBLIC__/img/Apphomework/xialaBlack.png" alt="" /style="width:10px"> 
+					</p>
+					<div class="workHeaderSeach">
+						<p @click="allStatus">
+							全部
+						</p>
+						<p  v-for=" (item,index) in statusData" :id="item.id" @click="getStatusId">
+							{{item.name}}
+						</p>
+					</div>
+				</li>
+
+				<div class="mask" @click="none">
+
+				</div>
+			</ul>
+
+		</div>
+		<div class="workList">
+			<ul>
+
+				<li v-for="(list,index) in workListData" >
+					<p v-if="index === 0">
+						{{list.create_at}}
+					</p>
+					<p v-else-if="list.create_at != dateArr[index-1] && index>0">
+						{{list.create_at}}
+					</p>
+					<div class="workDiv of" :id="list.id" @click="homeworkDetails" :classId="list.class_id" :status="list.status" :exercises_id_count="list.exercises_id_count">
+						<div class="of">
+
+						<div class="left p5" style="width:210px;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;">
+							<p class="workName">
+								<b>{{list.name}}</b>
+
+							</p>
+							<p class="">
+								{{list.grade_name}}{{list.class_name}}
+							</p>
+							<p>
+								知识点：<span class="knowledge" :class="{active:list.chapter_id == '期中' || list.chapter_id == '期末'}">{{list.knowledge_id}}</span>
+							</p>
+							<p class="workNum">
+								{{list.deadline}}
+							</p>
+						</div>
+						<div class="right p5" style="position:relative;height:100px;">
+							<p class="workState red" v-if="list.status=='待批改'">
+								<img src="__PUBLIC__/img/Apphomework/daipigai.png" alt="" /> 待批改
+							</p>
+							<p class="workState green" v-if="list.status=='未开始'">
+								<img src="__PUBLIC__/img/Apphomework/weikaishi.png" alt="" /> 待布置
+							</p>
+							<p class="workState gray" v-if="list.status=='作业报告'">
+								<img src="__PUBLIC__/img/Apphomework/zuoyebaogao.png" alt="" /> 作业报告
+							</p>
+							<p class="workState yellow" v-if="list.status=='作业中'">
+								<img src="__PUBLIC__/img/Apphomework/zuoyezhong.png" alt="" /> 作业中
+							</p>
+							<p style="	text-align: right;">
+								{{list.submit_student_count}}/{{list.class_student_count}}	人完成
+							</p>
+							<p class="chaper" :class="{active:list.chapter_id == '期中' || list.chapter_id == '期末'}">
+								{{list.chapter_id}}
+							</p>
+						</div>
+
+					</div>
+					</div>
+				</li>
+				<p class="jiazai">
+					加载中
+				</p>
+			</ul>
+		</div>
+
+	</div>
+		<script type="text/javascript">
+		var role = "{$role}";
+		var userId = "{$userId}";
+		var app = new Vue({
+			el:'.app',
+			data:{
+				workListData:'',
+				workUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/getMyClassHomeworkList',
+				dateArr:[],
+				classUrl:'/index.php/ApiInterface/Version1_3/TeacherHomework/getSearchWhere',
+				classData:'',
+				statusData:'',
+				classId:'',
+				statusId:'',
+				page:1,
+				role:role,
+				userId:userId,
+			},
+			created:function(){
+				this.getHomeWorkList()
+				this.getClassList()
+				this.scroll()
+			},
+			methods:{
+				getHomeWorkList:function(){
+					this.$http.post(this.workUrl, {
+						userId: this.userId,
+						role :this.role,
+						pageIndex:1,
+						status:this.statusId,
+						classId:this.classId,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.workListData = response.data.data;
+							this.dateArr = [];
+							for(var i=0;i<this.workListData.length;i++){
+								this.dateArr.push(this.workListData[i].create_at)
+							}
+							$('.jiazai').hide()
+							// console.log(this.dateArr);
+							// console.log(this.workListData);
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				},
+				getClassList:function(){
+					this.$http.post(this.classUrl, {
+						userId: this.userId,
+						role :this.role,
+						classId :this.classId,
+					}, {
+						emulateJSON: 'application/x-www-form-urlencoded'
+					}).then(function (response) {
+						if(response.status == '200'){
+							this.classData = response.data.data.class_list;
+							this.statusData = response.data.data.status_list;
+							// console.log(this.classData);
+							// console.log(this.statusData);
+						}else {
+							console.log('错误1')
+						}
+
+					}, function (response) {
+						console.log('错误2')
+					});
+				},
+				homeworkDetails:function($event){
+
+					var homeworkId = $($event.target).parents('.workDiv').attr('id');
+					var classId = $($event.target).parents('.workDiv').attr('classId');
+					var status = $($event.target).parents('.workDiv').attr('status')
+					var exercises_id_count = $($event.target).parents('.workDiv').attr('exercises_id_count')
+					window.location.href = '/index.php/ApiInterface/Version1_3/TeacherHomework/homeworkDetails?role='+this.role+'&userId='+this.userId+'&homeworkId='+homeworkId+'&status='+status+'&classId='+classId+"&exercises_id_count="+exercises_id_count
+				},
+				getClassId:function($event){
+					this.classId = $event.target.id;
+					this.page = 1;
+					$('.className').children('span').text($event.target.innerText);
+					this.none();
+					this.getHomeWorkList()
+				},
+				getStatusId:function($event){
+					this.statusId = $event.target.id;
+					$('.statusName').children('span').text($event.target.innerText);
+					this.none();
+					this.getHomeWorkList()
+				},
+				all:function($event){
+					this.classId = '';
+					$('.className').children('span').text('班级');
+					this.none();
+					this.getHomeWorkList()
+				},
+				allStatus:function(){
+					this.statusId = '';
+					$('.statusName').children('span').text('状态');
+					this.none();
+					console.log(this.classId);
+					this.pageIndex = 1;
+					this.getHomeWorkList()
+				},
+				none:function(){
+					$('.app').css({
+						'height':'auto',
+						'overflow':'auto'
+					})
+					$('.workHeaderSeach,.mask').hide()
+				},
+				search:function(e){
+						if(	$(e).siblings('.workHeaderSeach').css('display') == 'none'){
+							var index = '-'+$(e).parent().index()*100 +'%';
+							$(e).siblings('.workHeaderSeach').show().parent().siblings('li').find('.workHeaderSeach').hide();
+							$(e).siblings('.workHeaderSeach').css('left',index)
+							$('.workHeaderSeach').css({
+
+									'overflow':'scroll'
+							})
+							$('.app').css({
+								'height':$(window).height(),
+								'overflow':'hidden'
+							})
+							$('.mask').height($('.app').height()).show()
+
+						}else {
+							$(e).siblings('.workHeaderSeach').hide().parent().siblings('li').find('.workHeaderSeach').hide();
+							$('.app').css({
+								'height':'auto',
+								'overflow':'auto'
+							})
+							$('.mask').hide();
+						}
+				},
+				returnApp:function(){
+					var data4 = {
+						"page":"backpop",
+					}
+					postApp(data4)
+				},
+				scroll:function(){
+					var that = this
+					$(window).scroll(function () {
+						//已经滚动到上面的页面高度
+						var scrollTop = $(this).scrollTop();
+						//页面高度
+						var scrollHeight = $(document).height();
+						//浏览器窗口高度
+						var windowHeight = $(this).height();
+						$('.jiazai').show()
+						//此处是滚动条到底部时候触发的事件，在这里写要加载的数据，或者是拉动滚动条的操作
+						if (scrollTop + windowHeight == scrollHeight) {
+								that.page++;
+
+								that.$http.post(that.workUrl, {
+									userId : that.userId,
+									role: that.role,
+									pageIndex:that.page,
+									status:that.statusId,
+									classId:that.classId,
+								}, {
+									emulateJSON: 'application/x-www-form-urlencoded'
+								}).then(function (response) {
+									if(response.status == '200'){
+
+										for(var a=0;a<response.data.data.length;a++){
+										 that.workListData.push(response.data.data[a]);
+										console.log(response.data.data[a].create_at);
+										}
+										if(response.data.data == ''){
+											$('.jiazai').text('已全部加载完成')
+										}
+										// console.log(that.workListData);
+
+										for(var i=0;i<response.data.data.length;i++){
+											that.dateArr.push(response.data.data[i].create_at)
+										}
+										console.log(this.dateArr);
+										console.log(this.workListData);
+									}else {
+										console.log('错误1')
+									}
+
+								}, function (response) {
+									console.log('错误2')
+								});
+						}
+					});
+				}
+			}
+		})
+			var windowWidth = $(window).width();
+			var windowHeight = $(window).height();
+			$('.workHeaderSeach').width(windowWidth);
+			$('.mask').height(windowHeight)
+
+				function showWebNav(){}//显示web导航
+				$('.mask').bind('touchmove', function(e) {
+					e.preventDefault();
+				});
+		</script>
+	</body>
+</html>

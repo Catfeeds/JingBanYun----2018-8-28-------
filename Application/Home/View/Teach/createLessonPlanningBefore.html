@@ -1,0 +1,491 @@
+<layout name="teacher_layout_2" />
+<link href="__PUBLIC__/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/umeditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/external/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/jquery.validate.msg.js"></script>
+<script type="text/javascript" src="__PUBLIC__/js/FullScreen.js"></script>
+<style>
+    ul,
+    li {
+        list-style: none
+    }
+    
+    .form_section {
+        margin-bottom: 20px;
+    }
+    
+    .inupt-widths {
+        display: inline-block;
+        width: 70%;
+        margin-left: 1%
+    }
+    
+    #rem_file h3 {
+        font-size: 14px;
+        color: #dd1010;
+        font-weight: bold;
+        text-indent: 82px
+    }
+    
+    #rem_file a {
+        font-size: 14px;
+        color: #333;
+        padding-left: 54px
+    }
+    
+    #rem_file button {
+        color: #dd1010;
+        outline: none;
+        background: #FFF;
+        border: none
+    }
+    
+    .add_file a {
+        font-size: 14px;
+        color: #333;
+        padding-left: 42px;
+    }
+    
+    .add_file button {
+        color: #dd1010;
+        outline: none;
+        background: #FFF;
+        border: none
+    }
+    
+    .content_left {
+        width: 50%;
+        margin-left: 0;
+        border-right: 1px solid #e3e7e6;
+        float: left
+    }
+    
+    .content_right {
+        width: 50%;
+        margin: 0;
+        float: left;
+        padding: 0 30px
+    }
+    
+    #star_add {
+        background: none;
+        text-align: center
+    }
+    #saveButton{
+        margin-left:240px;
+    }
+
+    .form-control {
+        display: inline-block;
+    }
+
+</style>
+<div style="margin-bottom: 12px;">
+    <a href="{:U('Teach/myLessonPlannings')}" title="返回 教案列表" class="btn btnReturn2">返回</a>
+</div>
+<form id="mainForm" action="__URL__/createLessonPlanning<?php if($isEdit==1) echo '?id='.$lpId; ?>" method="post" enctype="multipart/form-data" onsubmit="$('#saveButton').attr('disabled',true);">
+
+    <div class="row content_left">
+        <div class="col-md-12">
+            <div class="form_section">
+                <label for="name">教案名称</label>
+                <div class="input-control text full-size inupt-widths">
+                    <input type="text" name="name" id="name" class="form-control" placeholder="必填，不超过50字" required maxlength="50" value="{$editInfo.name}">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form_section">
+                <label for="course_id">关联学科</label>
+
+                <div class="input-control text full-size inupt-widths">
+                    <select id="course_id" name="course_id" class="form-control" onchange="getTextbooks()"  required>
+                        <option value="">-请选择-</option>
+                        <volist name="courses" id="dataCourse" empty="暂时没有信息">
+                            <option value="{$dataCourse.id}" {$dataCourse['id']==$editInfo['course_id']? 'selected': ''}>{$dataCourse.code} : {$dataCourse.course_name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form_section">
+                <label for="grade_id">关联年级</label>
+
+                <div class="input-control text full-size inupt-widths">
+                    <select id="grade_id" name="grade_id" class="form-control" onchange="getTextbooks()" required>
+                        <option value="">-请选择-</option>
+                        <volist name="grades" id="dataGrade" empty="暂时没有信息">
+                            <option value="{$dataGrade.id}" {$dataGrade['id']==$editInfo['grade_id']? 'selected': ''}>{$dataGrade.grade}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="form_section">
+                <label for="textbook_id">教材分册</label>
+
+                <div class="input-control text full-size inupt-widths">
+                    <select id="textbook_id" name="textbook_id" class="form-control" required>
+                        <option value="">-请先选择学科和年级-</option>
+                        <volist name="textbooks" id="dataTextbook">
+                            <option value="{$dataTextbook.id}" {$dataTextbook['id']==$editInfo['textbook_id']? 'selected': ''}>{$dataTextbook.name}</option>
+                        </volist>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="fileList" id="fileListInput" value="{$fileList}">
+        <input type="hidden" name="MediaList" id="vid" value="{$vid}">
+        <input type="hidden" name="isEdit"  value="{$isEdit}">
+        <button type="submit" class="btn btn-primary" id="saveButton" onclick="return check()">确定</button>
+    </div>
+
+    </form>
+<form id="subForm" action="__URL__/uploadMyLessonPlanning" method="post" enctype="multipart/form-data">
+    <div class="row content_right">
+        <div class="col-md-12">
+            <div class="form_section">
+                <label for="name">文件类型</label>
+
+                <div class="input-control text full-size inupt-widths">
+                    <select name="type" id="type" class="form-control" >
+                        <option extval=".mp4,.mp3,.doc,.docx,.ppt,.pptx,.pdf,.swf,.jpg,.png">请选择</option>
+                        <option extval=".mp4" value="VIDEO">视频</option>
+                        <option extval=".mp3" value="AUDIO">音频</option>
+                        <option extval=".doc,.docx" value="WORD">WORD</option>
+                        <option extval=".ppt,.pptx" value="PPT">PPT</option>
+                        <option extval=".pdf" value="PDF">PDF</option>
+                        <option extval=".swf" value="SWF">SWF文件</option>
+                        <option extval=".jpg,.png" value="PIC">图片</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div id="pptContent" class="contentWrapper">
+            <div class="form_section col-md-12">
+                <label id="uploadLabel" onclick="addFile()"  style="color:#dd1010;text-indent:82px">选择上传文件</label>
+
+                <div class="input-control text full-size add_file">
+                    <div id="fileListDiv"> 
+                        
+                    </div>
+                    <ul class="row" id="filelist">
+                        <volist name="subList" id="subList_item" key="i">
+                            <li><a class="col-md-8"> <?php echo basename($subList_item['file_path']); ?></a><button id="delBtn_{$i-1}"onclick="deleteObj(this,{$i-1})" class="col-md-2" title="删除">删除</button></li>
+                        </volist>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--
+    <div id="htmlContent" class="contentWrapper" style="display: none;">
+        <script type="text/plain" id="contentEditor" name="content" style="width:100%;height:340px;"></script>
+    </div>
+
+    <div id="videoContent" class="contentWrapper" style="display: none;">
+        <div class="form_section">
+            <div id="videoWrapper">
+                <input type="file" id="uploadToBLWS">
+                <input type="button" onclick="javascript:$('#uploadToBLWS').uploadify('upload','*')" value="上传视频" class="btn btnReturn2" style="margin-left: 0px;">
+                <input type="hidden" value="" name="vid" id="vid">
+                <input type="hidden" value="" name="playerwidth" id="playerwidth">
+                <input type="hidden" value="" name="playerduration" id="playerduration">
+            </div>
+        </div>
+    </div>
+-->
+
+
+</form>
+<div class="form-actions" id="star_add">
+    <button type="" class="btn btn-primary" onclick="checkFiles();uploadVideo();">开始上传</button>
+</div>
+<!--<script src="__PUBLIC__/js/external/jquery.form.js" ></script>-->
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+   function getExtName(file)
+   {
+       var point = file.lastIndexOf(".");
+       var type = file.substr(point).toLowerCase();
+       return type;
+   }
+   function checkFiles()
+   {
+       $('.inputFiles').each(function(i,n){
+          if($(n).val()=="")
+           $(n).parent().remove();
+       });
+
+   }
+   function makeMediaForm(mediaNode)
+   {
+           // 创建一个 form
+           var form1 = document.createElement("form");
+           form1.id = "form1";
+           form1.name = "form1";
+           form1.enctype="multipart/form-data";
+           // 添加到 body 中
+           // 创建一个输入
+           var input = document.createElement("input");
+           // 设置相应参数
+           input.type = "text";
+           input.name = "writetoken";
+           input.value = "9c538d85-340c-466c-9e35-bb301734eb0d";
+           form1.appendChild(input);
+           var input2 = document.createElement("input");
+           input2.type = "text";
+           input2.name = "JSONRPC";
+           input2.value = '{"title": "这里是标题", "tag": "标签", "desc": "视频文档描述"}';
+           form1.appendChild(input2);
+           var clonedNode = mediaNode.cloneNode(true); // 克隆节点
+           mediaNode.setAttribute('name','Filedata');
+           $(mediaNode).appendTo($(form1));
+           //form1.appendChild(mediaNode);
+           form1.action='http://v.polyv.net/uc/services/rest?method=uploadfile';
+           form1.method ='POST';
+
+           // 对该 form 执行提交
+           return form1;
+           // 删除该 form
+   }
+   var currentUploadingVideoid = 0;
+   var currentUploadingVideo = "";
+   var BLWSUploadError = 0;
+   var isUploading = 0;
+   function showResponseVideo(responseText, statusText) {
+       switch(responseText.error)
+       {
+           case '0': //success
+               if($('#vid').val() =="" )
+                   $('#vid').val(currentUploadingVideoid+':'+responseText.data[0].vid);
+               else
+                   $('#vid').val( $('#vid').val() + ','+currentUploadingVideoid+ ':'+ responseText.data[0].vid);
+               BLWSUploadError = 0;
+               break;
+
+           default: alert("上传失败!错误码:"+responseText.error);
+                     BLWSUploadError = 1;
+                     isUploading = 0;
+                     break;
+       }
+       $('#'+currentUploadingVideo).attr('name','file[]');
+   }
+   function uploadVideo() {
+       //$('#vid').val('');
+       if(isUploading == 1)
+       return;
+       if($('.inputFiles').length == 0)
+       {
+           alert('无文件待上传!');
+           return;
+       }
+       isUploading = 1;
+       $('.inputFiles').each(function (i, n) {
+           var extName = getExtName($(n).val());
+           if (extName == ".mp4" || extName == ".mp3") {
+               currentUploadingVideoid = $(n).attr('id').split('_')[1];
+               currentUploadingVideo = $(n).attr('id');
+               var form = makeMediaForm($(n)[0]);
+               var options = {
+                   success:    showResponseVideo,  // post-submit callback
+                   resetForm:  false,
+                   dataType:  'json',
+                   async: false
+
+               };
+
+               // bind to the form's submit event
+               $(form).submit(function() {
+
+                   $(this).ajaxSubmit(options);
+                   return false;
+               });
+               $(form).submit();
+               $(form).find('[class="inputFiles"]').attr('name','file[]');
+               $('#fileListDiv')[0].appendChild($(form).find('[class="inputFiles"]')[0]);
+               if(BLWSUploadError == 1)
+                   return;
+           }
+       });
+       $('#subForm').submit();
+   }
+    $(function(){
+        var options = {
+            success:    showResponse,  // post-submit callback
+            resetForm:  false,
+            dataType:  'json'
+        };
+
+        // bind to the form's submit event
+        $('#subForm').submit(function() {
+            $(this).ajaxSubmit(options);
+            return false;
+        });
+    });
+    function showResponse(responseText, statusText) {
+        switch(responseText.code)
+        {
+            case 0: //success
+                alert(responseText.msg);
+                //TODO:remove inputsfiles
+                $('.inputFiles').remove();
+                if($('#fileListInput').val() != "")
+                $('#fileListInput').val( $('#fileListInput').val() + ',' +responseText.res);
+                else
+                $('#fileListInput').val(responseText.res);
+                break;
+
+            default: alert(responseText.msg);
+                      break;
+        }
+        isUploading = 0;
+    }
+
+
+</script>
+<script>
+    var fileCount = {$fileCount}-1;
+    var hasChanged = 1;
+    function addFile()
+    {
+        if(hasChanged == 0 || isUploading ==1)
+        return;
+        hasChanged = 0;
+        fileCount++;
+        var labelFor = 'file_' + fileCount;
+        var acceptStr = $('#type').find("option:selected").attr('extval');
+        var spn=document.createElement('DIV');
+        spn.innerHTML = '<input type="file" class="inputFiles" name="file[]" id="file_' + fileCount  +'" style="display:none" accept="'+acceptStr+'"  value="">';
+        document.getElementById('fileListDiv').appendChild(spn);
+        $('#uploadLabel').attr('for',labelFor);
+        $('#file_'+fileCount).change(function(){
+            if($('#file_'+fileCount).val() !="") {
+                document.getElementById('filelist').innerHTML += '<li><a class="col-md-8">' + $('#file_' + fileCount).val() + '</a><button id="delBtn_'+ fileCount+'" onclick="deleteObj(this,'+fileCount+')" class="col-md-2" title="删除">删除</button></li>'
+                hasChanged = 1;
+            }
+        });
+
+    }
+    function removeFileList(id)
+    {
+     //TODO:only remove element
+        var strArray = $('#fileListInput').val().split(',');
+        strArray.splice(id,1);
+        $('#fileListInput').val(strArray.toString());
+    }
+    function removeVid(id)
+    {
+    //TODO:remove element and minus id
+        var strArray = $('#vid').val().split(',');
+        var i;
+        var needMinusId = 0;
+        var splitIndex = -1;
+        for(i=0;i<strArray.length;i++)
+        {
+            var index = strArray[i].split(':')[0];
+            if(index == id)
+            {
+                splitIndex = i;
+                needMinusId = 1;
+                continue;
+            }
+            if(1==needMinusId)
+            {
+                var currentInfo = strArray[i].split(':');
+                strArray[i] = (currentInfo[0]-1).toString() + ":" +currentInfo[1];
+            }
+        }
+        if(splitIndex != -1)
+        strArray.splice(splitIndex,1);
+        $('#vid').val(strArray.toString());
+    }
+    function deleteObj(obj,id)
+    {
+       if(isUploading == 1)
+        return;
+       $(obj).parent().remove();
+       $('#file_'+id).parent().remove();
+        removeFileList(id);
+        removeVid(id);
+       //TODO:remove corresponding vid and filelist
+        var i;
+        for(i=id+1;i<fileCount+1;i++)
+        {
+            var newI = i-1;
+            $('#file_'+i).attr('id','file_'+ newI);
+            var delBtn = $('#delBtn_'+i);
+            delBtn.attr('id','delBtn_'+newI).attr('onclick','deleteObj(this,'+newI+')');
+        }
+        fileCount--;
+    }
+
+    $("#type").change(function(){
+       $('#file_'+fileCount).attr('accept',$('#type').find("option:selected").attr('extval'));
+    });
+
+
+
+</script>
+<script>
+    var um = null;
+
+    function check() {
+        var type = $(this).val();
+        switch (type) {
+        case 'PPT':
+            var file = $('#file').val();
+            if (file == '') {
+                alert('您还没有选择任何PPT文件');
+                return false;
+            }
+            break;
+        case 'HTML':
+            break;
+        case 'VIDEO':
+            var vid = $('#vid').val();
+            if (vid == '') {
+                alert('您还没有上传视频文件');
+                return false;
+            }
+            break;
+        default:
+            break;
+        }
+        return true;
+    }
+</script>
+<!--
+<script>
+    var type = 'PPT';
+    $('#type').change(function () {
+        var type = $(this).val();
+        switch (type) {
+        case 'PPT':
+            type = 'PPT';
+            $('.contentWrapper').hide();
+            $('#pptContent').show();
+            break;
+        case 'HTML':
+            type = 'HTML';
+            $('.contentWrapper').hide();
+            $('#htmlContent').show();
+            if (um == null) um = UM.getEditor('contentEditor');
+            break;
+        case 'VIDEO':
+            type = 'VIDEO';
+            $('.contentWrapper').hide();
+            $('#videoContent').show();
+            break;
+        default:
+            break;
+        }
+    });
+</script>
+-->

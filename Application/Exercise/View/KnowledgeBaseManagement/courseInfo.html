@@ -1,0 +1,196 @@
+<layout name="admin_layout_exercise"/>
+<div class="boxOutter">
+	<div class="borderBottom pb10 of">
+		<span class="color3baeabFixed left lh32">添加/修改学科</span>
+		<button type="button" name="button" class="btn right" onclick="ajaxForm()">保存</button>
+	</div>
+	<div class="mt30">
+		<div class="">
+			<label for="">学科名称</label>
+			<input type="text" name="name" id="courseName" value="<?php echo $info[0]['name']?>" class="inputCommon"><span id="error"></span>
+		</div>
+		<?php if($id){?>
+		<div class="lh32 mt20">
+			<label for="">所含题型</label>
+			<?php foreach($info as $item){
+				if($item['id']){?>
+			<p class="questionsP mr15">
+				<span attr-data="<?php echo $item['id']?>"><?php echo $item['pname']?></span>
+				<?php if(in_array('KnowledgeBaseManagement/deleteTypeAjax',session('exercises_permissions'))){ ?>
+				<img  attr-data="<?php echo $item['id']?>" src="__PUBLIC__/adminExercise/img/chacha.png" alt=""  class="cursor delete">
+				<?php }?>
+			</p>
+			<?php }else{?>
+
+			<?php }}?>
+			<?php if(in_array('KnowledgeBaseManagement/addTypeAjax',session('exercises_permissions'))){ ?>
+			<button type="button" name="button" class="btn addQuestionBtn" >添加题型</button>
+			<?php }?>
+		</div>
+		<?php }?>
+	</div>
+	<div class="fullBack"></div>
+	<div class="adminNotifyBox" id="addSubject">
+		<div class="adminNotifyTitle">
+			提示
+		</div>
+		<div class="adminNotifyContent">
+			<div class="teacherChoose">
+				<label for="" style="width:auto">题型：</label>
+				<input name="" id="sures" class="inputCommon questionsName" type="text">
+			</div>
+		</div>
+		<p class="adminNotifyButton">
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addSubjectSure">保存</a>
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addSubjectCancel">取消</a>
+		</p>
+	</div>
+	<div class="adminNotifyBox" id="delete">
+		<div class="adminNotifyTitle">
+			提示
+		</div>
+		<div class="adminNotifyContent">
+			<div class="teacherChoose">
+				确定要删除？
+			</div>
+		</div>
+		<p class="adminNotifyButton">
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="deleteSure">确定</a>
+			<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="deleteCancel">取消</a>
+		</p>
+	</div>
+</div>
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/comm.js"></script>
+<script type="text/javascript">
+    var QspanIndex;
+    var delQueIndex;
+    var clickSure;
+	$('.delete').live('click',function(){
+        delQueIndex = $(this).parent().index()
+			var id = $(this).attr('attr-data');
+	//**************************************************ajax删除********************************************************************
+			$('#delete').show();
+        $('#deleteSure').click(function () {
+            $.ajax({
+                url:"{:U('KnowledgeBaseManagement/deleteTypeAjax')}",
+                data:{'id':id},
+                type:"post",
+				dataType:"json",
+                success:function (data) {
+                    if(data.status == 200){
+                        location.reload();
+                    }else if(data.status == 502){
+                        alert(data.msg);//无权进行操作
+					}else{
+                        $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+					}
+                }
+            });
+        });
+    });
+	//*********************************************双击修改操作***********************************************************************************
+    <?php if(in_array('KnowledgeBaseManagement/saveTypeAjax',session('exercises_permissions'))){ ?>
+	$('.questionsP>span').dblclick(function(){
+		QspanIndex = $(this).parent().index();
+        var typeId = $(this).attr('attr-data');
+        $('#addSubject,.fullBack').show();
+		//ajax请求当前要操作的数据详情
+		$.ajax({
+		    url:"{:U('KnowledgeBaseManagement/getTypeInfoAjax')}",
+			data:{'id':typeId},
+			dataType:"json",
+			type:"post",
+			success:function (data) {
+				$('#sures').val(data.data[0]['name']);
+            }
+		});
+		sure(typeId);
+	});
+<?php }?>
+    $('#addSubjectCancel,#deleteCancel').click(function(){
+        $('#delete,#addSubject,.fullBack').hide();
+    });
+//添加习题
+    $('.addQuestionBtn').click(function(){
+        clickSure = 1;
+        $('#addSubject,.fullBack').show();
+        sure();
+    });
+	//*******************************************************ajax添加或者修改**********************************************************************
+	function sure(typeId) {
+        $('#addSubjectSure').click(function(){
+            if($('.questionsName').val() == ''){
+               return false
+            }else if (clickSure == 1) {     //新增*****************************************************************************
+
+                var name = $('.questionsName').val();
+                var pid = "<?php echo $id?>";
+                $.ajax({
+                    url:"{:U('KnowledgeBaseManagement/addTypeAjax')}",
+                    data:{'name':name,'pid':pid},
+                    dataType:"json",
+                    type:"post",
+                    success:function (data) {
+                        if(data.status == 200){
+                            location.reload();
+                        }else if(data.status == 403){
+                            $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+						}else{
+                            $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+						}
+                    }
+                })
+            }else {          //修改******************************************************************************************
+                var name = $('.questionsName').val();
+                var pid = "<?php echo $id?>";
+                $.ajax({
+                    url:"{:U('KnowledgeBaseManagement/saveTypeAjax')}",
+                    data:{'id':typeId,'name':name,'pid':pid},
+                    dataType:"json",
+                    type:"post",
+                    success:function (data) {
+                        if(data.status == 200){
+                            location.reload();
+                        }else if(data.status == 403){
+                    $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+                }else{
+                            $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+						}
+                    }
+                })
+            }
+        });
+    }
+</script>
+<script>
+	//*******************************************ajax提交form表单******************************************************
+	function ajaxForm() {
+        var courseName = $('#courseName').val();
+        var id = "<?php echo $id?>";
+        if(courseName == ''){
+			$('#error').text('不能为空');
+            $('#error').css('color','red');
+            return false;
+		}
+        if(id){
+            var url = "{:U('KnowledgeBaseManagement/saveCourseInfo')}"
+        }else{
+            var url = "{:U('KnowledgeBaseManagement/courseInfo')}"
+        }
+        $.ajax({
+            url:url,
+            type:"post",
+            dataType:'json',
+            data:{'courseName':courseName,'id':id},
+            success:function (data) {
+                if(data.status == 200){
+                    window.location.replace("{:U('KnowledgeBaseManagement/subjectManagement')}");
+                }else if(data.status == 403){
+                    $.NotifyBox.NotifyOne('提示',data.msg,'确定')
+				}
+            }
+        });
+    }
+
+</script>

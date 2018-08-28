@@ -1,0 +1,173 @@
+
+
+    <ul class="filter_list">
+            <?php if(empty($list)) :?>
+                <div class="emptyDiv">
+                    <img src="{$oss_path}public/web_img/Empty/bjResourceSearch.png" alt="">
+                    <p>正在整理制作中，敬请期待！</p>
+                </div>
+            <?php endif; ?>
+
+            <?php for($i=0;$i<count($list);$i++){ ;
+                if($i<3){
+                    if(($i+1)%2==0){;?>
+
+                    <li class="mlr95">
+                <?php }else{    ?>
+                    <li>
+                <?php };?>
+
+            <?php }elseif($i%3==1){
+            ?>
+                <li class="mlr95">
+            <?php }else{;?>
+                <li>
+            <?php };?>
+
+                                <p class="list_p text-center" style="border-bottom:1px solid #ccc">
+                                    <a href="{:U('BjResource/bjResourceDetails')}&id=<?php echo $list[$i]['id'];?>"target="_blank" <?php  if($list[$i]['resource_type'] !== '1'){echo "target=_blank" ; } ?>><img src="<?php  if(strpos($list[$i]['pc_cover'],'http') === false){ echo $oss_path.$list[$i]['pc_cover']; }else{ echo $list[$i]['pc_cover']; } ?>" alt="" class="resource_typeimg"></a>
+                                </p>
+                                <p class="of  p5 m0 " style="height:31px">
+                                    <?php if($list[$i]['file_type']=='pdf'){;?>
+                                        <img src="__PUBLIC__/img/resource/pdf.png" >
+                                    &nbsp;<?php echo $list[$i]['type_name']?>
+                                    <?php }elseif($list[$i]['file_type']=='word'){;?>
+                                        <img src="__PUBLIC__/img/resource/word.png" >
+                                    &nbsp;<?php echo $list[$i]['type_name']?>
+                                    <?php }elseif($list[$i]['file_type']=='ppt'){;?>
+                                        <img src="__PUBLIC__/img/resource/ppt.png" >
+                                    &nbsp;<?php echo $list[$i]['type_name']?>
+                                    <?php }elseif($list[$i]['file_type']=='image'){;?>
+                                        <img src="__PUBLIC__/img/resource/tupian.png" >
+                                    &nbsp;<?php echo $list[$i]['type_name']?>&nbsp;共<?php echo $list[$i]['count']?>张图片
+                                    <?php }elseif($list[$i]['file_type']=='condensed'){;?>
+                                        <img src="__PUBLIC__/img/resource/yasuo.png" >
+                                    &nbsp;<?php echo $list[$i]['type_name']?>
+                                    <?php }elseif($list[$i]['file_type']=='swf'){;?>
+                                        <img src="__PUBLIC__/img/resource/s_swf.png" class="ieSwfImg">
+                                    &nbsp;<?php echo $list[$i]['type_name']?>
+                                    <?php }elseif($list[$i]['file_type']=='video'){;?>
+                                        <img src="__PUBLIC__/img/resource/shipin.png" >
+                                    &nbsp;<?php echo $list[$i]['type_name']?>
+                                    <?php }elseif($list[$i]['file_type']=='html'){;?>
+                                    <img src="__PUBLIC__/img/resource/html.png" >
+                                    &nbsp;<?php echo $list[$i]['type_name']?>
+                                    <?php }elseif($list[$i]['file_type']=='audio'){;?>
+                                        <img src="__PUBLIC__/img/resource/yinyue.png" >
+                                    &nbsp;<?php echo $list[$i]['type_name']?>
+                                    <?php }elseif($list[$i]['file_type']=='mixed'){;?>
+                                        <img src="__PUBLIC__/img/app/icon_mixed.png" >
+                                    &nbsp;&nbsp;<?php echo $list[$i]['type_name']?>
+                                    <?php };?>
+                                </p>
+                                <p class="list_name">
+
+
+                                   <!-- <?php if($list[$i]['resource_type']==2){;?>
+                                        <a href="/index.php?m=Home&c=BjResource&a=bjResourceTools&url=<?php echo $list[$i]['resource_path'];?>" target="_blank"><span><?php echo $list[$i]['resource_name'] ;?></span></a>
+                                    <?php }elseif($list[$i]['resource_type']==3){;?>
+                                        <a href="<?php echo $list[$i]['resource_path'];?>" target="_blank"><span><?php echo $list[$i]['resource_name'] ;?></span></a>
+                                    <?php }else{;?>
+                                        <a href="/index.php?m=Home&c=BjResource&a=bjResourceDetails&id=<?php echo $list[$i]['id'];?>" target="_blank"><span><?php echo $list[$i]['resource_name'] ;?></span></a>
+                                    <?php };?>-->
+                                    <a href="/index.php?m=Home&c=BjResource&a=bjResourceDetails&id=<?php echo $list[$i]['id'];?>" target="_blank"><span class="titleSpan" title="<?php echo $list[$i]['resource_name'] ;?>"><?php echo $list[$i]['resource_name'] ;?></span></a>
+                                </p>
+                                <p class="list_grade">
+                                        <span><?php
+                                            if($keyword!=''){
+                                                if(!empty($list[$i]['course_name'])){
+                                                    echo preg_replace("/$keyword/","<span class='seach_active'>$keyword</span>",$list[$i]['course_name']);
+                                                }else{
+                                                    echo "&nbsp";
+                                                 }
+                                            }else{
+                                                if(!empty($list[$i]['course_name'])){
+                                                    echo $list[$i]['course_name'];
+                                                }else{
+                                                    echo "&nbsp";
+                                                }
+                                            }
+                                            ?>
+                                        </span>
+                                        <span><?php
+                                            if($list[$i]['course_id']!=$special_course){
+                                                if($keyword!=''){
+                                                    if($list[$i]['grade_number']>1){
+                                                        echo '多年级';
+                                                    }else{
+                                                        if(!empty($list[$i]['grade'])){
+                                                            echo preg_replace("/$keyword/","<span class='seach_active'>$keyword</span>",$list[$i]['grade']);
+                                                        }else{
+                                                            echo "&nbsp";
+                                                        }
+                                                    }
+                                                }else{
+                                                    if($list[$i]['grade_number']>1){
+                                                        echo '多年级';
+                                                    }else{
+                                                        if(!empty($list[$i]['grade'])){
+                                                            echo $list[$i]['grade'];
+                                                        }else{
+                                                            echo "&nbsp";
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                        </span>
+                                    <span><?php
+                                            if($list[$i]['course_id']!=$special_course){
+                                                if($keyword!=''){
+                                                    if($list[$i]['textbook_number']>1){
+                                                        echo '多分册';
+                                                    }else{
+                                                        if(!empty($list[$i]['textbook'])){
+                                                        echo preg_replace("/$keyword/","<span class='seach_active'>$keyword</span>",str_replace($list[$i]['course_name'].$list[$i]['grade'],"",$list[$i]['textbook']));
+                                                        }else{
+                                                            echo "&nbsp";
+                                                        }
+                                                    }
+                                                }else{
+                                                    if($list[$i]['textbook_number']>1){
+                                                        echo '多分册';
+                                                    }else{
+                                                         if(!empty($list[$i]['textbook'])){
+                                                            echo str_replace($list[$i]['course_name'].$list[$i]['grade'],"",$list[$i]['textbook']);
+                                                         }else{
+                                                            echo "&nbsp";
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                        </span>
+                                </p>
+                                <!--<p class="list_content">
+                                    <?php
+                                    if($keyword!=''){
+                                        echo preg_replace("/$keyword/","<span class='seach_active'>$keyword</span>",$list[$i]['child_knowledge']);
+                                    }else{
+                                        echo $list[$i]['child_knowledge'];
+                                    }
+                                    ?>
+
+                                </p>-->
+
+                </li>
+            <?php   };?>
+    </ul>
+    <div class="Pagination">{$page}</div>
+    <script type="text/javascript">
+        for(var i =0;i<$('.list_name').length;i++){
+            if($('.list_name').eq(i).find('span').height() < '23'){
+                $('.list_name').eq(i).css('line-height','46px')
+            }
+        }
+        $('.titleSpan').each(function(){
+            var maxwidth=30;
+            var trimString = $.trim($(this).html());
+            if(trimString.length > maxwidth){
+                $(this).html(trimString.substring(0,maxwidth)+'…');
+            }
+        });
+    </script>

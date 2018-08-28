@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>绘本阅读</title>
+    <style media="screen">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        body {
+            background: #f1f1f1
+        }
+
+        ul, li {
+            list-style: none
+        }
+
+        @font-face {
+            font-family: 'Hanjianyaya';
+            src: url('__PUBLIC__/font/hyg3gjm.ttf');
+        }
+
+        a, a:hover, a:focus {
+            text-decoration: none !important
+        }
+
+        .fullBack {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            background: rgba(0, 0, 0, .3);
+            display: none;
+
+        }
+
+        .selectOutter {
+            width: 100%;
+            border: 1px solid #999;
+            border-left: none;
+            border-right: none;
+            height: 45px;
+            position: fixed;
+            z-index: 2;
+            background: #f1f1f1;
+        }
+
+        .selectOutter .selectInner {
+            width: 33.33%;
+            float: left;
+            padding: 5px 0;
+            height: 100%;
+            text-align: center
+        }
+
+        .selectOutter .selectInner .selectBox {
+            line-height: 33px;
+            border-right: 2px solid #999;
+        }
+
+        .selectOutter .selectInner:nth-child(3) .selectBox {
+            border-right: none !important;
+        }
+
+        .selectOutter .selectInner.active {
+            background: #9eddc8;
+        }
+
+        .selectOutter .selectInner .downUp {
+            width: 11px;
+            position: relative;
+            top: -1px;
+            margin-left: 2px;
+        }
+
+        .selectOutter .selectFilter {
+            display: none;
+            width: 100%;
+            padding: 0 20px;
+            background: #f6f6f6;
+            clear: both;
+            position: relative;
+            z-index: 2;
+            overflow-y: scroll;
+        }
+
+        .selectOutter .selectFilter li {
+            width: 100%;
+            border-bottom: 1px solid #eee;
+            line-height: 45px;
+            text-indent: 15px;
+        }
+
+        .selectOutter .selectFilter li.active {
+            background: url({$oss_path}public/web_img/PictureBook/check.png) no-repeat 95% center;
+            background-size: 18px auto;
+        }
+
+        .picBookUl {
+            width: 100%;
+            overflow: hidden;
+            padding-top: 65px;
+
+        }
+
+        .picBookLi {
+            width: 50%;
+            float: left;
+            margin-bottom: 20px;
+        }
+
+        .picBookA {
+            display: block;
+            overflow: hidden;
+        }
+
+        .picBookA .imgBox {
+            display: block;
+            margin: 0 auto;
+            width: 142px;
+            height: 149px;
+            background: url({$oss_path}public/web_img/PictureBook/picBack.png) no-repeat center;
+            background-size: 100% 100%;
+        }
+
+        .picBookA .imgBox .picImg {
+            width: 117px;
+            height: 117px;
+            border-radius: 5px;
+            margin-left: 21px;
+            margin-top: 7px;
+        }
+
+        .picBookA .nameOutter {
+            width: 145px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .picBookA .nameOutter .nameBox {
+            float: left;
+            margin-top: 11px;
+        }
+
+        .picBookA .nameOutter .picName, .picBookA .nameOutter .picGrade, .picBookA .nameOutter .picCourse, .picBookA .nameOutter .picType {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            text-decoration: none;
+            text-align: center;
+            color: #fff;
+            font-weight: bold
+        }
+
+        .picBookA .nameOutter .picName {
+            width: 116px;
+            height: 21px;
+            padding: 0 5px;
+            background: url({$oss_path}public/web_img/PictureBook/nameBack.png) no-repeat center;
+            background-size: 100% 100%;
+            font-size: 14px;
+            line-height: 20px;
+            margin-bottom: 3px;
+        }
+
+        .picBookA .nameOutter .picGrade, .picBookA .nameOutter .picCourse, .picBookA .nameOutter .picType {
+            float: left;
+            width: 38px;
+            height: 18px;
+            margin-right: 1px;
+            font-size: 12px;
+            line-height: 17px;
+            font-family: 'Hanjianyaya';
+        }
+
+        .picBookA .nameOutter .picType {
+            float: right;
+            margin-right: 0;
+        }
+
+        .picBookA .nameOutter .picGrade {
+            background: url({$oss_path}public/web_img/PictureBook/gradeBack.png) no-repeat center;
+            background-size: 100% 100%;
+        }
+
+        .picBookA .nameOutter .picCourse {
+            background: url({$oss_path}public/web_img/PictureBook/courseBack.png) no-repeat center;
+            background-size: 100% 100%;
+        }
+
+        .picBookA .nameOutter .picType.beRead {
+            background: url({$oss_path}public/web_img/PictureBook/blueBack.png) no-repeat center;
+            background-size: 100% 100%;
+        }
+
+        .picBookA .nameOutter .picType.notRead {
+            background: url({$oss_path}public/web_img/PictureBook/greenBack.png) no-repeat center;
+            background-size: 100% 100%;
+        }
+
+        .picBookA .nameOutter .trophy {
+            float: right;
+            width: 26px;
+            margin: 4px 0 0 3px;
+        }
+
+        /*大于360的手机*/
+        @media (max-width: 599px) and (min-width: 360px) {
+            .picBookA .imgBox {
+                width: 165px;
+                height: 173px;
+            }
+
+            .picBookA .imgBox .picImg {
+                width: 135px;
+                height: 135px;
+                border-radius: 6px;
+                margin-left: 25px;
+                margin-top: 8px;
+            }
+
+            .picBookA .nameOutter {
+                width: 165px;
+                margin: 2px auto 0;
+            }
+
+            .picBookA .nameOutter .picName {
+                width: 130px;
+                height: 23px;
+                line-height: 23px;
+                margin-bottom: 5px;
+            }
+
+            .picBookA .nameOutter .picGrade, .picBookA .nameOutter .picCourse, .picBookA .nameOutter .picType {
+                width: 43px;
+                height: 20px;
+                margin-right: 2px;
+                line-height: 19px;
+            }
+
+            .picBookA .nameOutter .trophy {
+                width: 28px;
+                margin: 4px 0 0 2px
+            }
+        }
+
+        /*大于600的pad*/
+        @media screen and (min-width: 600px) {
+            .picBookUl {
+                padding-top: 100px;
+            }
+
+            .picBookLi {
+                margin-bottom: 40px;
+            }
+
+            .picBookA .imgBox {
+                width: 284px;
+                height: 298px;
+            }
+
+            .picBookA .imgBox .picImg {
+                width: 233px;
+                height: 233px;
+                border-radius: 12px;
+                margin-left: 42px;
+                margin-top: 14px;
+            }
+
+            .picBookA .nameOutter {
+                width: 275px;
+                margin: 6px auto 0;
+            }
+
+            .picBookA .nameOutter .picName {
+                width: 218px;
+                height: 38px;
+                line-height: 38px;
+                margin-bottom: 6px;
+                font-size: 18px;
+            }
+
+            .picBookA .nameOutter .picGrade, .picBookA .nameOutter .picCourse, .picBookA .nameOutter .picType {
+                width: 72px;
+                height: 29px;
+                margin-right: 5px;
+                line-height: 29px;
+                font-size: 18px;
+            }
+
+            .picBookA .nameOutter .trophy {
+                width: 40px;
+                margin-top: 0;
+            }
+
+            .selectOutter {
+                height: 60px;
+            }
+
+            .selectOutter .selectInner {
+                padding: 10px 0;
+            }
+
+            .selectOutter .selectInner .selectBox {
+                line-height: 40px;
+                border-right: 2px solid #999;
+                font-size: 20px;
+            }
+
+            .selectOutter .selectInner .downUp {
+                width: 15px;
+            }
+
+            .selectOutter .selectFilter li {
+                line-height: 60px;
+                text-indent: 75px;
+                font-size: 18px;
+            }
+
+            .selectOutter .selectFilter li.active {
+                background-size: 26px auto;
+            }
+        }
+
+        .trophyBox {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="selectOutter">
+    <div class="selectInner" id="selectGrade">
+        <div class="selectBox">
+            <span class="selectName">年级</span>
+            <img src="{$oss_path}public/web_img/PictureBook/down.png" alt="" class="downUp">
+        </div>
+    </div>
+    <div class="selectInner" id="selectTheme">
+        <div class="selectBox">
+            <span class="selectName">主题</span>
+            <img src="{$oss_path}public/web_img/PictureBook/down.png" alt="" class="downUp">
+        </div>
+    </div>
+    <div class="selectInner" id="selectGenre">
+        <div class="selectBox">
+            <span class="selectName">体裁</span>
+            <img src="{$oss_path}public/web_img/PictureBook/down.png" alt="" class="downUp">
+        </div>
+    </div>
+
+    <ul class="selectFilter" id="filterGrade">
+        <li class="active" data="0">不限</li>
+        <?php foreach($gradeList as $gradeItem) {?>
+        <li data="<?php echo $gradeItem['id'] ;?>"><?php echo $gradeItem['name']?></li>
+        <?php }?>
+    </ul>
+
+    <ul class="selectFilter" id="filterTheme">
+        <li class="active" data="0">不限</li>
+        <?php foreach($themeList as $themeItem) {?>
+        <li data="<?php echo $themeItem['id'] ;?>"><?php echo $themeItem['name']?></li>
+        <?php }?>
+    </ul>
+
+    <ul class="selectFilter" id="filterGenre">
+        <li class="active" data="0">不限</li>
+        <?php foreach($subjectList as $subjectItem) {?>
+        <li data="<?php echo $subjectItem['id'] ;?>"><?php echo $subjectItem['name']?></li>
+        <?php }?>
+    </ul>
+</div>
+<ul class="picBookUl ajaxli">
+    <?php foreach($list as $item){ ?>
+    <li class="picBookLi">
+        <div class="picBookA">
+            <a href="javascript:;" data-id="<?php echo $item['picture_books_id']?>"
+               data-name="<?php echo $item['picture_books_name']?>"
+               data-url="<?php echo $item['picture_books_config']?>" class="imgBox" onclick="goUrl(this)">
+                <img src="<?php echo $oss_path.$item['picture_books_cover']?>" alt="" class="picImg">
+            </a>
+            <div class="nameOutter">
+                <a href="javascript:;" class="nameBox">
+                    <!-- <div class="picName">
+                        <?php echo $item['picture_books_name']?>
+                    </div> -->
+                    <div class="picGrade">
+                        <?php echo $item['picture_books_grade_name']?>
+                    </div>
+                    <div class="picCourse">
+                        英语
+                    </div>
+                    <?php if($item['tip'] == 'true'){?>
+                    <div class="picType beRead">已阅读</div>
+                    <?php }else{?>
+                     <div class="picType notRead">未阅读</div>
+                    <?php }?>
+                </a>
+                <?php if($role != ROLE_YOUKE){?>
+                <a href="/index.php/ApiInterface/Version1_2/PictureBooks/pictureBooks/?userId=<?php echo $userId?>/&role=<?php echo $role?>/&id=<?php echo $item['picture_books_id']?>"
+                   class="trophyBox">
+                    <img src="{$oss_path}public/web_img/PictureBook/award.png" alt="" class="trophy">
+                </a>
+                <?php }?>
+            </div>
+        </div>
+    </li>
+    <?php }?>
+
+</ul>
+<div class="fullBack"></div>
+<!-- <script type="text/javascript" src="__PUBLIC__/js/zepto.js"></script> -->
+<script src="http://apps.bdimg.com/libs/jquery/1.10.1/jquery.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function(){
+        var winHeight = $(window).height();//屏幕的高度
+        var topHeight = $('.selectOutter').outerHeight();//“答题卡顶部”的高度
+        var minusHeight = winHeight*1 - topHeight*1;//相减的高度
+        $('.selectFilter').css('maxHeight',minusHeight);//标签页的最小高度
+    })
+
+    var index;
+    //点击tab页
+    $('.selectInner').click(function () {
+        index = $(this).index();//点击的位置
+        // 判断点击的是否已经点击过
+        if ($(this).hasClass('active')) {
+            var that = $(this);
+            $('.selectFilter').eq(index).slideUp('fast', function () {
+                that.removeClass('active');//点击的元素去掉背景颜色
+                that.children('.selectBox').css('border-right', '2px solid #999');//点击的元素添加右边框
+                that.find('img').attr('src', '{$oss_path}public/web_img/PictureBook/down.png');//点击的元素图片朝下
+                $('.fullBack').hide();//黑透明背景
+                $('body').css('overflow-y', 'auto');//页面可以滑动
+            });//点击相应的列表收起
+        } else {
+            $(this).addClass('active').siblings('.selectInner').removeClass('active');//点击的元素添加背景颜色
+            $(this).children('.selectBox').css('border-right', '2px solid #9eddc8').end().siblings('.selectInner').children('.selectBox').css('border-right', '2px solid #999');//点击的元素右边框消失
+            $(this).find('img').attr('src', '{$oss_path}public/web_img/PictureBook/up.png').end().siblings('.selectInner').find('img').attr('src', '{$oss_path}public/web_img/PictureBook/down.png');//点击的元素图片朝上
+            $('.fullBack').show();//黑透明背景
+            $('body').css('overflow-y', 'hidden');//页面禁止滑动
+            $('.selectFilter').hide().eq(index).slideDown('fast');//点击相应的列表展开
+        }
+    })
+
+    //点击透明黑背景
+    $('.fullBack').click(function () {
+        $('.selectFilter').eq(index).slideUp('fast', function () {
+            $('.selectInner').eq(index).removeClass('active');//点击的元素去掉背景颜色
+            $('.selectInner').eq(index).children('.selectBox').css('border-right', '2px solid #999');//点击的元素添加右边框
+            $('.selectInner').eq(index).find('img').attr('src', '{$oss_path}public/web_img/PictureBook/down.png');//点击的元素图片朝下
+            $('.fullBack').hide();//黑透明背景
+            $('body').css('overflow-y', 'auto');//页面可以滑动
+        });//点击相应的列表收起
+    })
+
+    /**************************************************************************点击筛选项*************************************************/
+    $('.selectFilter li').click(function () {
+        var liIndex = $(this).index();//点击元素的位置
+        var liText = $(this).text();//点击元素的内容
+        index = $(this).parent('.selectFilter').index() - 3;//父元素的位置
+        $(this).addClass('active').siblings('li').removeClass('active');//点击的元素添加对勾
+        //如果点击的是不限
+        if (liIndex == 0) {
+            if (index == 0) {
+                $('.selectInner').eq(index).find('.selectName').text('年级');
+
+                //console.log('年级筛选')
+            } else if (index == 1) {
+                $('.selectInner').eq(index).find('.selectName').text('主题');
+
+                //console.log('主题筛选')
+            } else if (index == 2) {
+                $('.selectInner').eq(index).find('.selectName').text('题材');
+               // console.log('体裁筛选')
+            }
+
+            //ajax筛选请求
+            //获取选中的筛选项
+            var oss_path = "{$oss_path}";
+            var subjectId = $('#filterGenre').children('.active').attr('data');//题材
+            var grade_id = $('#filterGrade').children('.active').attr('data');//年级
+            var theme = $('#filterTheme').children('.active').attr('data');//主题
+            var server = "<?php echo $_SERVER['SERVER_NAME']?>";
+            var url = "http://" + server + "/index.php/ApiInterface/Version1_2/PictureBooks/getPictureBookListBySearch";
+            var role = "<?php echo $role?>";
+            var userId = "<?php echo $userId?>";
+            var html = '';
+            $.ajax({
+                data: {'subjectId': subjectId, 'grade_id': grade_id, 'theme': theme, 'role': role , 'userId' : userId},
+                url: url,
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    //渲染页面操作
+                    if (data.status == 200) {
+                        for (var i = 0; i < data.data.length; i++) {
+                            if(data.data[i].tip == 'true'){
+                                var newStr = "<div class=\"picType beRead\">" +
+                                "\t\t\t\t\t\t\t\t已阅读\n" +
+                                "</div>"
+                            }else{
+                                var newStr = "<div class=\"picType notRead\">" +
+                                "\t\t\t\t\t\t\t\t未阅读\n" +
+                                "</div>"
+                            }
+
+                            html += "<li class=\"picBookLi\">\n" +
+                                "\t\t\t\t<div class=\"picBookA\">\n" +
+                                '\t\t\t\t\t<a href="javascript:;" class="imgBox" data-id= "'+ data.data[i].picture_books_id +'" data-name="'+ data.data[i].picture_books_name + '" data-url="'+ data.data[i].picture_books_config + '" onclick="goUrl(this)">'+
+                                "\t\t\t\t\t\t<img src=\"" +oss_path + data.data[i].picture_books_cover + "\" alt=\"\" class=\"picImg\">\n" +
+                                "\t\t\t\t\t</a>\n" +
+                                "\t\t\t\t\t<div class=\"nameOutter\">\n" +
+                                "\t\t\t\t\t\t<a href=\"javascript:;\" class=\"nameBox\">\n" +
+                                /*"\t\t\t\t\t\t\t<div class=\"picName\">\n" +
+                                "\t\t\t\t\t\t\t\t" + data.data[i].picture_books_name + "\n" +
+                                "\t\t\t\t\t\t\t</div>\n" +*/
+                                "\t\t\t\t\t\t\t<div class=\"picGrade\">\n" +
+                                "\t\t\t\t\t\t\t\t" + data.data[i].picture_books_grade_name + "\n" +
+                                "\t\t\t\t\t\t\t</div>\n" +
+                                "\t\t\t\t\t\t\t<div class=\"picCourse\">\n" +
+                                "\t\t\t\t\t\t\t\t英语\n" +
+                                "\t\t\t\t\t\t\t</div>\n" +
+                                newStr +
+                                "\t\t\t\t\t\t</a>\n" +
+                                "\t\t\t\t\t\t<a href=\"/index.php/ApiInterface/Version1_2/PictureBooks/pictureBooks/?userId="+userId+"/&role="+role+"/&id="+ data.data[i].picture_books_id + "\" class=\"trophyBox\"><img src=\"{$oss_path}public/web_img/PictureBook/award.png\" alt=\"\" class=\"trophy\"></a>\n" +
+                                "\t\t\t\t\t</div>\n" +
+                                "\t\t\t\t</a> \n" +
+                                "\t\t\t</li>"
+                        }
+                        $('.ajaxli').html(html);
+                    }
+
+                }
+            })
+
+        } else {
+            if (index == 0) {
+                $('.selectInner').eq(index).find('.selectName').text(liText);
+               // console.log('年级筛选')
+            } else if (index == 1) {
+                $('.selectInner').eq(index).find('.selectName').text(liText);
+                //console.log('主题筛选')
+            } else if (index == 2) {
+                $('.selectInner').eq(index).find('.selectName').text(liText);
+                //console.log('题材筛选')
+            }
+
+            //ajax筛选请求
+            //获取选中的筛选项
+            var oss_path = "{$oss_path}";
+            var subjectId = $('#filterGenre').children('.active').attr('data');//题材
+            var grade_id = $('#filterGrade').children('.active').attr('data');//年级
+            var theme = $('#filterTheme').children('.active').attr('data');//主题
+            var server = "<?php echo $_SERVER['SERVER_NAME']?>";
+            var url = "http://" + server + "/index.php/ApiInterface/Version1_2/PictureBooks/getPictureBookListBySearch";
+            var role = "<?php echo $role?>";
+            var userId = "<?php echo $userId?>";
+            var html = '';
+            $.ajax({
+                data: {'subjectId': subjectId, 'grade_id': grade_id, 'theme': theme, 'role': role , 'userId' : userId},
+                url: url,
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    //渲染页面操作
+                    if (data.status == 200) {
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            if(data.data[i].tip == 'true'){
+                                var newStr = "<div class=\"picType beRead\">" +
+                                    "\t\t\t\t\t\t\t\t已阅读\n" +
+                                    "</div>"
+                            }else{
+                                var newStr = "<div class=\"picType notRead\">" +
+                                    "\t\t\t\t\t\t\t\t未阅读\n" +
+                                    "</div>"
+                            }
+
+                            html += "<li class=\"picBookLi\">\n" +
+                                "\t\t\t\t<div class=\"picBookA\">\n" +
+                                '\t\t\t\t\t<a href="javascript:;" class="imgBox" data-id= "'+ data.data[i].picture_books_id +'" data-name="'+ data.data[i].picture_books_name + '" data-url="'+ data.data[i].picture_books_config + '" onclick="goUrl(this)">'+
+                                "\t\t\t\t\t\t<img src=\"" + oss_path + data.data[i].picture_books_cover + "\" alt=\"\" class=\"picImg\">\n" +
+                                "\t\t\t\t\t</a>\n" +
+                                "\t\t\t\t\t<div class=\"nameOutter\">\n" +
+                                "\t\t\t\t\t\t<a href=\"javascript:;\" class=\"nameBox\">\n" +
+                                /*"\t\t\t\t\t\t\t<div class=\"picName\">\n" +
+                                "\t\t\t\t\t\t\t\t" + data.data[i].picture_books_name + "\n" +
+                                "\t\t\t\t\t\t\t</div>\n" +*/
+                                "\t\t\t\t\t\t\t<div class=\"picGrade\">\n" +
+                                "\t\t\t\t\t\t\t\t" + data.data[i].picture_books_grade_name + "\n" +
+                                "\t\t\t\t\t\t\t</div>\n" +
+                                "\t\t\t\t\t\t\t<div class=\"picCourse\">\n" +
+                                "\t\t\t\t\t\t\t\t英语\n" +
+                                "\t\t\t\t\t\t\t</div>\n" +
+                                newStr +
+                                "\t\t\t\t\t\t</a>\n" +
+                                "\t\t\t\t\t\t<a href=\"/index.php/ApiInterface/Version1_2/PictureBooks/pictureBooks/?userId="+userId+"/&role="+role+"/&id="+ data.data[i].picture_books_id + "\" class=\"trophyBox\"><img src=\"{$oss_path}public/web_img/PictureBook/award.png\" alt=\"\" class=\"trophy\"></a>\n" +
+                                "\t\t\t\t\t</div>\n" +
+                                "\t\t\t\t</a> \n" +
+                                "\t\t\t</li>"
+                        }
+                        $('.ajaxli').html(html);
+                    }
+
+                }
+            })
+        }
+
+        $(this).parent('.selectFilter').slideUp('fast');
+        $('.selectInner').eq(index).removeClass('active');//点击的元素去掉背景颜色
+        $('.selectInner').eq(index).children('.selectBox').css('border-right', '2px solid #999');//点击的元素添加右边框
+        $('.selectInner').eq(index).find('img').attr('src', '{$oss_path}public/web_img/PictureBook/down.png');//点击的元素图片朝下
+        $('.fullBack').hide();//黑透明背景
+        $('body').css('overflow-y', 'auto');//页面可以滑动
+    })
+</script>
+<script>
+
+    function CheckIsAndroid() {
+        var browser = {
+            versions: function () {
+                var u = navigator.userAgent,
+                    app = navigator.appVersion;
+                return { //移动终端浏览器版本信息
+                    ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                    android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                    iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                    iPad: u.indexOf('iPad') > -1, //是否iPad
+                };
+            }(),
+        }
+        //if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+        //    return false;
+        //}
+        if (browser.versions.android)
+            return true;
+        return false;
+    }
+
+
+    function CheckIsIOS() {
+        var browser = {
+            versions: function () {
+                var u = navigator.userAgent,
+                    app = navigator.appVersion;
+                return { //移动终端浏览器版本信息
+                    ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                    android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                    iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                    iPad: u.indexOf('iPad') > -1, //是否iPad
+                };
+            }(),
+        }
+        if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+            return true;
+        }
+    }
+
+    function goUrl(obj) {
+        var url = $($(obj).context).attr('data-url');
+        var name = $($(obj).context).attr('data-name');
+        var id = $($(obj).context).attr('data-id');
+        var data = {
+            "id": id,
+            "url": url,
+            "name": name
+        };
+        var server = "<?php echo $_SERVER['SERVER_NAME']?>";
+        var dataurl = "http://" + server + "/index.php/ApiInterface/Version1_2/PictureBooks/clickNum";
+        $.ajax({
+            url: dataurl,
+            data: {'id': id},
+            dataType:'json',
+            type:"post",
+            success:function () {
+
+            }
+        });
+        if (CheckIsIOS())
+            window.webkit.messageHandlers.iosHuiBen.postMessage(data);
+        if (CheckIsAndroid())
+            AppFunction.androidHuiben(JSON.stringify(data));
+    }
+    $(".fullBack").on("touchmove",function(event){
+        event.preventDefault();
+    });
+</script>
+</body>
+</html>

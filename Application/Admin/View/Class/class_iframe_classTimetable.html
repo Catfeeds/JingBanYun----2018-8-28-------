@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/css/external/easyui.css">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/css/external/icon.css">
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/css/adminCommon.css">
+    <script type="text/javascript" src="__PUBLIC__/js/external/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/external/jquery.easyui.min.js"></script>
+    <style type="text/css">
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 850px;
+            margin: 0;
+        }
+
+        body {
+            margin-top: 20px;
+        }
+
+        @media screen and (max-width: 1010px) and (min-width: 0) {
+            body {
+                width: auto;
+                overflow-x: hidden;
+            }
+        }
+
+        .left {
+            width: 120px;
+        }
+
+        .left table {
+            background: #E0ECFF;
+        }
+
+        .left td {
+            background: #eee;
+        }
+ 
+        .rightDiv {
+            width: 710px;
+        }
+
+        .rightDiv table {
+            background: #E0ECFF;
+            width: 100%;
+        }
+
+        .rightDiv td {
+            background: #fafafa;
+            text-align: center;
+            height: 33px;
+        }
+
+        .rightDiv td {
+            background: #fff;
+            padding: 5px 0;
+        }
+
+        .rightDiv td.drop {
+            background: #fafafa;
+            width: 90px;
+        }
+
+        .rightDiv td.over {
+            background: #FBEC88;
+        }
+
+        .item {
+            text-align: center;
+            border: 1px solid #0073c6;
+            background: #fff;
+            padding: 2px 0;
+            width: 89px;
+			font-size: 14px;
+        }
+
+        .assigned {
+            border: 1px solid transparent;
+            background-color: transparent;
+        }
+
+    </style>
+    <style>
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 60px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.428571429;
+            color: #555555;
+            background-color: white;
+            background-image: none;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+            transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+        }
+
+        .btn {
+            padding: 6px 12px;
+        }
+
+        .btn-primary {
+            color: white;
+            background-color: #1abc9c;
+            border-color: #17a689;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: normal;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            padding: 10px 20px;
+            font-size: 14px;
+            line-height: 1.428571429;
+            border-radius: 4px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+		.blueBtn {
+			border: none;
+			background: none;
+			background-color: #0072c6;
+			color: #fff;
+			padding: 0.5rem 1.75rem;
+			font-size: 16px;
+			border-radius: 5px;
+			margin: 0 20px 30px;
+			cursor: pointer;
+		}
+
+		.blueBtn:hover {
+			background-color: #006caf;
+		}
+		
+		/*==后台管理弹窗开始==*/
+		.tableFull {
+			display: none;
+			width: 100%;
+			height: 100%;
+			position: fixed;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			margin: auto;
+			z-index: 20170000;
+		}
+
+		.tableBox {
+			width: 80%;
+			background: #fff;
+			position: fixed;
+			top: 100px;
+			left: 0;
+			right: 0;
+			margin: 0 auto;
+			z-index: 20170001;
+		}
+
+		.tableBoxTitle {
+			text-align: center;
+			background: #0073c6;
+			color: #fff;
+			line-height: 44px;
+			font-size: 18px;
+			letter-spacing: 2px;
+			font-weight: 600;
+		}
+
+		.tableBoxContent {
+			border: 2px solid #e0e0e0;
+			border-top: 0;
+			min-height: 350px;
+			max-height: 600px;
+			position: relative;
+		}
+
+		.tableBoxTop {
+			min-height: 250px;
+			max-height: 500px;
+			overflow-y: auto;
+			margin-bottom: 40px;
+			box-sizing: border-box;
+			padding: 10px;
+		}
+		
+		.teacherSpan {
+			display: inline-block;
+			width: 19%;
+			margin-bottom: 5px;
+		}
+		
+		.tableBoxButton {
+			text-align: center;
+			position: relative;
+			bottom: 30px;
+			left: 0;
+			right: 0;
+		}
+
+		.tableBoxBtn {
+			width: 100px;
+			height: 40px;
+			line-height: 40px;
+			display: inline-block;
+			color: #fff;
+			font-size: 18px;
+			text-align: center;
+			border-radius: 5px;
+			text-decoration: none;
+			letter-spacing: 2px;
+		}
+
+		.tableBoxBtn:hover, .tableBoxBtn:focus {
+			color: #fff;
+			text-decoration: none;
+		}
+
+		.tableBoxBlue1 {
+			background-color: #0072c6;
+		}
+
+		.tableBoxBlue1:hover {
+			background-color: #006caf;
+		}
+
+		.tableBoxBlue2 {
+			margin: 0 30px;
+			background: #0072c6;
+		}
+
+		.tableBoxBlue2:hover {
+			background: #006caf;
+		}
+
+		.tableBoxGray2 {
+			margin: 0 30px;
+			background: #aaa;
+		}
+
+		.tableBoxGray2:hover {
+			background: #999;
+		}
+
+		/*==后台管理弹窗结束==*/
+      
+    </style> 
+</head>
+<body>
+
+<form id="mainForm" action="__URL__/updateClassTimetable" method="post">
+
+    <input type="hidden" name="class_id" value="{$class_id}"> 
+
+    <table style="width:100%;border: none;" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="120" align="center" valign="top">
+                <div class="left">
+                    <table>
+                        <volist name="course_list" id="course_item">
+                            <tr>
+                                <td>
+                                    <div class="item" attr="{$course_item.id}">{$course_item.name}</div>
+                                </td>
+                            </tr> 
+                        </volist> 
+                            <tr>
+                                <td> 
+                                    <div class="item empty_item" attr="1,1,0,0">&nbsp;</div>
+                                </td>
+                            </tr>
+                    </table>
+                </div>
+            </td>
+            <td valign="top">
+                <div class="rightDiv" id="timetableWrapper">
+                     
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div style="padding: 15px 0 0 15px;width:100%;">
+                    <div style="margin-bottom: 6px;" >注：如果要删除一个排课，则将空白课程拖动到需要删除的一个排课上即可</div>
+                    <textarea name="comments" rows="5" maxlength="200" placeholder="课表备注，不超过200字"
+                              class="form-control">{$comments.comments}</textarea>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="form-actions" style="text-align: center; padding-top: 20px;">
+        <button type="button" class="blueBtn" onclick="submitForm()">保存</button>
+    </div>
+    
+    <div class="tableFull">
+		<div class="tableBox">
+			<div class="tableBoxTitle">创建班级</div>
+			<div class="tableBoxContent">
+				<div class="tableBoxTop">
+					 
+				</div>
+				
+				<p class="tableBoxButton">
+					<a href="javascript:;" class="tableBoxBtn tableBoxBlue2" id="sureBtn">确定</a>
+					<a href="javascript:;" class="tableBoxBtn tableBoxBlue2" id="cancelBtn">取消</a>
+				</p>
+			</div>
+		</div>
+    </div>
+</form>
+
+
+<script src="__PUBLIC__/js/timetable/timetable.js"></script>
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+<script>
+    var global_c,teacher_exists_flag; 
+    var teacher_span='<span class="teacherSpan">'+
+                '<input type="radio" value="" class="teacher_id" name="teacher_id" attr="">'+
+                '<label for="teacherName" >xx</label>'+
+        '</span>';
+    
+    $(document).ready(function(){
+         $.ajaxSetup({
+            async : false
+        }); 
+        
+        
+        timeTableObject.refreshClassTimeTable(classId,'timetableWrapper','comments',function(){ 
+            $('.left .item').draggable({
+                revert: true,
+                proxy: 'clone'
+            });
+            
+            $('.rightDiv td.drop').droppable({
+                onDragEnter: function () {
+                    $(this).addClass('over');
+                },
+                onDragLeave: function () {
+                    $(this).removeClass('over');
+                },
+                onDrop: function (e, source) {
+                    $(this).removeClass('over');
+                    if ($(source).hasClass('assigned')) { 
+                        $(this).append(source);
+                    } else {
+                        var c = $(source).clone().addClass('assigned');
+                            global_c=c;
+                            position=this;
+                            
+                            if($(source).hasClass('empty_item')){  
+                                var day=$(position).index();
+                                var lesson=$(position).parent().index(); 
+                                $(c).attr('attr',day+','+lesson+','+'null,0');
+                                $(this).empty().append(c);
+                            }else{  
+                                var course_id=$(c).attr('attr');    
+                                global_course_id=course_id;
+                                getTeacherByCourse(course_id);   
+                                if(teacher_exists_flag==2){ 
+//                                    alert('该学科下无任何教师');
+                                    $.NotifyBox.NotifyOne('注意','该学科下无任何教师！','确定');
+                                    return false;
+                                }
+                            //这里去拉学科的数据 
+                                $(this).empty().append(c);
+                            }
+                            c.draggable({
+                                revert: true
+                            });
+
+                        
+                    }
+					
+                        $('#cancelBtn').click(function(){
+                            $('.tableFull').hide();
+                            $(global_c).remove();
+                        })
+                }
+            });
+        });
+    })
+    
+    var position='';
+    var global_course_id='';
+    function getTeacherByCourse(course_id){ 
+        $(".tableBoxTop").find('span').remove();
+        $.ajax({
+            type:"post",
+            dataType:"json",
+            async: false,
+            url:"{:U('Class/getClassCourseTeacher')}",
+            data:{'id':classId,'course_id':course_id},
+            success: function(msg){  
+                if(msg.data.length){
+                    for(var i=0;i<msg.data.length;i++){
+                        var temp_span=$(teacher_span).clone(true);
+                        if(i==0){
+                            $(temp_span).find('.teacher_id').attr('checked',true);
+                        }
+                        $(temp_span).find('.teacher_id').val(msg['data'][i].teacher_id);
+                        $(temp_span).find('.teacher_id').attr('attr',msg['data'][i].teacher_name);
+                        $(temp_span).find('label').text(msg['data'][i].teacher_name); 
+                        $(".tableBoxTop").append(temp_span);
+                    }
+                    $('.tableFull').show(); 
+                    teacher_exists_flag=1;
+                }else{ 
+                    teacher_exists_flag=2;
+                } 
+            }  
+        });
+    }
+    
+    var temp_div='<div class="item assigned" attr="2,1,1333,1">语文_周鸿祎</div>';
+    //点击教师保存
+    $("#sureBtn").click(function(){
+        var teacher_id=$('.teacher_id:checked').val(); 
+        var teacher_name=$('.teacher_id:checked').attr('attr'); 
+        if(teacher_id==false || teacher_id==''){
+            $.NotifyBox.NotifyOne('注意','请选择该科的任教老师！','确定');
+            return false;
+        }   
+        var course=$(position).text(); 
+        var day=$(position).index();
+        var lesson=$(position).parent().index(); 
+        var reduce_count=0;
+        for(var i=1;i<=lesson;i++){
+            if(!$("#timetableWrapper").find('tr').eq(i).find('.droppable').length){
+                reduce_count++;
+            }
+        }
+        lesson=lesson-reduce_count;
+        var string=day+','+lesson+','+teacher_id+','+global_course_id;
+        var t_div=$(temp_div).clone(true);
+        $(t_div).text(course+'_'+teacher_name);
+        $(t_div).attr('attr',string);
+        $(position).text('');
+        $(position).append(t_div);
+        $(".tableFull").hide();
+        $(".tableBoxTop").find('span').remove();
+        
+    });
+    
+    
+    
+    var classId = "{$class_id}";
+    var status = '{$status}';
+    var temp_input="<input type='hidden' name='courses[]' />";
+    if (status == 1) {
+        alert('保存成功,可继续编辑');
+    }
+    function submitForm() { 
+        if($("#timetableWrapper").find('.assigned').length){
+            var allTd=$("#timetableWrapper").find('.assigned');
+            for(var i=0;i<allTd.length;i++){
+                var clone_input=$(temp_input).clone(true);
+                $(clone_input).val($(allTd[i]).attr('attr'));
+                $("#mainForm").append(clone_input);
+            }
+        }
+        $('#mainForm').submit();
+    }
+    
+    
+</script>
+</body>
+</html>

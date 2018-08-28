@@ -1,0 +1,308 @@
+<layout name="parent_layout_3" />
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+<link href="__PUBLIC__/cropperUpload/head/cropper.min.css" rel="stylesheet">
+<link href="__PUBLIC__/cropperUpload/head/sitelogo.css" rel="stylesheet">
+<script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
+<script src="__PUBLIC__/cropperUpload/head/cropper.js"></script>
+<script src="__PUBLIC__/cropperUpload/head/sitelogo.js"></script>
+
+<style>
+    #addChildren {
+      text-align: center;
+
+    }
+
+    #addChildren .form-control {
+        display: inline;
+        width: 500px;
+    }
+
+    .bg {
+        display: none;
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        z-index: 20170000;
+        background: rgba(0,0,0,.3);
+    }
+
+    #addChildren .form-actions {
+        width: 100%;
+        text-align: right;
+		text-align: center;
+		margin: 0
+    }
+
+    #addChildren .form_section {
+        margin: 20px 0;
+    }
+
+    /*================选择学校=======================*/
+    #queding {
+        display: block;
+        margin: 0 auto;
+        width: 96px;
+        height: 30px;
+        background: url(__PUBLIC__/img/home/15.png) no-repeat left top;
+        background-size: 100% 100%;
+        color: #fff;
+        font: 18px/30px "微软雅黑";
+        text-align: center;
+        text-decoration: none;
+    }
+    #navThumImg1,
+    #navThumImg3 {
+        -moz-transform: rotate(20deg);
+        -webkit-transform: rotate(20deg);
+        transform: rotate(20deg);
+    }
+
+    #navThumImg2,
+    #navThumImg4 {
+        -moz-transform: rotate(-20deg);
+        -webkit-transform: rotate(-20deg);
+        transform: rotate(-20deg);
+
+    }
+
+    #navThumImg1:hover,
+    #navThumImg3:hover {
+        -moz-animation: rotate_z 0.8s infinite ease;
+        -webkit-animation: rotate_z 0.8s infinite ease;
+        animation: rotate_z 0.8s infinite ease;
+    }
+
+    #navThumImg2:hover,
+    #navThumImg4:hover {
+        -moz-animation: rotate_f 0.8s infinite ease;
+        -webkit-animation: rotate_f 0.8s infinite ease;
+        animation: rotate_f 0.8s infinite ease;
+    }
+
+    @-moz-keyframes rotate_z {
+        0% {
+            -moz-transform: rotate(20deg);
+        }
+        100% {
+            -moz-transform: rotate(360deg);
+        }
+    }
+
+    @-webkit-keyframes rotate_z {
+        0% {
+            -webkit-transform: rotate(20deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes rotate_z {
+        0% {
+            transform: rotate(20deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @-moz-keyframes rotate_f {
+        0% {
+            -moz-transform: rotate(20deg);
+        }
+        100% {
+            -moz-transform: rotate(360deg);
+        }
+    }
+
+    @-webkit-keyframes rotate_f {
+        0% {
+            -webkit-transform: rotate(20deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes rotate_f {
+        0% {
+            transform: rotate(20deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+	#contentWrapper {
+    background: rgb(255, 251, 242);
+    border: 2px solid #efca33;
+		padding-top: 40px;
+	}
+	  .fullscreen #contentWrapper{
+		min-height:950px !important
+	}
+	.addstuerror{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto auto;
+    width: 400px;
+    height: 250px;
+    text-align: center;
+    z-index: 20170606;
+    background: #fff;
+    display: none;
+	}
+	.addstuerror p:nth-child(1) {
+    background: #efca33;
+    line-height: 40px;
+    font-size: 18px;
+	}
+	.addstuerror p:nth-child(2) {
+    margin: 70px 0;
+    font-size: 16px;
+	}
+	.addstuerror input{
+    border: none;
+    outline: none;
+    width: 150px;
+    padding: 5px;
+    background-color: #eaca33;
+    border-radius: 5px;
+    color: #fff;
+		margin-top: 50px;
+	}
+	 .addstuerror img {
+    float: right;
+    width: 30px;
+    margin-top: 5px;
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+	}
+</style>
+
+<div class="main_opr">
+     <a href="{:U('Parent/myChildren')}" title="添加学生" class="btn btn-main-opr ">我的孩子</a>
+    <a href="{:U('Parent/addMyChildren')}" title="添加学生" class="btn btn-main-opr btn-main-opr-active">关联孩子</a>
+</div>
+<div id="addChildren">
+    <form id="mainForm" action="{:U('Parent/addMyChildren')}<?php if($data['id'] != null) echo '&id='.$data['id']; ?>" method="post" onsubmit="$('#saveButton').attr('disabled',true);">
+        <input type="hidden" name="student_id" value="{$student.id}">
+
+        <div class="example" data-text="基本信息">
+            <div class="form_section">
+                <label for="student_name" style="width:70px;text-align:right">姓名</label>
+                <input type="text" name="student_name" id="student_name" class="form-control" placeholder="必填" autocomplete="off" value="{$data.student_name}" maxlength="20" required>
+            </div>
+             <div class="form_section">
+                <label for="student_name">家长手机号</label>
+                <input type="text" name="parent_tel" id="parent_tel" class="form-control" placeholder="必填" autocomplete="off" value="{$data.parent_tel}" maxlength="11" required>
+            </div>
+        </div>
+        <div class="form-actions">
+            <input type="hidden" class="os_upload_src" name="os_avatar">
+            <button type="submit" class="btn btn-primary" id="saveButton" onclick="return check();">确定</button>
+        </div>
+    </form>
+</div>
+
+<div class="addstuerror">
+    <p><span>添加失败</span><img src="__PUBLIC__/img/classManage/close_btn.png" alt="" class="del_user_stu"></p>
+    <div class="htmlerrorcsv_all"></div>
+    <p style="margin-top:40px">
+        您添加的学生未注册账号,
+    </p>
+    <p>
+        请先帮学生注册方可添加
+    </p>
+    <input type="button" value="确定"  class="daorusuccess">
+</div>
+<div class="bg">
+
+</div>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+<script src="__PUBLIC__/js/external/jquery-1.10.2.min.js"></script>
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script src="__PUBLIC__/js/external/xiuxiu.js" type="text/javascript"></script>
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+<script src="__PUBLIC__/cropperUpload/head/html2canvas.min.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    function check(){
+		var name = $('#student_name').val();
+		var tel = $('#parent_tel').val();
+        var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+
+		if(regName.test(name) == false){
+
+            $.NotifyBox.NotifyPromptOne('提示','请添加正确的姓名','确定')
+			return false
+		}else if(regTel.test(tel) == false){
+
+            $.NotifyBox.NotifyPromptOne('提示','请添加正确的手机号码','确定')
+			return false
+		}
+	}
+</script>
+
+<script>
+    $(function () {
+        var options = {
+            // target:        '#output',   // target element(s) to be updated with server response
+            //beforeSubmit:  showRequest,  // pre-submit callback
+            success: showResponse, // post-submit callback
+            resetForm: false,
+            dataType: 'json'
+
+            // other available options:
+            //url:       url         // override for form's 'action' attribute
+            //type:      type        // 'get' or 'post', override for form's 'method' attribute
+            //dataType:  null        // 'xml', 'script', or 'json' (expected server response type)
+            //clearForm: true        // clear all form fields after successful submit
+            //resetForm: true        // reset the form after successful submit
+
+            // $.ajax options can be used here too, for example:
+            //timeout:   3000
+        };
+
+        // bind to the form's submit event
+        $('#mainForm').submit(function () {
+            // inside event callbacks 'this' is the DOM element so we first
+            // wrap it in a jQuery object and then invoke ajaxSubmit
+            $(this).ajaxSubmit(options);
+
+            // !!! Important !!!
+            // always return false to prevent standard browser submit and page navigation
+            return false;
+        });
+
+        function showResponse(responseText, statusText) {
+            switch (responseText.code) {
+                case -1: //transfer user does not exist
+                    $('.addstuerror,.bg').show();
+                    break;
+                case 0: // transfer success
+                    // $('#forceAdd').val('false');
+                    $.NotifyBox.NotifyPromptOne('提示','添加成功','确定')
+                    location.reload();
+                    break;
+                default:
+                    alert(responseText.msg);
+                    break;
+            }
+            $('#saveButton').attr('disabled', false);
+        }
+    });
+	$('.addstuerror').find('input,img').click(function(){
+		$('.addstuerror,.bg').hide()
+	})
+</script>

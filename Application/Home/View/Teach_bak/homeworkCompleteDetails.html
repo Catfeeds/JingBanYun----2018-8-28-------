@@ -1,0 +1,133 @@
+<layout name="teacher_layout"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=2.0" type="text/css" rel="stylesheet">
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回" class="button {:session('btntheme')}">&lt; 返回</a>
+</div>
+<div style="margin: 12px 0;">
+    <a href="javascript:showDialog('dialogTJ_accuracy')" title="正确率统计" class="btn btn-primary">正确率统计</a>
+    <a href="javascript:showDialog('dialogTJ_speed')" title="提交速度统计" class="btn btn-primary">提交速度统计</a>
+</div>
+<form action="{:U('Teach/homeworkCompleteDetails')}" method="post">
+    <input type="hidden" name="homeworkId" value="{$homeworkId}">
+
+    <div class="row">
+        <div class="col-md-3">
+            <label>姓名：</label>
+            <input type="text" name="name" value="{$name}" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label>排序：</label>
+            <select id="sort_column" name="sort_column" class="form-control">
+                <option value="create_at" {$sort_column=='create_at'?'selected':''}>提交时间</option>
+                <option value="duration" {$sort_column=='duration'?'selected':''}>总耗时</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-primary" style="display: block;">搜索</button>
+        </div>
+    </div>
+</form>
+
+
+<div class="modal fade" id="dialogTJ_accuracy">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">正确率统计</h4>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <tr>
+                        <td>听录音，判断下列图片与你听到的内容是否相符，相符的再括号里打“√”，不相符的打“×”。</td>
+                        <td><strong>0%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>听录音，选图片，将其序号填入题前括号里。</td>
+                        <td><strong>0%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>听录音，用数字给下列图片排序。</td>
+                        <td><strong>0%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>What will you do for your mum?</td>
+                        <td><strong>0%</strong></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div style="margin-top: 20px">
+    <table class="table striped hovered border">
+        <thead>
+        <tr>
+            <th>学生姓名</th>
+            <th class="text-center">作业提交时间</th>
+            <th class="text-center">写作业耗时（分）</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="">
+            <tr id="l_{$data.id}">
+                <td>
+                    {$data.student_name}
+                </td>
+                <td class="text-center">
+                    {$data.create_at|date="Y-m-d H:i",###}
+                </td>
+                <td class="text-center">
+                    {$data.duration}
+                </td>
+                <td class="text-center">
+                    <a href="{:U('Teach/studentHomeworkDetails?id=')}{$data.id}" title="查作业" class="button">查作业</a>
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+</div>
+
+
+<div class="modal fade" id="dialogTJ_speed">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">提交速度统计</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    平均作业速度：<strong>{$avgDuration}</strong>分钟
+                </p>
+
+                <p>
+                    最快作业速度：<strong>{$minDuration}</strong>分钟
+                </p>
+
+                <p>
+                    最慢作业速度：<strong>{$maxDuration}</strong>分钟
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function showDialog(id) {
+        $('#' + 'dialogTJ_speed').modal('show')
+    }
+
+</script>

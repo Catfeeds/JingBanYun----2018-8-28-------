@@ -1,0 +1,497 @@
+<layout name="admin_layout_school"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<script src="__PUBLIC__/highcharts/code/highcharts.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/exporting.js"></script>
+<script src="__PUBLIC__/highcharts/code/modules/export-data.js"></script>
+
+<style>
+	.contentMain {
+		padding: 0;
+	}
+
+	.indexContent .roleText {
+	    background: url({$oss_path}public/web_img/Icons/select20-8.png) no-repeat 130px center ;
+	}
+
+	[v-cloak] {
+		display: none;
+	}
+</style>
+
+<div id="admin" v-cloak>
+	<div class="indexOutter">
+		<div class="standardMain hrefContent">
+			<a href="{:U('Class/classList')}" class="returnBack">{{ gradeName }}班级</a>
+			>
+			<span class="thePage">{{ className }}</span>
+		</div>
+		<div class="standardMain topContent">
+			{{ className }}
+		</div>
+
+		<div class="standardMain indexContent standardMainSmall">
+			<div class="indexTitle" v-bind:class="{ indexTitleBorder: teacherLength > 0 }">
+				班级教师
+				<img src="{$oss_path}public/web_img/Admin/xia.png" alt="" class="pullDown" v-if="teacherLength > 6">
+			</div>
+			<div class="emptyBox" v-if="teacherLength == 0">
+				<img src="__PUBLIC__/img/admin/zanwujiaoshishuju.png" alt="" class="emptyImg">
+				<div class="emptyText">暂无教师数据</div>
+			</div>
+			<div class="classTeacherOutter" v-else>
+				<div class="classTeacherBox" v-for="(teacherList, index) in teacherData" :teacherId="teacherList.id">
+					<!-- <div class="cornerBtnRed">班主任</div> -->
+					<div class="avatarCommonBox classTeacherAvatar">
+						<img :src="teacherList.teacher_avatar" alt="" class="avatarImg">
+					</div>
+					<div class="classTeacherName textHidden">{{ teacherList.teacher_name }}</div>
+					<div class="text-center">
+						<span class="commonBtnBlue classTeacherSubject">{{ teacherList.course_name }}老师</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="indexTitle">已布置作业</div>
+			<div class="emptyBox" v-if="homeworkLength == 0">
+				<img src="__PUBLIC__/img/admin/zanwuzuoyeshuju.png" alt="" class="emptyImg">
+				<div class="emptyText">暂无作业数据</div>
+			</div>
+			<div class="publishHomeworkOutter" v-else>
+				<div class="publishHomeworkInner" v-for="(homeworklist, index) in homeworkData">
+					<div class="publishHomeworkBox">
+						<div class="textHidden publishSubject">{{ homeworklist.course_name }}</div>({{ homeworklist.count }}份)
+						<div>作业平均分{{ homeworklist.averagescore }}分</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="indexTitle">学情分析</div>
+			<div class="emptyBox" v-if="courseLength == 0">
+				<img src="__PUBLIC__/img/admin/zanwuxueqingfenxi.png" alt="" class="emptyImg">
+				<div class="emptyText">暂无学情分析</div>
+			</div>
+			<div class="learningSituationOutter" v-else>
+<!-- 				<div class="left">
+			        <select id="course_id" name="course_id" class="form-control">
+			            <option value="">所有学科轨迹</option>
+			        </select>
+			    </div>
+ -->
+ 				<div class="roleFilter roleFilterAb courseFilter">
+					<div class="roleText" v-on:click="showCourse">{{ courseOne }}</div>
+					<ul class="roleUl">
+						<li class="active" courseId=" " v-on:click="changeCourse($event)">所有学科轨迹</li>
+						<li v-for="(courseArr, index) in courseList" :courseId="courseArr.courseid" v-on:click="changeCourse($event)">{{ courseArr.course_name }}</li>
+					</ul>
+				</div>
+
+			    <div class="timeOutter">
+			    	<span class="startBox">
+			    		<label for="startTime" class="startLabel yellow"></label>
+			    		<input type="text" class="timeInput" name='' id="startTime" placeholder="请选择开始日期" onkeydown="return false" autocomplete="off">
+			    	</span>
+			        <span class="endBox">
+			    		<label for="endTime" class="endLabel yellow"></label>
+			    		<input type="text" class="timeInput" name='' id="endTime" placeholder="请选择结束日期" onkeydown="return false"   autocomplete="off">
+			    	</span>
+			        <button type="submit" class="searchTime" v-on:click="searchTime"></button>
+			    </div>
+
+			    <div id="learningSituation" class="lineDiv mt20"></div>
+				<div class="coverBox"></div>
+			</div>
+
+			<div class="indexTitle">学生情况</div>
+			<div class="emptyBox" v-if="studentLength == 0">
+				<img src="__PUBLIC__/img/admin/zanwuxueshengshuju.png" alt="" class="emptyImg">
+				<div class="emptyText">暂无学生数据</div>
+			</div>
+			<div class="classStudentOutter" v-else>
+				<div class="classStudentBox"  v-for="(studentList, index) in studentData" :studentId="studentList.id">
+					<!-- <div class="cornerBtnRed">班长</div> -->
+					<div class="avatarCommonBox classStudentAvatar">
+						<img :src="studentList.student_avatar" alt="" class="avatarImg">
+					</div>
+					<div class="classStudentInfo">
+						<div class="classStudentName">{{ studentList.student_name }}</div>
+						<div class="classStudentSex">{{ studentList.sex }}</div>
+					</div>
+					<div class="classStudentElse">家长手机号：{{ studentList.parent_tel }}</div>
+					<div class="classStudentElse textHidden">邮箱地址：{{ studentList.email }}</div>
+					<div class="classStudentBtnBox">
+						<a href="javascript:;" class="commonBtnBlue classStudentBtn">成绩分析</a>
+					</div>
+					<div class="classStudentBtnBox">
+						<a href="javascript:;" class="commonBtnBlue classStudentBtn">教师寄语</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+
+<script>
+	var course = {$course};
+	var courseList = {$courseList};
+	var classId = "{$classId}";
+	var startTime = "{$startTime}";
+	var endTime = "{$endTime}";
+
+	var admin = new Vue({
+		el: '#admin',
+		data: {
+			course: course,
+			courseList: courseList,
+			gradeName: '',
+			className: '',
+			courseOne: '',
+			classId: classId,
+			courseId: ' ',
+			courseLength: '',
+			// 教师地址
+			teacherUrl: '/index.php?m=School&c=Class&a=getTeacherListByClass',
+			// 教师
+			teacherData: '',
+			// 教师数量
+			teacherLength: '',
+			// 作业地址
+			homeworkUrl: '/index.php?m=School&c=Class&a=getHomeWordListByClass',
+			// 作业
+			homeworkData: '',
+			// 作业数量
+			homeworkLength: '',
+			// 学生地址
+			studentUrl: '/index.php?m=School&c=Class&a=getStudentListByClass',
+			// 学生
+			studentData: '',
+			// 学生数量
+			studentLength: '',
+			// 学情地址
+			studyUrl: '/index.php?m=School&c=Class&a=studySituation',
+			// 学情
+			studyData: '',
+			studyxAxis: '',
+			startTime: startTime,
+			endTime: endTime
+		},
+		created: function () {
+			//获取年级班级
+			this.getGrade();
+			// 获取教师
+			this.getTeacherList();
+			// 获取作业
+			this.getHomeworkList();
+			// 获取学生
+			this.getStudentList();
+		},
+		methods: {
+			// 获取年级班级
+			getGrade: function(){
+				if(course.length > 0) {
+					this.gradeName = course[0].grade;
+					this.className = course[0].classname;
+				} else {
+					this.gradeName = "年级";
+					this.className = "班级";
+				}
+				this.courseOne = "所有学科轨迹";
+				this.courseOneId = "";
+				this.courseLength = courseList.length;
+				if(this.courseLength > 0) {
+					// 获取学情
+					this.getStudyList();
+				}
+			},
+			// 获取教师
+			getTeacherList: function(){ 
+				this.$http.post(this.teacherUrl, {
+					id: this.classId
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.teacherData = response.data.data;
+    					if(response.data.data != '') {
+    						this.teacherLength = response.data.data.length
+    					}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取作业
+			getHomeworkList: function(){ 
+				this.$http.post(this.homeworkUrl, {
+					classId: this.classId
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.homeworkData = response.data.data;
+    					if(response.data.data != '') {
+    						this.homeworkLength = response.data.data.length
+    					}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取学生
+			getStudentList: function(){ 
+				this.$http.post(this.studentUrl, {
+					id: this.classId
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.studentData = response.data.data;
+    					if(response.data.data != '') {
+    						this.studentLength = response.data.data.length
+    					}
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 获取学情
+			getStudyList: function(){ 
+				this.$http.post(this.studyUrl, {
+					courseId: this.courseId,
+					classId: this.classId,
+					startTime: this.startTime,
+					endTime: this.endTime
+				}, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+    					this.studyData = response.data.data.data;
+    					this.studyxAxis = response.data.data.name;
+
+    					// 折线图-学情分析
+						Highcharts.chart('learningSituation', {
+							title: {
+								text: ''
+							},
+							subtitle: {
+								text: ''
+							},
+							yAxis: {
+								title: {
+									text: '分数(分)',
+									align: 'high',
+									rotation: 360,
+									offset: 40,
+									y: 15,
+									style: { 
+										"font-weight": "bold"
+									}
+								},
+								lineWidth: 1,
+								endOnTick: false
+							},
+							xAxis: {
+								title: {
+									text: '作业名称',
+									align: 'high',
+									style: { 
+										"font-weight": "bold"
+									}
+								},
+								categories: this.studyxAxis,
+							},
+							exporting: {
+								enabled: false,
+							},
+							legend: {
+								enabled: false,
+							},
+							plotOptions: {
+								series: {
+									label: {
+										connectorAllowed: false
+									}
+								}
+							},
+							series: [this.studyData],
+							responsive: {
+								rules: [{
+									condition: {
+										maxWidth: 500
+									},
+									chartOptions: {
+										legend: {
+											layout: 'horizontal',
+											align: 'center',
+											verticalAlign: 'bottom'
+										}
+									}
+								}]
+							}
+						});
+                    } else {
+                        console.log('错误1')
+                    }
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			// 学科下拉框
+			showCourse: function(e){
+				if($(e.currentTarget).hasClass('active')) {
+					$('.roleUl').stop(false,true).slideUp('fast',function(){
+						$('.roleText').removeClass('active')
+					})
+				} else {
+					$(e.currentTarget).addClass('active');
+					$('.roleUl').stop(false,true).slideDown('fast')
+				}
+			},
+			// 改变学科
+			changeCourse: function(e){
+				$(e.currentTarget).addClass('active').siblings('li').removeClass('active');
+				this.courseOne = $(e.currentTarget).text();
+				this.courseId = $(e.currentTarget).attr('courseId');
+				$('.roleUl').stop(false,true).slideUp('fast',function(){
+					$('.roleText').removeClass('active')
+				});
+				// 获取学情
+				this.getStudyList()
+			},
+			// 搜索时间
+			searchTime: function(){
+				this.startTime = $('#startTime').val();
+				this.endTime = $('#endTime').val();
+				if(this.startTime == '') {
+					$.NotifyBox.NotifyOne('提示', '请选择开始日期', '确定');
+					return false
+				} else if(this.endTime == '') {
+					$.NotifyBox.NotifyOne('提示', '请选择结束日期', '确定');
+					return false
+				}
+				// 获取学情
+				this.getStudyList();
+			}
+		}
+	})
+</script>
+
+
+
+<!--开始时间 结束时间-->
+<script>
+    !function(){
+        laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+    }();
+
+    //活动起始时间
+    var actstart = {
+        elem: '#startTime',
+        format: 'YYYY-MM-DD',
+//		min: laydate.now(), //设定最小日期为当前日期
+        max: laydate.now(), //最大日期
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            actend.min = datas; //开始日选好后，重置结束日的最小日期
+            actend.start = datas; //将结束日的初始值设定为开始日
+            time('#startTime')
+        }
+    };
+
+    var actend = {
+        elem: '#endTime',
+        format: 'YYYY-MM-DD',
+//		min: laydate.now(),
+        max: laydate.now(),
+        istime: true,
+        istoday: false,
+        choose: function(datas){
+            actstart.max = datas; //结束日选好后，充值开始日的最大日期
+            time('#endTime')
+        }
+    };
+    laydate(actstart);
+    laydate(actend);
+
+    //给input赋值
+    $('#startTime').val(admin.startTime);
+    $('#endTime').val(admin.endTime);
+
+    var startMin = actstart.min;
+	var startMax = actstart.max;
+	var endMin = actend.min;
+	var endMax = actend.max;
+	function resetDate() {
+		actstart.min = startMin;
+		actstart.max = startMax;
+		actend.min = endMin;
+		actend.max = endMax;
+	}
+
+	$(document).on('click','#laydate_clear',function(){
+		if($('#startTime').val() == '' && $('#endTime').val() != '') {
+			actend.min = endMin;
+		} else if($('#startTime').val() != '' && $('#endTime').val() == '') {
+			actstart.max = startMax;
+		} else {
+			resetDate()
+		}
+
+		if($('#laydate_box').css('left') == startLeft) {
+            $('#startTime').siblings('label').removeClass('yellow');
+        } else {
+            $('#endTime').siblings('label').removeClass('yellow')
+        }
+	})
+
+
+    var startLeft;
+    $('#startTime').click(function(){
+        startLeft = $('#laydate_box').css('left');
+    })
+    var a = 0;
+    function time(id_){
+        if($(id_).val() != '') {
+            $(id_).siblings('label').addClass('yellow')
+        } else {
+            $(id_).siblings('label').removeClass('yellow')
+        }
+        $('#laydate_clear').click(function(){
+            if($('#laydate_box').css('left') == startLeft) {
+                $('#startTime').siblings('label').removeClass('yellow');
+            } else {
+                $('#endTime').siblings('label').removeClass('yellow')
+            }
+        })
+    }
+</script>
+
+<script>
+	
+</script>
+
+<script>
+	// 查看全部教师
+	$('.pullDown').click(function(){
+		var autoHeight = Math.ceil($('.classTeacherBox').length/6) * (210+13.6);
+
+		if($(this).hasClass('active')) {
+			$(this).removeClass('active').attr('src', '{$oss_path}public/web_img/Admin/xia.png');
+			$(".classTeacherOutter").animate({height: "210px"});
+		} else {
+			$(this).addClass('active').attr('src', '{$oss_path}public/web_img/Admin/shang.png');
+			$(".classTeacherOutter").animate({height: autoHeight});
+		}
+	})
+</script>
+
+
+

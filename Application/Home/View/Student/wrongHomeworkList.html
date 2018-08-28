@@ -1,0 +1,255 @@
+<layout name="student_layout_3"/>
+<link href="__PUBLIC_METRO__/css/app/table_list3.css?v=2.0" type="text/css" rel="stylesheet">
+<style>
+	.row .form-control {
+		margin-bottom: 10px;
+	}
+</style>
+<div class="main_opr">
+    <a href="{:U('StudentmulHomework/mulHomework')}" title="语音作业" class="btn btn-main-opr">语音作业</a>
+    <a href="{:U('Student/homework')}" title="习题作业" class="btn btn-main-opr">习题作业</a>
+    <a href="javascript:;" title="错题集" class="btn btn-main-opr btn-main-opr-active" >错题集</a>
+</div> 
+
+<?php if ($kw ==1 || !empty($list)): ?>
+
+<form action="{:U('Student/wrongHomeworkList')}" method="post">
+    <input type="hidden" name="homeworkId" value="{$homeworkId}">
+    <div class="row">
+        <div class="col-md-3">
+            <label>年级：</label>
+            <select name="grade" id="grade" class="form-control">
+                <option value="0">-请选择-</option>
+                <volist name="grade_list" id="grade_item" empty="">
+                    <option value="{$grade_item.id}" <if condition="$grade_item['id']==$default_grade">selected</if>>{$grade_item.grade}</option>
+                </volist>
+            </select>
+        </div>
+       <div class="col-md-3"> 
+            <label>班级：</label>
+            <select name="class" id="class" class="form-control">
+                <option value="0">-请选择-</option>
+                <volist name="class_list" id="class_item" empty="">
+                    <option value="{$class_item.id}" <if condition="$class_item['id']==$default_class">selected</if>>{$class_item.name}</option>
+                </volist>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>学科：</label>
+            <select id="course" name="course"  class="form-control"> 
+                <option value="0">-请选择-</option>
+                <volist name="course_list" id="course_item" empty="">
+                    <option value="{$course_item.id}" <if condition="$course_item['id']==$default_course">selected</if>>{$course_item.course_name}</option>
+                </volist>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>教材分册：</label>
+            <select name="subject" id="subject" class="form-control">
+                <option value="0">-请选择-</option>
+                <volist name="textbook_list" id="textbook_item" empty="">
+                    <option value="{$textbook_item.id}"<if condition="$textbook_item['id']==$default_textbook">selected</if>>{$textbook_item.name}</option>
+                </volist>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+       <div class="col-md-4">
+            <label>类型：</label>
+            <select name="type" id="type" class="form-control">
+                <option value="0">-请选择-</option>
+                <option value="1" <if condition="$default_type==1">selected</if>>课堂作业</option>
+                <option value="2" <if condition="$default_type==2">selected</if>>课后作业</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label>作业名称：</label>
+            <input type="text" name="homework_name" id="homework_name" placeholder="请输入作业名称" class="form-control" value="{$keyword}">
+        </div>
+        <div class="col-md-4">
+            <label>&nbsp;</label>
+            <button type="button" class="btn btn-primary" style="display: block;" >搜索</button>
+        </div>
+    </div>
+</form>
+
+<?php endif ?>
+
+<notempty name="list">
+    <table class="table striped hovered border" style="margin-top: 20px;">
+        <thead>
+        <tr>
+            <th class="text-center">序号</th>
+            <th class="text-center">年级</th>
+            <th class="text-center">班级</th>
+            <th class="text-center">学科</th>
+            <th class="text-center">作业名称</th>
+<!--            <th style="width:15%;">作业要求</th>-->
+            <th class="text-center">作业类型</th>
+<!--            <th style="width:15%;" class="text-center">习题所属章节</th>-->
+            <th class="text-center">教材分册</th>
+            <th class="text-center">习题数量</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <volist name="list" id="data" empty="" key="i">
+            <tr id="l_{$data.id}">
+                <!-----------序号------------->
+                <td class="text-center">
+                    {$i}
+                </td>
+                <!-----------年级----------->
+                <td class="text-center">
+                    {$data.grade}
+                </td>
+                <!-----------班级----------->
+                <td class="text-center">
+                    {$data.class_name}
+                </td>
+                <!-----------学科----------->
+                <td class="text-center">
+                    {$data.course_name}
+                </td>
+                <!-----------作业名称----------->
+                <td class="text-center" title="{$data.homework_name}">
+                    {$data.homework_name}
+                </td>
+                <!-----------作业要求----------->
+<!--
+                <td title="{$data.claim}">
+                    {$data.claim}
+                </td>
+-->
+                <!----------作业类型------------>
+                <td title="" class="text-center">
+                     {$data.homework_type}
+                </td>
+                <!----------习题所属章节------------>
+<!--
+                <td class="text-center">
+                    <select  style="border-radius:5px;width:95%">  
+                        <volist name="data.chapter" id="chapter_item" >
+                                <option>{$chapter_item.chapter}{$chapter_item.festival}</option>
+                        </volist>
+                    </select>
+                </td>
+-->
+                <!----------教材分册------------>
+                <td class="text-center">
+                    {$data.textbook}
+                </td>
+                <!----------习题数量------------>
+                <td class="text-center">
+                    {$data.exercises_number}
+                </td>
+                <!----------操作----------->
+                <td class="text-center">
+                    <a href="{:U('Student/wrongHomework?id=')}{$data.id}" title="查看" class="button">查看</a>
+                </td>
+            </tr>
+        </volist>
+        </tbody>
+    </table>
+    <div class="Pagination">{$page}</div>
+</notempty>
+
+<empty name="list">
+    <div class="emptyDiv">
+        <if condition="$kw eq 1 ">
+            <img src="{$oss_path}public/web_img/Empty/sorry.png" alt="">
+            <p>抱歉，没有搜索到相关的习题！</p>
+        <else />
+            <img src="{$oss_path}public/web_img/Empty/wrongHomework1.png" alt="">
+            <p><img src="{$oss_path}public/web_img/Empty/wrongHomework2.png" alt="">没有错题哦！</p>
+        </if>
+
+    </div>
+</empty>
+
+<script>
+    //点击搜索按钮
+    $(".btn-primary").click(function(){ 
+        var grade_value=$("#grade").val();
+        var class_value=$("#class").val();
+        var course_value=$("#course").val();
+        var subject_value=$("#subject").val();
+        var type_value=$("#type").val(); 
+        var homework_name=$("#homework_name").val();
+        var mca='action';
+        var condition_str="";
+          
+        if(grade_value!=0){
+            condition_str+="&grade="+grade_value;
+        }
+        if(class_value!=0){
+            condition_str+="&class="+class_value;
+        }
+        if(course_value!=0){
+            condition_str+="&course="+course_value;
+        }
+        if(subject_value!=0){
+            condition_str+="&subject="+subject_value;
+        }
+        if(type_value!=0){
+            condition_str+="&type="+type_value;
+        } 
+        if(homework_name!=''){ 
+            condition_str+="&keyword="+homework_name;
+        }  
+        condition_str="index.php?m=Home&c=Student&a=wrongHomeworkList"+condition_str+'&mca='+mca;
+        location.href=condition_str; 
+    });
+    
+    var option = "<option value='0'>-请选择-</option>  ";
+    //年级发生变化
+    $("#grade").change(function(){
+        var val = $("#grade").val();
+        $("#class option:not(:eq(0))").remove(); 
+        $("#course option:not(:eq(0))").remove();   
+        $("#subject option:not(:eq(0))").remove();   
+        if (val == 0) {
+            return false;
+        }
+        $.getJSON("index.php?m=Home&c=Student&a=getGradeClass", {'id': val}, function (msg) {
+            var length = msg.length;
+            for (var i = 0; i < length; i++) {
+                    var temp = $(option).clone(true); 
+                    $(temp).text(msg[i].name);
+                    $(temp).val(msg[i].id); 
+                    $("#class").append(temp);
+            }
+        });
+        $.getJSON("index.php?m=Home&c=Student&a=getClassCourse", {'id': val}, function (msg) {
+            var length = msg.length;
+            for (var i = 0; i < length; i++) {
+                    var temp = $(option).clone(true);
+                    $(temp).text(msg[i].course_name);
+                    $(temp).val(msg[i].id);
+                    $("#course").append(temp);
+            }
+        });
+    });
+    
+    //学科发生变化 
+    $("#course").change(function () {
+            var course_val = $("#course").val(); 
+            var grade_val = $("#grade").val();
+            $("#subject option:not(:eq(0))").remove(); 
+            if (course_val == 0) {
+                return false;
+            }
+            $.getJSON("index.php?m=Home&c=Teach&a=getCourseTextbook", {
+                    'course_id': course_val,
+                    'grade_id': grade_val
+            }, function (msg) {
+                    var length = msg.length;
+                    for (var i = 0; i < length; i++) {
+                            var temp = $(option).clone(true);
+                            $(temp).text(msg[i].name);
+                            $(temp).val(msg[i].id);
+                            $("#subject").append(temp);
+                    }
+            });
+    });
+</script>

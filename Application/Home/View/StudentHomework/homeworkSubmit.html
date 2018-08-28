@@ -1,0 +1,313 @@
+<layout name="student_layout_3" />
+<link href="__PUBLIC__/css/rotate.css" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/homeworkV1.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="__PUBLIC__/js/jquery/jquery-3.3.1.min.js"></script>
+<style>
+	[v-cloak] {
+		display: none;
+	}
+
+	#contentWrapper {
+		overflow: hidden;
+	}
+</style>
+
+<a href="Javascript:history.go(-1);" title="返回" class="btn btnReturn1" style="position: absolute;">返回</a>
+<div id="homework" v-cloak>
+	<div class="studentIndexOutter studentHomeworkWrapper">
+		<div class="homeworkLeft homeworkLeftFixed">
+			<div class="homeworkLeftTitle">{{additionalData.workName}}</div>
+			<div class="homeworkLeftStatus submit">已提交</div>
+			<div class="homeworkLeftMain">
+				<!-- 这是每个题型 -->
+				<div class="homeworkLeftBox" v-for="(exercise,index) in homeworkList">
+					<div class="homeworkLeftType">{{ index+1 | filtersVoiceNumber }}、{{exercise.name}}</div>
+					<div class="homeworkLeftCircleBox" >
+					    <div v-for="(subExercise,subIndex) in exercise.data">
+						<div class="homeworkLeftCircle " v-if="subExercise.has_process == '0'" @click="goExercise(subExercise.id)">{{subIndex+1}}</div>
+						<div class="homeworkLeftCircle right" v-if="subExercise.has_process == '1' && subExercise.is_correct == '1'" @click="goExercise(subExercise.id)">{{subIndex+1}}</div>
+						<div class="homeworkLeftCircle false" v-if="subExercise.has_process == '1' && subExercise.is_correct == '0'" @click="goExercise(subExercise.id)">{{subIndex+1}}</div>						
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="homeworkLeftLabel">
+				<div class="labelBox">
+					错误<br>
+					<div class="homeworkLeftCircle false"></div>
+				</div>
+				<div class="labelBox">
+					正确<br>
+					<div class="homeworkLeftCircle right"></div>
+				</div>
+				<div class="labelBox">
+					待批改<br>
+					<div class="homeworkLeftCircle notCorrect"></div>
+				</div>
+			</div>
+			<div class="homeworkLeftResult">
+				<div class="title">客观题成绩</div>
+				<div class="scoreExercise">
+					<div class="scoreCircle"><span class="num">{{additionalData.point}}</span>分</div>
+					<div class="exerciseNum">
+						<div>错题量：<span class="num">{{additionalData.wrongNum}}</span>题</div>
+						<div>待批改：<span class="num">{{additionalData.unProcessNum}}</span>题</div>
+					</div>
+				</div>
+				<div class="time">用时：{{timeConvert(additionalData.duration)}}</div>
+			</div>
+		</div>
+
+		<div class="homeworkRight">
+			<div class="exerciseOutter exerciseOutterNoBorder">
+				<div class="exerciseOutterTop">
+					<div class="exerciseBigTitle">
+						<span class="beforeName">{{additionalData.workName}}</span>
+					</div>
+					<div class="exerciseRemark">
+						共<span class="num"> {{additionalData.totalExercise}} </span>题&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;满分<span class="num"> {{additionalData.totalpoint}} </span>分
+					</div>
+				</div>
+
+				<include file="./Application/Home/View/HomeworkCommon/exerciseOutter.html"/>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var homework = new Vue({
+		el: '#homework',
+		data: {
+			url: '',
+			iscancel: '',
+			submitId:window.getQueryString('submitId'),
+			getListUrl:'/index.php/Home/StudentHomework/getSubmitHomeworkDetail',
+			exerciseCollectUrl: '/index.php/Home/StudentHomework/favorExercise',
+			homeworkList:[],
+			additionalData:[]
+		},
+		created: function () {
+			this.tileFilter(window)
+		},
+		methods: {
+		    timeConvert:function(seconds){
+			    seconds = parseInt(seconds);
+				var minutes = (Array(2).join('0') + parseInt(seconds/60)).slice(-2);
+				var second = (Array(2).join('0') + seconds%60).slice(-2);
+				return minutes + '分' + second + '秒';
+			},
+			total:function(index,field){
+			     var sum = 0;
+				 $(this.homeworkList[index].data).each(function(i,data){
+					sum += parseInt(data[field])
+				});
+				return sum;
+			},
+
+			tileFilter: function(){
+				var parameters={};
+				parameters['id'] = this.submitId;
+				this.$http.post(this.getListUrl, parameters, {
+					emulateJSON: 'application/x-www-form-urlencoded'
+				}).then(function (response) {
+					if(response.status == '200'){
+						this.additionalData = response.data.additionalData;
+						this.homeworkList = response.data.data;
+
+						this.$nextTick(function(){
+							isFixed()
+						})
+					} else {
+						console.log('错误1')
+					}
+				}, function (response) {
+					console.log('错误2')
+				})
+			},
+			//展开英文释义
+			showExplain: function(e){
+				if($(e.target).hasClass('active')) {
+					$(e.target).removeClass('active').text('英文释义');
+					$(e.target).siblings('.explainBox').slideUp()
+				} else {
+					var parentWordBox = $(e.target).parents('.wordBox');
+					var explainLeft = -parentWordBox.position().left - 30;
+
+					if(parentWordBox.parents('.forBox').siblings('.forBox').length > 0) {
+						parentWordBox.parents('.forBox').siblings('.forBox').find('.wordBox').find('.explainBox').stop(false,true).slideUp('normal',function(){
+							parentWordBox.parents('.forBox').siblings('.forBox').find('.wordBox').find('.explainText').removeClass('active').text('英文释义');
+							$(e.target).addClass('active').text('隐藏释义');
+							$(e.target).siblings('.explainBox').css('left', explainLeft).slideDown()
+						});
+					} else {
+						$(e.target).addClass('active').text('隐藏释义');
+						$(e.target).siblings('.explainBox').css('left', explainLeft).slideDown()
+					}
+					
+				}
+			},
+			//收藏图片
+            favorExercise: function(event){
+                var that = $(event.target);
+                if(that.hasClass('active')) {
+                    that.removeClass('active').text('收藏');
+                    this.iscancel = 1;
+                } else {
+                    that.addClass('active').text('取消收藏');
+                    this.iscancel = 0;
+                }
+
+                 this.exerciseId = that.attr('id');
+
+                 this.$http.post(this.exerciseCollectUrl, {
+                     isCancel : this.iscancel,
+                     exercise_id : this.exerciseId,
+                 }, {
+                     emulateJSON: 'application/x-www-form-urlencoded'
+                 }).then(function (response) {
+                     if(response.status == '200'){
+                         console.log('成功')
+                     } else {
+                         console.log('错误1')
+                     }
+                 }, function (response) {
+                     console.log('错误2')
+                 })
+            },
+            // 播放音频
+            play: function(e){
+                var that = $(e.currentTarget);
+                var player = that.parent('.wordMain').siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if (player.paused){
+                    // 其余音频停止播放
+                    $('audio').trigger('pause');
+                    // 其余去掉背景颜色
+                    $('.wordMain').removeClass('active');
+                    // 所有音频图标重置
+                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+
+                    // 所有学生音频图标重置
+                    $('.videoStudent').attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+
+                    that.parent('.wordMain').siblings('.audioHide').attr('src', newUrl);
+                    player.play();
+                    that.parent('.wordMain').addClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoYellow36×30.gif');
+                    player.loop = false;
+                    player.addEventListener('ended', function () {
+                        that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                    }, false);
+                } else {
+                    player.pause();//暂停
+                    that.parent('.wordMain').removeClass('active').find('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+                }
+            },
+            // 播放单个学生音频
+            playOne: function(e){
+                var that = $(e.currentTarget);
+                var player = that.siblings('.audioHide')[0];
+                var newUrl = that.attr('audioSrc');
+
+                if (player.paused){
+                    // 其余音频停止播放
+                    $('audio').trigger('pause');
+                    // 其余去掉背景颜色
+                    $('.wordMain').removeClass('active');
+                    // 所有音频图标重置
+                    $('.videoPrimary').attr('src', '__PUBLIC__/img/homeworkV1/videoGray36×30.png');
+
+                    // 所有学生音频图标重置
+                    $('.videoStudent').attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+                    that.siblings('.audioHide').attr('src', newUrl);
+                    player.play();
+                    that.attr('src', '__PUBLIC__/img/homeworkV1/bofang.png');
+                    player.loop = false;
+                    player.addEventListener('ended', function () {
+                        that.attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+                    }, false);
+                } else {
+                    player.pause();//暂停
+                    that.attr('src', '__PUBLIC__/img/homeworkV1/weibofang.png');
+                }
+            },
+            // 跳转到习题位置
+            goExercise: function(id_){
+                $("html,body").animate({ scrollTop: $('.innerId[exerciseId='+id_+']').offset().top });
+            }
+		},
+        filters:{
+            filtersVoiceNumber:function (val) {
+                val = num(val+"");
+                return val
+            },
+            filtersNumber:function (val) {
+                val = val + homework.exerciseListVocieLength;
+                val = num(val+"");
+                return val
+            }
+        }
+	})
+</script>
+
+<script>
+    function num(n) {
+        if(!/(^[1-9]\d*$)/){
+            return '非法数字';
+        }
+        var uppercase = '千百亿千百十万千百十个';
+        var nLength = n.length;
+        var newStr = '';
+        if(uppercase.length-nLength<0){
+            return '数字过长';
+        }
+        uppercase=uppercase.substr(uppercase.length-nLength);
+        for(var i=0; i < nLength; i++){
+            newStr +='零一二三四五六七八九'.charAt(n[i])+uppercase.charAt(i);
+        };
+        newStr = newStr.substr(0,newStr.length-1);
+        return newStr;
+    }
+</script>
+
+<script>
+	// 查看解析
+    $(document).on('click','.showAnalysis',function(){
+        if($(this).hasClass('active')) {
+            $(this).removeClass('active').text('查看解析').siblings('.analysisOutter').stop(false,true).slideUp();
+        } else {
+            $(this).addClass('active').text('收起').siblings('.analysisOutter').stop(false,true).slideDown();
+        }
+    })
+
+    // 查看评语
+    $(document).on('click','.showComment',function(){
+        if($(this).hasClass('active')) {
+            $(this).removeClass('active').text('查看评语').siblings('.commentOutter').stop(false,true).slideUp();
+        } else {
+            $(this).addClass('active').text('收起').siblings('.commentOutter').stop(false,true).slideDown();
+        }
+    })
+</script>
+
+<script>
+	// 标题格式
+	function title() {
+		$('.homeworkLeftTitle').each(function(i, n){
+			console.log($(this).text().length)
+			if($(this).text().length <= 10) {
+				$(this).css({
+					'text-align': 'center'
+				})
+			} else {
+				$(this).css({
+					'text-align': 'left'
+				})
+			}
+		})
+	}
+
+	title()
+</script>

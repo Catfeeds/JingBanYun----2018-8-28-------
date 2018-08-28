@@ -1,0 +1,1050 @@
+<layout name="parent_layout_withouticon" />
+<script src="__PUBLIC__/js/xiuxiu.js" type="text/javascript"></script>
+<link rel="stylesheet" href="__PUBLIC__/css/me.css?v=1">
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+<link href="__PUBLIC__/cropperUpload/head/cropper.min.css" rel="stylesheet">
+<link href="__PUBLIC__/cropperUpload/head/sitelogo.css" rel="stylesheet">
+<script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js"></script>
+<script src="__PUBLIC__/cropperUpload/head/cropper.js"></script>
+<script src="__PUBLIC__/cropperUpload/head/sitelogo.js"></script>
+
+<style>
+	body {
+		display: block
+	}
+
+	@media (max-width: 1100px) and (min-width:0) {
+		body {
+			width: 1100px;
+			overflow-x: auto;
+		}
+	}
+</style>
+
+<div class="meOutter">
+	<div class="leftWrapper">
+		<p class="leftTitle">我的京版云</p>
+		<ul class="leftUl">
+			<li class="leftLi leftLi1">
+				<a href="javascript:;" class="leftA active" id="leftA1">
+					<p class="leftP">
+						个人资料
+					</p>
+				</a>
+			</li>
+			<li class="leftLi leftLi4">
+				<a href="{:U('Parent/myMessage')}" target="_blank" class="leftA">
+					<p class="leftP">
+						我的消息&nbsp;&nbsp;<span class="unReadMessageCount"></span>
+					</p>
+				</a>
+			</li>
+			<li class="leftLi leftLi6">
+				<a href="{:U('Myresources/redbjResourceList')}" target="_blank" class="leftA">
+					<p class="leftP">
+						我的收藏
+					</p>
+				</a>
+			</li>
+			<li class="leftLi leftLiOrder">
+				<a href="{:U('OrderMgmt/orderMgmt')}" target="_blank" class="leftA">
+					<p class="leftP">
+						我的订单
+					</p>
+				</a>
+			</li>
+			<li class="leftLi leftLi9" style="margin-bottom: 150px">
+				<a href="{:U('Feedback/addfeedback')}" target="_blank" class="leftA">
+					<p class="leftP">
+						意见反馈
+					</p>
+				</a>
+			</li>
+			<li  class="leftLi leftdoc">
+				<a href="http://jbyoss.oss-cn-beijing.aliyuncs.com/public/web_img/OI/teacherOI.doc" target="_blank" class="">
+					<p class="leftP">
+					  点击下载操作说明
+					</p>
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div class="rightOutter">
+		<!-- 基础信息 -->
+		<div class="meTitleBox">
+			<div class="meTitle">
+				基本信息
+				<span class="orangeText" id="editInfo">【编辑】</span>
+				<span class="orangeText dn" id="returnEditInfo">【取消】</span>
+			</div>
+		</div>
+		<div class="basicInfo">
+			<!-- 头像 -->
+			<div class="basicInfoLeft">
+				<img onerror="img_parent(this)" sex="{$data.sex}" class="list_avatar navListImg" style="">
+				<div class="orangeText" id="changeAvatar">【更换头像】</div>
+				<div class="grayText" id="avatarSuccess">头像更换成功！</div>
+			</div>
+			<div class="basicInfoRight">
+				<!-- 编辑之前 -->
+				<div class="basicInfoBefore">
+					<div class="infoRow">
+						<span class="infoRowTitle">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</span>
+						<span class="infoRowText">{$data.parent_name}</span>
+					</div>
+					<div class="infoRow">
+						<span class="infoRowTitle">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<!-- <span class="infoRowText">{$data.sex}</span> -->
+						<span class="infoRowText">
+							<?php if ($data[ 'sex']=='女'): ?>
+								<input type="radio" class="hidden" checked="true" name="sex" value="女">
+								<img src="{$oss_path}public/web_img/Me/radio2.png" alt="" class="sexRadio">
+								<img src="{$oss_path}public/web_img/Me/p_woman.png" alt="">
+								<?php else: ?>
+								<input type="radio" class="hidden" checked="true" name="sex" value="男">
+								<img src="{$oss_path}public/web_img/Me/radio2.png" alt="" class="sexRadio">
+								<img src="{$oss_path}public/web_img/Me/p_man.png" alt="">
+							<?php endif ?>
+						</span>
+					</div>
+					<div class="infoRow">
+						<span class="infoRowTitle">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</span>
+						<span class="infoRowText">{$data.email}</span>
+					</div>
+					<div class="infoRow">
+						<span class="infoRowTitle lh35">关联学生：</span>
+						<span class="infoRowText ">
+							<volist name="studentList" id="studata" empty="">
+								<span class="studentOutter">
+
+									<span class="myCourse">{$studata.student_name}</span>
+
+									<div class="studentBox">
+										<!-- 这里是学生头像 -->
+
+										<?php if (preg_match('/Resources/', $studata['avatar'])): ?>
+										<img class="studentAvatar"  src="<?php echo C('oss_path').$studata['avatar']?>">
+										<?php else: ?>
+										<?php if ( $studata['sex']=='男' ): ?>
+										<img class="studentAvatar"   src="__PUBLIC__/img/classManage/student_m.png">
+										<?php else: ?>
+										<img class="studentAvatar" src="__PUBLIC__/img/classManage/student_w.png">
+										<?php endif; ?>
+										<?php endif; ?>
+
+										<p>{$studata.student_name}</p>
+										<p>{$studata.create_at|date="Y-m-d",###}</p>
+										<p>{$studata.grade} {$studata.name}</p>
+										<p>{$studata.school_name}</p>
+									</div>
+
+								</span>
+							</volist>
+						</span>
+					</div>
+				</div>
+
+				<!-- 编辑中 -->
+				<div class="basicInfoAfter">
+					<form class="myform" novalidate action="{:U('Parent/information')}" method="post" onsubmit="return checkParent();">
+						<input type="hidden" name="telephone" value="{$data.telephone}">
+						<div class="infoRow">
+							<span class="infoRowTitle">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</span>
+							<input type="text" name="name" class="input-common" id="parent_name" placeholder="请输入姓名" maxlength="20" value="{$data.parent_name}" onblur="return myName();">
+							<span class="requiredStar">*</span>
+							<span class="input-error name-error"></span>
+						</div>
+						<div class="infoRow">
+							<span class="infoRowTitle">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+
+							<label for="man" class="manLabel">
+								<?php if ($data[ 'sex']=='男'): ?>
+								<input type="radio" class="hidden" checked="true"  name="sex" value="男">
+										<img src="{$oss_path}public/web_img/Me/radio2.png" alt="" class="sexRadio">
+									<?php else: ?>
+										<img src="{$oss_path}public/web_img/Me/radio1.png" alt="" class="sexRadio">
+								<?php endif ?>
+
+								<img src="{$oss_path}public/web_img/Me/p_man.png" alt="">
+							</label>
+
+							<label for="woman" class="womanLabel">
+								<?php if ($data[ 'sex']=='女'): ?>
+								<input type="radio" class="hidden" checked="true" name="sex" value="女">
+								<img src="{$oss_path}public/web_img/Me/radio2.png" alt="" class="sexRadio">
+								<?php else: ?>
+								<img src="{$oss_path}public/web_img/Me/radio1.png" alt="" class="sexRadio">
+								<?php endif ?>
+								<img src="{$oss_path}public/web_img/Me/p_woman.png" alt="">
+							</label>
+						</div>
+						<div class="infoRow">
+							<span class="infoRowTitle">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</span>
+							<input type="email" name="email" class="input-common" id="parent_email" placeholder="请输入邮箱" value="{$data.email}" onblur="return myEmail();">
+							<span class="input-error email-error"></span>
+						</div>
+						<div class="infoRow">
+							<span class="infoRowTitle">关联学生：</span>
+							<span class="infoRowText meTeaching">
+								<div class="dib myCourseDiv">
+
+								<volist name="studentList" id="studatacopy" empty="">
+									<span class="myCourse">
+										{$studatacopy.student_name}
+										<img src="/Public/img/register/classClose.png" alt="" class="input-delete">
+										<input type="hidden" class="coursegrade_add" name="parent_stu_id[]" value="{$studatacopy.student_id}">
+									</span>
+								</volist>
+								<img src="{$oss_path}public/web_img/Me/addCourseBlue.png" alt="" class="addCourse blueBtn">
+								</div>
+								<!-- 可以添加，是蓝色按钮 -->
+		                        
+		                        <!-- 不可以添加，是灰色按钮 -->
+		                        <!--<img src="{$oss_path}public/web_img/Me/addCourseGray.png" alt="" class="addCourse gayBtn dn">-->
+							</span>
+						</div>
+						<div class="infoRow courseInfo">
+							<span class="infoRowTitle" style="width: 80px">&nbsp;</span>
+
+							<div class="courseList" >
+								<div class="studentInfo studentNameBox">
+									<label class="title">学&nbsp;生&nbsp;姓&nbsp;名：</label>
+									<input type="text" class="student_name" placeholder="必填" >
+									<span class="input-error studentNameError" style="text-indent: 115px;margin-top:3px"></span>
+								</div>
+								<div class="studentInfo parentPhoneBox">
+									<label class="title">家长手机号：</label>
+									<input type="text" class="parent_phone" placeholder="必填" maxlength="11">
+									<span class="input-error parentPhoneError" style="text-indent: 115px;margin-top:3px"></span>
+								</div>
+								<div class="buttonBox">
+									<span class="input-btn courseCancel">取消</span>
+									<span class="input-btn courseSure">确定</span>
+								</div>
+
+							</div>
+						</div>
+						<button class="input-btn saveInfo" id="saveInfo" type="submit" style="" onclick="return checkParent();">保存</button>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- 账号安全 -->
+		<div class="meTitleBox">
+			<div class="meTitle">
+				账号安全
+				<span class="orangeText" id="editAccount">【编辑】</span>
+				<span class="orangeText dn" id="returnEditAccount">【取消】</span>
+			</div>
+		</div>
+		<div class="accountSafe">
+			<!-- 修改密码 -->
+			<div class="accountSafeLeft">
+				<img src="{$oss_path}public/web_img/Me/changePwd.png" alt="" class="changePwd">
+			</div>
+			<div class="accountSafeRight">
+				<!-- 编辑之前 -->
+				<div class="accountSafeBefore">
+					<div class="accountRow">
+						<span class="accountRowTitle myPhone">手机号码：</span>
+						<span class="accountRowText phoneText">{$data.telephone}</span>
+					</div>
+					<div class="accountRow">
+						<span class="accountRowTitle">密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码：</span>
+						<span class="accountRowText pwdText">******</span>
+					</div>
+				</div>
+				<!-- 编辑中 -->
+				<div class="accountSafeAfter">
+					<form class="modi_info_form" id="info-list" action="{:U('Parent/forgetPassword')}" method="post" onsubmit="return checkAccount();">
+                        <input type="hidden" value="1" name="n_verify_code" />
+						<input type="hidden" value="{$data.telephone}" name="telephone" />
+						<div class="accountRow">
+							<span class="accountRowTitle phoneNum">手机号码：</span>
+							<span class="accountRowText mytelephone">{$data.telephone}</span>
+						</div>
+						<div class="accountRow">
+							<span class="accountRowTitle">验证号码：</span>
+							<input type="text" class="input-common input-code" name="valid_code">
+							<a href="javascript:void(0);return false;" onclick="sendPhoneCode();" id="sendcodebutton">获取验证码</a>
+							<span class="input-error code-error">验证码输入错误！</span>
+						</div>
+						<div class="accountRow">
+							<span class="accountRowTitle">新&nbsp;&nbsp;密&nbsp;&nbsp;码：</span>
+							<input type="password" style="display:none">
+							<input onfocus="this.type='password'" type="text" name="password" class="input-common input-newPwd" id="password" placeholder="请输入6-16位密码" maxlength="16" onblur="return pas1();" autocomplete="off">
+							<span class="input-error newPwd-error">密码长度不少于6位！</span>
+						</div>
+						<div class="accountRow">
+							<span class="accountRowTitle">密码确认：</span>
+							<input type="password" style="display:none">
+							<input onfocus="this.type='password'" type="text" name="confirm_password" class="input-common input-newPwdSure" id="confirm_password" placeholder="请输入6-16位密码" maxlength="16" onblur="return pas2();" autocomplete="off">
+							<span class="input-error newPwdSure-error">两次密码输入不一致！</span>
+						</div>
+						<button class="input-btn account-btn" type="submit" id="passwordSubmit" style="" onclick="return checkAccount();">提交</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 修改头像 -->
+<div class="avatarOutter">
+	<div class="avatarInner">
+		<div class="avatarTop">
+			<img src="{$oss_path}public/web_img/Me/camera.png" alt="" class="cameraImg">
+			更换头像
+			<div class="avatarClose"></div>
+		</div>
+		<div id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label" role="dialog" tabindex="-1" style="width: 700px;
+		margin: 0 auto">
+			<form class="avatar-form" action="/index.php/Home/Parent/ossUploadAvatar?id={$data.id}" method="post">
+				<div class="modal-body">
+					<div class="avatar-body">
+						<div class="avatar-upload">
+							<input class="avatar-src" name="avatar_src" type="hidden">
+							<input class="avatar-data" name="avatar_data" type="hidden">
+							<label for="avatarInput" style="line-height: 35px;">图片上传</label>
+							<button class="btn btn-danger"  type="button" style="height: 35px;" onclick="$('input[id=avatarInput]').click();">请选择图片</button>
+							<span id="avatar-name"></span>
+							<input class="avatar-input hide" id="avatarInput" name="file" type="file"></div>
+						<div style="width: 100%; overflow: hidden">
+							<div style="width: 66%; float: left">
+								<div class="avatar-wrapper"></div>
+							</div>
+							<div style="padding-left: 30px !important; float: left; width: 25%; ">
+								<div class="avatar-preview preview-lg" id="imageHead"></div>
+								<!--<div class="avatar-preview preview-md"></div>
+						<div class="avatar-preview preview-sm"></div>-->
+							</div>
+						</div>
+						<div class="avatar-btns" style="width: 100%; overflow: hidden">
+							<div style="width: 33%; float: left">
+								<div class="btn-group">
+									<button class="btn btn-danger fa fa-undo" data-method="rotate" data-option="-90" type="button" title="Rotate -90 degrees"> 向左旋转</button>
+								</div>
+								<div class="btn-group">
+									<button class="btn  btn-danger fa fa-repeat" data-method="rotate" data-option="90" type="button" title="Rotate 90 degrees"> 向右旋转</button>
+								</div>
+							</div>
+							<div style="width: 33%; float: left; text-align: right; margin-left: 40px">
+<!--
+								<button class="btn btn-danger fa fa-arrows" data-method="setDragMode" data-option="move" type="button" title="移动">
+								<span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;setDragMode&quot;, &quot;move&quot;)">
+								</span>
+							  </button>
+-->
+							  <button type="button" class="btn btn-danger fa fa-search-plus" data-method="zoom" data-option="0.1" title="放大图片">
+								<span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;zoom&quot;, 0.1)">
+								  <!--<span class="fa fa-search-plus"></span>-->
+								</span>
+							  </button>
+							  <button type="button" class="btn btn-danger fa fa-search-minus" data-method="zoom" data-option="-0.1" title="缩小图片">
+								<span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;zoom&quot;, -0.1)">
+								  <!--<span class="fa fa-search-minus"></span>-->
+								</span>
+							  </button>
+							  <button type="button" class="btn btn-danger fa fa-refresh" data-method="reset" title="重置图片">
+									<span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;reset&quot;)" aria-describedby="tooltip866214">
+							   </button>
+							</div>
+							<div style="width: 25%; float: left; padding-left: 20px !important">
+								<button class="btn btn-danger btn-block avatar-save fa fa-save" type="button" data-dismiss="modal"> 保存修改</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<?php if (preg_match('/Resources/', $data['avatar'])): ?>
+	<input type="hidden" class="oss_path_img" value=<?=C('oss_path').$data['avatar']?> >
+<?php endif ?>
+
+<script typet="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+<script src="__PUBLIC__/js/message/messageList.js"></script>
+<script src="__PUBLIC__/js/notify/notifyBox.js"></script>
+
+<script src="__PUBLIC__/cropperUpload/head/html2canvas.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+
+
+	/*function checkParent() {
+		//姓名验证
+		var parent_name = $('#parent_name').val();
+		var regTel = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+		if (!regTel.test(parent_name)) {
+			$.NotifyBox.NotifyPromptOne("提示","姓名格式不正确", "确定");
+			return false;
+		}
+
+		var email = $('#parent_email').val();
+		if (email != '') {
+			var emailReg = /^([a-zA-Z0-9]+[_|\_|\.|\-]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.|\-]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+			if (!emailReg.test(email)) {
+
+				$.NotifyBox.NotifyPromptOne("提示","请输入有效的Email地址", "确定");
+				return false;
+			}
+		}
+		return true;
+	}*/
+
+	//更换头像的弹窗
+	$('#changeAvatar').click(function(){
+		$('.avatarOutter').addClass('active');
+	})
+
+	$('.avatarClose').click(function(){
+		$('.avatarOutter').removeClass('active');
+	})
+
+	//做个下简易的验证  大小 格式
+	$('#avatarInput').on('change', function(e) {
+		var filemaxsize = 1024 * 5;//5M
+		var target = $(e.target);
+		var Size = target[0].files[0].size / 1024;
+		if(Size > filemaxsize) {
+			// alert('图片过大，请重新选择!');
+			$.NotifyBox.NotifyPromptOne("提示","图片过大，请重新选择!", "确定");
+			$(".avatar-wrapper").childre().remove;
+			return false;
+		}
+		if(!this.files[0].type.match(/image.*/)) {
+			// alert('请选择正确的图片!');
+			$.NotifyBox.NotifyPromptOne("提示","请选择正确的图片!", "确定");
+		} else {
+			var filename = document.querySelector("#avatar-name");
+			var texts = document.querySelector("#avatarInput").value;
+			var teststr = texts; //你这里的路径写错了
+			testend = teststr.match(/[^\\]+\.[^\(]+/i); //直接完整文件名的
+			filename.innerHTML = testend;
+		}
+
+	});
+
+	$(".avatar-save").on("click", function() {
+		var img_lg = document.getElementById('imageHead');
+		// 截图小的显示框内的内容
+		html2canvas(img_lg, {
+			allowTaint: true,
+			taintTest: false,
+			onrendered: function(canvas) {
+				canvas.id = "mycanvas";
+				var imgUri = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+				//生成base64图片数据
+				var dataUrl = canvas.toDataURL("image/jpeg");
+				var newImg = document.createElement("img");
+				newImg.src = dataUrl;
+				imagesAjax(dataUrl);
+			}
+		});
+	})
+
+	var a ;
+	function imagesAjax(src) {
+		var data = {};
+		data.img = src;
+		var orginUrl = window.location.protocol + '//' + window.location.host;
+		data.jid = $('#jid').val();
+		$.ajax({
+			url: orginUrl +"/index.php/Home/Parent/ossUploadAvatar?id={$data.id}",
+			data: data,
+			type: "POST",
+			dataType: 'json',
+			success: function(re) {
+				if(re.status == '1') {
+					//$.NotifyBox.NotifyPromptOne("提示","头像保存成功！", "确定",30000);
+					$('.avatarOutter').removeClass('active');
+					$('.user_pic img').attr('src',src );
+					$('.navListImg').attr('src', src);
+					$('#avatarSuccess').show();
+					setTimeout("$('#avatarSuccess').fadeOut()",3000);
+				}
+			}
+		});
+	}
+</script>
+
+<!--***【一】我的京版云***-->
+<script type="text/javascript">
+    var oss_path_img = $('.oss_path_img').val();
+    if ( typeof(oss_path_img) != 'undefined' ) {
+        var orginUrl = window.location.protocol + '//' + window.location.host;
+        window.onload = function () {
+            xiuxiu.embedSWF("altContent", 5, "800px", "400px");
+            xiuxiu.setUploadDataFieldName("file");
+            /*第1个参数是加载编辑器div容器，第2个参数是编辑器类型，第3个参数是div容器宽，第4个参数是div容器高*/
+            xiuxiu.setUploadURL(orginUrl + "/index.php/Home/Parent/ossUploadAvatar?id={$data.id}"); //修改为您自己的上传接收图片程序
+            xiuxiu.setUploadType('2'); //上传类型：1 流上传 2 表单上传
+            //xiuxiu.setUploadDataFieldName("face_pic");//图片上传元素名称（只针对与表单上传类型）
+            xiuxiu.onInit = function () {
+                //console.log(oss_path_img + "?v=" + Date.parse(new Date()));
+                xiuxiu.loadPhoto(oss_path_img + "?v=" + Date.parse(new Date()));
+            };
+            xiuxiu.onUploadResponse = function (data) {
+                var obj = JSON.parse(data);
+                updateNavTitleImgNew(obj.src);
+            }
+        }
+    } else {
+        var orginUrl = window.location.protocol + '//' + window.location.host;
+        window.onload = function () {
+            xiuxiu.embedSWF("altContent", 5, "800px", "400px");
+            xiuxiu.setUploadDataFieldName("file");
+            /*第1个参数是加载编辑器div容器，第2个参数是编辑器类型，第3个参数是div容器宽，第4个参数是div容器高*/
+            xiuxiu.setUploadURL(orginUrl + "/index.php/Home/Parent/ossUploadAvatar?id={$data.id}"); //修改为您自己的上传接收图片程序
+            xiuxiu.setUploadType('2'); //上传类型：1 流上传 2 表单上传
+            //xiuxiu.setUploadDataFieldName("face_pic");//图片上传元素名称（只针对与表单上传类型）
+            xiuxiu.onInit = function () {
+                xiuxiu.loadPhoto(orginUrl + "/Uploads/Avatars/{$data.avatar}_t.jpg?v=" + Date.parse(new Date()));
+            };
+            xiuxiu.onUploadResponse = function (data) {
+                var obj = JSON.parse(data);
+                updateNavTitleImgNew(obj.src);
+            }
+        }
+    }
+</script>
+<script type="text/javascript">
+    function updateNavTitleImg() {
+        var oss_path_img = $('.oss_path_img').val();
+        if (typeof(oss_path_img) != 'undefined') {
+            $('.navListImg').attr('src', oss_path_img+'?v=' + Date.parse(new Date()));
+
+        } else {
+			var sexis = $('.navListImg').attr('sex');
+
+			if (sexis=='男'){
+				$('.navListImg').attr('src', '__ROOT__/Public/img/classManage/jiazhang.png?v='+ Date.parse(new Date()));
+			}else{
+				$('.navListImg').attr('src', '__ROOT__/Public/img/classManage/jiazhang2.png?v='+ Date.parse(new Date()));
+			}
+            //$('.navListImg').attr('src', '__ROOT__/Uploads/Avatars/{$data.avatar}_t.jpg?v=' + Date.parse(new Date()));
+        }
+        setTimeout("initAvatar()",200);
+
+    }
+    function initAvatar()
+	{
+      if (typeof (cropAvatar) == "undefined")
+		  setTimeout("initAvatar()",200);
+	  else
+		  cropAvatar.initAvatar($('.navListImg').attr('src'));
+	}
+    function updateNavTitleImgNew( oss_path_data) {
+        var oss_path_img = $('.oss_path_img').val();
+        if (typeof(oss_path_img) != 'undefined') {
+            $('.navListImg').attr('src', oss_path_data+'?v=' + Date.parse(new Date()));
+        } else {
+            $('.navListImg').attr('src', oss_path_data+'?v=' + Date.parse(new Date()));
+            //$('.navListImg').attr('src', '__ROOT__/Uploads/Avatars/{$data.id}_t.jpg?v=' + Date.parse(new Date()));
+        }
+    }
+    updateNavTitleImg();
+</script>
+
+<!--【二】编辑个人资料-->
+<script>
+	$('#editInfo').click(function(){
+		$('#editInfo').hide();
+		$('.basicInfoBefore').hide();
+		$('.basicInfoAfter').show();
+		$('#returnEditInfo').show()
+	})
+	$('#returnEditInfo').click(function(){
+		$('#returnEditInfo').hide();
+		$('.basicInfoBefore').show();
+		$('.basicInfoAfter').hide();
+		$('#editInfo').show()
+	})
+
+		// 性别
+	$('.manLabel,.womanLabel').click(function(){
+		$(this).children('.sexRadio').attr('src','{$oss_path}public/web_img/Me/radio2.png').end().siblings('label').children('.sexRadio').attr('src','{$oss_path}public/web_img/Me/radio1.png');
+		})
+	 	$('.manLabel').click(function(){
+			 $(this).find('input').remove().end().append('<input type="radio" class="hidden" name="sex" checked="true" value="男">');
+			$('.womanLabel').find('input').remove()
+		})
+		$('.womanLabel').click(function(){
+			$(this).find('input').remove().end().append('<input type="radio" class="hidden" name="sex" checked="true" value="女">');
+		$('.manLabel').find('input').remove()
+	})
+
+	//添加
+	$('.addCourse').click(function(){
+		$('.courseList').slideDown();
+		$('.saveInfo').css('background','#ccc').attr('disabled','disabled');
+		$('.student_name').val('');
+		$('.parent_phone').val('');
+	})
+
+	$('.courseCancel').click(function(){
+		$('.courseList').slideUp();
+		$('.saveInfo').css('background','#e9573f').removeAttr('disabled','disabled')
+		$('.student_name').val('');
+		$('.parent_phone').val('');
+		$('.studentNameError,.parentPhoneError').hide()
+	})
+
+	function myName(){
+		//姓名验证
+        var parent_name = $('#parent_name').val();
+        var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+        if (parent_name == '') {
+			$('.name-error').hide();
+			return false;
+		} else if (!regName.test(parent_name)) {
+			$('.name-error').show().html('姓名格式错误！');
+			return false;
+		} else {
+			$('.name-error').hide();
+			return true;
+		}
+	}
+
+	function myEmail(){
+		//邮箱验证
+		var email = $('#parent_email').val();
+		var emailReg = /^([a-zA-Z0-9]+[_|\_|\.|\-]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.|\-]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+        if (email == '') {
+			$('.email-error').hide();
+			return true;
+		} else if (!emailReg.test(email)) {
+			$('.email-error').show().html('邮箱格式错误！');
+			return false;
+		} else {
+			$('.email-error').hide();
+			return true;
+		}
+	}
+
+	function checkParent() {
+		var isTure = 1;
+		if($('#parent_name').val()=='') {
+       		$('.name-error').show().html('请输入姓名！');
+			isTure = 0;
+       	} else if(myName() == false) {
+       		$('.name-error').show().html('姓名格式错误！');
+			isTure = 0;
+       	}
+
+       	if(myEmail() == false) {
+       		$('.email-error').show().html('邮箱格式错误！');
+			isTure = 0;
+       	}/* else if($('.myCourse').length == 0) {
+   			$.NotifyBox.NotifyPromptOne("提示","请添加关联学生！", "确定");
+			isTure = 0;
+       	} */
+
+       	if (isTure == 0) {
+   			return false;
+       	} else {
+       		document.cookie= "success=yes";
+        	return true;
+       	}
+	}
+</script>
+
+<!--【三】修改/重置密碼-->
+<script>
+	$('#editAccount').click(function(){
+		$('#editAccount').hide();
+		$('.accountSafeBefore').hide();
+		$('.changePwd').show();
+		$('.accountSafeAfter').show();
+		$('#returnEditAccount').show()
+	})
+	$('#returnEditAccount').click(function(){
+		$('#returnEditAccount').hide();
+		$('.accountSafeBefore').show();
+		$('.changePwd').hide();
+		$('.accountSafeAfter').hide();
+		$('#editAccount').show()
+	})
+
+	var err = '{$err}';
+	if (err == 1) $('#wrongpassword').show();
+	if (err == 2) $('#wrongcode').show();
+
+	function isValidPhone(str) {
+		var re = /^1\d{10}$/
+		if (re.test(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	var hasSentPhoneCode = false;
+	var isinerval, times;
+
+	function sendPhoneCode() {
+
+		if (hasSentPhoneCode == true) {
+			return;
+		}
+
+		var telephone = $('.mytelephone').text();
+		//        if (telephone == '') {
+		//            alert('请输入手机号');
+		//            return false;
+		//        }
+		if (!isValidPhone(telephone)) {
+			//            alert('手机号格式不正确');
+			$('#p_forget_error_phone').css('display', 'block');
+			return false;
+		}
+
+		hasSentPhoneCode = true;
+		$("#sendcodebutton").html('<span id="GetVerify">60</span>秒后重发');
+		times = 59;
+		isinerval = setInterval(CountDown, 1000);
+
+		$.ajax({
+			url: "__URL__/sendForgetPasswordPhoneCode", //请求的url地址
+			dataType: "json", //返回格式为json
+			//async: true, //请求是否异步，默认为异步，这也是ajax重要特性
+			data: {
+				'telephone': telephone,
+                                'n_verify_code':1
+			}, //参数值
+			type: "GET", //请求方式
+			beforeSend: function () {
+				//请求前的处理
+			},
+			success: function (req) {
+				var res = eval(req);
+				if (res.status < 0) {
+					$.NotifyBox.NotifyPromptOne("提示",res.msg, "确定");
+					location.reload()
+				}
+			},
+			complete: function () {
+				//请求完成的处理
+			},
+			error: function () {
+				//请求出错处理
+			}
+		});
+	}
+
+	function pas1() {
+		var pas1 = $('#password').val();
+
+		if (pas1 == '') {
+			$('.newPwd-error').hide();
+			return false;
+		} else if (pas1.length < 6) {
+			$('.newPwd-error').show();
+			return false;
+		} else {
+			$('.newPwd-error').hide();
+			return true;
+		}
+	}
+
+	function pas2() {
+		var pas1 = $('#password').val();
+		var pas2 = $('#confirm_password').val();
+		if (pas2 == '') {
+			$('.newPwdSure-error').hide();
+			return false;
+		} else if (pas1 != pas2) {
+			$('.newPwdSure-error').show();
+			return false;
+		} else {
+			$('.newPwdSure-error').hide();
+			return true;
+		}
+	}
+
+	function checkAccount() {
+		var isTure = 1;
+		if ($('input[name=valid_code]').val()=='') {
+			$('.code-error').show().html('请输入验证码！');
+			isTure = 0;
+		} else {
+			$('.code-error').hide();
+		}
+
+		if ($('#password').val() == '') {
+			$('.newPwd-error').show().html('请输入密码！');
+			isTure = 0;
+		} else if (pas1() == false) {
+			$('.newPwd-error').show().html('密码格式有误！');
+			isTure = 0;
+		} else if ($('#confirm_password').val() == '') {
+			$('.newPwdSure-error').show().html('请再次确认密码！');
+			isTure = 0;
+		} else if (pas2() == false) {
+			$('.newPwdSure-error').show().html('两次密码输入不一致！');
+			isTure = 0;
+		}
+
+		if (isTure == 0) {
+			return false
+		} else {
+			return true;
+			$('#editAccount').show();
+			$('.accountSafeBefore').show();
+			$('.changePwd').hide();
+			$('.accountSafeAfter').hide();
+		}
+	}
+</script>
+<script>
+	String.prototype.format = function (args) {
+		var result = this;
+		if (arguments.length > 0) {
+			if (arguments.length == 1 && typeof (args) == "object") {
+				for (var key in args) {
+					if (args[key] != undefined) {
+						var reg = new RegExp("({" + key + "})", "g");
+						result = result.replace(reg, args[key]);
+					}
+				}
+			} else {
+				for (var i = 0; i < arguments.length; i++) {
+					if (arguments[i] != undefined) {
+						var reg = new RegExp("({)" + i + "(})", "g");
+						result = result.replace(reg, arguments[i]);
+					}
+				}
+			}
+		}
+		return result;
+	}
+</script>
+
+<script>
+	function CountDown() {
+		if (times < 1) {
+			hasSentPhoneCode = false;
+			clearInterval(isinerval);
+			$('#sendcodebutton').html('重新发送');
+			return;
+		}
+		$('#GetVerify').html(times);
+		times--;
+	}
+
+//	$(function () {
+//		window.setTimeout(function () {
+//			$('#rightWrapper3').find('input').val('');
+//		}, 500);
+//	});
+</script>
+<script src="__PUBLIC__/js/jquery.form.js"></script>
+<script>
+	$(function () {
+		var options = {
+			// target:        '#output',   // target element(s) to be updated with server response
+			//beforeSubmit:  showRequest,  // pre-submit callback
+			success: showResponse, // post-submit callback
+			resetForm: false,
+			dataType: 'json'
+
+			// other available options:
+			//url:       url         // override for form's 'action' attribute
+			//type:      type        // 'get' or 'post', override for form's 'method' attribute
+			//dataType:  null        // 'xml', 'script', or 'json' (expected server response type)
+			//clearForm: true        // clear all form fields after successful submit
+			//resetForm: true        // reset the form after successful submit
+
+			// $.ajax options can be used here too, for example:
+			//timeout:   3000
+		};
+
+		// bind to the form's submit event
+		$('#info-list').submit(function () {
+			// inside event callbacks 'this' is the DOM element so we first
+			// wrap it in a jQuery object and then invoke ajaxSubmit
+			$(this).ajaxSubmit(options);
+			$('#passwordSubmit').attr('disabled',true);
+			// !!! Important !!!
+			// always return false to prevent standard browser submit and page navigation
+			return false;
+		});
+		if($('.myCourseDiv').find('.myCourse').length >= 6){
+			//$('.blueBtn').hide();
+			$('.gayBtn').show()
+		}
+	});
+
+	function showResponse(responseText, statusText) {
+		$('#passwordSubmit').attr('disabled',false);
+		switch (responseText.code) {
+		case -1: //failed
+			//alert(responseText.msg);
+			$.NotifyBox.NotifyPromptOne("提示",responseText.msg, "确定");
+			break;
+		case 0:
+			$('.container').css('display', 'block');
+			var s = 1;
+			var timer = setInterval(function () {
+				s--;
+				$('.time').html(s);
+
+				if (s <= 0) {
+					clearInterval(timer);
+					$('.container').css('display', 'none');
+					// location.href = "{:U('Index/index')}"
+					$.NotifyBox.NotifyPromptOneClose("提示","密码修改成功，下次登录请使用新密码!", "确定", function(){
+						location.reload()
+					},function(){
+						location.reload()
+					});
+				}
+			}, 1000);
+			break;
+		default:
+			//alert(responseText.msg);
+			$.NotifyBox.NotifyPromptOne("提示",responseText.msg, "确定");
+			break;
+		}
+	}
+</script>
+
+<script src="__PUBLIC__/js/message/messageList.js"></script>
+<script>
+    function getCookie(name){
+        var strCookie=document.cookie;
+        var arrCookie=strCookie.split("; ");
+        for(var i=0;i<arrCookie.length;i++){
+            var arr=arrCookie[i].split("=");
+            if(arr[0]==name)return arr[1];
+        }
+        return "";
+    }
+    function deleteCookie(name){
+        var date=new Date();
+        date.setTime(date.getTime()-10000);
+        document.cookie=name+"=v; expire="+date.toGMTString();
+    }
+    var tips = getCookie('tips');
+    var succ = getCookie('suce');
+    var activity_id = getCookie('id');
+    if(tips == '1' && succ == 'yes'){
+        deleteCookie('tips');
+        deleteCookie('suce');
+        document.cookie= "back=yes";
+        window.location.href = "{:U('Activity/activityApplyDetails')}&id="+activity_id;
+    }
+</script>
+
+<script>
+	$('.myCourse').hover(function(){
+		$(this).siblings('.studentBox').stop().show();
+		$(this).parent('.studentOutter').css('z-index','9999').siblings('.studentOutter').css('z-index','0')
+	},function(){
+		$(this).siblings('.studentBox').stop().hide();
+		$(this).parent('.studentOutter').css('z-index','0').siblings('.studentOutter').css('z-index','0')
+	})
+
+	$('.main').children('span').click(function(){
+		$(this).addClass('active').siblings().removeClass('active')
+	})
+	$('.courseSure').click(function(){
+
+		var studentName = $('.student_name').val();
+		var parentPhone = $('.parent_phone').val();
+        var regName = /^(([\u4E00-\u9FA5]{2,7})|([a-zA-Z]{3,10}))$/;
+        var regTel = /^(((13[0-9]{1})|(15[0-9]{1})|(17[0-9]{1})|(18[0-9]{1}))+\d{8})$/;
+
+		var meArray = new Array();
+	  	var meInformation	= studentName;
+		for(var i = 0;i<$('.myCourseDiv').find('.myCourse').length;i++){
+			meArray.push($('.myCourseDiv').find('.myCourse').eq(i).text().replace(/\s+/g, ""))
+		}
+
+		for(var l =0;l<meArray.length;l++){
+			if(meInformation == meArray[l]){
+				$.NotifyBox.NotifyPromptOne("提示","关联学生重复", "确定");
+				return false
+			}
+		}
+		if (studentName == '') {
+			$('.studentNameError').show().html('请填写学生姓名！');
+			return false;
+		} else if (!regName.test(studentName)) {
+
+			$('.studentNameError').show().html('学生姓名格式错误！');
+			return false;
+		} else if (parentPhone == '') {
+			$('.studentNameError').hide();
+			$('.parentPhoneError').show().html('请填写家长手机号！');
+			return false;
+		} else if (!regTel.test(parentPhone)) {
+			$('.studentNameError').hide();
+			$('.parentPhoneError').show().html('家长手机号格式错误！');
+			return false;
+		} else{
+			var flock = 1;
+			var student_id_demain = '';
+			$.ajax({
+				url: "__URL__/VerifyStudentPhone", //请求的url地址
+				dataType: "json", //返回格式为json
+				async: false, //请求是否异步，默认为异步，这也是ajax重要特性
+				data: {
+					'parent_tel': parentPhone,
+					'student_name':studentName
+				}, //参数值
+				type: "GET",
+				success: function (req) {
+					if (req.code == -1) {
+						$.NotifyBox.NotifyPromptOne("提示",req.msg, "确定");
+						$('.studentNameError').hide();
+						$('.parentPhoneError').hide();
+						return false;
+					} else {
+						student_id_demain =req.student_id;
+						flock =2;
+					}
+				}
+			});
+
+			if(flock== 2 && student_id_demain!='') {
+				$('.studentNameError').hide();
+				$('.parentPhoneError').hide();
+
+				$('.addCourse').before('<span class="myCourse">'+studentName+'<img src="/Public/img/register/classClose.png" alt="" class="input-delete"><input type="hidden" class="coursegrade_add" name="parent_stu_id[]" value="'+student_id_demain+'"></span>');
+				if($('.myCourseDiv').find('.myCourse').length == 6){
+					$('.gayBtn').show();
+					//$('.blueBtn').hide()
+				}
+				$('.student_name').val('');
+				$('.parent_phone').val('');
+				$('.courseList').slideUp();
+				$('.saveInfo').css('background','#e9573f').removeAttr('disabled','disabled');
+			}
+
+
+
+		}
+
+	})
+
+	$(document).on('click',".input-delete",function(){
+		$(this).parent().remove();
+		if($('.myCourseDiv').find('.myCourse').length<6){
+			$('.gayBtn').hide();
+			//$('.blueBtn').show()
+		}
+	})
+</script>
+
+<script>
+	$('.basicInfoRight').find('.infoRowText').each(function(i,n){
+		if($.trim($(this).html()) == '') {
+			var emptyText = '<span style="color: #ccc">空</span>'
+			$(this).html(emptyText)
+		}
+	})
+</script>

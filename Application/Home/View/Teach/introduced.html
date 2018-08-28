@@ -1,0 +1,267 @@
+<layout name="teacher_layout_withouticon" />
+<link href="__PUBLIC_METRO__/css/app/table_list1.css?v=2.0" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="__PUBLIC__/css/myPublish.css">
+
+
+<div class="main_opr">
+	<a href="javascript:;" title="我的发布" target="_blank" class="btn btn-main-opr btn-main-opr-active">我的发布</a>
+</div>
+
+<!-- <div style="margin-bottom: 12px;">
+	<a href="{:U('Teach/me')}" title="返回" class="btn btnReturn1">返回</a>
+</div> -->
+
+<empty name="list">
+    <div class="emptyDiv">
+        <img src="{$oss_path}public/web_img/Empty/myPublishResource.png" alt="">
+    </div>
+</empty>
+<notempty name="list">
+<div class="row" style="margin: 0 0 50px">
+	<div class="col-md-12">
+		<?php if (preg_match('/Resources/', $teacherInfo['avatar'])): ?>
+		<img src="<?php echo C( 'oss_path').$teacherInfo['avatar']?>" alt="头像" style="width:100px;height:100px;border-radius:8px">
+		<?php else: ?>
+			<?php if ( $teacherInfo['sex']=='男' ): ?>
+				<img class="avatar" width="98" height="98" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/teacher_m.png">
+				<?php else: ?>
+				<img class="avatar" width="98" height="98" onerror="img_teacher(this)"  src="__PUBLIC__/img/classManage/teacher_w.png">
+			<?php endif; ?>
+		<?php endif ?>
+	</div>
+	<volist name="list" id="data">
+		<div class="col-md-12 time-length">
+			<div class="timedot">
+				<img src="__PUBLIC__/img/icon/dian.png" alt=""><span>{$data[0]['create_at']|date="Y-m-d",###}</span>
+			</div>
+			<div class="introduced row">
+				<volist name="data" id="subData">
+					<if condition = "$subData['flag'] eq 1">
+						<!--我发布的资源-->
+						<div class="col-md-4 introBox">
+							
+								<switch name="subData.type">
+									<case value="video">
+									<div class="myintroduced" style="background: url(__PUBLIC__/img/resource/r_video.png) no-repeat center;background-size: 100% 100%; position: relative">
+										<if condition="strpos($subData['vid_image_path'],'http')===false">
+											<img class="resource_img" src="{$oss_path}{$subData.vid_image_path}" alt="">
+											<else />
+											<img class="resource_img" src="{$subData.vid_image_path}" alt="">
+										</if>
+									</case>
+									<case value="audio">
+									<div class="myintroduced" style="background: url(__PUBLIC__/img/resource/r_radio.png) no-repeat center;background-size: 100% 100%; position: relative">
+										<img class="resource_img" src="__PUBLIC__/img/resource/b_radio.jpg" alt="">
+									</case>
+									<case value="image">
+									<div class="myintroduced" style="background: url(__PUBLIC__/img/resource/r_images.png)no-repeat center;background-size: 100% 100%; position: relative">
+										<img class="resource_img" src="{$oss_path}{$subData.file_path}" alt="">
+									</case>
+									<case value="word">
+									<div class="myintroduced" style="background: url(__PUBLIC__/img/resource/r_word.png)no-repeat center;background-size: 100% 100%; position: relative">
+										<img class="resource_img" src="__PUBLIC__/img/resource/b_word.jpg" alt="">
+									</case>
+									<case value="ppt">
+									<div class="myintroduced" style="background: url(__PUBLIC__/img/resource/r_ppt.png)no-repeat center;background-size: 100% 100%; position: relative">
+										<img class="resource_img" src="__PUBLIC__/img/resource/b_ppt.jpg" alt="">
+									</case>
+									<case value="pdf">
+									<div class="myintroduced" style="background: url(__PUBLIC__/img/resource/r_pdf.png)no-repeat center;background-size: 100% 100%; position: relative">
+										<img class="resource_img" src="__PUBLIC__/img/resource/b_pdf.jpg" alt="">
+									</case>
+									<case value="swf">
+									<div class="myintroduced" style="background: url(__PUBLIC__/img/resource/r_swf.png)no-repeat center;background-size: 100% 100%; position: relative" ieSwf="ieSwf">
+										<img class="resource_img" src="__PUBLIC__/img/resource/b_swf.jpg" alt="">
+									</case>
+									<case value="condensed">
+									<div class="myintroduced" style="background: url(__PUBLIC__/img/resource/r_rar.png)no-repeat center;background-size: 100% 100%; position: relative" ieSwf="ieSwf">
+										<img class="resource_img" src="__PUBLIC__/img/resource/rar.jpg" alt="">
+									</case>
+								</switch>
+								<a href="javascript:;" class="resource_title">{$subData.name}</a>
+								<p class="resource_p">{$subData.textbook}</p>
+								<p class="resource_p" style="text-align: center;">
+							<span class="left">
+								<img src="__PUBLIC__/img/resource/watch.png" alt="">
+								<span>{$subData.follow_count}</span>
+							</span>
+									<!-- <span>
+								<img src="__PUBLIC__/img/resource/like.png" alt="">
+								<span>{$subData.zan_count}</span>
+							</span> -->
+									<span class="right">
+								<img src="__PUBLIC__/img/resource/collect.png" alt="">
+								<span>{$subData.favorite_count}</span>
+							</span>
+								</p>
+								<!--蒙层-->
+								<div class="resource_masking">
+									<div class="masking_top">
+										<if condition="$subData['status']  eq 1">
+											<span class="masking_span">等待审核</span>
+											<elseif condition="$subData['status'] eq 2"/>
+											<span class="masking_span">通过审核</span>
+											<else/>
+											<span class="masking_span">未通过审核</span>
+										</if>
+									</div>
+									<div class="masking_bottom">
+										<a href="index.php?m=Home&c=Teach&a=myResourceDetails&f=my&id={$subData['id']}" title="查看" class="masking_a ieSwf">查看</a>
+										<if condition="($subData['status']  eq 2) OR ($subData['status']  eq 3)">
+											<a href="index.php?m=Home&c=Teach&a=modifyResource&id={$subData['id']}&from=my" title="修改" class="masking_a">修改</a>
+										</if>
+										<a href="javascript:;" onclick="showDeleteResourceDialog('{$subData['id']}')" title="删除" class="masking_btn" style="text-decoration:">删除</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<elseif condition = "$subData['flag'] eq 2"/>
+						<!--我发布的作品-->
+						<div class="col-md-4 introBox">
+							<div class="boxShadow">
+								<div class="works_box">
+									<a class="works_title" href="javascript:;" title="">{$subData['works_name']}</a>
+									<p class="activities_p">
+										{$subData['course_name']}/{$subData['grade']}
+									</p>
+<!--
+									<p class="activities_p">
+								<span class="left">
+									<img src="__PUBLIC__/img/resource/watch.png" alt="">
+									<span>{$subData.browse_number}</span>
+								</span>&nbsp;
+										<span>
+									<img src="__PUBLIC__/img/resource/like.png" alt="">
+									<span>{$subData.zan_count}</span>
+								</span>&nbsp;
+										<span class="right">
+									<img src="__PUBLIC__/img/resource/collect.png" alt="">
+									<span>{$subData.favor_count}</span>
+								</span>
+									</p>
+-->
+									<!--蒙层-->
+									<div class="works_masking">
+										<div class="masking_top">
+											<if condition="$subData['status']  eq 0">
+												<span class="masking_span">等待审核</span>
+												<elseif condition="$subData['status'] eq 1"/>
+												<span class="masking_span">通过审核</span>
+												<elseif condition="$subData['status'] eq 2"/>
+												<span class="masking_span">未通过审核</span>
+											</if>
+										</div>
+										<div class="masking_bottom">
+											<if condition="$subData.class_id eq 6">
+											<a href="index.php?m=Home&c=Activity&a=teachDesignWorkView&workId={$subData['id']}" title="查看" class="masking_a">查看</a>
+											<else/>
+											<a href="index.php?m=Home&c=Activity&a=activityWorkDetails&id={$subData['id']}&own=1" title="查看" class="masking_a">查看</a>
+											</if>
+											<!--<a href="javascript:;" onclick="showDeleteResourceDialog('{$subData['id']}')" title="删除" class="masking_btn" style="text-decoration:">删除</a>-->
+										</div>
+									</div>
+								</div>
+								<if condition="$subData.class_id eq 6">
+									<img class="workType" src="{$oss_path}public/web_img/Activity/teachingDesign.png" alt="">
+									<elseif condition="$subData.class_id eq 7"/>
+									<img class="workType" src="{$oss_path}public/web_img/Activity/teachingCase.png" alt="">
+
+									<elseif condition="$subData.class_id eq 8"/>
+									<img class="workType" src="{$oss_path}public/web_img/Activity/teachingCourseware.png" alt="">
+									<elseif condition="$subData.class_id eq 9"/>
+									<img class="workType" src="{$oss_path}public/web_img/Activity/teachingPaper.png" alt="">
+									<elseif condition="$subData.class_id eq 10"/>
+									<img class="workType" src="{$oss_path}public/web_img/Activity/teachingWeClass.png" alt="">
+								</if>
+								<a href="{:U('Activity/activityApplyDetails')}&id={$subData['activity_id']}" class="actName" title=""><span>{$subData['title']}</span></a>
+
+							</div>
+						</div>
+					</if>
+				</volist>
+			</div>
+		</div>
+	</volist>
+</div>
+</notempty>
+<div class="modal fade" id="deleteDialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">删除前确认</h4>
+			</div>
+			<div class="modal-body">
+				<p>请再次确定您要讲这项记录删除</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="deleteResource()">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="ietanchuang">
+	<span>好的</span>
+</div>
+<script>
+	$('.classify_ul').children('li').on('click', function () {
+		$(this).css('color', 'red').siblings('li').css('color', '#7f7f7f')
+	})
+</script>
+
+<script>
+	var currentResourceId = 0;
+
+	function showDeleteResourceDialog(resourceId) {
+		$('#deleteDialog').modal('show')
+		currentResourceId = resourceId;
+	}
+
+	function deleteResource() {
+		$.get('index.php?m=Home&c=Teach&a=deleteResource', {
+			id: currentResourceId
+		}, function (res) {
+			if (res == 'success') {
+				hideDeleteDialog();
+				window.location.reload();
+			} else {
+				alert('删除失败，请刷新页面后重新尝试');
+			}
+		})
+	}
+
+	function hideDeleteDialog() {
+		$('#deleteDialog').modal('hide')
+		currentResourceId = 0;
+	}
+</script>
+
+<script>
+	$('.actName').hover(function(){
+		var spanHeight = $(this).children('span').height();
+		$(this).stop().animate({
+			'height':spanHeight+10
+		})
+	},function(){
+		$(this).stop().animate({
+			'height':'40px'
+		})
+	})
+	$('#ietanchuang').find('span').click(function(){
+		$(this).parent().hide()
+	})
+	$('.masking_a').click(function(){
+				var userAgent = navigator.userAgent; 
+			 	var isOpera = userAgent.indexOf("Opera") > -1;
+				var ie = $(this).parent().parent().parent().attr('ieSwf');
+//				if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+//				if(userAgent.indexOf("MSIE 9.0")>0||userAgent.indexOf("MSIE 10.0")){
+					if(ie == 'ieSwf'){
+						$('#ietanchuang').show();
+						 return false;	
+//					}	 
+//				    }
+				}
+		})
+</script>

@@ -1,0 +1,146 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<link href="__PUBLIC__/css/jquery.ui.datepicker.css" rel="stylesheet" type="text/css" />
+
+<style>
+	.cellNew .cell1 {
+		width: 33.33% !important;
+	}
+	
+	.cellNew .cell2 {
+		width: 66% !important;
+	}
+	
+	.cellNew .cell2 .input-control {
+		width: 37.7% !important;
+	}
+	
+	.laydate_body .laydate_bottom, .laydate_body .laydate_top, .laydate_body .laydate_ym .laydate_yms {
+		box-sizing: content-box;
+	}
+	
+	.qq-uploader {
+		max-height: 540px
+	}
+	
+	#laydate_hms {
+		display: none !important;
+	}
+</style>
+
+<!--
+<div class="titleBox">
+	<p class="blueText fs18 underline1">班级管理</p>
+	<div class="underline2"></div>
+</div>
+-->
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		分享管理
+		<span class="blueSpan">
+			<a href="javascript:;">分享管理</a>>>
+			<a href="javascript:;">分享列表</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<p class="blueText fs16">分享列表</p>
+<table id="listWrapper" class="table striped hovered border">
+	<thead>
+		<tr>
+			<th class="text-center">资源名称</th>
+			<th class="text-center">资源类型</th>
+			<th class="text-center">资源查看次数</th>
+			<th class="text-center">资源微信分享次数</th>
+			<th class="text-center">资源微信分享时间</th>
+		</tr>
+	</thead>
+	<tbody id="body">
+		<volist name="list" id="data" empty="暂时没有账户数据">
+			<tr>
+				<td class="text-center" title="{$item.school_name}">
+					{$data.name}
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+
+					<if condition="$data.type eq 1 ">京版资源
+						<else /> 京版活动
+					</if>
+				</td>
+				<td class="text-center" title="{$item.school_name}">
+					{$data.browse_count}
+				</td>
+				<td class="text-center" title="{$item.school_code}">
+					{$data.count}
+				</td>
+				<td class="text-center">
+					{$data.create_at|date="Y-m-d H:i",###}
+				</td>
+			</tr>
+		</volist>
+	</tbody>
+</table>
+
+<script src="__PUBLIC__/laydate/laydate.js"></script>
+<script>
+	$(document).ready(function () {
+		$('#listWrapper').DataTable({
+			"scrollCollapse": true,
+			"paging": false,
+			"bSort": false,
+			"aoColumns": [
+				{"width": "7%"},
+				{"width": "10%"},
+				{"width": "15%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "8%"},
+				{"width": "10%"},
+				{"width": "10%"}
+            ]
+		});
+	});
+</script>
+
+<script>
+   !function(){
+		laydate.skin('yalan');//切换皮肤，请查看skins下面皮肤库
+	}();
+
+	//活动起始时间
+	var actstart = {
+		elem: '#startTime',
+		format: 'YYYY-MM-DD ',
+//		min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 actend.min = datas; //开始日选好后，重置结束日的最小日期
+			 actend.start = datas; //将结束日的初始值设定为开始日
+		}
+	};
+
+	var actend = {
+		elem: '#endTime',
+		format: 'YYYY-MM-DD ',
+//		min: laydate.now(),
+		max: '2099-06-16',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			actstart.max = datas; //结束日选好后，充值开始日的最大日期
+		}
+	};
+	laydate(actstart);
+	laydate(actend);
+
+	$('.resetButton').click(function() {
+		window.location.href="{:U('Orderdata/orderList')}";
+	})
+</script>

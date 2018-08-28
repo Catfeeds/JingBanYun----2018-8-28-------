@@ -1,0 +1,129 @@
+<layout name="teacher_layout"/>
+<style>
+    .form_section {
+        margin-bottom: 12px;
+    }
+</style>
+
+<div style="margin-bottom: 12px;">
+    <a href="javascript:window.history.go(-1)" title="返回">&lt; 返回</a>
+</div>
+<form action="__URL__/assignHomework" method="post" data-role="validator"
+      data-on-error-input="notifyOnErrorInput" data-show-error-hint="true">
+    <table style="width: 100%;border-collapse: collapse;" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="400" valign="top">
+                <div class="form_section">
+                    <label for="homework_name">作业名称</label>
+
+                    <div class="input-control text full-size">
+                        <input type="text" name="homework_name" id="homework_name" class="form-control" data-validate-func="required"
+                               data-validate-hint="作业名称不能为空">
+                    </div>
+                </div>
+
+                <div class="form_section" style="height: 146px">
+                    <label for="claim">作业要求</label>
+
+                    <div class="input-control text full-size">
+                        <textarea id="claim" name="claim" rows="3" class="form-control" ></textarea>
+                    </div>
+                </div>
+
+
+                <div class="form_section">
+                    <label for="grade_id">选择年级</label>
+
+                    <div class="input-control text full-size">
+                        <select id="grade_id" name="grade_id" onchange="getTextbooks()" class="form-control"
+                                data-validate-func="required" data-validate-hint="关联年级不能为空">
+                            <option value="">-请选择-</option>
+                            <volist name="grades" id="dataGrade" empty="">
+                                <option value="{$dataGrade.id}">{$dataGrade.grade}</option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="course_id">选择课程</label>
+
+                    <div class="input-control text full-size">
+                        <select id="course_id" name="course_id" onchange="getTextbooks()" class="form-control"
+                                data-validate-func="required" data-validate-hint="关联学科不能为空">
+                            <option value="">-请选择-</option>
+                            <volist name="courses" id="dataCourse" empty="">
+                                <option value="{$dataCourse.id}">{$dataCourse.code} :
+                                    {$dataCourse.course_name}
+                                </option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="course_id">选择班级</label>
+
+                    <div class="input-control text full-size">
+                        <select id="class_id" name="class_id" class="form-control"
+                                data-validate-func="required" data-validate-hint="班级不能为空">
+                            <option value="">-请选择-</option>
+                            <volist name="classes" id="dataClass" empty="">
+                                <option value="{$dataClass.id}">{$dataClass.name}
+                                </option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+                <div class="form_section">
+                    <label for="textbook_id">选择教材</label>
+
+                    <div class="input-control text full-size">
+                        <select id="textbook_id" name="textbook_id" data-validate-func="required" class="form-control"
+                                data-validate-hint="关联教材不能为空" onchange="showExerciseLibrary()">
+                            <option value="">-请选择-</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions" style="text-align: left; ">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+
+            </td>
+            <td valign="top">
+                <div style="margin-left: 20px;border-left: 1px solid #ccc;padding-left: 20px;">
+                    <div id="exerciseLibraryTitle" style="font-weight: 600;">请先选择教材，然后从习题库选择作业题</div>
+                    <div id="exerciseLibraryList" style="margin-top: 20px;color: #333;display: none;">
+                        <div style="margin: 20px 0;padding: 4px; cursor: pointer;" onclick="chooseHomework(this)">
+                            三年级英语（下）Unit 1达标卷
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+    </table>
+</form>
+<script>
+
+
+    function showExerciseLibrary() {
+        var textbookId = $('#textbook_id').val();
+        if (textbookId != '') {
+            $('#exerciseLibraryList').show();
+        }
+    }
+</script>
+
+<script>
+    function notifyOnErrorInput(input) {
+        var message = input.data('validateHint');
+        $.Notify({
+            caption: '提示',
+            content: message,
+            type: 'warning'
+        });
+    }
+    function chooseHomework(obj) {
+        $(obj).css({'background': 'green', 'color': '#fff'});
+    }
+</script>

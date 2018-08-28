@@ -1,0 +1,191 @@
+<layout name="admin_layout" />
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+<style>
+    #acclist {
+        margin: 30px 0;
+        padding: 0 20%;
+        line-height: 50px;
+        font-size: 16px;
+    }
+    
+    #acclist select {
+        width: 40%;
+        margin-left: 10%;
+        padding: 10px
+    }
+    
+    .form_section {
+        margin-top: 10px
+    }
+    
+    .lab {
+        width: 120px;
+        display: inline-block;
+    }
+    #control {
+        width: 70%;
+        margin-left: 10%;
+        display: inline-block;
+    }
+    
+    #control span {
+        display: inline-block;
+        width: 33%
+    }
+    
+    #control input {
+        margin-left: 15px
+    }
+    
+    #innerlist{
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid rgb(169,169,169);
+    }
+    #none {
+        float: right;
+        color: #dd1040;
+        font-size: 18px;
+        cursor: pointer
+    }
+    
+    .checkboxstyle {
+        width: 20px;
+        height: 20px;
+    }
+    
+    #innerlist p {
+        margin: 0;
+        line-height: 30px;
+    }
+    
+    .left {
+        float: left;
+    }
+    
+    .line40 {
+        line-height: 40;
+    }
+    
+    .arrow {
+        cursor: pointer
+    }
+    
+    .contentlist {
+        display: block;
+    }
+</style>
+<div>
+    <div><a href="{:U('Account/accountList')}" class="button info">返回账户列表</a></div>
+</div>
+
+<form action="{:U('Account/saveNodeData')}" method="post">
+<div id="acclist">
+    <div class="form_section">
+        <span for="" class="lab"> 权限类型</span>
+        <select name="auth_id" id="">
+            <volist name="auth_list" id="auth">
+                <option value="{$auth.id}" {$auth.id==1?'selected':''} >{$auth.auth_name}</option>
+            </volist>
+        </select>
+    </div>
+    <div class="form_section">
+        <span for="" class="lab">用户角色</span>
+        <select name="user_type_id" id="">
+            <volist name="user_type_list" id="usertype">
+                <option value="{$usertype.id}">{$usertype.type_name}</option>    
+            </volist>
+        </select>
+    </div>
+    <div class="form_section" style="position:relative">
+        <span for="" class="lab">可使用功能模块</span>
+    </div>
+    <div id="innerlist">
+        <p style="padding-left:12px">
+            <input type="checkbox" class="checkboxstyle check_all">全部</p>
+
+            <volist name="node_list" id="node">
+                <div style="overflow:hidden">
+                    <div class="left padding10">
+                        <p>
+                            <input type="checkbox" name="node_id[]" value="{$node.id}" class="checkboxstyle check_child fcheck">{$node.node_name}
+                        </p>
+                    </div>
+                    <div class="left padding10 arrow arrow">
+                        <p>></p>
+                    </div>
+                    <div class="left padding10 contentlist">
+                        <volist name="node.child_data" id="child_data">
+                            <p><input type="checkbox" name="node_id[]" value="{$child_data.id}" class="checkboxstyle check_child">{$child_data.node_name}</p>
+                        </volist>
+                    </div>
+                </div>
+            </volist>
+    </div>
+    <div style="margin-top:20px">
+        <button type="submit" class="button info">保存</button>
+    </div>
+    <!--弹出面板-->
+</div>
+</form>
+
+
+<script>
+    var index = 0
+        //点击一级模块旁边箭头显示隐藏二级模块
+    $('.arrow').click(function () {
+        index++;
+        if (index % 2 != 1) {
+            $(this).next('div').show();
+        } else {
+            $(this).next('div').hide();
+        }
+    })
+
+
+     //全选和反选中
+    $('.check_all').click(function(){
+        var all_checkbox=$('.check_child');
+        var length=all_checkbox.length;
+        var temp_status=true;
+        if($(this)[0].checked==true){
+            //本次选中
+            temp_status=true;
+        }else{
+            //本次取消
+            temp_status=false;
+        }
+        for(var i=0;i<length;i++){
+            all_checkbox[i].checked=temp_status
+        }
+    });
+
+    //点击取消选中
+    $('.check_child').click(function(){
+        $(this).parent().parent().css('color','');
+        if ($(this).attr('checked') =='checked') {
+            $(this).parent().parent().prev().prev().css('color','red');
+            $(this).parent().parent().prev().prev().find('input').attr('checked',true);
+        }
+        
+    });
+
+    //一级选框点击取消  同时取消所有的子节点
+    $('.fcheck').click(function(){
+        if ($(this).attr('checked') !='checked') {
+            $(this).parent().parent().next().next().find('input').attr('checked',false);
+        }
+    })
+
+    $('.checkboxstyle').click(function(){
+        if ($(this).attr('checked') !='checked') {
+            $('.check_all').attr('checked',false);
+        } else {
+
+            if($("input[type='checkbox']:checked").length >= 18) {
+                $('.check_all').attr('checked',true);
+                $('.checkboxstyle').attr('checked',true);
+            }
+        }
+    })
+</script>

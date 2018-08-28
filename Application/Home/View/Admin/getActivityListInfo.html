@@ -1,0 +1,72 @@
+<?php if (!empty($registerDetails)): ?>
+<volist name="registerDetails" id="item">
+    <tr id="l_{$item.id}">
+        <if condition = "$activity.class_parent_id eq 5">
+        <input value="{$item.id}" class="hidden_input_id" type="hidden"/>
+        <td>
+            {$item.name}
+        </td>
+        <td class="text-center">
+            {$item.telephone}
+        </td>
+        <td class="text-center">
+            {$item.course_name}
+        </td>
+        <td class="text-center">
+            {$item.grade}{$item.bname}
+        </td>
+        <td>
+            {$item.school_name}
+        </td>
+        <td>
+            {$item.lesson}
+        </td>
+        <td class="text-center">
+            {$item.register_at|date="Y-m-d H:i",###}
+        </td>
+        <td class="text-center">
+            {$item.invitation_code}
+        </td>
+        <td class="text-center">
+            <?php if (!empty($item['status'])): ?>
+                <?php if ($item['status'] == 1): ?>
+                通过
+                <?php else: ?>
+                <?php if ($item['status'] == 2): ?>
+                    拒绝
+                <?php else: ?>
+                    待审核
+                <?php endif ?>
+
+                <?php endif ?>
+            <?php else: ?>
+
+            <?php endif ?>
+        </td>
+        <td class="text-center">
+            {$item.point}
+        </td>
+        <td class="text-center">
+
+            <a href="{:U('Admin/lookRanking?id=')}{$item.id}" class="button">查看</a>
+            <?php if($item['status'] == 1) : ?>
+            <a href="javascript:;" class="button activityMark" id-save="{$item.id}">设置奖项</a>
+            <?php endif; ?>
+
+        </td>
+            <else />
+            <td>
+                {$item.name}
+            </td>
+            <td class="text-center">
+                手机: {$item.telephone}&nbsp;&nbsp; 邮箱:{$item.email}&nbsp;&nbsp;报名信息:{$item.register_info}
+            </td>
+            <td class="text-center">
+                {$item.register_at|date="Y-m-d H:i",###}
+            </td>
+        </if>
+    </tr>
+</volist>
+<?php else: ?>
+<tr><td class="text-center" colspan="11">暂无数据</td></tr>
+<?php endif ?>

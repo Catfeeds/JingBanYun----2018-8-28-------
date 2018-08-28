@@ -1,0 +1,174 @@
+<layout name="admin_layout_back"/>
+<link href="__PUBLIC_METRO__/css/app/table_list.css?v=4.0" type="text/css" rel="stylesheet">
+
+<style>
+
+</style>
+
+<div class="titleBox">
+	<p class="blueText fs18 underline1">
+		数据字典分类
+		<span class="blueSpan">
+			<a href="javascript:;">数据字典管理</a>>>
+			<a href="javascript:;">活动类型管理</a>
+		</span>
+	</p>
+	<div class="underline2"></div>
+</div>
+
+<!--<div class="blueBox">
+	<span class="blueText left fs16">查看分类信息</span>
+</div>
+<hr class="thin bg-grayLighter"> 
+
+<div class="grid condensed">
+	<div class="row cells3 infoBox">
+		<div class="cell">分类编号：Resource sytle</div>
+		<div class="cell">标签名称：资源类型</div>
+		<div class="cell">用处：京版资源-检索分类</div>
+	</div>
+</div>-->
+
+<form action="">
+	<div class="grayBox">
+		<div class="left">
+			<span class="btns" id="addBtn">
+				<img src="{$oss_path}public/web_img/Admin/icon-add.png" alt=""> 
+				<a href="javascript:;">新增分类</a>
+			</span>
+		</div>
+	</div>
+	
+	<p class="blueText fs16">分类列表</p>
+	<table id="listWrapper" class="table striped hovered border">
+		<thead>
+			<tr>
+				<th class="text-center">序号</th>
+				<th class="text-center">分类名称</th>
+				<th class="text-center">父级板块</th>
+				<th class="text-center">所属板块</th>
+				<th class="text-center">操作</th>
+			</tr>
+		</thead>
+		<tbody id="body">
+		<volist name="list" id="data">
+			<tr>
+				<td class="text-center">
+					{$i}
+				</td>
+				<td class="text-center">
+					{$data.class}
+				</td>
+				<td class="text-center">
+					{$data.parent_class}
+				</td>
+				<td class="text-center">
+					京版活动
+				</td>
+				<td class="text-center">
+					<a href="javascript:;" class="operBtn modifyBtn" id="" attr_parent_id="{$data.parent_id}" attr_id="{$data.id}" attr_parms="{$data.class}">修改</a>
+				</td>
+			</tr>
+		</volist>
+		</tbody>
+	</table>
+	<div class="Pagination">{$page}</div>
+</form>
+
+<!--新增子分类-->
+<div class="fullscr1" id="addSort">
+	<div class="adminNotifyBox1">
+		<div class="adminNotifyTitle">新增分类</div>
+		<div class="adminNotifyContent">
+			<div class="adminSelect pt20">
+				<input type="hidden" id="addEditId"/>
+				<div class="selectBox mb10">
+				<label for="">父级分类</label>
+				<select id="selectOption">
+                  <option></option>
+				</select>
+					</div>
+				<div class="selectBox mb10">
+					<label for="">类型名称：</label>
+					<input type="text" class="input-control" name="" value="" id="typeName" placeholder="请输入类型名称">
+				</div>
+			</div>
+			<p class="adminNotifyButton">
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="sure">确定</a>
+				<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="cancel">取消</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+
+
+<script src="__PUBLIC__/js/notify/adminNotify.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#listWrapper').DataTable({
+            "scrollCollapse": true,
+            "paging": false,
+            "bSort": false,
+            "aoColumns":[
+                {"width":"20%"},
+				{"width":"20%"},
+				{"width":"20%"},
+                {"width":"20%"},
+                {"width":"20%"}
+            ]
+        });
+    });
+</script>
+
+<script>
+
+	//添加修改分类
+	$('.modifyBtn,#addBtn').click(function () {
+        var id=$(this).attr('attr_id');
+		var attr_parent_id = $(this).attr('attr_parent_id');
+		if(undefined == id) // add
+		{
+			$("#addEditId").val('');
+			id = 0;
+			$("#typeName").val('');
+			$('.adminNotifyTitle').text('新增分类');
+		}
+		else {
+			var type_name = $(this).attr('attr_parms');
+			$("#typeName").val(type_name);
+			var id = $(this).attr('attr_id');
+			$("#addEditId").val(id);
+			$('.adminNotifyTitle').text('修改分类');
+		}
+		$.post('__URL__/getAvailableActivityClass',{id:id},function(res){
+                res = eval('(' + res + ')');
+			    var tplone = '<option value="{1}" data-id="{1}" data-name="{0}" selected >{0}</option>';
+			    var html = [];
+			    var emptyOption = '<option value="0" >-无-</option>';
+			    html.push(emptyOption);
+			    $.each(res.data,function(i,n){
+					html.push(tplone.format(n.class, n.id));
+				});
+			    $('#selectOption').html(html.join(''));
+			    $('#selectOption').val(attr_parent_id);
+				})
+        $('#addSort').show();
+    });
+	$('#sure').click(function () {
+        var id=$('#addEditId').val();
+		var parentId = $("#selectOption").val();
+        var typeName = $("#typeName").val();
+        $.getJSON('index.php?m=Admin&c=Activities&a=addEditClass',{'id':id,'parentId':parentId,'typeName':typeName},function (data) {
+			if(data.status == 200){
+			    history.go();
+			}else{
+			    alert('添加修改失败，请稍后重试');
+			}
+        });
+    });
+	$('#cancel').click(function(){
+		$('#addSort').hide()
+	})
+</script>

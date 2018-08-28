@@ -1,0 +1,1350 @@
+<layout name="admin_layout_back"/>
+<link rel="stylesheet" href="__PUBLIC__/css/external/jquery-ui-1.10.4.min.css">
+<link rel="stylesheet" href="__PUBLIC__/bootstrap/css/bootstrap.css">
+<script src="__PUBLIC__/js/jquery-2.1.1.min.js"></script>
+<script src="__PUBLIC__/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" src="__PUBLIC__/new_ueditor/ueditor/ueditor.all.js"></script>
+
+<style>
+	ul {
+		list-style: none;
+	}
+
+	.form_section {
+		margin-bottom: 12px;
+	}
+	html, body, * {
+		box-sizing: inherit;
+	}
+
+	.exampl{
+		content: attr(data-text);
+		text-transform: lowercase;
+		left: 1.5rem;
+		top: 11.875rem;
+		color: gray;
+		display: block;
+		font-size: 1rem;
+		line-height: 1rem;
+		height: 2rem;
+		text-align: right;
+		white-space: nowrap;
+		direction: ltr;
+		width: 1.5rem;
+	}
+
+	.moreImg {
+		height: 1.75rem
+	}
+
+	.infoContent {
+		border: 1px solid #333;
+	}
+
+	.infoP {
+		margin: 0 !important;
+		margin-bottom: 5px !important;
+	}
+
+	.infoCheckbox {
+		width: 16px;
+		height: 16px;
+		margin-top: -3px;
+		margin-right: 5px;
+	}
+
+	.infoRole {
+		margin-bottom: 10px;
+	}
+
+	#myTab {
+		margin: 0;
+	}
+
+	#myTabContent {
+		background: #fff;
+		padding-bottom: 50px
+	}
+
+	.listview {
+		box-sizing: border-box;
+	}
+
+	.fs14 {
+		font-size: 14px
+	}
+
+	.num {
+		margin: 0;
+		padding: 0;
+		margin: 10px 0 0 10px
+	}
+
+	.tabContent {
+		background: #eee;
+	}
+
+	.roleButton {
+		box-sizing: border-box;
+	}
+
+	.infoRole span {
+		font-size: 16px;
+		display: inline-block;
+		margin-right: 10px;
+	}
+</style>
+
+<div style="margin-bottom: 12px;">
+	<a href="javascript:window.history.go(-1)" title="返回" class="button primary {:session('btntheme')}" style="box-sizing:border-box;">&lt; 返回 消息列表</a>
+</div>
+<div class="" style="padding-right: 100px;">
+	<div class="example" >
+		<span class="exampl">消息接收人</span>
+		<div class="infoRole">
+			<?php if ( in_array(2,explode(',',$messageInfo['role_id'])) ): ?>
+			<span>教师</span>
+			<?php endif ?>
+
+			<?php if ( in_array(3,explode(',',$messageInfo['role_id'])) ): ?>
+			<span>学生</span>
+			<?php endif ?>
+
+			<?php if ( in_array(4,explode(',',$messageInfo['role_id'])) ): ?>
+			<span>家长</span>
+			<?php endif ?>
+
+			<a href="javascript:;" class="detail">去查看>></a>
+		</div>
+
+		<div class="listview set-border padding20 tabContent" style="display: none">
+			<ul id="myTab" class="nav nav-tabs">
+				<?php if ( in_array(2,explode(',',$messageInfo['role_id'])) ): ?>
+				<li class="{$is_teacher_active} isshowactive" attr-id="2">
+					<a href="#teacherTab" data-toggle="tab">
+						教师
+					</a>
+				</li>
+				<?php endif ?>
+
+				<?php if ( in_array(3,explode(',',$messageInfo['role_id'])) ): ?>
+				<li onclick="stutab()" class="{$is_stu_active} isshowactive" attr-id="3">
+					<a href="#studentTab" data-toggle="tab">
+						学生
+					</a>
+				</li>
+				<?php endif ?>
+
+				<?php if ( in_array(4,explode(',',$messageInfo['role_id'])) ): ?>
+				<li onclick="parenttab()" class="{$is_parent_active} isshowactive" attr-id="4">
+					<a href="#parentTab" data-toggle="tab">
+						家长
+					</a>
+				</li>
+				<?php endif ?>
+			</ul>
+			<div id="myTabContent" class="tab-content padding10">
+				<!--教师教师教师-->
+				<div class="tab-pane fade {$is_teacher_active_show}" id="teacherTab">
+
+					<div class="padding10">
+
+						<div class="grid condensed searchbar">
+							<div class="row cells3 cellBox">
+								<div class="cell">
+									<label>姓名：</label>
+									<input type="text" class="input-control teacher_name" placeholder="请输入姓名">
+								</div>
+								<div class="cell">
+									<label>手机：</label>
+									<input type="text" class="input-control teacher_telephone" placeholder="请输入手机号">
+								</div>
+								<!--
+                                                                    <div class="cell">
+                                                                        <label>所在学校：</label>
+                                                                        <select id="school_id" class="input-control" name="school_id">
+                                                                            <option value="">-请选择-</option>
+                                                                            <volist name="school_result" id="school_item" empty="暂时没有学校">
+                                                                                <option  value={$school_item.id} <if condition="$school_item['id']==$school"> selected="true"</if>  >{$school_item.school_name}</option>
+                                                                            </volist>
+                                                                        </select>
+                                                                    </div>
+                                -->
+								<div id="province" class="cell">
+									<label>省份：</label>
+									<select name="province_id" id="pro_select" class="searchCondition input-control">
+										<option value="">-请选择-</option>
+									</select>
+								</div>
+								<div id="city" class="cell">
+									<label>市区：</label>
+									<select name="city_id" id="city_select" class="searchCondition input-control">
+										<option value="">-请选择-</option>
+									</select>
+								</div>
+								<div id="country" class="cell">
+									<label>区县：</label>
+									<select name="country_id" id="coun_select" class="searchCondition input-control">
+										<option value="">-请选择-</option>
+									</select>
+								</div>
+								<div id="school" class="cell">
+									<label>学校：</label>
+									<select name="school_id" id="sch_select" class="searchCondition input-control">
+										<option value="">-请选择-</option>
+									</select>
+								</div>
+								<div class="cell">
+									<label>学科：</label>
+									<select id="teacher_course_id" class="input-control" name="course_id" onchange="{$filterSelect['textbook'] == 1 ? 'getTextbooks()':''}" class="searchCondition">
+										<!--TODO: getTextbooks parameters-->
+										<option value="">-请选择学科-</option>
+										<volist name="courses" id="dataCourse">
+											<option value="{$dataCourse.id}">
+												{$dataCourse.code} : {$dataCourse.course_name}
+											</option>
+										</volist>
+									</select>
+								</div>
+								<div class="cell">
+									<label>年级：</label>
+									<select id="teacher_grade_id" class="input-control" name="grade_id" onchange="getTextbooks()">
+										<option value="">-请选择-</option>
+										<volist name="grades" id="dataGrade">
+											<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+											{$dataGrade.grade}
+											</option>
+										</volist>
+									</select>
+								</div>
+								<div class="cell">
+									<label>账户状态：</label>
+									<select id="teacher_lock_status" class="searchCondition input-control">
+										<option value='0'>-请选择状态-</option>
+										<option value="1" <if condition="$status==1">selected</if> >审核等待中</option>
+										<option value="2" <if condition="$status==2">selected</if> >账号已锁定</option>
+										<option value="3" <if condition="$status==3">selected</if> >审核已通过</option>
+										<option value="4" <if condition="$status==4">selected</if> >审核已拒绝</option>
+									</select>
+								</div>
+								<div class="cell">
+									<label>权限类型：</label>
+									<select id="teacher_vip_type" class="input-control" name="type">
+										<option value="">-请选择-</option>
+										<option value="2">普通用户</option>
+										<option value="4">个人VIP</option>
+										<option value="3">团体VIP</option>
+									</select>
+								</div>
+								<div class="cell">
+									<label>到期时间：</label>
+									<input type="text" name="time_id" class="input-control teacher_time_id" id="datepicker_t" class="datepicker" placeholder="到期时间" autocomplete="off">
+								</div>
+
+								<div class="cell">
+									<label>&nbsp;</label>
+									<button type="submit" class="button fs14" onclick="teacher_search()" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+								</div>
+							</div>
+						</div>
+
+
+						<table id="listWrapper" class="table striped hovered border">
+							<thead>
+							<tr>
+								<th style="width:10%" class="text-center">教师姓名</th>
+								<th style="width:8%" class="text-center">性别</th>
+								<th style="width:10%" class="text-center">手机号</th>
+								<th style="width:10%" class="text-center">注册时间</th>
+								<th style="width:16%" class="text-center">所在学校</th>
+								<th style="width:8%" class="text-center">权限类型</th>
+								<th style="width:10%" class="text-center">到期时间</th>
+								<th style="width:10%" class="text-center">邮箱</th>
+								<th style="width:8%" class="text-center">积分</th>
+								<th style="width:10%" class="text-center">状态</th>
+							</tr>
+							</thead>
+							<tbody class="teacherhtml">
+							<tr><td class="text-center" colspan="12">努力加载中...</td></tr>
+							</tbody>
+						</table>
+
+						<div class="Pagination teacherPage"></div>
+					</div>
+				</div>
+				<!--学生学生学生-->
+				<div class="tab-pane fade {$is_stu_active_show}" id="studentTab">
+
+					<div class="padding10">
+
+						<div class="grid condensed searchbar">
+							<div class="row cells3 cellBox">
+								<div class="cell">
+									<label>姓名：</label>
+									<input type="text" class="input-control stuname" placeholder="请输入姓名">
+								</div>
+								<div class="cell">
+									<label>家长手机号：</label>
+									<input type="text" class="input-control stuparentphone" name="" value="" placeholder="请输入手机号">
+								</div>
+								<!--
+                                                                    <div class="cell">
+                                                                        <label>所在学校：</label>
+                                                                        <select id="school_id" class="input-control" name="school_id">
+                                                                            <option value="">-请选择-</option>
+                                                                            <volist name="school_result" id="school_item" empty="暂时没有学校">
+                                                                                <option  value={$school_item.id} <if condition="$school_item['id']==$school"> selected="true"</if>  >{$school_item.school_name}</option>
+                                                                            </volist>
+                                                                        </select>
+                                                                    </div>
+                                -->
+								<div id="stu_province" class="cell">
+									<label>省份：</label>
+									<select name="province_id" id="stu_pro_select" class="searchCondition input-control">
+										<option value="">-请选择-</option>
+									</select>
+								</div>
+								<div id="stu_city" class="cell">
+									<label>市区：</label>
+									<select name="city_id" id="stu_city_select" class="searchCondition input-control">
+										<option value="">-请选择-</option>
+									</select>
+								</div>
+								<div id="stu_country" class="cell">
+									<label>区县：</label>
+									<select name="country_id" id="stu_coun_select" class="searchCondition input-control">
+										<option value="">-请选择-</option>
+									</select>
+								</div>
+								<div id="stu_school" class="cell">
+									<label>学校：</label>
+									<select name="school_id" id="stu_sch_select" class="searchCondition input-control">
+										<option value="">-请选择-</option>
+									</select>
+								</div>
+								<div class="cell">
+									<label>年级：</label>
+									<select id="stu_grade_id" class="input-control" name="grade_id" onchange="getTextbooks()">
+										<option value="">-请选择-</option>
+										<volist name="grades" id="dataGrade">
+											<option value="{$dataGrade.id}" {$dataGrade['id']==$grade_id?'selected':''}>
+											{$dataGrade.grade}
+											</option>
+										</volist>
+									</select>
+								</div>
+								<div class="cell">
+									<label>权限类型：</label>
+									<select id="stu_type" class="input-control" name="type">
+										<option value="">-请选择-</option>
+										<option value="2">普通用户</option>
+										<option value="4">个人VIP</option>
+										<option value="3">团体VIP</option>
+									</select>
+								</div>
+								<div class="cell">
+									<label>到期时间：</label>
+									<input type="text" name="stu_time_id" class="input-control stu_time_id" id="datepicker_s" class="datepicker" placeholder="到期时间" autocomplete="off">
+								</div>
+								<div class="cell">
+									<label>账户状态：</label>
+									<select id="stu_lock_status" class="input-control">
+										<option value='0'>-请选择状态-</option>
+										<option value="1">正常</option>
+										<option value="2">锁定</option>
+									</select>
+								</div>
+
+								<div class="cell">
+									<label>&nbsp;</label>
+									<button type="submit" class="button fs14" onclick="stu_search()" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+								</div>
+							</div>
+						</div>
+
+						<table id="stulistWrapper" class="table striped hovered border">
+							<thead>
+							<tr>
+								<th style="width: 8%" class="text-center">学生姓名</th>
+								<th style="width: 7%" class="text-center">性别</th>
+								<th style="width: 8%" class="text-center">家长姓名</th>
+								<th style="width: 8%" class="text-center">学生编号</th>
+								<th style="width: 8%" class="text-center">出生年月</th>
+								<th style="width: 14%" class="text-center">所在学校</th>
+								<th style="width: 8%" class="text-center">注册时间</th>
+								<th style="width: 8%" class="text-center">邮箱</th>
+								<th style="width: 8%" class="text-center">家长手机号</th>
+								<th style="width: 8%" class="text-center">权限类型</th>
+								<th style="width: 8%" class="text-center">到期时间</th>
+								<th style="width: 7%" class="text-center">状态</th>
+							</tr>
+							</thead>
+							<tbody class="stulist">
+							<tr><td class="text-center" colspan="13">努力加载中...</td></tr>
+							</tbody>
+						</table>
+
+						<div class="Pagination stupage"></div>
+					</div>
+				</div>
+				<!--家长家长家长-->
+				<div class="tab-pane fade {$is_parent_active_show}" id="parentTab">
+					<div class="padding10">
+
+						<div class="grid condensed searchbar">
+							<div class="row cells3 cellBox">
+								<div class="cell">
+									<label>姓名：</label>
+									<input type="text" class="input-control parent_name" placeholder="请输入姓名">
+								</div>
+								<div class="cell">
+									<label>手机：</label>
+									<input type="text" class="input-control parent_phone" placeholder="请输入手机号">
+								</div>
+								<div class="cell">
+									<label>账户状态：</label>
+									<select id="parent_lock_status" class="input-control">
+										<option value='0'>-请选择状态-</option>
+										<option value="1">正常</option>
+										<option value="2">锁定</option>
+									</select>
+								</div>
+								<div class="cell">
+									<label>权限类型：</label>
+									<select id="parent_type" class="input-control" name="type">
+										<option value="">-请选择-</option>
+										<option value="2">普通用户</option>
+										<option value="4">个人VIP</option>
+										<option value="3">团体VIP</option>
+									</select>
+								</div>
+								<div class="cell">
+									<label>到期时间：</label>
+									<input type="text" name="parent_time_id" class="input-control parent_time_id" id="datepicker_p" class="datepicker" placeholder="到期时间" autocomplete="off">
+								</div>
+
+								<div class="cell">
+									<label>&nbsp;</label>
+									<button type="submit" class="button fs14" onclick="parent_search()" style="margin:.325rem 0"><span class="mif-search"></span> 搜索</button>
+								</div>
+							</div>
+						</div>
+
+
+						<table class="table striped hovered border">
+							<thead>
+							<tr>
+								<th style="width:10%" class="text-center">家长姓名</th>
+								<th style="width:9%" class="text-center">性别</th>
+								<th style="width:18%" class="text-center">学生姓名</th>
+								<th style="width:11%" class="text-center">手机号</th>
+								<th style="width:11%" class="text-center">注册时间</th>
+								<th style="width:12%" class="text-center">邮箱</th>
+								<th style="width:9%" class="text-center">权限类型</th>
+								<th style="width:11%" class="text-center">到期时间</th>
+								<th style="width:9%" class="text-center">状态</th>
+							</tr>
+							</thead>
+							<tbody id="body" class="parenthtml">
+							<tr><td class="text-center" colspan="13">努力加载中...</td></tr>
+							</tbody>
+						</table>
+						<input type="hidden" value="{$role}" id="role_id" />
+						<div class="Pagination parentpage"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<br>
+	<?php if ($messageInfo['receive_type'] != 2): ?>
+	<div class="example message_title_is_show" >
+		<span class="exampl">消息推送头</span>
+		<div class="cell">
+			<label>消息推送头：</label>
+			<div class="listview set-border padding10">
+				{$messageInfo.title|default=''}
+			</div>
+		</div>
+	</div>
+	<?php endif ?>
+	<br>
+	<div class="example" >
+		<span class="exampl">消息内容</span>
+		<div class="listview set-border padding10">
+			{$messageInfo.message_content|default=''}
+		</div>
+	</div>
+	<br>
+	<div class="example" >
+		<span class="exampl">消息接收方式</span>
+		<p class="infoP"><input type="checkbox" class="infoCheckbox apppush"
+			<?php if ($messageInfo['receive_type'] != 2): ?>
+			checked
+			<?php endif ?>
+		>APP推送</label></p>
+		<p class="infoP"><input type="checkbox" class="infoCheckbox" checked disabled>个人中心--我的消息</label></p>
+	</div>
+
+	<input type="hidden" class="message_id_send" value="{$messageInfo.id}">
+	<input type="hidden" class="is_first_teacher" value="1">
+	<input type="hidden" class="is_first_parent" value="1">
+</div>
+
+
+<script src="__PUBLIC__/js/external/jquery-ui-1.10.4.min.js"></script>
+<script src="__PUBLIC__/js/DistrictQuery.js" type="text/javascript"></script>
+
+
+<script>
+	function notifyOnErrorInput(input) {
+		var message = input.data('validateHint');
+		$.Notify({
+			caption: '提示',
+			content: message,
+			type: 'warning'
+		});
+	}
+</script>
+
+<!--------------日历----------------->
+<script>
+	$(function () {
+		$("#datepicker_t,#datepicker_s,#datepicker_p").datepicker({
+			showButtonPanel: true,
+			changeMonth: true,
+			changeYear: true,
+			dateFormat: "yy-mm-dd",
+//			maxDate: '0',
+			yearRange: "1950:2050"
+		});
+	});
+</script>
+<script>
+	jQuery(function ($) {
+		$.datepicker.regional['zh-CN'] = {
+			clearText: '清除',
+			clearStatus: '清除已选日期',
+			closeText: '关闭',
+			closeStatus: '不改变当前选择',
+			prevText: '<上月',
+			prevStatus: '显示上月',
+			prevBigText: '<<',
+			prevBigStatus: '显示上一年',
+			nextText: '下月>',
+			nextStatus: '显示下月',
+			nextBigText: '>>',
+			nextBigStatus: '显示下一年',
+			currentText: '今天',
+			currentStatus: '显示本月',
+			monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthNamesShort: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+			monthStatus: '选择月份',
+			yearStatus: '选择年份',
+			weekHeader: '周',
+			weekStatus: '年内周次',
+			dayNames: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+			dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+			dayStatus: '设置 DD 为一周起始',
+			dateStatus: '选择 m月 d日, DD',
+			dateFormat: 'yy-mm-dd',
+			firstDay: 1,
+			initStatus: '请选择日期',
+			isRTL: false
+		};
+		$.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+	});
+</script>
+
+<script>
+	bindQueryDistrictEvent("/Home/Teach", 'stu_pro_select', 'stu_city_select', 'stu_coun_select', 'stu_sch_select');
+	bindQueryDistrictEvent("/Home/Teach", 'pro_select', 'city_select', 'coun_select', 'sch_select');
+	var type = $('#myTab').find('.active').attr('attr-id');
+	var message_id = $('.message_id_send').val();
+
+	if (type == "2"){ //教师
+		$.get("index.php?m=Admin&c=Message&a=getSelectAllTearch",{'message_id':message_id,'type':type},function(res){
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+			for( var i=0 ; i<provinces.length;i++ ) {
+				string += '<tr id="l_'+provinces[i].id+'">';
+				string += '<td class="text-center">'+provinces[i].name+'</td>';
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+				string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+				string += '<td class="text-center">'+provinces[i].points+'</td>';
+
+				if (provinces[i].lock == "0") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">未通过审核</span></td>';
+				}
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				}
+				if (provinces[i].lock == "2") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">通过审核</span></td>';
+				}
+				if (provinces[i].lock == "3") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">已拒绝</span></td>';
+				}
+				string += '</tr>';
+			}
+			$('.teacherhtml').html('');
+			$('.teacherhtml').html(string);
+			$('.teacherPage').html(page);
+
+		});
+	}else if (type == "3"){ //学生
+		$.get("index.php?m=Admin&c=Message&a=getSelectAllStu",{'message_id':message_id,'type':type},function(res){
+
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+
+			for( var i=0 ; i<provinces.length;i++ ) {
+				string += '<tr id="l_'+provinces[i].id+'">';
+				if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+				if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+				} else {
+					string += '<td>没有关联家长</td>';
+				}
+				string += '<td class="text-center">'+provinces[i].student_id+'</td>';
+				string += '<td class="text-center">'+provinces[i].birth_date+'</td>';
+
+				if ( typeof (provinces[i].school_name) != "undefined" && provinces[i].school_name !='' && provinces[i].school_name !=null && provinces[i].school_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+				} else {
+					string += '<td class="text-center">学校审核中</td>';
+				}
+
+
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+				string += '<td class="text-center">'+provinces[i].parent_tel+'</td>';
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				} else {
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+				}
+
+				string += '</tr>';
+			}
+			$('.stulist').html('');
+			$('.stulist').html(string);
+			$('.stupage').html(page);
+
+		});
+	}else{ //家长
+		$.get("index.php?m=Admin&c=Message&a=getSelectAllParent",{'message_id':message_id,'type':type},function(res){
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+			for( var i=0 ; i<provinces.length;i++ ) {
+				string += '<tr id="l_'+provinces[i].id+'">';
+
+				if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].parent_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+				if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				} else {
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+				}
+
+				string += '</tr>';
+			}
+			$('.parenthtml').html('');
+			$('.parenthtml').html(string);
+			$('.parentpage').html(page);
+
+		});
+	}
+
+	//搜索学生
+	function stu_search() {
+		var string = "";
+		var stuname = $(".stuname").val();
+		var stuparentphone = $(".stuparentphone").val();
+		var school_id = $('#stu_sch_select').val();
+		var stu_grade_id = $('#stu_grade_id').val();
+		var stu_lock_status = $('#stu_lock_status').val();
+		var stu_type = $('#stu_type').val();
+		var stu_time_id = $('.stu_time_id').val();
+		var stu_is_checked = $('#stu_is_checked').val();
+		var province_id = $('#stu_pro_select').val();
+		var city_id = $('#stu_city_select').val();
+		var country_id = $('#stu_coun_select').val();
+
+		if (province_id != '') {
+			string += '&province_id=' + province_id;
+		}
+		if (city_id != '') {
+			string += '&city_id=' + city_id;
+		}
+
+		if (country_id != '') {
+			string += '&country_id=' + country_id;
+		}
+
+
+		if (stuname != '') {
+			string = '&stuname=' + stuname;
+		}
+		if (stuparentphone != '') {
+			string += '&stuparentphone=' + stuparentphone;
+		}
+		if (school_id != '') {
+			string += '&school_id=' + school_id;
+		}
+		if (stu_grade_id != '') {
+			string += '&stu_grade_id=' + stu_grade_id;
+		}
+		if (stu_lock_status != '') {
+			string += '&status=' + stu_lock_status;
+		}
+		if (stu_type != '') {
+			string += '&vip_type=' + stu_type;
+		}
+		if (stu_time_id != '') {
+			string += '&stu_time_id=' + stu_time_id;
+		}
+
+		$.get("index.php?m=Admin&c=Message&a=getSelectAllStu"+string,{'message_id':message_id,'type':3},function(res){
+
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+
+			for( var i=0 ; i<provinces.length;i++ ) {
+				string += '<tr id="l_'+provinces[i].id+'">';
+				if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+				if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+				} else {
+					string += '<td>没有关联家长</td>';
+				}
+				string += '<td class="text-center">'+provinces[i].student_id+'</td>';
+				string += '<td class="text-center">'+provinces[i].birth_date+'</td>';
+
+				if ( typeof (provinces[i].school_name) != "undefined" && provinces[i].school_name !='' && provinces[i].school_name !=null && provinces[i].school_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+				} else {
+					string += '<td class="text-center">学校审核中</td>';
+				}
+
+
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+				string += '<td class="text-center">'+provinces[i].parent_tel+'</td>';
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				} else {
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+				}
+
+				string += '</tr>';
+			}
+			$('.stulist').html('');
+			$('.stulist').html(string);
+			$('.stupage').html(page);
+
+		});
+	}
+	//点击加载学生
+	function stutab(){
+		var is_first_teacher = $('.is_first_teacher').val();
+
+		if (is_first_teacher == 1) {
+			$.get("index.php?m=Admin&c=Message&a=getSelectAllStu",{'message_id':message_id,'type':3},function(res){
+
+				var provinces = res.list;
+				var page = res.page;
+				var string = "";
+
+				for( var i=0 ; i<provinces.length;i++ ) {
+					string += '<tr id="l_'+provinces[i].id+'">';
+					if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+					} else {
+						string += '<td></td>';
+					}
+					string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+					if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].student_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+					} else {
+						string += '<td>没有关联家长</td>';
+					}
+					string += '<td class="text-center">'+provinces[i].student_id+'</td>';
+					string += '<td class="text-center">'+provinces[i].birth_date+'</td>';
+
+					if ( typeof (provinces[i].school_name) != "undefined" && provinces[i].school_name !='' && provinces[i].school_name !=null && provinces[i].school_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+					} else {
+						string += '<td class="text-center">学校审核中</td>';
+					}
+
+
+					string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+					string += '<td class="text-center">'+provinces[i].email+'</td>';
+					string += '<td class="text-center">'+provinces[i].parent_tel+'</td>';
+					if (provinces[i].is_vip_auth_id == 4) {
+						string += '<td class="text-center">个人VIP</td>';
+					} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+						string += '<td class="text-center">普通权限</td>';
+					} else {
+						string += '<td class="text-center">团体VIP</td>';
+					}
+
+					if (typeof (provinces[i].vipendtime) != "undefined") {
+						string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+					} else {
+						string += '<td class="text-center"></td>';
+					}
+
+					if (provinces[i].lock == "1") {
+
+						string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+					} else {
+						string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+					}
+
+					string += '</tr>';
+				}
+				$('.stulist').html('');
+				$('.stulist').html(string);
+				$('.stupage').html(page);
+
+			});
+			$('.is_first_teacher').val('2');
+		}
+	}
+	//点击加载家长
+	function parenttab(){
+		var is_first_parent = $('.is_first_parent').val();
+		if (is_first_parent == 1) {
+			$.get("index.php?m=Admin&c=Message&a=getSelectAllParent",{'message_id':message_id,'type':4},function(res){
+				var provinces = res.list;
+				var page = res.page;
+				var string = "";
+				for( var i=0 ; i<provinces.length;i++ ) {
+					string += '<tr id="l_'+provinces[i].id+'">';
+
+					if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].parent_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+					} else {
+						string += '<td></td>';
+					}
+					string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+					if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+						string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+					} else {
+						string += '<td></td>';
+					}
+					string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+					string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+					string += '<td class="text-center">'+provinces[i].email+'</td>';
+
+					if (provinces[i].is_vip_auth_id == 4) {
+						string += '<td class="text-center">个人VIP</td>';
+					} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+						string += '<td class="text-center">普通权限</td>';
+					} else {
+						string += '<td class="text-center">团体VIP</td>';
+					}
+
+					if (typeof (provinces[i].vipendtime) != "undefined") {
+						string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+					} else {
+						string += '<td class="text-center"></td>';
+					}
+
+					if (provinces[i].lock == "1") {
+
+						string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+					} else {
+						string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+					}
+
+					string += '</tr>';
+				}
+				$('.parenthtml').html('');
+				$('.parenthtml').html(string);
+				$('.parentpage').html(page);
+
+			});
+			$('.is_first_parent').val('2');
+		}
+	}
+	//搜索家长
+	function parent_search() {
+		var string = "";
+		var parent_name = $(".parent_name").val();
+		var parent_phone = $(".parent_phone").val();
+		var parent_lock_status = $('#parent_lock_status').val();
+		var parent_type = $('#parent_type').val();
+		var parent_time_id = $('.parent_time_id').val();
+		var parent_is_checked = $('#parent_is_checked').val();
+
+		if (parent_name != '') {
+			string += '&parent_name=' + parent_name;
+		}
+		if (parent_phone != '') {
+			string += '&parent_phone=' + parent_phone;
+		}
+		if (parent_lock_status != '') {
+			string += '&status=' + parent_lock_status;
+		}
+		if (parent_type != '') {
+			string += '&parent_type=' + parent_type;
+		}
+		if (parent_time_id != '') {
+			string += '&parent_time_id=' + parent_time_id;
+		}
+
+		$.get("index.php?m=Admin&c=Message&a=getSelectAllParent"+string,{'message_id':message_id,'type':4},function(res){
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+			for( var i=0 ; i<provinces.length;i++ ) {
+				string += '<tr id="l_'+provinces[i].id+'">';
+
+				if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].parent_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+				if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				} else {
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+				}
+
+				string += '</tr>';
+			}
+			$('.parenthtml').html('');
+			$('.parenthtml').html(string);
+			$('.parentpage').html(page);
+
+		});
+
+	}
+
+	//搜索教师
+	function teacher_search() {
+		var string = "";
+		var teacher_name = $(".teacher_name").val();
+		var teacher_telephone = $(".teacher_telephone").val();
+		var school_id = $('#sch_select').val();
+		var teacher_course_id = $('#teacher_course_id').val();
+		var teacher_grade_id = $('#teacher_grade_id').val();
+		var teacher_lock_status = $('#teacher_lock_status').val();
+		var teacher_vip_type = $('#teacher_vip_type').val();
+		var teacher_time_id = $('.teacher_time_id').val();
+		var teacher_is_checked = $('#teacher_is_checked').val();
+
+		var province_id = $('#pro_select').val();
+		var city_id = $('#city_select').val();
+		var country_id = $('#coun_select').val();
+		if (province_id != '') {
+			string += '&province_id=' + province_id;
+		}
+		if (city_id != '') {
+			string += '&city_id=' + city_id;
+		}
+
+		if (country_id != '') {
+			string += '&country_id=' + country_id;
+		}
+
+		if (teacher_name != '') {
+			string = '&teacher_name=' + teacher_name;
+		}
+		if (teacher_telephone != '') {
+			string += '&teacher_telephone=' + teacher_telephone;
+		}
+		if (school_id != '') {
+			string += '&school_id=' + school_id;
+		}
+
+		if (teacher_course_id != '') {
+			string += '&course_id=' + teacher_course_id;
+		}
+		if (teacher_grade_id != '') {
+			string += '&grade_id=' + teacher_grade_id;
+		}
+		if (teacher_lock_status != '') {
+			string += '&lock_status=' + teacher_lock_status;
+		}
+		if (teacher_vip_type != '') {
+			string += '&vip_type=' + teacher_vip_type;
+		}
+		if (teacher_time_id != '') {
+			string += '&teacher_time_id=' + teacher_time_id;
+		}
+
+		$.get("index.php?m=Admin&c=Message&a=getSelectAllTearch"+string,{'message_id':message_id,'type':2},function(res){
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+			for( var i=0 ; i<provinces.length;i++ ) {
+				string += '<tr id="l_'+provinces[i].id+'">';
+				string += '<td class="text-center">'+provinces[i].name+'</td>';
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+				string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+				string += '<td class="text-center">'+provinces[i].points+'</td>';
+
+				if (provinces[i].lock == "0") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">未通过审核</span></td>';
+				}
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				}
+				if (provinces[i].lock == "2") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">通过审核</span></td>';
+				}
+				if (provinces[i].lock == "3") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">已拒绝</span></td>';
+				}
+				string += '</tr>';
+			}
+			$('.teacherhtml').html('');
+			$('.teacherhtml').html(string);
+			$('.teacherPage').html(page);
+
+		});
+	}
+
+	//分页加载教师
+	function queryList(url) {
+		$.get(url,{'message_id':message_id,'type':2},function(res){
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+			for( var i=0 ; i<provinces.length;i++ ) {
+				string += '<tr id="l_'+provinces[i].id+'">';
+				string += '<td class="text-center">'+provinces[i].name+'</td>';
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+				string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+				string += '<td class="text-center">'+provinces[i].points+'</td>';
+
+				if (provinces[i].lock == "0") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">未通过审核</span></td>';
+				}
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				}
+				if (provinces[i].lock == "2") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">通过审核</span></td>';
+				}
+				if (provinces[i].lock == "3") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">已拒绝</span></td>';
+				}
+				string += '</tr>';
+			}
+			$('.teacherhtml').html('');
+			$('.teacherhtml').html(string);
+			$('.teacherPage').html(page);
+
+		});
+	}
+	//学生
+	function stuQueryList( url ) {
+		$.get(url,{'message_id':message_id,'type':3},function(res){
+
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+
+			for( var i=0 ; i<provinces.length;i++ ) {
+				string += '<tr id="l_'+provinces[i].id+'">';
+				if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+				if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+				} else {
+					string += '<td>没有关联家长</td>';
+				}
+				string += '<td class="text-center">'+provinces[i].student_id+'</td>';
+				string += '<td class="text-center">'+provinces[i].birth_date+'</td>';
+
+				if ( typeof (provinces[i].school_name) != "undefined" && provinces[i].school_name !='' && provinces[i].school_name !=null && provinces[i].school_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].school_name+'</td>';
+				} else {
+					string += '<td class="text-center">学校审核中</td>';
+				}
+
+
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+				string += '<td class="text-center">'+provinces[i].parent_tel+'</td>';
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				} else {
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+				}
+
+				string += '</tr>';
+			}
+			$('.stulist').html('');
+			$('.stulist').html(string);
+			$('.stupage').html(page);
+
+		});
+	}
+	//分页家长
+	function parentQueryList( url ) {
+		$.get(url,{'message_id':message_id,'type':4},function(res){
+			var provinces = res.list;
+			var page = res.page;
+			var string = "";
+			for( var i=0 ; i<provinces.length;i++ ) {
+				string += '<tr id="l_'+provinces[i].id+'">';
+
+				if ( typeof (provinces[i].parent_name) != "undefined" && provinces[i].parent_name !='' && provinces[i].parent_name !=null && provinces[i].parent_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].parent_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].sex+'</td>';
+
+				if ( typeof (provinces[i].student_name) != "undefined" && provinces[i].student_name !='' && provinces[i].student_name !=null && provinces[i].student_name !='null' ) {
+					string += '<td class="text-center">'+provinces[i].student_name+'</td>';
+				} else {
+					string += '<td></td>';
+				}
+				string += '<td class="text-center">'+provinces[i].telephone+'</td>';
+				string += '<td class="text-center">'+provinces[i].create_at+'</td>';
+				string += '<td class="text-center">'+provinces[i].email+'</td>';
+
+				if (provinces[i].is_vip_auth_id == 4) {
+					string += '<td class="text-center">个人VIP</td>';
+				} else if(provinces[i].is_vip_auth_id == '' ||provinces[i].is_vip_auth_id == null || provinces[i].is_vip_auth_id == "undefined"  ) {
+					string += '<td class="text-center">普通权限</td>';
+				} else {
+					string += '<td class="text-center">团体VIP</td>';
+				}
+
+				if (typeof (provinces[i].vipendtime) != "undefined") {
+					string += '<td class="text-center">'+provinces[i].vipendtime+'</td>';
+				} else {
+					string += '<td class="text-center"></td>';
+				}
+
+				if (provinces[i].lock == "1") {
+
+					string += '<td class="text-center fg_lock"><span class="fg-red fg_class">锁定</span></td>';
+				} else {
+					string += '<td class="text-center fg_lock"><span class="fg-green fg_class">正常</span></td>';
+				}
+
+				string += '</tr>';
+			}
+			$('.parenthtml').html('');
+			$('.parenthtml').html(string);
+			$('.parentpage').html(page);
+
+		});
+	}
+</script>
+
+<script>
+	$('.detail').click(function(){
+		if($('.tabContent').is(':hidden')){
+			$('.tabContent').show();
+			$('.detail').html('收起')
+		} else {
+			$('.tabContent').hide();
+			$('.detail').html('去查看>>')
+		}
+
+	})
+
+	$('.closeTab').click(function(){
+		$('.tabContent').hide();
+		$('.detail').html('去查看>>')
+	})
+</script>

@@ -1,0 +1,288 @@
+<layout name="admin_layout_exercise"/>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/exerciseNotify.js"></script>
+<div class="boxOutter">
+	<div class="of borderBottom pt10">
+		<span class="tabBtn left text-center">试卷详情</span>
+		<button type="button" name="button" class="btn right mt_10" id="batchReject">审核不通过</button>
+		<button type="button" name="button" class="btn right mt_10" id="biaoyin" pid="{$paperinfo.id}" state="<?= EXERCISE_STATE_WAITASSIGN?>">提交标引</button>
+	</div>
+	<div class="filterOutter of pt10 pb0">
+				<div class="filterBox">
+					<label>学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;段</label> -
+					<?php foreach (C('questionCategory') as $CategoryK => $CategoryV): ?>
+						<?php if ($paperinfo['period'] == $CategoryV['id']): ?>
+							<?=$CategoryV['name']?>
+						<?php else: ?>
+						<?php endif ?>
+					<?php endforeach ?>
+				</div>
+				<div class="filterBox">
+					<label>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级</label> -
+					<?php foreach (C('PAPERGRADE') as $GradeK => $GradeV): ?>
+						<?php if ($paperinfo['grade'] == $GradeV['id']): ?>
+							<?=$GradeV['name']?>
+						<?php else: ?>
+						<?php endif ?>
+					<?php endforeach ?>
+				</div>
+				<div class="filterBox">
+					<label >分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</label> -
+					<?php foreach (C('schoolTerm') as $TermK => $TermV): ?>
+						<?php if ($paperinfo['section'] == $TermV['id']): ?>
+							<?=$TermV['name']?>
+						<?php else: ?>
+						<?php endif ?>
+					<?php endforeach ?>
+				</div>
+				<div class="filterBox">
+					<label for="">年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份</label> - {$paperinfo.year}
+				</div>
+				<div class="filterBox">
+					<label for="" class="">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;区</label> - {$paperinfo.region}
+				</div>
+				<div class="filterBox">
+					<label class="">科&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;目</label> -
+					<?php foreach ($getCourse as $CourseK => $CourseV): ?>
+						<?php if ($paperinfo['subject'] == $CourseV['id']): ?>
+							<?=$CourseV['name']?>
+						<?php else: ?>
+						<?php endif ?>
+					<?php endforeach; ?>
+				</div>
+				<div class="filterBox">
+					<label >省&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;份</label> -
+					<?php foreach ($city as $CityK => $CityV): ?>
+						<?php if ($paperinfo['city_id'] == $CityV['id']): ?>
+							<?=$CityV['name']?>
+						<?php else: ?>
+						<?php endif ?>
+					<?php endforeach; ?>
+				</div>
+				<div class="filterBox">
+					<label >试卷类型</label> -
+						<?php foreach (C('paperCategory') as $paperK => $paperV): ?>
+							<?php if ($paperinfo['paper_type'] == $paperV['id']): ?>
+								<?=$paperV['name']?>
+							<?php else: ?>
+							<?php endif ?>
+						<?php endforeach; ?>
+				</div>
+				<div class="filterBox">
+					<label class="mr0">试卷名称</label> - {$paperinfo.paper_name}
+				</div>
+				<div class="filterBox">
+					<label style="width:auto">试卷模块数目</label> - {$paperinfo.paper_num}
+				</div>
+			</div>
+
+	<div class="pt10 pb10">
+		<ul class="subjectUl">
+			<li class="tableLi">
+				<?php if (!empty($bigList)): ?>
+					<table style="width: 100%;" class="tableCommon dataTable no-footer">
+						<tbody>
+						<?php for($i=0;$i<5;$i++): ?>
+
+							<switch name="i">
+								<case value="0">
+									<tr>
+										<td>大题题号</td>
+
+										<?php foreach ($bigList as $bigK => $bigV): ?>
+											<td><?=$bigV['big_topic_asnumber']?></td>
+
+											<input type="hidden" disabled name="big_topic_asnumber[]" class="inputCommon big_topic_asnumber" value="<?=$bigV['big_topic_asnumber']?>">
+
+											<input type="hidden" disabled name="big_question_id[]" class="inputCommon big_question_id" value="<?=$bigV['id']?>">
+										<?php endforeach; ?>
+
+									</tr>
+								</case>
+								<case value="1">
+									<tr>
+										<td>大题名称</td>
+										<?php foreach ($bigList as $bigK => $bigV): ?>
+											<td>
+												<input type="text" disabled name="big_topic_name[]" class="inputCommon big_topic_name" value="<?=$bigV['big_topic_name']?>" placeholder="请输入大题名称">
+											</td>
+										<?php endforeach; ?>
+									</tr>
+								</case>
+								<case value="2">
+									<tr>
+										<td>包含题数</td>
+										<?php foreach ($bigList as $bigK => $bigV): ?>
+										<td><?=$bigV['big_topic_num']?></td>
+										<?php endforeach; ?>
+									</tr>
+								</case>
+								<case value="3">
+									<tr>
+										<td>大题说明</td>
+										<?php foreach ($bigList as $bigK => $bigV): ?>
+										<td>
+											<input type="text" disabled name="big_topic_describe[]" class="inputCommon big_topic_describe" value="<?=$bigV['big_topic_describe']?>" placeholder="输入大题说明">
+										</td>
+										<?php endforeach; ?>
+									</tr>
+								</case>
+
+							</switch>
+
+						<?php endfor; ?>
+						</tbody>
+					</table>
+				<?php endif; ?>
+			</li>
+		</ul>
+
+		<dl>
+			注释：以后用预览替换
+
+			<?php foreach ($bigList as $bigK => $bigV): ?>
+				<dt style="color: red;"><?=$bigV['big_topic_asnumber']?>  <?=$bigV['big_topic_name']?></dt>
+
+				<?php if (!empty($bigV['childquestions'])): ?>
+					<?php foreach ($bigV['childquestions'] as $qK => $qV): ?>
+						<dd><?=html_entity_decode($qV['subject_name'])?></dd>
+						<dd>-----
+							<span class="editParperInfo" onclick="biaojiQuestion(<?=$qV['exercise_id']?>,<?=$qV['paper_id']?>)" >标记</span>
+						</dd>
+					<br/>
+					<?php endforeach; ?>
+				<?php endif ?>
+
+			<br/>
+			<?php endforeach; ?>
+		</dl>
+
+	</div>
+
+
+	<div class="borderBottom ">
+		<span class="text-center tabBtn">试卷追踪</span>
+	</div>
+	<table class="tableCommon borderNone mt20">
+		<thead>
+		<tr>
+			<th width="20%">序号</th>
+			<th width="20%">操作</th>
+			<th width="20%">操作人</th>
+			<th width="20%">时间</th>
+			<th width="20%">备注</th>
+		</tr>
+		</thead>
+		<tbody>
+		<?php foreach ($paperinfo['track'] as $trackK => $trackV): ?>
+		<tr>
+			<td><?=$trackK+1?></td>
+			<td><?=$trackV['oper_name']?></td>
+			<td><?=$trackV['operator_name']?></td>
+			<td><?=$trackV['oper_time']?></td>
+			<td class="showDetails"><a href="javascript:"><?=$trackV['comment']?></a></td>
+		</tr>
+		<?php endforeach ?>
+		</tbody>
+	</table>
+
+</div>
+
+
+<!-- 弹窗：添加备注 -->
+<div class="adminNotifyBox" id="addRemarks" style="z-index:100">
+	<div class="adminNotifyTitle">
+		添加备注
+	</div>
+	<div class="adminNotifyContent">
+		<textarea name="" id="" class="remarksMain" rows="6" placeholder="请输入返工的理由，限100字" maxlength="100"></textarea>
+	</div>
+	<p class="adminNotifyButton">
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" pid="{$paperinfo.id}" state="<?= EXERCISE_STATE_REPROCESS ?>" id="addRemarksSure">完成</a>
+		<a href="javascript:;" class="adminNotifyBtn adminNotifyBlue2" id="addRemarksCancel">取消</a>
+	</p>
+</div>
+<input type="hidden" name="repeat_commit" class="repeat_commit" value="{:session('TOKEN')}">
+
+<script src="__PUBLIC__/adminExercise/js/input/loading.js"></script>
+<script type="text/javascript" src="__PUBLIC__/adminExercise/js/input/paper.js"></script>
+<script>
+
+	$('#batchReject').click(function(){
+		$('#addRemarks').show();
+	});
+
+	//审核习题为返工
+	$('#addRemarksSure').unbind().click(function(){
+		var reason = $('.remarksMain').val().trim();
+		var id = $(this).attr('pid');
+		var state = $(this).attr('state');
+
+		if(reason == '')
+		{
+			$.NotifyBox.NotifyOne('提示','请输入不通过原因','确定');
+		}
+		else {
+			$('.fullBack,#addRemarks').hide();
+			reject(id,state,reason);
+		}
+
+	})
+
+	function reject( id,state,reason ) {
+		var requestdata={ids:id,state:25,additionalInfo:reason}
+		$.ajax({
+			type: "POST",   //访问WebService使用Post方式请求
+			url: 'index.php?m=Exercise&c=ExerciseState&a=setPaperState', //调用WebService的地址和方法名称组合---WsURL/方法名
+			data:requestdata,
+			dataType:'json',
+			beforeSend:function () {
+				loading('createAnswerQuestions');
+			},
+			success: function(res){
+				console.log(res);
+				if (res.status ==200) {
+					removeLoad('createAnswerQuestions');
+					window.history.go(-1);
+				} else {
+					removeLoad('createAnswerQuestions');
+					$.NotifyBox.NotifyPromptOne('错误信息',res.message,'关闭');
+				}
+			}
+		});
+	}
+
+	// 添加备注
+	$('#addRemarksCancel').click(function(){
+		$('.fullBack,#addRemarks').hide();
+	})
+
+	//提交标引，审核通过
+
+	$('#biaoyin').click(function(){
+		var id = $(this).attr('pid');
+		//var state = $(this).attr('state');
+		var state = "<?=EXERCISE_STATE_UNINBOUND?>";
+		$.NotifyBox.NotifyTwoCallTwo('标引','确定要标引吗？','确定','取消',function(){
+			var requestdata={ids:id,state:state}
+			$.ajax({
+				type: "POST",   //访问WebService使用Post方式请求
+				url: 'index.php?m=Exercise&c=ExerciseState&a=setPaperState', //调用WebService的地址和方法名称组合---WsURL/方法名
+				data:requestdata,
+				dataType:'json',
+				beforeSend:function () {
+					loading('createAnswerQuestions');
+				},
+				success: function(res){
+					console.log(res);
+					if (res.status ==200) {
+						removeLoad('createAnswerQuestions');
+						window.history.go(-1);
+					} else {
+						removeLoad('createAnswerQuestions');
+						$.NotifyBox.NotifyPromptOne('错误信息',res.message,'关闭');
+					}
+				}
+			});
+		})
+	})
+</script>
